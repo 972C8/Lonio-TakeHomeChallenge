@@ -1,0 +1,38 @@
+# Hand-labelled gold set (written by a human from the sources, NOT by the pipeline).
+# Used by `eval` to report recall/precision of the generated spec.
+# Calculator-derived items will be added once the calculator is explored.
+
+fields:
+  - {id: first_name, consumers: [pension_fund]}
+  - {id: last_name, consumers: [pension_fund]}
+  - {id: date_of_birth, consumers: [pension_fund]}
+  - {id: nationality, consumers: [source_tax]}
+  - {id: permit_type, consumers: [source_tax]}
+  - {id: residence_country, aliases: [address_country], consumers: [source_tax]}   # may be derived from the address
+  - {id: address_street, aliases: [street], consumers: [employer_hr]}
+  - {id: address_house_number, aliases: [house_number, street_number], consumers: [employer_hr]}
+  - {id: address_postcode, aliases: [postcode, postal_code, zip], consumers: [employer_hr]}
+  - {id: address_town, aliases: [town, city], consumers: [employer_hr]}
+  - {id: address_country, aliases: [country], consumers: [employer_hr]}
+  - {id: residence_canton, aliases: [canton], consumers: [pension_fund]}
+  - {id: first_working_day, aliases: [start_date], consumers: [pension_fund]}
+  - {id: civil_status, aliases: [marital_status], consumers: [pension_fund, source_tax]}
+  - {id: spouse_date_of_birth, consumers: [pension_fund]}
+  - {id: spouse_nationality, consumers: [source_tax]}
+  - {id: spouse_permit_type, consumers: [source_tax]}
+  - {id: spouse_residence_country, aliases: [spouse_lives_in_switzerland], consumers: [source_tax]}
+
+rules:
+  - subject_to_source_tax
+  - insurance_start_date
+
+exclusions:          # keywords that must appear in an exclusion
+  - photo
+  - laptop
+
+notices:             # keywords that must appear in a notice
+  - permit
+
+open_questions:      # keywords that must appear in an open question
+  - registered partnership
+  - canton

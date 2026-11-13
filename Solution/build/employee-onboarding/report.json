@@ -1,0 +1,1863 @@
+{
+  "problem": "employee-onboarding",
+  "counts": {
+    "units": 266,
+    "facts": 68,
+    "steps": 6,
+    "fields": 18,
+    "rules": 2,
+    "notices": 2,
+    "open_questions": 9,
+    "exclusions": 6
+  },
+  "findings": {
+    "error": [],
+    "warning": [
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-TR-015",
+        "message": "partial: First working day and confirmation are supported, but 'for the pension fund' is only implied by Leo's question and 'most important item' is 'number one thing' for the fund context. | The employee's first working day is needed (for the pension fund) and is the most important item; the employee should confirm it."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-TR-030",
+        "message": "partial: Calculator asking whether the spouse works is supported, but 'Zurich' is not mentioned in these units. | For married employees subject to source tax, the Zurich calculator asks whether the spouse works."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-TR-044",
+        "message": "partial: Gist is reasonable, but the explicit condition about when to ask spouse data is not stated; it is an inferred design choice. | Spouse nationality, permit and residence only need to be asked when the employee is married and the spouse exemption could apply (i.e. employee is non-Swiss without C permit and lives in CH)."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-SC-013",
+        "message": "partial: Shown for Married (05, 07) and absent for Single (04), and no spouse field appears in 01/03 units, but screenshot 06 and 02 are not evidenced and 'only when' is an inference. | 'Spouse's date of birth' appears only when Civil status is 'Married': it is shown in screenshots 05 and 07 (civil status Married) and absent in screenshot 04 (civil status Single) and in 01, 02, 03, 06 (civil status not selected)."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-SC-014",
+        "message": "partial: The banner text is shown in screenshot 06, but the units don't show the submit trigger or that every empty required field is highlighted (only an error-highlighted spouse field in 07). | Submitting the form with missing required fields shows the banner 'Please correct the highlighted fields.' and highlights each empty required field."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-SC-018",
+        "message": "partial: Only Zug and Zurich options are visible, so 'only Swiss cantons' is plausible but the ambiguity about residence/work canton is the extractor's inference, not in the units. | The Canton dropdown lists only Swiss cantons; it is unclear what to enter for an employee living abroad (e.g. cross-border commuter), and whether 'Canton' means residence canton or work canton."
+      },
+      {
+        "check": "coverage",
+        "severity": "warning",
+        "target": "F-SC-014",
+        "message": "fact not used by any requirement, exclusion or open question: Submitting the form with missing required fields shows the banner 'Please correct the highlighted fields.' and highlights each empty required field."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "field.first_name",
+        "message": "partial: Pension portal required field is backed, but the HR consumer (correspondence and payroll administration) is only weakly inferred from the address quote, and the passport/ID help text and trim validation are not backed by any cited fact."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "field.last_name",
+        "message": "partial: Pension fund required field is backed, but HR consumer (correspondence/payroll), the passport/ID help text and trim validation are not supported by the cited facts."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "field.date_of_birth",
+        "message": "partial: Required field, DD.MM.YYYY display and ISO storage are backed, but the validation rules (valid calendar date, not in the future) are not supported by any cited fact."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "field.address_house_number",
+        "message": "partial: Required house number for HR is backed, but the free-text allowing '12a' is not stated in the cited facts."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "field.residence_canton",
+        "message": "partial: The 26 labels and required status are backed, but the two-letter option values and the ask_when address_country==\"CH\" restriction are not backed by the cited facts (F-SC-018 leaves residents abroad and residence-vs-work canton unresolved)."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "field.spouse_date_of_birth",
+        "message": "partial: Asking when married, required, and the DD.MM.YYYY format are backed, but the 'must not be in the future' validation is not backed by any cited fact."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "field.spouse_residence_country",
+        "message": "partial: Facts support asking spouse residence for the exemption, but the country-type ISO alpha-2 format/validation and required_when=true are not backed, and the 'ask_when' narrowing is only inferred, since facts only give 'lives here' (in CH), not a country field."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "field.spouse_employed",
+        "message": "partial: Calculator asking whether the spouse works for married employees is supported (F-TR-030), but the boolean yes/no format, validation and required_when=true are not backed, and the notes admit the calculator wording is unknown."
+      },
+      {
+        "check": "naive_builder",
+        "severity": "warning",
+        "target": "flow.md",
+        "message": "Step 6 'Source tax details' is shown whenever subject_to_source_tax is true, but its only field (spouse_employed) is asked only when the employee is married. A single, divorced or widowed person who is subject (including every unmarried resident abroad) would get a step with only the intro text 'You are subject to source tax. We need a few more details…' and no questions. Should an empty step be skipped, shown as an information-only page, or should the step condition include civil_status == \"married\" until OQ-01 is resolved?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "warning",
+        "target": "open-questions.md",
+        "message": "README says to implement each open-question recommendation. OQ-01 recommends extracting the calculator's questions *before building the source_tax step*, yet flow.md and spouse_employed.md fully specify step 6. Should I build step 6 now with only 'spouse_employed', or leave step 6 out of the first release and ship liability determination only?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "warning",
+        "target": "fields/first_working_day.md",
+        "message": "The step text says 'Please confirm your first working day' and F-TR-015 says HR asks the employee to *confirm* it. Is first_working_day pre-filled by HR (from the contract) for the employee to confirm, or does the employee type it in with no starting value? Is an explicit confirmation action (checkbox or button) required, or is filling in the date enough?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "warning",
+        "target": "notices.md",
+        "message": "The first_working_day_confirm notice and the first_working_day help text tell the employee to 'update it here right away' if the date changes. That means the questionnaire stays editable after it is submitted. Is editing after submission in scope? If so, which steps or fields can be edited, and does a re-submission re-run the conditions (for example a new civil status hiding or adding fields)? Notifications are out of scope, but editing itself is not addressed."
+      },
+      {
+        "check": "naive_builder",
+        "severity": "warning",
+        "target": "fields/permit_type.md",
+        "message": "permit_type is asked only of Swiss residents, but its consumers include employer_hr for first-day logistics (bring your permit). Non-Swiss cross-border commuters (e.g. the woman living in Liechtenstein) also have a Swiss work permit, but they are never asked and never get the reminder. Should residents abroad who are not Swiss be asked their permit (for example a cross-border permit) and shown the reminder?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "warning",
+        "target": "conventions.md",
+        "message": "The general form behaviour is not specified. Can the employee go back to earlier steps? Is there a save-and-resume across sessions? Is there a final review/summary and an explicit submit? What happens after submission (confirmation screen, read-only view)? Is the employee identified or invited (for example with an HR-prefilled name)?"
+      }
+    ],
+    "info": [
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "fields/date_of_birth.md",
+        "message": "Contradiction: date_of_birth.md and spouse_date_of_birth.md add the validation 'must not be in the future', but OQ-09's recommendation (affecting date_of_birth and spouse_date_of_birth) says 'validate as a calendar date only'. Which one wins? (The trace judge also notes that no source supports 'not in the future'.)"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "notices.md",
+        "message": "The permit_reminder is shown when is_set(permit_type), so it also appears when permit_type == \"other\", whose label is 'Other permit / no permit yet'. Should someone without a permit yet be told to bring their permit? Should the notice be limited to B/C, or worded differently for 'other'?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "notices.md",
+        "message": "Should the first_working_day_confirm notice show the computed insurance_start_date (e.g. 'Your insurance starts on 01.04.2026') or only the generic rule text as written? Is insurance_start_date displayed to the employee anywhere?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "rules/subject_to_source_tax.md",
+        "message": "Because of the outer `not (...)`, subject_to_source_tax is TRUE while the spouse questions are still unanswered (e.g. married B-permit holder, spouse_nationality = CH, spouse_residence_country not yet answered). That contradicts the conventions.md statement that 'a rule is never true because of a missing answer'. Should the rule (and step 6 visibility) count as undetermined/false until every input needed for the spouse exemption is answered, or is this temporary true value acceptable because step 5 must be finished first?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "fields/spouse_residence_country.md",
+        "message": "The source only needs to know whether the spouse lives in Switzerland ('and that they live here'). For data minimisation (G-01), should this be a yes/no question ('Does your spouse live in Switzerland?') instead of a full country picker? The trace judge flags the country type as unsupported."
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "conventions.md",
+        "message": "What error/validation messages should our form show (required, invalid date, invalid choice)? Should we reuse the portal's pattern '<Field label> is required.' and the banner 'Please correct the highlighted fields.', or does Lonio have its own wording?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "fields/address_country.md",
+        "message": "Which country list and labels should the country pickers (address_country, nationality, spouse_nationality, spouse_residence_country) use: all ISO 3166-1 alpha-2 entries with English names? Should Switzerland and neighbouring countries be listed first? How do we handle stateless persons, refugees, or nationality 'unknown', which have no ISO country code?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "fields/first_name.md",
+        "message": "Are there length or character limits for the text fields (first/last name, street, house number, postcode, town) imposed by the pension portal or HR systems? Should names include middle names / all given names as on the passport? Should values be stored trimmed?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "fields/address_house_number.md",
+        "message": "The house number is always required, but some addresses (rural or foreign) have no house number. Should it stay mandatory, or be optional, or allow an explicit 'no house number' choice?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "open-questions.md",
+        "message": "OQ-03's recommendation says to 'flag registrations of residents abroad for HR'. What is this flag in the questionnaire build: a stored derived flag, a visible marker in the HR output, or something else? Transmission to parties is out of scope, so where should the flag live?"
+      },
+      {
+        "check": "naive_builder",
+        "severity": "info",
+        "target": "traceability.md",
+        "message": "Requirements cite product-owner guidance ids (G-01 … G-10, e.g. G-03, G-04, G-05 in out-of-scope.md) and a decisions.yaml, but neither the guidance document nor decisions.yaml is in the package, and traceability.md does not resolve G-ids. Can these be provided, so that no guidance affecting the build (for example G-02) is missing?"
+      }
+    ]
+  },
+  "coverage": {
+    "units_total": 266,
+    "units_covered": 102,
+    "facts_total": 68,
+    "facts_used": 59,
+    "uncovered_units": [
+      {
+        "id": "T-000",
+        "text": "HR meeting transcript Everyone and everything here is fictional. Anna is the HR manager at Muster AG. Leo works in product at Lonio."
+      },
+      {
+        "id": "T-001",
+        "text": "Can you hear me okay? You're a bit quiet."
+      },
+      {
+        "id": "T-002",
+        "text": "Is this better? I'm in the small meeting room, the big one is taken. Sorry, let me just close the door."
+      },
+      {
+        "id": "T-003",
+        "text": "Much better. So, thanks for making the time. The idea today is simple. We want your new employees to give us everything once, so that you stop chasing them for "
+      },
+      {
+        "id": "T-005",
+        "text": "Okay. And how many people do you hire in a year?"
+      },
+      {
+        "id": "T-007",
+        "text": "Good. Let's start with the biggest pain. What takes you the most time?"
+      },
+      {
+        "id": "T-009",
+        "text": "So who actually needs to answer them?"
+      },
+      {
+        "id": "T-011",
+        "text": "Okay, that's clear. And the questionnaire itself is what?"
+      },
+      {
+        "id": "T-015",
+        "text": "Anything else on the address?"
+      },
+      {
+        "id": "T-017",
+        "text": "Great. Do you also want a photo? Some customers ask for one."
+      },
+      {
+        "id": "T-019",
+        "text": "It could. Do you want that from day one?"
+      },
+      {
+        "id": "T-023",
+        "text": "Perfect. What do you need for the fund that you don't have?"
+      },
+      {
+        "id": "T-025",
+        "text": "It moves?"
+      },
+      {
+        "id": "T-027",
+        "text": "Ouch."
+      },
+      {
+        "id": "T-029",
+        "text": "Sorry, one second, someone's at my door. [pause] Okay, I'm back, sorry. Where were we?"
+      },
+      {
+        "id": "T-030",
+        "text": "The Julia story. It doesn't matter."
+      },
+      {
+        "id": "T-031",
+        "text": "Right. What else about the employee affects the fund? Are they married, things like that?"
+      },
+      {
+        "id": "T-033",
+        "text": "And what are the options in that list?"
+      },
+      {
+        "id": "T-035",
+        "text": "How did you enter him?"
+      },
+      {
+        "id": "T-037",
+        "text": "Okay. Noted. Can I go back to source tax? You said all non-Swiss employees."
+      },
+      {
+        "id": "T-041",
+        "text": "Sure, send it if it's easy. Do people need anything from you on the first day? Laptops, things like that? I just want to see if that belongs in the same form."
+      },
+      {
+        "id": "T-047",
+        "text": "Okay. Anything else on who needs to do it? I'd rather hear all of it now."
+      },
+      {
+        "id": "T-054",
+        "text": "Good. I'll send them after lunch. Thanks, Leo."
+      },
+      {
+        "id": "T-055",
+        "text": "Thanks, Anna. Talk soon."
+      },
+      {
+        "id": "S01-E02",
+        "text": "Employer portal"
+      },
+      {
+        "id": "S01-E04",
+        "text": "Log out"
+      },
+      {
+        "id": "S01-E05",
+        "text": "Home"
+      },
+      {
+        "id": "S01-E07",
+        "text": "Register new employee"
+      },
+      {
+        "id": "S01-E09",
+        "text": "Employee"
+      },
+      {
+        "id": "S01-E21",
+        "text": "Cancel"
+      },
+      {
+        "id": "S01-E22",
+        "text": "Register"
+      },
+      {
+        "id": "S02-E01",
+        "text": "Pensionskasse Muster"
+      },
+      {
+        "id": "S02-E02",
+        "text": "Employer portal"
+      },
+      {
+        "id": "S02-E03",
+        "text": "Muster AG"
+      },
+      {
+        "id": "S02-E04",
+        "text": "Log out"
+      },
+      {
+        "id": "S02-E05",
+        "text": "Home"
+      },
+      {
+        "id": "S02-E06",
+        "text": "Insured persons"
+      },
+      {
+        "id": "S02-E07",
+        "text": "Register new employee"
+      },
+      {
+        "id": "S02-E08",
+        "text": "Register new employee"
+      },
+      {
+        "id": "S02-E09",
+        "text": "Employee"
+      },
+      {
+        "id": "S02-E10",
+        "text": "First name"
+      },
+      {
+        "id": "S02-E11",
+        "text": "Last name"
+      },
+      {
+        "id": "S02-E12",
+        "text": "Date of birth"
+      },
+      {
+        "id": "S02-E13",
+        "text": "DD.MM.YYYY"
+      },
+      {
+        "id": "S02-E15",
+        "text": "Please select"
+      },
+      {
+        "id": "S02-E42",
+        "text": "Insurance"
+      },
+      {
+        "id": "S02-E43",
+        "text": "Insurance start date"
+      },
+      {
+        "id": "S02-E44",
+        "text": "Civil status"
+      },
+      {
+        "id": "S02-E45",
+        "text": "Cancel"
+      },
+      {
+        "id": "S02-E46",
+        "text": "Register"
+      },
+      {
+        "id": "S02-E47",
+        "text": "Fields marked * are required."
+      },
+      {
+        "id": "S03-E01",
+        "text": "Pensionskasse Muster"
+      },
+      {
+        "id": "S03-E02",
+        "text": "Employer portal · Muster AG · Log out"
+      },
+      {
+        "id": "S03-E03",
+        "text": "Home > Insured persons > Register new employee"
+      },
+      {
+        "id": "S03-E04",
+        "text": "Register new employee"
+      },
+      {
+        "id": "S03-E05",
+        "text": "Employee"
+      },
+      {
+        "id": "S03-E06",
+        "text": "First name"
+      },
+      {
+        "id": "S03-E07",
+        "text": "Lena"
+      },
+      {
+        "id": "S03-E08",
+        "text": "Last name"
+      },
+      {
+        "id": "S03-E09",
+        "text": "Keller"
+      },
+      {
+        "id": "S03-E10",
+        "text": "Date of birth"
+      },
+      {
+        "id": "S03-E11",
+        "text": "14.02.1991"
+      },
+      {
+        "id": "S03-E12",
+        "text": "DD.MM.YYYY"
+      },
+      {
+        "id": "S03-E13",
+        "text": "Canton"
+      },
+      {
+        "id": "S03-E14",
+        "text": "Zurich"
+      },
+      {
+        "id": "S03-E15",
+        "text": "Insurance"
+      },
+      {
+        "id": "S03-E16",
+        "text": "Insurance start date"
+      },
+      {
+        "id": "S03-E17",
+        "text": "01.05.2026"
+      },
+      {
+        "id": "S03-E18",
+        "text": "DD.MM.YYYY. Must be the 1st of a month."
+      },
+      {
+        "id": "S03-E20",
+        "text": "Please select"
+      },
+      {
+        "id": "S03-E25",
+        "text": "Cancel"
+      },
+      {
+        "id": "S03-E26",
+        "text": "Register"
+      },
+      {
+        "id": "S03-E27",
+        "text": "Fields marked * are required."
+      },
+      {
+        "id": "S04-E01",
+        "text": "Pensionskasse Muster"
+      },
+      {
+        "id": "S04-E02",
+        "text": "Employer portal · Muster AG · Log out"
+      },
+      {
+        "id": "S04-E03",
+        "text": "Home > Insured persons > Register new employee"
+      },
+      {
+        "id": "S04-E04",
+        "text": "Register new employee"
+      },
+      {
+        "id": "S04-E05",
+        "text": "Employee"
+      },
+      {
+        "id": "S04-E06",
+        "text": "First name"
+      },
+      {
+        "id": "S04-E07",
+        "text": "Lena"
+      },
+      {
+        "id": "S04-E08",
+        "text": "Last name"
+      },
+      {
+        "id": "S04-E09",
+        "text": "Keller"
+      },
+      {
+        "id": "S04-E10",
+        "text": "Date of birth"
+      },
+      {
+        "id": "S04-E11",
+        "text": "14.02.1991"
+      },
+      {
+        "id": "S04-E12",
+        "text": "DD.MM.YYYY"
+      },
+      {
+        "id": "S04-E13",
+        "text": "Canton"
+      },
+      {
+        "id": "S04-E14",
+        "text": "Zurich"
+      },
+      {
+        "id": "S04-E15",
+        "text": "Insurance"
+      },
+      {
+        "id": "S04-E16",
+        "text": "Insurance start date"
+      },
+      {
+        "id": "S04-E17",
+        "text": "01.05.2026"
+      },
+      {
+        "id": "S04-E18",
+        "text": "DD.MM.YYYY. Must be the 1st of a month."
+      },
+      {
+        "id": "S04-E19",
+        "text": "Civil status"
+      },
+      {
+        "id": "S04-E21",
+        "text": "Cancel"
+      },
+      {
+        "id": "S04-E22",
+        "text": "Register"
+      },
+      {
+        "id": "S04-E23",
+        "text": "Fields marked * are required."
+      },
+      {
+        "id": "S05-E01",
+        "text": "Pensionskasse Muster"
+      },
+      {
+        "id": "S05-E02",
+        "text": "Employer portal · Muster AG · Log out"
+      },
+      {
+        "id": "S05-E03",
+        "text": "Home > Insured persons > Register new employee"
+      },
+      {
+        "id": "S05-E04",
+        "text": "Register new employee"
+      },
+      {
+        "id": "S05-E05",
+        "text": "Employee"
+      },
+      {
+        "id": "S05-E06",
+        "text": "First name"
+      },
+      {
+        "id": "S05-E07",
+        "text": "Marco"
+      },
+      {
+        "id": "S05-E08",
+        "text": "Last name"
+      },
+      {
+        "id": "S05-E09",
+        "text": "Rossi"
+      },
+      {
+        "id": "S05-E10",
+        "text": "Date of birth"
+      },
+      {
+        "id": "S05-E11",
+        "text": "03.09.1985"
+      },
+      {
+        "id": "S05-E12",
+        "text": "DD.MM.YYYY"
+      },
+      {
+        "id": "S05-E13",
+        "text": "Canton"
+      },
+      {
+        "id": "S05-E14",
+        "text": "Bern"
+      },
+      {
+        "id": "S05-E15",
+        "text": "Insurance"
+      },
+      {
+        "id": "S05-E16",
+        "text": "Insurance start date"
+      },
+      {
+        "id": "S05-E17",
+        "text": "01.06.2026"
+      },
+      {
+        "id": "S05-E18",
+        "text": "DD.MM.YYYY. Must be the 1st of a month."
+      },
+      {
+        "id": "S05-E19",
+        "text": "Civil status"
+      },
+      {
+        "id": "S05-E22",
+        "text": "22.11.1987"
+      },
+      {
+        "id": "S05-E24",
+        "text": "Cancel"
+      },
+      {
+        "id": "S05-E25",
+        "text": "Register"
+      },
+      {
+        "id": "S05-E26",
+        "text": "Fields marked * are required."
+      },
+      {
+        "id": "S06-E01",
+        "text": "Pensionskasse Muster"
+      },
+      {
+        "id": "S06-E02",
+        "text": "Employer portal · Muster AG · Log out"
+      },
+      {
+        "id": "S06-E03",
+        "text": "Home > Insured persons > Register new employee"
+      },
+      {
+        "id": "S06-E04",
+        "text": "Register new employee"
+      },
+      {
+        "id": "S06-E06",
+        "text": "Employee"
+      },
+      {
+        "id": "S06-E07",
+        "text": "First name"
+      },
+      {
+        "id": "S06-E08",
+        "text": ""
+      },
+      {
+        "id": "S06-E10",
+        "text": "Last name"
+      },
+      {
+        "id": "S06-E11",
+        "text": ""
+      },
+      {
+        "id": "S06-E13",
+        "text": "Date of birth"
+      },
+      {
+        "id": "S06-E14",
+        "text": ""
+      },
+      {
+        "id": "S06-E15",
+        "text": "DD.MM.YYYY"
+      },
+      {
+        "id": "S06-E17",
+        "text": "Canton"
+      },
+      {
+        "id": "S06-E18",
+        "text": "Please select"
+      },
+      {
+        "id": "S06-E20",
+        "text": "Insurance"
+      },
+      {
+        "id": "S06-E21",
+        "text": "Insurance start date"
+      },
+      {
+        "id": "S06-E22",
+        "text": ""
+      },
+      {
+        "id": "S06-E25",
+        "text": "Civil status"
+      },
+      {
+        "id": "S06-E26",
+        "text": "Please select"
+      },
+      {
+        "id": "S06-E28",
+        "text": "Cancel"
+      },
+      {
+        "id": "S06-E29",
+        "text": "Register"
+      },
+      {
+        "id": "S06-E30",
+        "text": "Fields marked * are required."
+      },
+      {
+        "id": "S07-E01",
+        "text": "Pensionskasse Muster"
+      },
+      {
+        "id": "S07-E02",
+        "text": "Employer portal · Muster AG · Log out"
+      },
+      {
+        "id": "S07-E03",
+        "text": "Home > Insured persons > Register new employee"
+      },
+      {
+        "id": "S07-E04",
+        "text": "Register new employee"
+      },
+      {
+        "id": "S07-E05",
+        "text": "Employee"
+      },
+      {
+        "id": "S07-E06",
+        "text": "First name"
+      },
+      {
+        "id": "S07-E07",
+        "text": "Marco"
+      },
+      {
+        "id": "S07-E08",
+        "text": "Last name"
+      },
+      {
+        "id": "S07-E09",
+        "text": "Rossi"
+      },
+      {
+        "id": "S07-E10",
+        "text": "Date of birth"
+      },
+      {
+        "id": "S07-E11",
+        "text": "03.09.1985"
+      },
+      {
+        "id": "S07-E12",
+        "text": "DD.MM.YYYY"
+      },
+      {
+        "id": "S07-E13",
+        "text": "Canton"
+      },
+      {
+        "id": "S07-E14",
+        "text": "Bern"
+      },
+      {
+        "id": "S07-E15",
+        "text": "Insurance"
+      },
+      {
+        "id": "S07-E16",
+        "text": "Insurance start date"
+      },
+      {
+        "id": "S07-E17",
+        "text": "01.06.2026"
+      },
+      {
+        "id": "S07-E18",
+        "text": "DD.MM.YYYY. Must be the 1st of a month."
+      },
+      {
+        "id": "S07-E19",
+        "text": "Civil status"
+      },
+      {
+        "id": "S07-E22",
+        "text": ""
+      },
+      {
+        "id": "S07-E23",
+        "text": "DD.MM.YYYY"
+      },
+      {
+        "id": "S07-E25",
+        "text": "Cancel"
+      },
+      {
+        "id": "S07-E26",
+        "text": "Register"
+      },
+      {
+        "id": "S07-E27",
+        "text": "Fields marked * are required."
+      }
+    ]
+  },
+  "personas": [
+    {
+      "id": "maria",
+      "from": "T: Maria in sales, Portuguese, C permit, no source tax",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status"
+        ],
+        "rules": {
+          "subject_to_source_tax": false,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "tomas",
+      "from": "T: Tomás, Brazilian, B permit, wife Swiss, live in Winterthur -> no source tax",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth",
+          "spouse_nationality",
+          "spouse_residence_country"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth",
+          "spouse_nationality",
+          "spouse_residence_country"
+        ],
+        "rules": {
+          "subject_to_source_tax": false,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "stefan",
+      "from": "T: Stefan, Swiss, lives in Konstanz -> source tax regardless of passport",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "first_working_day",
+          "civil_status"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "first_working_day",
+          "civil_status"
+        ],
+        "rules": {
+          "subject_to_source_tax": true,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "liechtenstein_resident",
+      "from": "T: woman in the warehouse who lives in Liechtenstein -> source tax",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "first_working_day",
+          "civil_status"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "first_working_day",
+          "civil_status"
+        ],
+        "rules": {
+          "subject_to_source_tax": true,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "swiss_resident",
+      "from": "T: if you have a Swiss passport (and live here) you do not do source tax",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth"
+        ],
+        "rules": {
+          "subject_to_source_tax": false,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "b_permit_single",
+      "from": "T: all non-Swiss without C permit do source tax",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status"
+        ],
+        "rules": {
+          "subject_to_source_tax": true,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "b_permit_spouse_b_permit",
+      "from": "T: spouse exemption only for Swiss or C-permit spouses living here",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth",
+          "spouse_nationality",
+          "spouse_permit_type",
+          "spouse_employed"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth",
+          "spouse_nationality",
+          "spouse_permit_type",
+          "spouse_employed"
+        ],
+        "rules": {
+          "subject_to_source_tax": true,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "b_permit_spouse_c_permit",
+      "from": "T: married to someone with a C permit who lives here -> no source tax",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth",
+          "spouse_nationality",
+          "spouse_permit_type",
+          "spouse_residence_country"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "permit_type",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth",
+          "spouse_nationality",
+          "spouse_permit_type",
+          "spouse_residence_country"
+        ],
+        "rules": {
+          "subject_to_source_tax": false,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "b_permit_swiss_spouse_abroad",
+      "from": "T: spouse exemption requires that the spouse lives here",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth",
+          "spouse_employed"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth",
+          "spouse_employed"
+        ],
+        "rules": {
+          "subject_to_source_tax": true,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "julia",
+      "from": "T: Julia moved her first working day to 15 March -> insurance starts 1 April",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status"
+        ],
+        "rules": {
+          "subject_to_source_tax": false,
+          "insurance_start_date": "2026-04-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "starts_on_first",
+      "from": "T: unless somebody starts exactly on the first, then it's just that day",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status"
+        ],
+        "rules": {
+          "subject_to_source_tax": false,
+          "insurance_start_date": "2026-05-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "marco_married",
+      "from": "S: married -> Spouse's date of birth appears and is required (screens 05, 07)",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status",
+          "spouse_date_of_birth"
+        ],
+        "rules": {
+          "subject_to_source_tax": false,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    },
+    {
+      "id": "lena_single",
+      "from": "S: single -> no spouse field (screen 04)",
+      "pass": true,
+      "failures": [],
+      "simulation": {
+        "asked": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status"
+        ],
+        "required": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country",
+          "residence_canton",
+          "nationality",
+          "first_working_day",
+          "civil_status"
+        ],
+        "rules": {
+          "subject_to_source_tax": false,
+          "insurance_start_date": "2026-06-01"
+        }
+      },
+      "unused_inputs_alias_or_not_in_spec": [
+        "residence_country"
+      ]
+    }
+  ],
+  "eval": {
+    "field_recall": 1.0,
+    "field_precision": 0.94,
+    "consumer_recall": 1.0,
+    "rules_found": "2/2",
+    "exclusions_found": "2/2",
+    "notices_found": "1/1",
+    "open_questions_found": "2/2",
+    "fields_not_in_gold": [
+      "spouse_employed"
+    ]
+  },
+  "open_questions": [
+    {
+      "id": "OQ-01",
+      "question": "Which questions does the Zurich source tax calculator ask to determine the tariff code (including the extra questions and German forms for residents abroad), with their options and conditions?",
+      "why_it_matters": "No facts were extracted from the calculator source. The source tax step currently holds only 'spouse works' (from the transcript). Without the calculator's questions, Lonio cannot collect enough to determine the tariff.",
+      "options": [
+        "Extract the calculator facts and extend the source_tax step",
+        "Ship liability determination only; HR collects the tariff inputs manually"
+      ],
+      "recommendation": "Extract the calculator's questions before building the source_tax step. The liability rule and the other steps can be built now.",
+      "affects": [
+        "spouse_employed",
+        "source_tax",
+        "nationality",
+        "permit_type",
+        "subject_to_source_tax"
+      ],
+      "source_refs": [
+        "F-TR-039",
+        "F-TR-030",
+        "F-TR-007"
+      ],
+      "blocking": true
+    },
+    {
+      "id": "OQ-03",
+      "question": "What should be entered in the pension portal's required 'Canton' field for employees living abroad, and does 'Canton' mean the residence canton or the work canton?",
+      "why_it_matters": "The dropdown lists only Swiss cantons, and the field is required. Cross-border employees exist (Konstanz, Liechtenstein). If it means the work canton, the employee should not be asked at all.",
+      "options": [
+        "Residence canton; ask only Swiss residents; ask the fund what to use for residents abroad",
+        "Work canton; do not ask the employee; HR/employer supplies it (e.g. Zurich)",
+        "Ask everyone abroad for a canton"
+      ],
+      "recommendation": "Ask Pensionskasse Muster. Until then, ask only Swiss residents for their residence canton and flag registrations of residents abroad for HR.",
+      "affects": [
+        "residence_canton"
+      ],
+      "source_refs": [
+        "F-SC-005",
+        "F-SC-006",
+        "F-SC-018",
+        "F-TR-038"
+      ],
+      "blocking": true
+    },
+    {
+      "id": "OQ-04",
+      "question": "How should employees in a registered partnership (or with other statuses such as separated) be recorded, and does the fund want the partner's date of birth?",
+      "why_it_matters": "Such an employee exists (Daniel), but the portal offers only Single, Married, Divorced, Widowed. Adding an option the fund does not support would break the registration.",
+      "options": [
+        "Keep the four portal options; HR handles partnerships manually",
+        "Add 'registered_partnership' and map it per the fund's answer; ask partner's date of birth if required",
+        "Treat registered partnership as married"
+      ],
+      "recommendation": "Keep the four portal options for now and ask the fund. Add a 'registered_partnership' option once its mapping and partner-data requirements are known.",
+      "affects": [
+        "civil_status",
+        "spouse_date_of_birth",
+        "subject_to_source_tax"
+      ],
+      "source_refs": [
+        "F-TR-023",
+        "F-TR-024",
+        "F-SC-019",
+        "F-SC-010"
+      ],
+      "blocking": false
+    },
+    {
+      "id": "OQ-02",
+      "question": "Is the source tax liability rule complete? Anna ended with 'I think that's it'.",
+      "why_it_matters": "Any missing exemption or condition would wrongly show or hide the source tax questions.",
+      "options": [
+        "Confirm the rule as specified",
+        "Add missing conditions"
+      ],
+      "recommendation": "Confirm with HR and cross-check against the calculator.",
+      "affects": [
+        "subject_to_source_tax",
+        "spouse_nationality",
+        "spouse_permit_type",
+        "spouse_residence_country"
+      ],
+      "source_refs": [
+        "F-TR-040"
+      ],
+      "blocking": false
+    },
+    {
+      "id": "OQ-05",
+      "question": "Is 'Spouse's date of birth' hidden in the portal for Divorced and Widowed?",
+      "why_it_matters": "No screenshot shows these states. The spec asks for the spouse's date of birth only when the employee is married.",
+      "options": [
+        "Only for Married (as specified)",
+        "Also for divorced/widowed"
+      ],
+      "recommendation": "Keep 'only married' (consistent with the transcript) and verify in the portal.",
+      "affects": [
+        "spouse_date_of_birth"
+      ],
+      "source_refs": [
+        "F-SC-020",
+        "F-SC-013",
+        "F-TR-021"
+      ],
+      "blocking": false
+    },
+    {
+      "id": "OQ-06",
+      "question": "Which permit types must the permit fields offer?",
+      "why_it_matters": "The sources name only B and C. The calculator may need to distinguish other permits.",
+      "options": [
+        "B, C, other (as specified)",
+        "The full permit list from the calculator"
+      ],
+      "recommendation": "Keep B / C / other until the calculator facts are extracted.",
+      "affects": [
+        "permit_type",
+        "spouse_permit_type"
+      ],
+      "source_refs": [
+        "F-TR-025",
+        "F-TR-031",
+        "F-TR-034",
+        "G-10"
+      ],
+      "blocking": false
+    },
+    {
+      "id": "OQ-07",
+      "question": "Is the postal address always the residence address, so that address_country can serve as the residence country?",
+      "why_it_matters": "Liability depends on the country of residence. A different mailing address would give the wrong result.",
+      "options": [
+        "Yes, one address (as specified)",
+        "Ask for the residence country separately"
+      ],
+      "recommendation": "Use one address. Anna described a normal home address.",
+      "affects": [
+        "address_country",
+        "subject_to_source_tax",
+        "residence_canton"
+      ],
+      "source_refs": [
+        "F-TR-011",
+        "F-TR-043"
+      ],
+      "blocking": false
+    },
+    {
+      "id": "OQ-08",
+      "question": "What exact wording should the permit reminder use, and when should it be shown?",
+      "why_it_matters": "Anna deferred the wording.",
+      "options": [
+        "Use the drafted wording",
+        "HR provides the wording"
+      ],
+      "recommendation": "Use the draft and let HR review it.",
+      "affects": [
+        "permit_reminder"
+      ],
+      "source_refs": [
+        "F-TR-029"
+      ],
+      "blocking": false
+    },
+    {
+      "id": "OQ-09",
+      "question": "Are there limits on dates (e.g. first working day not in the past, or a maximum distance in the future) and how does the portal word date errors?",
+      "why_it_matters": "The sources give only formats.",
+      "options": [
+        "Validate only as a calendar date (as specified)",
+        "Add range limits"
+      ],
+      "recommendation": "Validate as a calendar date only, until HR or the fund defines limits.",
+      "affects": [
+        "first_working_day",
+        "date_of_birth",
+        "spouse_date_of_birth"
+      ],
+      "source_refs": [
+        "F-SC-022"
+      ],
+      "blocking": false
+    }
+  ],
+  "inferred_items": [
+    "field.first_name",
+    "field.last_name",
+    "field.address_country",
+    "field.residence_canton",
+    "field.nationality",
+    "field.permit_type",
+    "field.civil_status",
+    "field.spouse_nationality",
+    "field.spouse_permit_type",
+    "field.spouse_residence_country",
+    "field.spouse_employed",
+    "rule.subject_to_source_tax"
+  ],
+  "naive_builder": {
+    "already_flagged": [
+      "OQ-01 (blocking): Which questions the Zurich source tax calculator asks (incl. extra questions / German forms for residents abroad), with options and conditions – the source_tax step is incomplete",
+      "OQ-03 (blocking): What to enter in the pension portal's required 'Canton' field for residents abroad, and whether 'Canton' means residence or work canton",
+      "OQ-04: How to record registered partnership / separated etc. and whether the partner's date of birth is needed",
+      "OQ-02: Whether the source tax liability rule is complete ('I think that's it')",
+      "OQ-05: Whether 'Spouse's date of birth' is hidden in the portal for Divorced and Widowed",
+      "OQ-06: Which permit types the permit fields must offer (B / C / other vs. full calculator list)",
+      "OQ-07: Whether the postal address is always the residence address (address_country used as residence country)",
+      "OQ-08: Exact wording of the permit reminder and when it is shown",
+      "OQ-09: Date range limits (past/future) and error wording for dates"
+    ],
+    "questions": [
+      {
+        "file": "flow.md",
+        "question": "Step 6 'Source tax details' is shown whenever subject_to_source_tax is true, but its only field (spouse_employed) is asked only when the employee is married. A single, divorced or widowed person who is subject (including every unmarried resident abroad) would get a step with only the intro text 'You are subject to source tax. We need a few more details…' and no questions. Should an empty step be skipped, shown as an information-only page, or should the step condition include civil_status == \"married\" until OQ-01 is resolved?",
+        "severity": "major"
+      },
+      {
+        "file": "open-questions.md",
+        "question": "README says to implement each open-question recommendation. OQ-01 recommends extracting the calculator's questions *before building the source_tax step*, yet flow.md and spouse_employed.md fully specify step 6. Should I build step 6 now with only 'spouse_employed', or leave step 6 out of the first release and ship liability determination only?",
+        "severity": "major"
+      },
+      {
+        "file": "fields/date_of_birth.md",
+        "question": "Contradiction: date_of_birth.md and spouse_date_of_birth.md add the validation 'must not be in the future', but OQ-09's recommendation (affecting date_of_birth and spouse_date_of_birth) says 'validate as a calendar date only'. Which one wins? (The trace judge also notes that no source supports 'not in the future'.)",
+        "severity": "minor"
+      },
+      {
+        "file": "fields/first_working_day.md",
+        "question": "The step text says 'Please confirm your first working day' and F-TR-015 says HR asks the employee to *confirm* it. Is first_working_day pre-filled by HR (from the contract) for the employee to confirm, or does the employee type it in with no starting value? Is an explicit confirmation action (checkbox or button) required, or is filling in the date enough?",
+        "severity": "major"
+      },
+      {
+        "file": "notices.md",
+        "question": "The first_working_day_confirm notice and the first_working_day help text tell the employee to 'update it here right away' if the date changes. That means the questionnaire stays editable after it is submitted. Is editing after submission in scope? If so, which steps or fields can be edited, and does a re-submission re-run the conditions (for example a new civil status hiding or adding fields)? Notifications are out of scope, but editing itself is not addressed.",
+        "severity": "major"
+      },
+      {
+        "file": "notices.md",
+        "question": "The permit_reminder is shown when is_set(permit_type), so it also appears when permit_type == \"other\", whose label is 'Other permit / no permit yet'. Should someone without a permit yet be told to bring their permit? Should the notice be limited to B/C, or worded differently for 'other'?",
+        "severity": "minor"
+      },
+      {
+        "file": "fields/permit_type.md",
+        "question": "permit_type is asked only of Swiss residents, but its consumers include employer_hr for first-day logistics (bring your permit). Non-Swiss cross-border commuters (e.g. the woman living in Liechtenstein) also have a Swiss work permit, but they are never asked and never get the reminder. Should residents abroad who are not Swiss be asked their permit (for example a cross-border permit) and shown the reminder?",
+        "severity": "major"
+      },
+      {
+        "file": "notices.md",
+        "question": "Should the first_working_day_confirm notice show the computed insurance_start_date (e.g. 'Your insurance starts on 01.04.2026') or only the generic rule text as written? Is insurance_start_date displayed to the employee anywhere?",
+        "severity": "minor"
+      },
+      {
+        "file": "rules/subject_to_source_tax.md",
+        "question": "Because of the outer `not (...)`, subject_to_source_tax is TRUE while the spouse questions are still unanswered (e.g. married B-permit holder, spouse_nationality = CH, spouse_residence_country not yet answered). That contradicts the conventions.md statement that 'a rule is never true because of a missing answer'. Should the rule (and step 6 visibility) count as undetermined/false until every input needed for the spouse exemption is answered, or is this temporary true value acceptable because step 5 must be finished first?",
+        "severity": "minor"
+      },
+      {
+        "file": "fields/spouse_residence_country.md",
+        "question": "The source only needs to know whether the spouse lives in Switzerland ('and that they live here'). For data minimisation (G-01), should this be a yes/no question ('Does your spouse live in Switzerland?') instead of a full country picker? The trace judge flags the country type as unsupported.",
+        "severity": "minor"
+      },
+      {
+        "file": "conventions.md",
+        "question": "The general form behaviour is not specified. Can the employee go back to earlier steps? Is there a save-and-resume across sessions? Is there a final review/summary and an explicit submit? What happens after submission (confirmation screen, read-only view)? Is the employee identified or invited (for example with an HR-prefilled name)?",
+        "severity": "major"
+      },
+      {
+        "file": "conventions.md",
+        "question": "What error/validation messages should our form show (required, invalid date, invalid choice)? Should we reuse the portal's pattern '<Field label> is required.' and the banner 'Please correct the highlighted fields.', or does Lonio have its own wording?",
+        "severity": "minor"
+      },
+      {
+        "file": "fields/address_country.md",
+        "question": "Which country list and labels should the country pickers (address_country, nationality, spouse_nationality, spouse_residence_country) use: all ISO 3166-1 alpha-2 entries with English names? Should Switzerland and neighbouring countries be listed first? How do we handle stateless persons, refugees, or nationality 'unknown', which have no ISO country code?",
+        "severity": "minor"
+      },
+      {
+        "file": "fields/first_name.md",
+        "question": "Are there length or character limits for the text fields (first/last name, street, house number, postcode, town) imposed by the pension portal or HR systems? Should names include middle names / all given names as on the passport? Should values be stored trimmed?",
+        "severity": "minor"
+      },
+      {
+        "file": "fields/address_house_number.md",
+        "question": "The house number is always required, but some addresses (rural or foreign) have no house number. Should it stay mandatory, or be optional, or allow an explicit 'no house number' choice?",
+        "severity": "minor"
+      },
+      {
+        "file": "open-questions.md",
+        "question": "OQ-03's recommendation says to 'flag registrations of residents abroad for HR'. What is this flag in the questionnaire build: a stored derived flag, a visible marker in the HR output, or something else? Transmission to parties is out of scope, so where should the flag live?",
+        "severity": "minor"
+      },
+      {
+        "file": "traceability.md",
+        "question": "Requirements cite product-owner guidance ids (G-01 … G-10, e.g. G-03, G-04, G-05 in out-of-scope.md) and a decisions.yaml, but neither the guidance document nor decisions.yaml is in the package, and traceability.md does not resolve G-ids. Can these be provided, so that no guidance affecting the build (for example G-02) is missing?",
+        "severity": "minor"
+      }
+    ]
+  },
+  "skipped_sources": [
+    "zh_source_tax_calculator"
+  ],
+  "review": {
+    "verdict": "not_ready",
+    "summary": "Not ready. All 13 persona tests pass. Field and consumer recall are both 1.0, all 2 rules are found, and no errors were reported. Two open questions still block the build:\n- **OQ-01:** what the Zurich source tax calculator asks. The calculator source was skipped, so step 6 is incomplete.\n- **OQ-03:** what goes in the required 'Canton' field for people living abroad, and whether it means residence or work canton.\n\nThe naive builder also raised 6 major questions: an empty step 6, whether the first working day is pre-filled or just confirmed, editing after submission, overall form behaviour, the permit question for cross-border commuters, and whether to build step 6 at all. 12 of the 18 fields and the source tax rule are inferred and only partly backed by sources. Most of these can be settled by product owner decisions in decisions.yaml.",
+    "findings": [
+      {
+        "title": "The source tax step (step 6) cannot be specified because the calculator source was never read",
+        "why": "Without the calculator's questions, Lonio cannot collect enough to work out the tax rate code. The package contradicts itself: OQ-01 says not to build step 6 yet, while flow.md fully specifies it with only spouse_employed.",
+        "evidence": "OQ-01 (blocking); skipped_sources: zh_source_tax_calculator; naive_builder major question on open-questions.md; fields_not_in_gold: spouse_employed",
+        "action": "Extract the calculator's questions now. Or record in decisions.yaml that release 1 only decides who is subject to source tax: drop step 6 and HR collects the rate inputs by hand."
+      },
+      {
+        "title": "Step 6 is empty for unmarried people who are subject to source tax",
+        "why": "Single, divorced or widowed people who are subject to source tax, including every unmarried resident abroad, get a step with intro text and no questions. That is a visible UX defect.",
+        "evidence": "naive_builder major question on flow.md; personas stefan and liechtenstein_resident (subject_to_source_tax=true, civil_status not married)",
+        "action": "Decide whether to skip the empty step, show it as an information-only page, or add civil_status=='married' to the step condition until OQ-01 is resolved."
+      },
+      {
+        "title": "Meaning of the required 'Canton' field is unresolved",
+        "why": "The pension portal requires a canton, but the list only has Swiss cantons. Cross-border employees (Konstanz, Liechtenstein) currently get no canton, so their registration cannot be completed in the portal.",
+        "evidence": "OQ-03 (blocking); F-SC-018; trace_judge partial on field.residence_canton (ask_when and option values not backed)",
+        "action": "Ask Pensionskasse Muster. Meanwhile, record the interim decision (residence canton, asked only of Swiss residents) and say concretely what the 'flag for HR' is: a stored flag or a marker in the HR output."
+      },
+      {
+        "title": "Unclear whether the first working day is pre-filled or entered, and how it is confirmed",
+        "why": "This is the field Anna calls most important, and it drives insurance_start_date. Whether HR pre-fills it and whether an explicit confirmation is needed changes the data model and the UI.",
+        "evidence": "naive_builder major question on fields/first_working_day.md; fact_judge partial on F-TR-015",
+        "action": "Decide: HR pre-fills the date from the contract or the employee types it, and whether a confirmation checkbox is needed. Add the decision to decisions.yaml."
+      },
+      {
+        "title": "No overall form behaviour or post-submit editing is specified",
+        "why": "The notice tells employees to 'update it here right away', which implies editing after submission. Going back to earlier steps, save and resume, a review page and submit are all undefined. A builder will guess.",
+        "evidence": "naive_builder major questions on notices.md and conventions.md",
+        "action": "Write a short conventions decision covering: back navigation, save and resume, a review page and explicit submit, the confirmation screen, whether editing after submission is in scope, and whether conditions re-run when an answer changes."
+      },
+      {
+        "title": "Non-Swiss cross-border commuters are never asked their permit",
+        "why": "permit_type is asked only of Swiss residents. Cross-border commuters, such as the Liechtenstein resident, have a Swiss permit too, but HR never gets it for the first day and they never see the reminder to bring it.",
+        "evidence": "naive_builder major question on fields/permit_type.md; persona liechtenstein_resident (permit_type not asked)",
+        "action": "Decide whether non-Swiss residents abroad are asked their permit (for example a cross-border permit option) and shown the reminder. Link this to OQ-06."
+      },
+      {
+        "title": "The source tax rule is true while spouse answers are still missing",
+        "why": "This breaks the convention that 'a rule is never true because of a missing answer'. Step 6 could show or hide wrongly while the employee is still answering.",
+        "evidence": "naive_builder question on rules/subject_to_source_tax.md; rule.subject_to_source_tax is inferred",
+        "action": "State that the rule counts as undetermined until all its spouse inputs are answered, or confirm that step order makes this safe. Also confirm the rule is complete with HR (OQ-02)."
+      },
+      {
+        "title": "Validation rules contradict each other and lack sources",
+        "why": "The field files say dates 'must not be in the future', but OQ-09 recommends checking only that a date is a valid calendar date. Trimming, accepting '12a' as a house number, and ISO country codes are also invented. Error wording is undefined, and the portal's error banner (F-SC-014) is not used anywhere.",
+        "evidence": "trace_judge partials on date_of_birth, spouse_date_of_birth, first_name, last_name, address_house_number, spouse_residence_country, spouse_employed; coverage warning F-SC-014; naive_builder questions on validation wording, length limits and country list",
+        "action": "Settle the date validation in one place, approve or remove the inferred validations, and decide the error wording (for example reuse the portal's pattern) and the country list."
+      },
+      {
+        "title": "Guidance ids and decisions.yaml are not in the package",
+        "why": "Requirements cite G-01…G-10, but traceability.md cannot resolve them. A builder cannot check guidance that affects scope, for example G-02.",
+        "evidence": "naive_builder question on traceability.md; OQ-06 cites G-10",
+        "action": "Add the product owner guidance document and decisions.yaml to the package, and resolve the G-ids in traceability.md."
+      },
+      {
+        "title": "Smaller wording and field-type decisions are still open",
+        "why": "The permit reminder also shows for 'no permit yet'. spouse_residence_country is a full country picker where a yes/no question would do (data minimisation, G-01). It is unclear whether insurance_start_date is shown to the employee.",
+        "evidence": "naive_builder questions on notices.md and fields/spouse_residence_country.md; OQ-08",
+        "action": "Decide whether the reminder shows only for B/C, whether to ask 'Does your spouse live in Switzerland?' (yes/no), and whether the notice shows the computed insurance start date."
+      }
+    ]
+  },
+  "stages": {
+    "ran": [
+      "extract/zh_source_tax_calculator",
+      "extract/pension_portal",
+      "extract/hr_transcript",
+      "judge_facts",
+      "spec.raw",
+      "judge_trace",
+      "naive_builder",
+      "review"
+    ],
+    "reused": [
+      "normalize/hr_transcript",
+      "normalize/pension_portal",
+      "normalize/zh_source_tax_calculator"
+    ]
+  },
+  "cost_usd_this_run": 2.38
+}

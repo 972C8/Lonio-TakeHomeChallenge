@@ -1,0 +1,28 @@
+# Limitations
+
+Where the pipeline stands today, where each problem comes from, and which
+direction I would take to improve it. Ordered by impact.
+
+| # | Limitation | Where it comes from | Direction |
+|---|---|---|---|
+| 1 | **The Zurich source tax calculator is not explored yet.** The tax step therefore only decides *who* is liable; the tariff questions (spouse working, children, church tax, cross-border specifics) are an open question. | Time-boxed. The adapter, explorer prompt and CLI command (`pipeline explore`) exist, but a live, multi-branch crawl is the most expensive and fragile stage. | Run the explorer, then make the branch enumeration *deterministic*: the agent maps controls once, and a Playwright script walks all combinations and records test vectors. The vectors become acceptance tests for the tariff logic. |
+| 2 | **Synthesis is one large LLM call and not deterministic.** Two runs can model the same thing differently, e.g. `residence_country` as a field in one run and `address_country` plus a derived rule in the next. Wording also drifts, which makes requirement diffs noisy. | One agent solves a global design problem (dictionary, flow, conditions) at once. The only stabilizer is "reuse existing ids". | Synthesize incrementally per subject (address, civil status, tax liability...) against the previous spec as a baseline, so the agent only proposes *changes*. Freeze accepted items via decisions and add snapshot tests on the spec. |
+| 3 | **Tests are only as complete as the people who wrote them.** In run 2, all persona tests passed, yet step 6 was gated on "married", which hid it from unmarried taxpayers. Only the naive builder caught it. | Personas and the gold set are written by hand from my own reading of the sources. They can't catch what I didn't think of, and they don't yet check step or notice visibility. | Extend the persona format (steps and notices shown). Have an agent *propose* personas from every condition branch, with a human approving them. Then measure branch coverage of the conditions. |
+| 4 | **LLM judges are noisy.** "Partial" verdicts are often about wording rather than substance, and they inflate the warnings. | LLM-as-judge is the weakest verifier. Its threshold is set in a prompt, not calibrated. | Calibrate on a small labelled set and track judge agreement. Downgrade wording-only notes automatically, and keep judges for the claims code cannot check. |
+| 5 | **Screenshot evidence is text, not pixels.** Anchors point to a transcription, not to a region of the image. | The vision agent transcribes; there is no OCR with bounding boxes. | Use OCR with coordinates, store crops, and link each anchor to its crop so a human can verify it at a glance. The double read already flags disagreements between transcriptions. |
+| 6 | **Fact-level recall is not measured.** Coverage lists source units nobody cited, but it doesn't prove every requirement-relevant statement became a fact. | The gold set is at requirement level only. | Add a fact-level gold set for the transcript, and use the chunk-pair judging the Inter2US paper describes (each chunk against each requirement) for coverage. |
+| 7 | **Source precedence is applied by the LLM.** It's declared in `profile.yaml` (authority, precedence), but no code enforces it. | Conflicts are detected and resolved inside synthesis. | Detect conflicts mechanically: the same subject gets different values from different sources. Resolve by declared precedence in code, and send only real ties to `review.md`. |
+| 8 | **Change detection is per file, not per statement.** Any byte change to a source reruns that source's whole chain, and a change to `guidance.md` reruns every extraction. | Fingerprints are whole-file hashes. | Diff units semantically (which turns or elements changed) and rerun extraction for those units only. Then carry forward unchanged facts with their ids. |
+| 9 | **Decisions target ids.** If synthesis renames a field, a decision that targets it fails (reported as an error, not fixed automatically). | Ids come from the LLM. The guidance vocabulary and the "reuse existing ids" prompt reduce, but don't remove, renames. | Treat the id vocabulary as a registry. A rename becomes a proposed change the human must approve, which migrates decisions with it. |
+| 10 | **One requirement shape.** The schema and templates cover "data field" requirements, not workflows, integrations or business-rule tables. | Scoped to this challenge. | Ship more shapes, each with its own schema, lint rules and templates, chosen per problem profile. |
+| 11 | **Linear is a dry run.** | No workspace was available, and publishing writes outside the repository. | Add a publisher agent with the Linear MCP server that follows the computed plan, verifies by reading the issues back, and pulls decisions from `needs-decision` issues into `decisions.yaml`. |
+| 12 | **Cost and time.** A full run takes about 10–15 minutes and costs about $2.70. A run after a decision only costs about $1. | Many small agent calls through the Agent SDK. Each starts a Claude Code process. | Batch judges more aggressively, use the cheaper model for extraction once eval numbers confirm it's good enough, and cache at the unit level (see 8). |
+
+## Known gaps in the current requirements (not the pipeline)
+
+The current requirements still contain gaps that belong to the product owner
+or the stakeholder, not to the pipeline. Examples are the meaning of the
+fund's "Canton" field, registered partnerships, the full permit list, and the
+form lifecycle (draft, submit, edit after submit). They are listed in
+`requirements/employee-onboarding/open-questions.md` and in `review.md`, and
+are resolved through `decisions.yaml`.

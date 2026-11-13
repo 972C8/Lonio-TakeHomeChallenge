@@ -1,0 +1,100 @@
+{
+  "already_flagged": [
+    "OQ-01 (blocking): Which questions the Zurich source tax calculator asks (incl. extra questions / German forms for residents abroad), with options and conditions – the source_tax step is incomplete",
+    "OQ-03 (blocking): What to enter in the pension portal's required 'Canton' field for residents abroad, and whether 'Canton' means residence or work canton",
+    "OQ-04: How to record registered partnership / separated etc. and whether the partner's date of birth is needed",
+    "OQ-02: Whether the source tax liability rule is complete ('I think that's it')",
+    "OQ-05: Whether 'Spouse's date of birth' is hidden in the portal for Divorced and Widowed",
+    "OQ-06: Which permit types the permit fields must offer (B / C / other vs. full calculator list)",
+    "OQ-07: Whether the postal address is always the residence address (address_country used as residence country)",
+    "OQ-08: Exact wording of the permit reminder and when it is shown",
+    "OQ-09: Date range limits (past/future) and error wording for dates"
+  ],
+  "questions": [
+    {
+      "file": "flow.md",
+      "question": "Step 6 'Source tax details' is shown whenever subject_to_source_tax is true, but its only field (spouse_employed) is asked only when the employee is married. A single, divorced or widowed person who is subject (including every unmarried resident abroad) would get a step with only the intro text 'You are subject to source tax. We need a few more details…' and no questions. Should an empty step be skipped, shown as an information-only page, or should the step condition include civil_status == \"married\" until OQ-01 is resolved?",
+      "severity": "major"
+    },
+    {
+      "file": "open-questions.md",
+      "question": "README says to implement each open-question recommendation. OQ-01 recommends extracting the calculator's questions *before building the source_tax step*, yet flow.md and spouse_employed.md fully specify step 6. Should I build step 6 now with only 'spouse_employed', or leave step 6 out of the first release and ship liability determination only?",
+      "severity": "major"
+    },
+    {
+      "file": "fields/date_of_birth.md",
+      "question": "Contradiction: date_of_birth.md and spouse_date_of_birth.md add the validation 'must not be in the future', but OQ-09's recommendation (affecting date_of_birth and spouse_date_of_birth) says 'validate as a calendar date only'. Which one wins? (The trace judge also notes that no source supports 'not in the future'.)",
+      "severity": "minor"
+    },
+    {
+      "file": "fields/first_working_day.md",
+      "question": "The step text says 'Please confirm your first working day' and F-TR-015 says HR asks the employee to *confirm* it. Is first_working_day pre-filled by HR (from the contract) for the employee to confirm, or does the employee type it in with no starting value? Is an explicit confirmation action (checkbox or button) required, or is filling in the date enough?",
+      "severity": "major"
+    },
+    {
+      "file": "notices.md",
+      "question": "The first_working_day_confirm notice and the first_working_day help text tell the employee to 'update it here right away' if the date changes. That means the questionnaire stays editable after it is submitted. Is editing after submission in scope? If so, which steps or fields can be edited, and does a re-submission re-run the conditions (for example a new civil status hiding or adding fields)? Notifications are out of scope, but editing itself is not addressed.",
+      "severity": "major"
+    },
+    {
+      "file": "notices.md",
+      "question": "The permit_reminder is shown when is_set(permit_type), so it also appears when permit_type == \"other\", whose label is 'Other permit / no permit yet'. Should someone without a permit yet be told to bring their permit? Should the notice be limited to B/C, or worded differently for 'other'?",
+      "severity": "minor"
+    },
+    {
+      "file": "fields/permit_type.md",
+      "question": "permit_type is asked only of Swiss residents, but its consumers include employer_hr for first-day logistics (bring your permit). Non-Swiss cross-border commuters (e.g. the woman living in Liechtenstein) also have a Swiss work permit, but they are never asked and never get the reminder. Should residents abroad who are not Swiss be asked their permit (for example a cross-border permit) and shown the reminder?",
+      "severity": "major"
+    },
+    {
+      "file": "notices.md",
+      "question": "Should the first_working_day_confirm notice show the computed insurance_start_date (e.g. 'Your insurance starts on 01.04.2026') or only the generic rule text as written? Is insurance_start_date displayed to the employee anywhere?",
+      "severity": "minor"
+    },
+    {
+      "file": "rules/subject_to_source_tax.md",
+      "question": "Because of the outer `not (...)`, subject_to_source_tax is TRUE while the spouse questions are still unanswered (e.g. married B-permit holder, spouse_nationality = CH, spouse_residence_country not yet answered). That contradicts the conventions.md statement that 'a rule is never true because of a missing answer'. Should the rule (and step 6 visibility) count as undetermined/false until every input needed for the spouse exemption is answered, or is this temporary true value acceptable because step 5 must be finished first?",
+      "severity": "minor"
+    },
+    {
+      "file": "fields/spouse_residence_country.md",
+      "question": "The source only needs to know whether the spouse lives in Switzerland ('and that they live here'). For data minimisation (G-01), should this be a yes/no question ('Does your spouse live in Switzerland?') instead of a full country picker? The trace judge flags the country type as unsupported.",
+      "severity": "minor"
+    },
+    {
+      "file": "conventions.md",
+      "question": "The general form behaviour is not specified. Can the employee go back to earlier steps? Is there a save-and-resume across sessions? Is there a final review/summary and an explicit submit? What happens after submission (confirmation screen, read-only view)? Is the employee identified or invited (for example with an HR-prefilled name)?",
+      "severity": "major"
+    },
+    {
+      "file": "conventions.md",
+      "question": "What error/validation messages should our form show (required, invalid date, invalid choice)? Should we reuse the portal's pattern '<Field label> is required.' and the banner 'Please correct the highlighted fields.', or does Lonio have its own wording?",
+      "severity": "minor"
+    },
+    {
+      "file": "fields/address_country.md",
+      "question": "Which country list and labels should the country pickers (address_country, nationality, spouse_nationality, spouse_residence_country) use: all ISO 3166-1 alpha-2 entries with English names? Should Switzerland and neighbouring countries be listed first? How do we handle stateless persons, refugees, or nationality 'unknown', which have no ISO country code?",
+      "severity": "minor"
+    },
+    {
+      "file": "fields/first_name.md",
+      "question": "Are there length or character limits for the text fields (first/last name, street, house number, postcode, town) imposed by the pension portal or HR systems? Should names include middle names / all given names as on the passport? Should values be stored trimmed?",
+      "severity": "minor"
+    },
+    {
+      "file": "fields/address_house_number.md",
+      "question": "The house number is always required, but some addresses (rural or foreign) have no house number. Should it stay mandatory, or be optional, or allow an explicit 'no house number' choice?",
+      "severity": "minor"
+    },
+    {
+      "file": "open-questions.md",
+      "question": "OQ-03's recommendation says to 'flag registrations of residents abroad for HR'. What is this flag in the questionnaire build: a stored derived flag, a visible marker in the HR output, or something else? Transmission to parties is out of scope, so where should the flag live?",
+      "severity": "minor"
+    },
+    {
+      "file": "traceability.md",
+      "question": "Requirements cite product-owner guidance ids (G-01 … G-10, e.g. G-03, G-04, G-05 in out-of-scope.md) and a decisions.yaml, but neither the guidance document nor decisions.yaml is in the package, and traceability.md does not resolve G-ids. Can these be provided, so that no guidance affecting the build (for example G-02) is missing?",
+      "severity": "minor"
+    }
+  ]
+}

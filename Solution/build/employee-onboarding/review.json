@@ -1,0 +1,66 @@
+{
+  "verdict": "not_ready",
+  "summary": "Not ready. All 13 persona tests pass. Field and consumer recall are both 1.0, all 2 rules are found, and no errors were reported. Two open questions still block the build:\n- **OQ-01:** what the Zurich source tax calculator asks. The calculator source was skipped, so step 6 is incomplete.\n- **OQ-03:** what goes in the required 'Canton' field for people living abroad, and whether it means residence or work canton.\n\nThe naive builder also raised 6 major questions: an empty step 6, whether the first working day is pre-filled or just confirmed, editing after submission, overall form behaviour, the permit question for cross-border commuters, and whether to build step 6 at all. 12 of the 18 fields and the source tax rule are inferred and only partly backed by sources. Most of these can be settled by product owner decisions in decisions.yaml.",
+  "findings": [
+    {
+      "title": "The source tax step (step 6) cannot be specified because the calculator source was never read",
+      "why": "Without the calculator's questions, Lonio cannot collect enough to work out the tax rate code. The package contradicts itself: OQ-01 says not to build step 6 yet, while flow.md fully specifies it with only spouse_employed.",
+      "evidence": "OQ-01 (blocking); skipped_sources: zh_source_tax_calculator; naive_builder major question on open-questions.md; fields_not_in_gold: spouse_employed",
+      "action": "Extract the calculator's questions now. Or record in decisions.yaml that release 1 only decides who is subject to source tax: drop step 6 and HR collects the rate inputs by hand."
+    },
+    {
+      "title": "Step 6 is empty for unmarried people who are subject to source tax",
+      "why": "Single, divorced or widowed people who are subject to source tax, including every unmarried resident abroad, get a step with intro text and no questions. That is a visible UX defect.",
+      "evidence": "naive_builder major question on flow.md; personas stefan and liechtenstein_resident (subject_to_source_tax=true, civil_status not married)",
+      "action": "Decide whether to skip the empty step, show it as an information-only page, or add civil_status=='married' to the step condition until OQ-01 is resolved."
+    },
+    {
+      "title": "Meaning of the required 'Canton' field is unresolved",
+      "why": "The pension portal requires a canton, but the list only has Swiss cantons. Cross-border employees (Konstanz, Liechtenstein) currently get no canton, so their registration cannot be completed in the portal.",
+      "evidence": "OQ-03 (blocking); F-SC-018; trace_judge partial on field.residence_canton (ask_when and option values not backed)",
+      "action": "Ask Pensionskasse Muster. Meanwhile, record the interim decision (residence canton, asked only of Swiss residents) and say concretely what the 'flag for HR' is: a stored flag or a marker in the HR output."
+    },
+    {
+      "title": "Unclear whether the first working day is pre-filled or entered, and how it is confirmed",
+      "why": "This is the field Anna calls most important, and it drives insurance_start_date. Whether HR pre-fills it and whether an explicit confirmation is needed changes the data model and the UI.",
+      "evidence": "naive_builder major question on fields/first_working_day.md; fact_judge partial on F-TR-015",
+      "action": "Decide: HR pre-fills the date from the contract or the employee types it, and whether a confirmation checkbox is needed. Add the decision to decisions.yaml."
+    },
+    {
+      "title": "No overall form behaviour or post-submit editing is specified",
+      "why": "The notice tells employees to 'update it here right away', which implies editing after submission. Going back to earlier steps, save and resume, a review page and submit are all undefined. A builder will guess.",
+      "evidence": "naive_builder major questions on notices.md and conventions.md",
+      "action": "Write a short conventions decision covering: back navigation, save and resume, a review page and explicit submit, the confirmation screen, whether editing after submission is in scope, and whether conditions re-run when an answer changes."
+    },
+    {
+      "title": "Non-Swiss cross-border commuters are never asked their permit",
+      "why": "permit_type is asked only of Swiss residents. Cross-border commuters, such as the Liechtenstein resident, have a Swiss permit too, but HR never gets it for the first day and they never see the reminder to bring it.",
+      "evidence": "naive_builder major question on fields/permit_type.md; persona liechtenstein_resident (permit_type not asked)",
+      "action": "Decide whether non-Swiss residents abroad are asked their permit (for example a cross-border permit option) and shown the reminder. Link this to OQ-06."
+    },
+    {
+      "title": "The source tax rule is true while spouse answers are still missing",
+      "why": "This breaks the convention that 'a rule is never true because of a missing answer'. Step 6 could show or hide wrongly while the employee is still answering.",
+      "evidence": "naive_builder question on rules/subject_to_source_tax.md; rule.subject_to_source_tax is inferred",
+      "action": "State that the rule counts as undetermined until all its spouse inputs are answered, or confirm that step order makes this safe. Also confirm the rule is complete with HR (OQ-02)."
+    },
+    {
+      "title": "Validation rules contradict each other and lack sources",
+      "why": "The field files say dates 'must not be in the future', but OQ-09 recommends checking only that a date is a valid calendar date. Trimming, accepting '12a' as a house number, and ISO country codes are also invented. Error wording is undefined, and the portal's error banner (F-SC-014) is not used anywhere.",
+      "evidence": "trace_judge partials on date_of_birth, spouse_date_of_birth, first_name, last_name, address_house_number, spouse_residence_country, spouse_employed; coverage warning F-SC-014; naive_builder questions on validation wording, length limits and country list",
+      "action": "Settle the date validation in one place, approve or remove the inferred validations, and decide the error wording (for example reuse the portal's pattern) and the country list."
+    },
+    {
+      "title": "Guidance ids and decisions.yaml are not in the package",
+      "why": "Requirements cite G-01…G-10, but traceability.md cannot resolve them. A builder cannot check guidance that affects scope, for example G-02.",
+      "evidence": "naive_builder question on traceability.md; OQ-06 cites G-10",
+      "action": "Add the product owner guidance document and decisions.yaml to the package, and resolve the G-ids in traceability.md."
+    },
+    {
+      "title": "Smaller wording and field-type decisions are still open",
+      "why": "The permit reminder also shows for 'no permit yet'. spouse_residence_country is a full country picker where a yes/no question would do (data minimisation, G-01). It is unclear whether insurance_start_date is shown to the employee.",
+      "evidence": "naive_builder questions on notices.md and fields/spouse_residence_country.md; OQ-08",
+      "action": "Decide whether the reminder shows only for B/C, whether to ask 'Does your spouse live in Switzerland?' (yes/no), and whether the notice shows the computed insurance start date."
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+---
+id: {{ f.id }}
+kind: field
+step: {{ f.step }}
+order: {{ f.order }}
+type: {{ f.type }}
+{% if f.format %}format: {{ f.format | tojson }}
+{% endif %}
+{% if f.options %}options: [{% for o in f.options %}{{ o.value | tojson }}{{ ", " if not loop.last }}{% endfor %}]
+{% endif %}
+ask_when: {{ f.ask_when | tojson }}
+required_when: {{ f.required_when | tojson }}
+depends_on: [{{ f.depends_on | join(", ") }}]
+consumers: [{% for c in f.consumers %}{{ c.party }}{{ ", " if not loop.last }}{% endfor %}]
+status: {{ f.status }}
+sources: [{{ f.source_refs | join(", ") }}]
+---
+
+# {{ f.label }}
+
+> **Question to the employee:** {{ f.question }}
+{% if f.help_text %}
+>
+> _Help text:_ {{ f.help_text }}
+{% endif %}
+
+{% if f.status != "confirmed" %}
+**Status: {{ f.status }}** – {{ "parts of this field rest on inferred facts; see Evidence." if f.status == "inferred" else "defined by a product decision." }}
+
+{% endif %}
+## What? (data and form)
+| | |
+|---|---|
+| Type | `{{ f.type }}` |
+{% if f.format %}| Format | {{ f.format }} |
+{% endif %}
+| Step | [{{ step.title }}](../flow.md#{{ step.id }}) (step {{ step.order }}, position {{ f.order }}) |
+{% if f.options %}
+
+**Options** (store the value, show the label):
+
+| Value | Label |
+|---|---|
+{% for o in f.options %}| `{{ o.value }}` | {{ o.label }} |
+{% endfor %}
+{% endif %}
+{% if f.validation %}
+
+**Validation**
+{% for v in f.validation %}
+- {{ v }}
+{% endfor %}
+{% endif %}
+
+## When do we ask?
+{{ f.ask_when | cond }}{% if step.ask_when.strip() not in ("true", "True") %} (and the step condition {{ step.ask_when | cond }}){% endif %}
+
+
+## When is it required?
+{% if f.required_when.strip() in ("true", "True") %}Always required when asked; the employee cannot leave it empty.{% elif f.required_when.strip() in ("false", "False") %}Optional: the employee may leave it empty.{% else %}Required when {{ f.required_when | cond }}; otherwise optional.{% endif %}
+
+
+## What does it depend on?
+{% if f.depends_on %}
+{% for d in f.depends_on %}
+- `{{ d }}` ({% if d in spec.fields | map(attribute="id") | list %}[field](./{{ d }}.md){% else %}[rule](../rules/{{ d }}.md){% endif %})
+{% endfor %}
+{% else %}
+Nothing – asked independently of other answers.
+{% endif %}
+{% if used_by.get(f.id) %}
+
+Used by: {% for u in used_by[f.id] %}`{{ u }}`{{ ", " if not loop.last }}{% endfor %}
+{% endif %}
+
+## Who needs it?
+| Party | Purpose | Their field |
+|---|---|---|
+{% for c in f.consumers %}| {{ consumers.get(c.party, c.party) }} | {{ c.purpose }} | {{ c.target or "–" }} |
+{% endfor %}
+{% if f.notes %}
+
+## Notes
+{{ f.notes }}
+{% endif %}
+
+## Evidence
+{% for e in evidence(f.source_refs) %}
+- **{{ e.id }}** ({{ e.source }}{% if e.basis is defined and e.basis == "inferred" %}, inferred{% endif %}): {{ e.statement }}
+{% for q in e.quotes %}
+  - "{{ q.quote }}" — {{ q.where }}
+{% endfor %}
+{% endfor %}
+{% if judge.get("field." ~ f.id) %}
+
+_Trace judge: {{ judge["field." ~ f.id].verdict }}{% if judge["field." ~ f.id].note %} – {{ judge["field." ~ f.id].note }}{% endif %}_
+{% endif %}

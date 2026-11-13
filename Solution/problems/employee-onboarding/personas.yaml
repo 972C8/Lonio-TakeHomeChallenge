@@ -1,0 +1,92 @@
+# Persona tests: real cases from the sources, run against the generated rules
+# and conditions. `answers` use field ids; `expect` checks rule values and
+# whether fields are asked / required. Each case cites where the expectation
+# comes from, so a failing test points straight at the evidence.
+
+personas:
+  - id: maria
+    from: "T: Maria in sales, Portuguese, C permit, no source tax"
+    answers: {nationality: PT, permit_type: C, residence_country: CH, address_country: CH, civil_status: single, first_working_day: "2026-06-01"}
+    expect:
+      rules: {subject_to_source_tax: false}
+
+  - id: tomas
+    from: "T: Tomás, Brazilian, B permit, wife Swiss, live in Winterthur -> no source tax"
+    answers: {nationality: BR, permit_type: B, residence_country: CH, address_country: CH, civil_status: married,
+              spouse_nationality: CH, spouse_residence_country: CH, address_country: CH, first_working_day: "2026-06-01"}
+    expect:
+      rules: {subject_to_source_tax: false}
+      asked: [spouse_nationality, spouse_date_of_birth]
+
+  - id: stefan
+    from: "T: Stefan, Swiss, lives in Konstanz -> source tax regardless of passport"
+    answers: {nationality: CH, residence_country: DE, address_country: DE, civil_status: single, first_working_day: "2026-06-01"}
+    expect:
+      rules: {subject_to_source_tax: true}
+
+  - id: liechtenstein_resident
+    from: "T: woman in the warehouse who lives in Liechtenstein -> source tax"
+    answers: {nationality: LI, residence_country: LI, address_country: LI, civil_status: single, first_working_day: "2026-06-01"}
+    expect:
+      rules: {subject_to_source_tax: true}
+
+  - id: swiss_resident
+    from: "T: if you have a Swiss passport (and live here) you do not do source tax"
+    answers: {nationality: CH, residence_country: CH, address_country: CH, civil_status: married, first_working_day: "2026-06-01"}
+    expect:
+      rules: {subject_to_source_tax: false}
+      not_asked: [permit_type, spouse_nationality, spouse_permit_type]
+      asked: [spouse_date_of_birth]
+
+  - id: b_permit_single
+    from: "T: all non-Swiss without C permit do source tax"
+    answers: {nationality: DE, permit_type: B, residence_country: CH, address_country: CH, civil_status: single, first_working_day: "2026-06-01"}
+    expect:
+      rules: {subject_to_source_tax: true}
+      not_asked: [spouse_date_of_birth, spouse_nationality]
+
+  - id: b_permit_spouse_b_permit
+    from: "T: spouse exemption only for Swiss or C-permit spouses living here"
+    answers: {nationality: IT, permit_type: B, residence_country: CH, address_country: CH, civil_status: married,
+              spouse_nationality: IT, spouse_permit_type: B, spouse_residence_country: CH, address_country: CH, first_working_day: "2026-06-01"}
+    expect:
+      rules: {subject_to_source_tax: true}
+
+  - id: b_permit_spouse_c_permit
+    from: "T: married to someone with a C permit who lives here -> no source tax"
+    answers: {nationality: IT, permit_type: B, residence_country: CH, address_country: CH, civil_status: married,
+              spouse_nationality: FR, spouse_permit_type: C, spouse_residence_country: CH, address_country: CH, first_working_day: "2026-06-01"}
+    expect:
+      rules: {subject_to_source_tax: false}
+
+  - id: b_permit_swiss_spouse_abroad
+    from: "T: spouse exemption requires that the spouse lives here"
+    answers: {nationality: IT, permit_type: B, residence_country: CH, address_country: CH, civil_status: married,
+              spouse_nationality: CH, spouse_residence_country: IT, address_country: IT, first_working_day: "2026-06-01"}
+    expect:
+      rules: {subject_to_source_tax: true}
+
+  - id: julia
+    from: "T: Julia moved her first working day to 15 March -> insurance starts 1 April"
+    answers: {nationality: CH, residence_country: CH, address_country: CH, civil_status: single, first_working_day: "2026-03-15"}
+    expect:
+      rules: {insurance_start_date: "2026-04-01"}
+
+  - id: starts_on_first
+    from: "T: unless somebody starts exactly on the first, then it's just that day"
+    answers: {nationality: CH, residence_country: CH, address_country: CH, civil_status: single, first_working_day: "2026-05-01"}
+    expect:
+      rules: {insurance_start_date: "2026-05-01"}
+
+  - id: marco_married
+    from: "S: married -> Spouse's date of birth appears and is required (screens 05, 07)"
+    answers: {nationality: CH, residence_country: CH, address_country: CH, civil_status: married, first_working_day: "2026-06-01"}
+    expect:
+      asked: [spouse_date_of_birth]
+      required: [spouse_date_of_birth]
+
+  - id: lena_single
+    from: "S: single -> no spouse field (screen 04)"
+    answers: {nationality: CH, residence_country: CH, address_country: CH, civil_status: single, first_working_day: "2026-06-01"}
+    expect:
+      not_asked: [spouse_date_of_birth]

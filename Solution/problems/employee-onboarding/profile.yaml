@@ -1,0 +1,53 @@
+# Problem profile: everything specific to ONE investigation lives in this folder.
+# The engine and adapters are shared across problems.
+id: employee-onboarding
+title: Employee onboarding questionnaire
+goal: >
+  Define what Lonio asks a new employee during onboarding: which information,
+  in which steps and order, and under which conditions - asking each piece of
+  information once and reusing it for every receiving party.
+requirement_shape: data_field     # see pipeline/render/templates/conventions.md.j2
+
+sources:
+  - id: hr_transcript
+    type: transcript
+    path: ../Instructions/Anhang/HR meeting transcript.pdf
+    speakers: [Leo, Anna]
+    description: >
+      Fictional meeting between Leo (Lonio product, interviewer) and Anna (HR
+      manager at the customer Muster AG, the stakeholder).
+    authority: Policy and scope - who must answer what, business rules, what is in or out.
+    precedence: 2
+  - id: pension_portal
+    type: screenshots
+    path: ../Instructions/Anhang/Pension portal screenshots
+    description: >
+      Screenshots 01-07 of the employer portal of the pension fund
+      "Pensionskasse Muster" (fictional), page "Register new employee".
+    authority: Pension fund data - fields, formats, options and required flags it accepts.
+    precedence: 1
+  - id: zh_source_tax_calculator
+    type: web_calculator
+    url: https://www.zh.ch/de/steuern-finanzen/steuern/quellensteuer/quellensteuer-tarife.html
+    description: Canton of Zurich source tax tariff calculator (real).
+    authority: Source tax data - which questions determine the tariff code, options, conditions.
+    precedence: 1
+
+# Receiving parties ("Who needs it?")
+consumers:
+  pension_fund: Pensionskasse Muster (BVG registration via employer portal)
+  source_tax: Source tax tariff determination (Canton of Zurich calculator)
+  employer_hr: Muster AG HR (correspondence, payroll admin, first-day logistics)
+
+# Decisions by the product owner have the highest precedence (0).
+decisions_file: decisions.yaml
+
+models:
+  default: claude-opus-5-5
+  extract: claude-opus-5-5
+  vision: claude-opus-5-5
+  synthesize: claude-opus-5-5
+  judge: claude-sonnet-5-5
+  builder: claude-opus-5-5
+  review: claude-opus-5-5
+  explore: claude-opus-5-5

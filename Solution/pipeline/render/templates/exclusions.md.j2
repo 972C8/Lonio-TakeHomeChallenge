@@ -1,0 +1,9 @@
+# Out of scope
+
+Explicitly **not** part of the onboarding questionnaire. Do not build these.
+
+{% for x in spec.exclusions %}
+- **{{ x.item }}** – {{ x.reason }} ({% for e in evidence(x.source_refs) %}{{ e.id }}{% for q in e.quotes %}: "{{ q.quote }}"{% endfor %}{{ "; " if not loop.last }}{% endfor %})
+{% else %}
+- None.
+{% endfor %}

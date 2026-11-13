@@ -1,0 +1,48 @@
+# Onboarding flow
+
+Steps are shown in this order. Within a step, fields are shown in the listed
+order. A step or field whose condition is false is skipped entirely (not shown,
+no value stored). Conditions are re-evaluated whenever an answer changes; when
+a field becomes hidden, its value is discarded.
+
+```mermaid
+flowchart TD
+{% for s in steps %}
+  {{ s.id }}["{{ s.order }}. {{ s.title }}"]
+{% if not loop.last %}
+  {{ s.id }} --> {{ steps[loop.index].id }}
+{% endif %}
+{% endfor %}
+```
+
+{% for s in steps %}
+## {{ s.order }}. {{ s.title }}
+<a id="{{ s.id }}"></a>
+
+{{ s.purpose }}
+
+Shown: {{ s.ask_when | cond }}
+{% if s.intro_text %}
+
+> {{ s.intro_text }}
+{% endif %}
+
+| # | Field | Asked when | Required when | Needed by |
+|---|---|---|---|---|
+{% for f in fields_by_step[s.id] %}
+| {{ f.order }} | [{{ f.label }}](fields/{{ f.id }}.md) `{{ f.id }}` | {{ f.ask_when | cond }} | {{ f.required_when | cond }} | {% for c in f.consumers %}{{ c.party }}{{ ", " if not loop.last }}{% endfor %} |
+{% endfor %}
+{% set ns = spec.notices | selectattr("step", "equalto", s.id) | list %}
+{% if ns %}
+
+Notices in this step:
+{% for n in ns %}
+- {{ n.text }} (shown {{ n.show_when | cond }})
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+## Derived values
+{% for r in spec.rules %}
+- [`{{ r.id }}`](rules/{{ r.id }}.md): {{ r.description }}
+{% endfor %}

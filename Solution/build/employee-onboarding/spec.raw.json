@@ -1,0 +1,1078 @@
+{
+  "steps": [
+    {
+      "id": "personal",
+      "order": 1,
+      "title": "Personal details",
+      "purpose": "Identify the employee for the pension fund registration and HR correspondence.",
+      "intro_text": "Let's start with a few details about you."
+    },
+    {
+      "id": "address",
+      "order": 2,
+      "title": "Home address",
+      "purpose": "Collect the full postal address for HR mail. The country also decides source tax liability, and the canton is needed for the pension fund.",
+      "intro_text": "Please enter your home address the way you would write it on an envelope. We post documents to this address."
+    },
+    {
+      "id": "citizenship",
+      "order": 3,
+      "title": "Nationality and permit",
+      "purpose": "Check whether a Swiss resident is subject to source tax. Only asked of people living in Switzerland, because everyone living abroad is subject to source tax whatever their nationality.",
+      "ask_when": "address_country == \"CH\""
+    },
+    {
+      "id": "employment",
+      "order": 4,
+      "title": "Start of employment",
+      "purpose": "Confirm the first working day. The pension fund insurance start date is derived from it.",
+      "intro_text": "Please confirm your first working day."
+    },
+    {
+      "id": "family",
+      "order": 5,
+      "title": "Civil status and spouse",
+      "purpose": "Collect the civil status and spouse's date of birth for the pension fund, and spouse details that can exempt a married employee from source tax.",
+      "intro_text": "The pension fund needs your civil status. If you are married, we also need some details about your spouse."
+    },
+    {
+      "id": "source_tax",
+      "order": 6,
+      "title": "Source tax details",
+      "purpose": "Collect the inputs for the Zurich source tax tariff calculator. Only shown to employees who are subject to source tax.",
+      "ask_when": "subject_to_source_tax",
+      "intro_text": "You are subject to source tax. We need a few more details to determine your tax tariff."
+    }
+  ],
+  "fields": [
+    {
+      "id": "first_name",
+      "step": "personal",
+      "order": 1,
+      "label": "First name",
+      "question": "What is your first name?",
+      "help_text": "As shown on your passport or ID card.",
+      "type": "text",
+      "validation": [
+        "required non-empty after trimming whitespace"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "pension_fund",
+          "purpose": "BVG registration (required field)",
+          "target": "First name"
+        },
+        {
+          "party": "employer_hr",
+          "purpose": "Correspondence and payroll administration",
+          "target": "First name"
+        }
+      ],
+      "source_refs": [
+        "F-SC-001",
+        "F-SC-015",
+        "F-TR-010"
+      ],
+      "status": "inferred",
+      "notes": "Required by the pension portal. HR's need for the name for addressing post is inferred from F-TR-010."
+    },
+    {
+      "id": "last_name",
+      "step": "personal",
+      "order": 2,
+      "label": "Last name",
+      "question": "What is your last name?",
+      "help_text": "As shown on your passport or ID card.",
+      "type": "text",
+      "validation": [
+        "required non-empty after trimming whitespace"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "pension_fund",
+          "purpose": "BVG registration (required field)",
+          "target": "Last name"
+        },
+        {
+          "party": "employer_hr",
+          "purpose": "Correspondence and payroll administration",
+          "target": "Last name"
+        }
+      ],
+      "source_refs": [
+        "F-SC-002",
+        "F-SC-015",
+        "F-TR-010"
+      ],
+      "status": "inferred",
+      "notes": "HR consumer is inferred, as for first_name."
+    },
+    {
+      "id": "date_of_birth",
+      "step": "personal",
+      "order": 3,
+      "label": "Date of birth",
+      "question": "What is your date of birth?",
+      "help_text": "Format DD.MM.YYYY.",
+      "type": "date",
+      "format": "stored YYYY-MM-DD; displayed DD.MM.YYYY",
+      "validation": [
+        "must be a valid calendar date",
+        "must not be in the future"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "pension_fund",
+          "purpose": "BVG registration (required field, DD.MM.YYYY)",
+          "target": "Date of birth"
+        }
+      ],
+      "source_refs": [
+        "F-SC-003",
+        "F-SC-004",
+        "F-SC-015",
+        "G-09"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "address_street",
+      "step": "address",
+      "order": 1,
+      "label": "Street",
+      "question": "What street do you live on?",
+      "type": "text",
+      "validation": [
+        "required non-empty after trimming whitespace"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "employer_hr",
+          "purpose": "Postal address for mailed documents",
+          "target": "Street"
+        }
+      ],
+      "source_refs": [
+        "F-TR-009",
+        "F-TR-010",
+        "F-TR-011"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "address_house_number",
+      "step": "address",
+      "order": 2,
+      "label": "House number",
+      "question": "What is your house number?",
+      "type": "text",
+      "validation": [
+        "required non-empty after trimming whitespace",
+        "free text (allows e.g. '12a')"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "employer_hr",
+          "purpose": "Postal address for mailed documents",
+          "target": "Number"
+        }
+      ],
+      "source_refs": [
+        "F-TR-010"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "address_postcode",
+      "step": "address",
+      "order": 3,
+      "label": "Postcode",
+      "question": "What is your postcode?",
+      "type": "text",
+      "validation": [
+        "required non-empty after trimming whitespace",
+        "free text; no country-specific format check (none given by the sources)"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "employer_hr",
+          "purpose": "Postal address for mailed documents",
+          "target": "Postcode"
+        }
+      ],
+      "source_refs": [
+        "F-TR-010",
+        "G-06"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "address_town",
+      "step": "address",
+      "order": 4,
+      "label": "Town",
+      "question": "What town do you live in?",
+      "type": "text",
+      "validation": [
+        "required non-empty after trimming whitespace"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "employer_hr",
+          "purpose": "Postal address for mailed documents",
+          "target": "Town"
+        }
+      ],
+      "source_refs": [
+        "F-TR-010"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "address_country",
+      "step": "address",
+      "order": 5,
+      "label": "Country",
+      "question": "In which country do you live?",
+      "help_text": "The country of your home address. If you live outside Switzerland (for example, you commute across the border), choose that country.",
+      "type": "country",
+      "format": "ISO 3166-1 alpha-2 (Switzerland = \"CH\")",
+      "validation": [
+        "must be a valid ISO 3166-1 alpha-2 code"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "employer_hr",
+          "purpose": "Postal address for mailed documents",
+          "target": "Country"
+        },
+        {
+          "party": "source_tax",
+          "purpose": "Country of residence: anyone living outside CH is always subject to source tax",
+          "target": "residence country (liability check)"
+        }
+      ],
+      "source_refs": [
+        "F-TR-010",
+        "F-TR-037",
+        "F-TR-040",
+        "F-TR-043",
+        "F-TR-045",
+        "G-09"
+      ],
+      "status": "inferred",
+      "notes": "Also serves as the residence country, so the employee is asked once (see OQ-07). The id residence_country is deliberately not used as a separate field."
+    },
+    {
+      "id": "residence_canton",
+      "step": "address",
+      "order": 6,
+      "label": "Canton",
+      "question": "In which canton do you live?",
+      "type": "enum",
+      "options": [
+        {
+          "value": "AG",
+          "label": "Aargau"
+        },
+        {
+          "value": "AR",
+          "label": "Appenzell Ausserrhoden"
+        },
+        {
+          "value": "AI",
+          "label": "Appenzell Innerrhoden"
+        },
+        {
+          "value": "BL",
+          "label": "Basel-Landschaft"
+        },
+        {
+          "value": "BS",
+          "label": "Basel-Stadt"
+        },
+        {
+          "value": "BE",
+          "label": "Bern"
+        },
+        {
+          "value": "FR",
+          "label": "Fribourg"
+        },
+        {
+          "value": "GE",
+          "label": "Geneva"
+        },
+        {
+          "value": "GL",
+          "label": "Glarus"
+        },
+        {
+          "value": "GR",
+          "label": "Graubünden"
+        },
+        {
+          "value": "JU",
+          "label": "Jura"
+        },
+        {
+          "value": "LU",
+          "label": "Lucerne"
+        },
+        {
+          "value": "NE",
+          "label": "Neuchâtel"
+        },
+        {
+          "value": "NW",
+          "label": "Nidwalden"
+        },
+        {
+          "value": "OW",
+          "label": "Obwalden"
+        },
+        {
+          "value": "SH",
+          "label": "Schaffhausen"
+        },
+        {
+          "value": "SZ",
+          "label": "Schwyz"
+        },
+        {
+          "value": "SO",
+          "label": "Solothurn"
+        },
+        {
+          "value": "SG",
+          "label": "St. Gallen"
+        },
+        {
+          "value": "TG",
+          "label": "Thurgau"
+        },
+        {
+          "value": "TI",
+          "label": "Ticino"
+        },
+        {
+          "value": "UR",
+          "label": "Uri"
+        },
+        {
+          "value": "VS",
+          "label": "Valais"
+        },
+        {
+          "value": "VD",
+          "label": "Vaud"
+        },
+        {
+          "value": "ZG",
+          "label": "Zug"
+        },
+        {
+          "value": "ZH",
+          "label": "Zurich"
+        }
+      ],
+      "validation": [
+        "must be one of the 26 option values"
+      ],
+      "ask_when": "address_country == \"CH\"",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "pension_fund",
+          "purpose": "BVG registration (required 'Canton' dropdown)",
+          "target": "Canton"
+        }
+      ],
+      "source_refs": [
+        "F-SC-005",
+        "F-SC-006",
+        "F-SC-015",
+        "F-SC-018"
+      ],
+      "status": "inferred",
+      "notes": "Option values are the official two-letter canton abbreviations; labels match the portal exactly. Only asked of Swiss residents because the portal lists only Swiss cantons. What the fund needs for residents abroad, and whether 'Canton' means residence canton or work canton, is unresolved (OQ-03)."
+    },
+    {
+      "id": "nationality",
+      "step": "citizenship",
+      "order": 1,
+      "label": "Nationality",
+      "question": "What is your nationality?",
+      "help_text": "If you have more than one nationality and one of them is Swiss, choose Switzerland.",
+      "type": "country",
+      "format": "ISO 3166-1 alpha-2 (Switzerland = \"CH\")",
+      "validation": [
+        "must be a valid ISO 3166-1 alpha-2 code"
+      ],
+      "ask_when": "address_country == \"CH\"",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "source_tax",
+          "purpose": "Liability check: Swiss nationals living in CH are not subject to source tax",
+          "target": "nationality (liability check)"
+        }
+      ],
+      "source_refs": [
+        "F-TR-040",
+        "F-TR-041",
+        "F-TR-037",
+        "G-01"
+      ],
+      "status": "inferred",
+      "notes": "Not asked of residents abroad, because they are subject regardless of nationality (F-TR-037). Whether the calculator itself needs nationality is open (OQ-01). The dual-nationality help text rests on 'If you don't have a Swiss passport'."
+    },
+    {
+      "id": "permit_type",
+      "step": "citizenship",
+      "order": 2,
+      "label": "Residence permit",
+      "question": "Which Swiss residence permit do you have?",
+      "help_text": "Choose the permit type shown on your permit card. A C permit means a settlement permit.",
+      "type": "enum",
+      "options": [
+        {
+          "value": "B",
+          "label": "B permit"
+        },
+        {
+          "value": "C",
+          "label": "C permit"
+        },
+        {
+          "value": "other",
+          "label": "Other permit / no permit yet"
+        }
+      ],
+      "validation": [
+        "must be one of the option values"
+      ],
+      "ask_when": "address_country == \"CH\" and nationality != \"CH\"",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "source_tax",
+          "purpose": "Liability check: C permit holders are not subject to source tax",
+          "target": "permit type (liability check)"
+        },
+        {
+          "party": "employer_hr",
+          "purpose": "First-day logistics: remind the employee to bring the permit",
+          "target": "permit"
+        }
+      ],
+      "source_refs": [
+        "F-TR-025",
+        "F-TR-026",
+        "F-TR-040",
+        "F-TR-042",
+        "F-TR-029",
+        "G-10"
+      ],
+      "status": "inferred",
+      "notes": "Only B and C appear in the sources. 'other' covers everything else until the calculator's permit list is known (OQ-06)."
+    },
+    {
+      "id": "first_working_day",
+      "step": "employment",
+      "order": 1,
+      "label": "First working day",
+      "question": "What is your first working day at Muster AG?",
+      "help_text": "Please check this date carefully. If it changes, for example because you agree an earlier exit with your current employer, update it here straight away. The pension fund insurance start depends on it.",
+      "type": "date",
+      "format": "stored YYYY-MM-DD; displayed DD.MM.YYYY",
+      "validation": [
+        "must be a valid calendar date"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "pension_fund",
+          "purpose": "Basis for the derived insurance start date",
+          "target": "Insurance start date (via rule insurance_start_date)"
+        },
+        {
+          "party": "employer_hr",
+          "purpose": "Payroll administration and first-day logistics",
+          "target": "First working day"
+        }
+      ],
+      "source_refs": [
+        "F-TR-015",
+        "F-TR-016",
+        "F-TR-019",
+        "G-08"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "civil_status",
+      "step": "family",
+      "order": 1,
+      "label": "Civil status",
+      "question": "What is your civil status?",
+      "type": "enum",
+      "options": [
+        {
+          "value": "single",
+          "label": "Single"
+        },
+        {
+          "value": "married",
+          "label": "Married"
+        },
+        {
+          "value": "divorced",
+          "label": "Divorced"
+        },
+        {
+          "value": "widowed",
+          "label": "Widowed"
+        }
+      ],
+      "validation": [
+        "must be one of the option values"
+      ],
+      "ask_when": "true",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "pension_fund",
+          "purpose": "BVG registration (required dropdown)",
+          "target": "Civil status"
+        },
+        {
+          "party": "source_tax",
+          "purpose": "Married employees may be exempt via their spouse; it also changes the calculator's questions",
+          "target": "civil status"
+        }
+      ],
+      "source_refs": [
+        "F-TR-020",
+        "F-TR-022",
+        "F-SC-009",
+        "F-SC-010",
+        "F-SC-015",
+        "F-TR-031",
+        "F-TR-030",
+        "F-TR-023",
+        "F-SC-019",
+        "G-07",
+        "G-10"
+      ],
+      "status": "inferred",
+      "notes": "The options are exactly the portal's four (G-07). Registered partnership is not supported by the portal (OQ-04)."
+    },
+    {
+      "id": "spouse_date_of_birth",
+      "step": "family",
+      "order": 2,
+      "label": "Spouse's date of birth",
+      "question": "What is your spouse's date of birth?",
+      "help_text": "Format DD.MM.YYYY.",
+      "type": "date",
+      "format": "stored YYYY-MM-DD; displayed DD.MM.YYYY",
+      "validation": [
+        "must be a valid calendar date",
+        "must not be in the future"
+      ],
+      "ask_when": "civil_status == \"married\"",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "pension_fund",
+          "purpose": "BVG registration (required when civil status is Married)",
+          "target": "Spouse's date of birth"
+        }
+      ],
+      "source_refs": [
+        "F-TR-021",
+        "F-SC-011",
+        "F-SC-012",
+        "F-SC-013",
+        "F-SC-016",
+        "F-SC-020"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "spouse_nationality",
+      "step": "family",
+      "order": 3,
+      "label": "Spouse's nationality",
+      "question": "What is your spouse's nationality?",
+      "help_text": "If your spouse has more than one nationality and one of them is Swiss, choose Switzerland.",
+      "type": "country",
+      "format": "ISO 3166-1 alpha-2 (Switzerland = \"CH\")",
+      "validation": [
+        "must be a valid ISO 3166-1 alpha-2 code"
+      ],
+      "ask_when": "civil_status == \"married\" and address_country == \"CH\" and nationality != \"CH\" and permit_type != \"C\"",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "source_tax",
+          "purpose": "Spouse exemption: married to a Swiss national who lives in CH means no source tax",
+          "target": "spouse nationality (liability check)"
+        }
+      ],
+      "source_refs": [
+        "F-TR-031",
+        "F-TR-033",
+        "F-TR-040",
+        "F-TR-044",
+        "F-TR-032"
+      ],
+      "status": "inferred",
+      "notes": "Only asked when the spouse exemption could change the outcome (F-TR-044)."
+    },
+    {
+      "id": "spouse_permit_type",
+      "step": "family",
+      "order": 4,
+      "label": "Spouse's residence permit",
+      "question": "Which Swiss residence permit does your spouse have?",
+      "help_text": "Choose 'Other permit / no permit' if your spouse has no Swiss permit, for example because they live abroad.",
+      "type": "enum",
+      "options": [
+        {
+          "value": "B",
+          "label": "B permit"
+        },
+        {
+          "value": "C",
+          "label": "C permit"
+        },
+        {
+          "value": "other",
+          "label": "Other permit / no permit"
+        }
+      ],
+      "validation": [
+        "must be one of the option values"
+      ],
+      "ask_when": "civil_status == \"married\" and address_country == \"CH\" and nationality != \"CH\" and permit_type != \"C\" and spouse_nationality != \"CH\"",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "source_tax",
+          "purpose": "Spouse exemption: married to a C permit holder who lives in CH means no source tax",
+          "target": "spouse permit type (liability check)"
+        }
+      ],
+      "source_refs": [
+        "F-TR-031",
+        "F-TR-034",
+        "F-TR-035",
+        "F-TR-044",
+        "G-10"
+      ],
+      "status": "inferred",
+      "notes": "Uses the same option set as permit_type (OQ-06)."
+    },
+    {
+      "id": "spouse_residence_country",
+      "step": "family",
+      "order": 5,
+      "label": "Spouse's country of residence",
+      "question": "In which country does your spouse live?",
+      "type": "country",
+      "format": "ISO 3166-1 alpha-2 (Switzerland = \"CH\")",
+      "validation": [
+        "must be a valid ISO 3166-1 alpha-2 code"
+      ],
+      "ask_when": "civil_status == \"married\" and address_country == \"CH\" and nationality != \"CH\" and permit_type != \"C\" and (spouse_nationality == \"CH\" or spouse_permit_type == \"C\")",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "source_tax",
+          "purpose": "Spouse exemption applies only if the spouse lives in CH",
+          "target": "spouse lives in Switzerland (liability check)"
+        }
+      ],
+      "source_refs": [
+        "F-TR-031",
+        "F-TR-036",
+        "F-TR-044",
+        "F-TR-045"
+      ],
+      "status": "inferred",
+      "notes": "Only relevant when the spouse is Swiss or holds a C permit. 'Lives here' is interpreted as CH (F-TR-045)."
+    },
+    {
+      "id": "spouse_employed",
+      "step": "source_tax",
+      "order": 1,
+      "label": "Spouse works",
+      "question": "Does your spouse work (is your spouse gainfully employed)?",
+      "type": "boolean",
+      "validation": [
+        "must be answered yes or no"
+      ],
+      "ask_when": "subject_to_source_tax and civil_status == \"married\"",
+      "required_when": "true",
+      "consumers": [
+        {
+          "party": "source_tax",
+          "purpose": "Input to the Zurich tariff calculator for married employees",
+          "target": "spouse works (calculator question)"
+        }
+      ],
+      "source_refs": [
+        "F-TR-030",
+        "F-TR-007"
+      ],
+      "status": "inferred",
+      "notes": "Only the transcript supports this; the calculator source has no extracted facts yet (OQ-01). The calculator's exact wording and options are unknown."
+    }
+  ],
+  "rules": [
+    {
+      "id": "subject_to_source_tax",
+      "description": "Whether the employee is subject to source tax. Residents abroad are always subject. Residents of CH are not subject if they are Swiss, hold a C permit, or are married to a Swiss national or C permit holder who lives in CH. Everyone else is subject.",
+      "expression": "address_country != \"CH\" or (address_country == \"CH\" and nationality != \"CH\" and permit_type != \"C\" and not (civil_status == \"married\" and (spouse_nationality == \"CH\" or spouse_permit_type == \"C\") and spouse_residence_country == \"CH\"))",
+      "output_type": "boolean",
+      "depends_on": [
+        "address_country",
+        "nationality",
+        "permit_type",
+        "civil_status",
+        "spouse_nationality",
+        "spouse_permit_type",
+        "spouse_residence_country"
+      ],
+      "consumers": [
+        {
+          "party": "source_tax",
+          "purpose": "Decides whether a tariff must be determined at all",
+          "target": "liability"
+        },
+        {
+          "party": "employer_hr",
+          "purpose": "Payroll: apply source tax deduction",
+          "target": "source tax yes/no"
+        }
+      ],
+      "source_refs": [
+        "F-TR-040",
+        "F-TR-025",
+        "F-TR-031",
+        "F-TR-037",
+        "F-TR-005",
+        "F-TR-004",
+        "F-TR-006"
+      ],
+      "status": "inferred"
+    },
+    {
+      "id": "insurance_start_date",
+      "description": "Pension fund insurance start: the first working day if it is the 1st of a month, otherwise the 1st of the following month.",
+      "expression": "first_of_month_on_or_after(first_working_day)",
+      "output_type": "date",
+      "depends_on": [
+        "first_working_day"
+      ],
+      "consumers": [
+        {
+          "party": "pension_fund",
+          "purpose": "BVG registration (required, DD.MM.YYYY, must be the 1st of a month)",
+          "target": "Insurance start date"
+        }
+      ],
+      "source_refs": [
+        "F-TR-017",
+        "F-TR-018",
+        "F-TR-019",
+        "F-SC-007",
+        "F-SC-008",
+        "F-SC-021",
+        "G-08"
+      ],
+      "status": "confirmed"
+    }
+  ],
+  "notices": [
+    {
+      "id": "permit_reminder",
+      "step": "citizenship",
+      "text": "Please bring your residence permit with you on your first working day.",
+      "show_when": "is_set(permit_type)",
+      "source_refs": [
+        "F-TR-029"
+      ]
+    },
+    {
+      "id": "first_working_day_confirm",
+      "step": "employment",
+      "text": "Your pension fund insurance starts on the 1st of the month on or after your first working day. If your start date changes, please update it here right away.",
+      "show_when": "is_set(first_working_day)",
+      "source_refs": [
+        "F-TR-015",
+        "F-TR-016",
+        "F-TR-019"
+      ]
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-01",
+      "question": "Which questions does the Zurich source tax calculator ask to determine the tariff code (including the extra questions and German forms for residents abroad), with their options and conditions?",
+      "why_it_matters": "No facts were extracted from the calculator source. The source tax step currently holds only 'spouse works' (from the transcript). Without the calculator's questions, Lonio cannot collect enough to determine the tariff.",
+      "options": [
+        "Extract the calculator facts and extend the source_tax step",
+        "Ship liability determination only; HR collects the tariff inputs manually"
+      ],
+      "recommendation": "Extract the calculator's questions before building the source_tax step. The liability rule and the other steps can be built now.",
+      "affects": [
+        "spouse_employed",
+        "source_tax",
+        "nationality",
+        "permit_type",
+        "subject_to_source_tax"
+      ],
+      "blocking": true,
+      "source_refs": [
+        "F-TR-039",
+        "F-TR-030",
+        "F-TR-007"
+      ]
+    },
+    {
+      "id": "OQ-03",
+      "question": "What should be entered in the pension portal's required 'Canton' field for employees living abroad, and does 'Canton' mean the residence canton or the work canton?",
+      "why_it_matters": "The dropdown lists only Swiss cantons, and the field is required. Cross-border employees exist (Konstanz, Liechtenstein). If it means the work canton, the employee should not be asked at all.",
+      "options": [
+        "Residence canton; ask only Swiss residents; ask the fund what to use for residents abroad",
+        "Work canton; do not ask the employee; HR/employer supplies it (e.g. Zurich)",
+        "Ask everyone abroad for a canton"
+      ],
+      "recommendation": "Ask Pensionskasse Muster. Until then, ask only Swiss residents for their residence canton and flag registrations of residents abroad for HR.",
+      "affects": [
+        "residence_canton"
+      ],
+      "blocking": true,
+      "source_refs": [
+        "F-SC-005",
+        "F-SC-006",
+        "F-SC-018",
+        "F-TR-038"
+      ]
+    },
+    {
+      "id": "OQ-04",
+      "question": "How should employees in a registered partnership (or with other statuses such as separated) be recorded, and does the fund want the partner's date of birth?",
+      "why_it_matters": "Such an employee exists (Daniel), but the portal offers only Single, Married, Divorced, Widowed. Adding an option the fund does not support would break the registration.",
+      "options": [
+        "Keep the four portal options; HR handles partnerships manually",
+        "Add 'registered_partnership' and map it per the fund's answer; ask partner's date of birth if required",
+        "Treat registered partnership as married"
+      ],
+      "recommendation": "Keep the four portal options for now and ask the fund. Add a 'registered_partnership' option once its mapping and partner-data requirements are known.",
+      "affects": [
+        "civil_status",
+        "spouse_date_of_birth",
+        "subject_to_source_tax"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-TR-023",
+        "F-TR-024",
+        "F-SC-019",
+        "F-SC-010"
+      ]
+    },
+    {
+      "id": "OQ-02",
+      "question": "Is the source tax liability rule complete? Anna ended with 'I think that's it'.",
+      "why_it_matters": "Any missing exemption or condition would wrongly show or hide the source tax questions.",
+      "options": [
+        "Confirm the rule as specified",
+        "Add missing conditions"
+      ],
+      "recommendation": "Confirm with HR and cross-check against the calculator.",
+      "affects": [
+        "subject_to_source_tax",
+        "spouse_nationality",
+        "spouse_permit_type",
+        "spouse_residence_country"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-TR-040"
+      ]
+    },
+    {
+      "id": "OQ-05",
+      "question": "Is 'Spouse's date of birth' hidden in the portal for Divorced and Widowed?",
+      "why_it_matters": "No screenshot shows these states. The spec asks for the spouse's date of birth only when the employee is married.",
+      "options": [
+        "Only for Married (as specified)",
+        "Also for divorced/widowed"
+      ],
+      "recommendation": "Keep 'only married' (consistent with the transcript) and verify in the portal.",
+      "affects": [
+        "spouse_date_of_birth"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-SC-020",
+        "F-SC-013",
+        "F-TR-021"
+      ]
+    },
+    {
+      "id": "OQ-06",
+      "question": "Which permit types must the permit fields offer?",
+      "why_it_matters": "The sources name only B and C. The calculator may need to distinguish other permits.",
+      "options": [
+        "B, C, other (as specified)",
+        "The full permit list from the calculator"
+      ],
+      "recommendation": "Keep B / C / other until the calculator facts are extracted.",
+      "affects": [
+        "permit_type",
+        "spouse_permit_type"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-TR-025",
+        "F-TR-031",
+        "F-TR-034",
+        "G-10"
+      ]
+    },
+    {
+      "id": "OQ-07",
+      "question": "Is the postal address always the residence address, so that address_country can serve as the residence country?",
+      "why_it_matters": "Liability depends on the country of residence. A different mailing address would give the wrong result.",
+      "options": [
+        "Yes, one address (as specified)",
+        "Ask for the residence country separately"
+      ],
+      "recommendation": "Use one address. Anna described a normal home address.",
+      "affects": [
+        "address_country",
+        "subject_to_source_tax",
+        "residence_canton"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-TR-011",
+        "F-TR-043"
+      ]
+    },
+    {
+      "id": "OQ-08",
+      "question": "What exact wording should the permit reminder use, and when should it be shown?",
+      "why_it_matters": "Anna deferred the wording.",
+      "options": [
+        "Use the drafted wording",
+        "HR provides the wording"
+      ],
+      "recommendation": "Use the draft and let HR review it.",
+      "affects": [
+        "permit_reminder"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-TR-029"
+      ]
+    },
+    {
+      "id": "OQ-09",
+      "question": "Are there limits on dates (e.g. first working day not in the past, or a maximum distance in the future) and how does the portal word date errors?",
+      "why_it_matters": "The sources give only formats.",
+      "options": [
+        "Validate only as a calendar date (as specified)",
+        "Add range limits"
+      ],
+      "recommendation": "Validate as a calendar date only, until HR or the fund defines limits.",
+      "affects": [
+        "first_working_day",
+        "date_of_birth",
+        "spouse_date_of_birth"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-SC-022"
+      ]
+    }
+  ],
+  "exclusions": [
+    {
+      "id": "EX-01",
+      "item": "Employee photo for badges",
+      "reason": "Postponed to next year because of the badge system change.",
+      "source_refs": [
+        "F-TR-013",
+        "F-TR-012"
+      ]
+    },
+    {
+      "id": "EX-02",
+      "item": "IT equipment / laptops",
+      "reason": "IT has its own process.",
+      "source_refs": [
+        "F-TR-028",
+        "G-03"
+      ]
+    },
+    {
+      "id": "EX-03",
+      "item": "Social insurance (AHV) data",
+      "reason": "Out of scope by product-owner guidance.",
+      "source_refs": [
+        "G-03"
+      ]
+    },
+    {
+      "id": "EX-04",
+      "item": "Asking the insurance start date",
+      "reason": "Derived from first_working_day; the employee is never asked.",
+      "source_refs": [
+        "F-TR-019",
+        "G-08"
+      ]
+    },
+    {
+      "id": "EX-05",
+      "item": "Canton-specific source tax calculators",
+      "reason": "The Zurich calculator is used for every employee.",
+      "source_refs": [
+        "F-TR-007",
+        "G-05"
+      ]
+    },
+    {
+      "id": "EX-06",
+      "item": "Transmission to parties and change notifications (e.g. first working day changes)",
+      "reason": "This belongs to a separate requirement package.",
+      "source_refs": [
+        "G-04",
+        "F-TR-016"
+      ]
+    }
+  ]
+}

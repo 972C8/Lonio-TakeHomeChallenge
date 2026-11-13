@@ -1,0 +1,36 @@
+# Conventions (requirement shape: data field)
+
+This package follows a fixed structure so that agents can build from it
+directly and so the same structure can be reused for the next process.
+
+## Files
+- `flow.md` – ordered steps; each step lists its fields in order.
+- `fields/<id>.md` – one field. YAML front matter is the machine-readable
+  contract; the body explains it for humans. Front matter keys:
+  - `id` – stable snake_case id, used in conditions and as storage key
+  - `step`, `order` – where it appears
+  - `type` – `text | date | enum | boolean | country | integer | file`
+  - `format`, `options` – exact form of the value (enum stores option values)
+  - `ask_when` – condition: show the field only if true
+  - `required_when` – condition, evaluated only if shown: must not be empty
+  - `depends_on` – ids its conditions reference (computed)
+  - `consumers` – receiving parties that need the value
+  - `status` – `confirmed` (backed by explicit source statements), `inferred`
+    (backed partly by interpretation – flagged for review), `decision`
+    (defined by a product decision)
+  - `sources` – fact / decision ids, resolved in `traceability.md`
+- `rules/<id>.md` – derived values (`expression`), never asked.
+- `notices.md`, `open-questions.md`, `out-of-scope.md`, `traceability.md`.
+
+## Behaviour every implementation must follow
+- Evaluate conditions in flow order. A hidden field has no value; when an
+  answer change hides a field, discard its value.
+- A field is shown if its step's condition **and** its own `ask_when` are
+  true.
+- Required means: the employee cannot complete the step while it is empty.
+- Store enum **values**, display labels. Countries are ISO 3166-1 alpha-2.
+  Dates are stored ISO `YYYY-MM-DD`, displayed `DD.MM.YYYY`.
+- Derived rules are recomputed whenever an input changes.
+
+## Condition language
+{{ condition_language }}

@@ -1,0 +1,132 @@
+[
+  {
+    "id": "field.first_name",
+    "verdict": "partial",
+    "note": "Pension portal required field is backed, but the HR consumer (correspondence and payroll administration) is only weakly inferred from the address quote, and the passport/ID help text and trim validation are not backed by any cited fact."
+  },
+  {
+    "id": "field.last_name",
+    "verdict": "partial",
+    "note": "Pension fund required field is backed, but HR consumer (correspondence/payroll), the passport/ID help text and trim validation are not supported by the cited facts."
+  },
+  {
+    "id": "field.date_of_birth",
+    "verdict": "partial",
+    "note": "Required field, DD.MM.YYYY display and ISO storage are backed, but the validation rules (valid calendar date, not in the future) are not supported by any cited fact."
+  },
+  {
+    "id": "field.address_street",
+    "verdict": "supported",
+    "note": "HR needs full postal address including street, and nothing extra, so the required text field is backed."
+  },
+  {
+    "id": "field.address_house_number",
+    "verdict": "partial",
+    "note": "Required house number for HR is backed, but the free-text allowing '12a' is not stated in the cited facts."
+  },
+  {
+    "id": "field.address_postcode",
+    "verdict": "supported",
+    "note": "Postcode is required for HR address, and no format check is consistent with G-06 (no source gives one)."
+  },
+  {
+    "id": "field.address_town",
+    "verdict": "supported",
+    "note": "Town is part of the complete address HR requires."
+  },
+  {
+    "id": "field.address_country",
+    "verdict": "supported",
+    "note": "Country is part of HR's address, ISO alpha-2 is per G-09, and use as residence country for source tax is backed by F-TR-037/040/043/045."
+  },
+  {
+    "id": "field.residence_canton",
+    "verdict": "partial",
+    "note": "The 26 labels and required status are backed, but the two-letter option values and the ask_when address_country==\"CH\" restriction are not backed by the cited facts (F-SC-018 leaves residents abroad and residence-vs-work canton unresolved)."
+  },
+  {
+    "id": "field.nationality",
+    "verdict": "supported",
+    "note": "Source-tax liability needs nationality for people living in CH (F-TR-040/041), residents abroad are always subject (F-TR-037), and G-01 backs asking only when needed."
+  },
+  {
+    "id": "field.permit_type",
+    "verdict": "supported",
+    "note": "The C-permit exemption (F-TR-025/040/042), the first-day permit reminder (F-TR-029), and the option values (G-10) back the field and its ask condition."
+  },
+  {
+    "id": "field.first_working_day",
+    "verdict": "supported",
+    "note": "The first working day is needed for the fund, is confirmed by the employee, changes often, and the insurance start is derived from it (F-TR-015/016/019, G-08)."
+  },
+  {
+    "id": "field.civil_status",
+    "verdict": "supported",
+    "note": "The fund's required dropdown with exactly four options (F-SC-009/010, G-07), the source-tax use (F-TR-031/030), and the values (G-10) are all backed."
+  },
+  {
+    "id": "field.spouse_date_of_birth",
+    "verdict": "partial",
+    "note": "Asking when married, required, and the DD.MM.YYYY format are backed, but the 'must not be in the future' validation is not backed by any cited fact."
+  },
+  {
+    "id": "field.spouse_nationality",
+    "verdict": "supported",
+    "note": "The spouse-exemption rule (F-TR-031/033/040) and the ask condition limited to cases where the exemption could apply (F-TR-044) are backed."
+  },
+  {
+    "id": "field.spouse_permit_type",
+    "verdict": "supported",
+    "note": "The spouse's permit matters only for non-Swiss spouses (F-TR-034/035) and only when the exemption could apply (F-TR-044), with option values per G-10."
+  },
+  {
+    "id": "field.spouse_residence_country",
+    "verdict": "partial",
+    "note": "Facts support asking spouse residence for the exemption, but the country-type ISO alpha-2 format/validation and required_when=true are not backed, and the 'ask_when' narrowing is only inferred, since facts only give 'lives here' (in CH), not a country field."
+  },
+  {
+    "id": "field.spouse_employed",
+    "verdict": "partial",
+    "note": "Calculator asking whether the spouse works for married employees is supported (F-TR-030), but the boolean yes/no format, validation and required_when=true are not backed, and the notes admit the calculator wording is unknown."
+  },
+  {
+    "id": "rule.subject_to_source_tax",
+    "verdict": "supported",
+    "note": "F-TR-040, F-TR-025, F-TR-031 and F-TR-037 back every branch: abroad always subject, and in CH exempt if Swiss, C permit, or married to a Swiss/C-permit spouse living in CH."
+  },
+  {
+    "id": "rule.insurance_start_date",
+    "verdict": "supported",
+    "note": "F-TR-017/018/019 give the derivation rule and F-SC-007/008 give the pension fund's required DD.MM.YYYY 1st-of-month format."
+  },
+  {
+    "id": "exclusion.EX-01",
+    "verdict": "supported",
+    "note": "F-TR-013 confirms the photo is postponed to next year because of the badge system change."
+  },
+  {
+    "id": "exclusion.EX-02",
+    "verdict": "supported",
+    "note": "F-TR-028 and G-03 confirm IT equipment is out of scope because IT has its own process."
+  },
+  {
+    "id": "exclusion.EX-03",
+    "verdict": "supported",
+    "note": "G-03 explicitly puts AHV data out of scope."
+  },
+  {
+    "id": "exclusion.EX-04",
+    "verdict": "supported",
+    "note": "F-TR-019 and G-08 state the insurance start date is derived from first_working_day, not asked."
+  },
+  {
+    "id": "exclusion.EX-05",
+    "verdict": "supported",
+    "note": "F-TR-007 confirms the Zurich calculator is used for every employee and G-05 confirms Zurich is the only source tax system, so canton-specific calculators are out of scope."
+  },
+  {
+    "id": "exclusion.EX-06",
+    "verdict": "supported",
+    "note": "G-04 places transmission and change notifications in a separate requirement package, and F-TR-016 shows first-working-day changes as an example of that concern."
+  }
+]

@@ -1,0 +1,18 @@
+# Notices
+
+Texts shown to the employee that collect no data.
+
+{% for n in spec.notices %}
+## {{ n.id }}
+- Step: `{{ n.step }}`
+- Shown: {{ n.show_when | cond }}
+- Text: "{{ n.text }}"
+- Evidence:
+{% for e in evidence(n.source_refs) %}
+  - **{{ e.id }}**: {{ e.statement }}{% for q in e.quotes %} — "{{ q.quote }}" ({{ q.where }}){% endfor %}
+
+{% endfor %}
+
+{% else %}
+None.
+{% endfor %}
