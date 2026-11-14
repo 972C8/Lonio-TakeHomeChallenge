@@ -58,7 +58,7 @@ class WebCalculatorAdapter(Adapter):
         return [self.cache, self.src]
 
     async def explore(self) -> dict:
-        system = load_prompt(self.dir / "explorer.md")
+        system = load_prompt(self.dir / "explorer.md", hints=self.src.get("explore_hints", "(none)"))
         out = await run_agent(
             f"explore/{self.src['id']}", system,
             f"Explore this calculator exhaustively: {self.src['url']}",

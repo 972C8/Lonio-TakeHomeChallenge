@@ -11,7 +11,7 @@ import hashlib
 
 import yaml
 
-from .schemas import Decision, Exclusion, Fact, FieldReq, Finding, Notice, Rule, Spec, Unit
+from .schemas import BusinessRule, Decision, Exclusion, Fact, Feature, Finding, InfoItem, OpenQuestion, Spec, Story, Unit
 
 
 def load(ctx) -> list[Decision]:
@@ -60,44 +60,53 @@ def apply_to_facts(decisions: list[Decision], facts: list[Fact]) -> list[Fact]:
 
 
 def apply_to_spec(decisions: list[Decision], spec: Spec) -> tuple[Spec, list[Finding]]:
+    """Targets: item.<id>[.<attr>] | rule.<id>[.<attr>] | open.<id> | exclusion.<id> | feature.<id>[.<attr>] | story.<id>[.<attr>]"""
     findings = []
-    colls = {"field": spec.fields, "rule": spec.rules, "notice": spec.notices, "step": spec.steps,
-             "open": spec.open_questions}
-    models = {"field": FieldReq, "rule": Rule, "notice": Notice}
+    km = spec.knowledge
+    stories = {s.id: (f, s) for f in spec.features for s in f.stories}
+    colls = {"item": (km.items, InfoItem), "rule": (km.rules, BusinessRule), "open": (km.open_questions, OpenQuestion),
+             "exclusion": (km.exclusions, Exclusion), "feature": (spec.features, Feature)}
     for d in decisions:
         kind, _, rest = d.target.partition(".")
         if kind == "fact":
             continue
         item_id, _, attr = rest.partition(".")
-        coll = colls.get(kind)
-        if coll is None:
-            findings.append(Finding(check="decisions", severity="error", target=d.id, message=f"bad target {d.target}"))
-            continue
-        item = next((x for x in coll if x.id == item_id), None)
         try:
+            if kind == "story":
+                coll = stories[item_id][0].stories if item_id in stories else None
+                model = Story
+                if coll is None and d.action == "add":
+                    feat = next(f for f in spec.features if f.id == (d.value or {}).get("feature"))
+                    coll = feat.stories
+            else:
+                coll, model = colls[kind]
+            item = next((x for x in coll if x.id == item_id), None) if coll is not None else None
             if d.action == "add":
                 if item is not None:
                     coll.remove(item)
-                obj = models[kind].model_validate({**d.value, "id": item_id})
-                obj.source_refs = sorted(set(obj.source_refs) | {d.id})
-                if hasattr(obj, "status"):
-                    obj.status = "decision"
+                val = {k: v for k, v in (d.value or {}).items() if k != "feature"}
+                obj = model.model_validate({**val, "id": item_id})
+                _cite(obj, d)
                 coll.append(obj)
             elif item is None:
                 findings.append(Finding(check="decisions", severity="error", target=d.id,
                                         message=f"target {d.target} not found in the spec (renamed?)"))
             elif d.action == "override":
                 setattr(item, attr, d.value)
-                if hasattr(item, "source_refs"):
-                    item.source_refs = sorted(set(item.source_refs) | {d.id})
-                if hasattr(item, "status"):
-                    item.status = "decision"
+                _cite(item, d)
             elif d.action == "exclude":
                 coll.remove(item)
-                spec.exclusions.append(Exclusion(id=f"X-{d.id}", item=f"{kind} {item_id}", reason=d.rationale,
-                                                 source_refs=[d.id]))
+                km.exclusions.append(Exclusion(id=f"X-{d.id}", item=f"{kind} {item_id}", reason=d.rationale,
+                                               source_refs=[d.id]))
             elif d.action == "resolve":
                 coll.remove(item)
         except Exception as e:  # noqa: BLE001
             findings.append(Finding(check="decisions", severity="error", target=d.id, message=f"could not apply: {e}"))
     return spec, findings
+
+
+def _cite(obj, d):
+    if hasattr(obj, "source_refs"):
+        obj.source_refs = sorted(set(obj.source_refs) | {d.id})
+    if hasattr(obj, "status"):
+        obj.status = "decision"

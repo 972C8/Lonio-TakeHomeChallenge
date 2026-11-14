@@ -17,4 +17,8 @@ Quote verbatim from unit `text`. A calculator question asked only of some
 people must keep that condition; do not generalise it to everyone.
 
 ## Problem guidance
+Context for interpreting the source. Its conventions (ids, value wording,
+formats) are NOT facts of this source: never extract a fact that only the
+guidance states.
+
 {{guidance}}

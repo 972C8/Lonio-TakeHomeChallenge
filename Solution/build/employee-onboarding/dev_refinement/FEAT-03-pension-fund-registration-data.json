@@ -1,0 +1,66 @@
+{
+  "questions": [
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "severity": "major",
+      "question": "The goal says a registration is \"never blocked by missing data\", but the fund requires a canton for every employee and US-03.4 skips the canton for anyone living abroad (Germany, Liechtenstein). Until OQ-02 is answered, these registrations will be blocked. For now, should Lonio still let these employees complete the questionnaire, or should the case be marked as incomplete or flagged to HR? Or do we accept that the goal is not met for them yet? This is separate from OQ-02 itself, which asks what the canton means."
+    },
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "severity": "major",
+      "question": "For employees living in Switzerland, the canton follows from the Swiss postcode and town they already give in FEAT-02. Guidance prefers deriving values over asking for them. Should the canton be derived from the address instead of asked? If it is still asked, what happens when the chosen canton does not match the postcode? Should it be checked, or accepted as entered?"
+    },
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "severity": "major",
+      "question": "Suppose an employee answers a dependent question and then changes the answer it depends on: civil status from Married to something else, or country from Switzerland to abroad. Should the spouse's date of birth or canton they already gave be discarded? Data minimisation (G-01) suggests yes, but the spec does not say."
+    },
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "severity": "minor",
+      "question": "Which names should the employee enter: the official names exactly as on their passport or ID, including all first names and middle names, or the name they use day to day? The fund's registration and later matching may depend on this, and it changes the question wording and help text."
+    },
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "severity": "minor",
+      "question": "Are there plausibility rules for the employee's date of birth and the spouse's date of birth? For example: not in the future, a minimum or maximum age for the employee, the spouse being an adult. Today the only rules are \"not empty\" and \"a valid date\", so a mistyped year would reach the fund."
+    },
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "severity": "minor",
+      "question": "AC-03.1.3 (\"another part of the onboarding or another receiving party needs the same detail … not asked again\") cannot be tested as written. Which other features or parties reuse name and date of birth? The information catalogue lists only the pension fund. What should the test check?"
+    },
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "severity": "minor",
+      "question": "The title of AC-03.2.3 says civil status is reused \"for source tax and HR\", but its Then clause covers only source tax. Is there an HR reuse that needs its own acceptance criterion? If not, should \"HR\" be removed from the title?"
+    },
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "severity": "minor",
+      "question": "Where in the questionnaire flow does the canton question go? FEAT-02 (AC-02.2.3) says employees living in Switzerland \"continue to nationality and canton\" straight after the address. FEAT-03 groups name and date of birth under \"personal details\" and civil status under \"family details\" but does not place the canton. Is there a required order across FEAT-02, FEAT-03 and FEAT-04?"
+    }
+  ],
+  "already_flagged": [
+    "OQ-02: whether the fund's Canton means the canton of residence or of work, and what to enter for employees living abroad (US-03.4, AC-03.4.1)",
+    "OQ-03: how to register employees in a registered partnership or another status such as separated, and whether the fund wants the partner's details (AC-03.2.2)",
+    "OQ-04: whether the portal shows extra spouse fields for Divorced or Widowed. The AC-03.3.1 example rows already mark these as 'not asked ✅' although the question is open"
+  ],
+  "tech_leaks": [
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "quote": "It depends on address_country from FEAT-02.",
+      "why": "Uses an internal field id in business prose. The business term is \"country of home address\"."
+    },
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "quote": "naming the item residence_canton is an unbacked assumption",
+      "why": "Refers to an internal field or data-model name in the body text. What to call the field is an engineering decision."
+    },
+    {
+      "file": "features/FEAT-03-pension-fund-registration-data.md",
+      "quote": "they are asked for their date of birth as a day, month and year (shown as DD.MM.YYYY, e.g. 14.02.1990)",
+      "why": "The fund's DD.MM.YYYY format is a constraint on the data delivered to the fund. Telling the questionnaire to ask for day, month and year as separate parts and to display them that way is an input and UI decision that belongs to engineering and design."
+    }
+  ]
+}

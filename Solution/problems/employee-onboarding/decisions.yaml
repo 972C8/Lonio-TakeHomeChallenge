@@ -1,14 +1,14 @@
 # Product decisions: the human override layer.
 #
-# Applied deterministically AFTER synthesis (agents cannot reinterpret them),
-# cited in the requirements like any source, with the highest precedence.
+# Applied deterministically AFTER the agents ran (they cannot reinterpret
+# them), cited in the feature specs like any source, with the highest precedence.
 #
-# action:  override  target: field.<id>.<attribute> | rule.<id>.<attribute> | step.<id>.<attribute>
-#          add       target: field.<id> | rule.<id> | notice.<id>   value: full object
-#          exclude   target: field.<id> | rule.<id> | notice.<id>   (moves it to exclusions)
-#          resolve   target: open.<id>                              (closes an open question)
+# action:  override  target: item.<id>.<attr> | rule.<id>.<attr> | story.<id>.<attr> | feature.<id>.<attr>
+#          add       target: item.<id> | rule.<id> | story.<id> (value.feature = owning feature id); value = full object
+#          exclude   target: item.<id> | rule.<id> | story.<id>   (moves it to out of scope)
+#          resolve   target: open.<id>                             (closes an open question)
 #          accept    target: fact.<id>   (confirms an inferred fact)
-#          reject    target: fact.<id>   (removes a fact before synthesis)
+#          reject    target: fact.<id>   (removes a fact before modelling)
 #
 # evidence: unit ids (T-012, S05-E14 ...) the decision is based on or overrides.
 # evidence_hash is filled in by the pipeline; if the evidence text changes later,

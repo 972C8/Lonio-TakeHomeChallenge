@@ -1,0 +1,112 @@
+---
+id: {{ f.id }}
+title: {{ f.title | tojson }}
+order: {{ f.order }}
+stakeholders: [{{ f.stakeholders | join(", ") }}]
+stories: [{% for s in f.stories %}{{ s.id }}{{ ", " if not loop.last }}{% endfor %}]
+information: [{{ f.items | join(", ") }}]
+rules: [{{ f.rules | join(", ") }}]
+open_questions: [{{ f.open_questions | join(", ") }}]
+---
+
+# {{ f.title }}
+
+**Goal:** {{ f.goal }}
+
+## Context
+{{ f.context }}
+
+**Stakeholders:** {% for st in f.stakeholders %}{{ stakeholders.get(st, st) }}{{ ", " if not loop.last }}{% endfor %}
+
+
+{% if f.open_questions %}
+> ⚠ Open questions affecting this feature: {% for q in f.open_questions %}[{{ q }}](../open-questions.md#{{ q | lower }}){{ ", " if not loop.last }}{% endfor %}
+
+{% endif %}
+
+## User stories
+
+{% for s in f.stories %}
+### {{ s.id }} – {{ s.title }}
+**As** {{ stakeholders.get(s.as_a, s.as_a) }}, **I want** {{ s.i_want }}, **so that** {{ s.so_that }}
+
+Priority **{{ s.priority }}** – {{ s.priority_reason }}{% if s.status != "confirmed" %} · Status: **{{ s.status }}**{% endif %} · Sources: {{ s.source_refs | join(", ") }}
+
+{% if s.items or s.rules %}
+Covers: {% for x in s.items + s.rules %}{{ names.get(x, x) }}{{ ", " if not loop.last }}{% endfor %}
+
+
+{% endif %}
+**Acceptance criteria**
+
+{% for ac in s.acceptance_criteria %}
+- **{{ ac.id }} {{ ac.title }}**
+  - **Given** {{ ac.given }}
+  - **When** {{ ac.when }}
+  - **Then** {{ ac.then }}
+  - _Sources: {{ ac.source_refs | join(", ") }}_
+{% if ac.examples %}
+{% set t = example_table(ac) %}
+
+  | Example | {% for c in t.in %}{{ c | cell }} | {% endfor %}→ | {% for c in t.out %}{{ c | cell }} | {% endfor %}Checked |
+  |---|{% for c in t.in %}---|{% endfor %}---|{% for c in t.out %}---|{% endfor %}---|
+{% for r in t.rows %}
+  | {{ r.name | cell }} | {% for v in r.in %}{{ v | cell }} | {% endfor %}→ | {% for v in r.out %}{{ v | cell }} | {% endfor %}{{ r.ok }} |
+{% endfor %}
+
+{% endif %}
+{% endfor %}
+{% if judge.get("story." ~ s.id) and judge["story." ~ s.id].verdict != "supported" %}
+_Trace check: {{ judge["story." ~ s.id].verdict }} – {{ judge["story." ~ s.id].note }}_
+
+{% endif %}
+{% endfor %}
+## Information needed
+
+The information this feature owns. Each piece is asked once and reused by
+every stakeholder listed (see [information.md](../information.md) for all).
+
+{% for x in f.items if x in items %}
+{% set it = items[x] %}
+### {{ it.name }}
+| | |
+|---|---|
+| **What?** | {{ it.description | cell }}{% if it.form %} – Form: {{ it.form | cell }}{% endif %} |
+{% if it.allowed_values %}| **Allowed values** | {{ it.allowed_values | join(" · ") | cell }} |
+{% endif %}
+| **When do we ask?** | {{ it.asked_when | cell }} |
+| **When is it required?** | {{ it.required_when | cell }} |
+| **Depends on** | {% if it.depends_on %}{% for d in it.depends_on %}{{ names.get(d, d) }}{{ ", " if not loop.last }}{% endfor %}{% else %}nothing{% endif %} |
+| **Who needs it?** | {% for n in it.needed_by %}{{ stakeholders.get(n.stakeholder, n.stakeholder) | cell }}: {{ n.purpose | cell }}{{ "<br>" if not loop.last }}{% endfor %} |
+| **Status · sources** | {{ it.status }} · {{ it.source_refs | join(", ") }} |
+{% if it.notes %}| **Notes** | {{ it.notes | cell }} |
+{% endif %}
+
+{% endfor %}
+{% if f.rules %}
+## Business rules
+
+{% for x in f.rules if x in rules %}
+{% set r = rules[x] %}
+### {{ r.name }}
+{{ r.statement }}
+
+{% if r.table %}
+| # | {% for c in r.inputs %}{{ c | cell }} | {% endfor %}→ Result | Sources |
+|---|{% for c in r.inputs %}---|{% endfor %}---|---|
+{% for row in r.table %}
+| {{ loop.index }} | {% for v in row.when %}{{ v | cell }} | {% endfor %}{{ row.then | cell }} | {{ row.source_refs | join(", ") }} |
+{% endfor %}
+
+{% endif %}
+_Status: {{ r.status }} · Sources: {{ r.source_refs | join(", ") }}_
+
+{% endfor %}
+{% endif %}
+## Evidence
+{% for e in evidence(feature_refs(f)) %}
+- **{{ e.id }}** ({{ e.source }}{% if e.basis %}, {{ e.basis }}{% endif %}): {{ e.statement }}
+{% for q in e.quotes %}
+  - "{{ q.quote }}" — {{ q.where }}
+{% endfor %}
+{% endfor %}

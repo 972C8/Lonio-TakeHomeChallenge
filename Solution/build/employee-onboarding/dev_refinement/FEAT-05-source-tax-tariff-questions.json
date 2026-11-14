@@ -1,0 +1,49 @@
+{
+  "questions": [
+    {
+      "file": "features/FEAT-05-source-tax-tariff-questions.md",
+      "question": "OQ-01 lists 'Ship without tariff questions first' as an option, and AC-05.2.2 says no question is added until the calculator has been analysed. If we ship before OQ-01 is resolved, US-05.1 hides questions that don't exist yet. What would we actually deliver in that case? For example: should HR be shown the subject / not subject result as a flag or worklist, or should the whole feature wait for OQ-01?",
+      "severity": "blocker"
+    },
+    {
+      "file": "features/FEAT-05-source-tax-tariff-questions.md",
+      "question": "An employee may change an earlier answer after the tariff questions have been answered (e.g. nationality, permit, civil status, spouse residence), so that they are no longer subject. What should happen to the tariff answers already given? Should they be discarded (data minimisation, G-01) or kept? And if the employee becomes subject later in the flow, should the tariff questions then appear?",
+      "severity": "major"
+    },
+    {
+      "file": "features/FEAT-05-source-tax-tariff-questions.md",
+      "question": "What should happen when source tax liability cannot be decided with certainty, e.g. a registered partnership (OQ-03, not linked to this feature), a permit type other than B/C (OQ-06), or a case the rule may not cover (OQ-05)? Should these employees get the tariff questions (so HR is not missing answers) or not (data minimisation)? Or should HR decide manually?",
+      "severity": "major"
+    },
+    {
+      "file": "features/FEAT-05-source-tax-tariff-questions.md",
+      "question": "US-05.2 says HR should not have to chase employees for missing answers. Are all tariff questions required, or may an employee answer 'don't know' or leave some empty (e.g. details about the spouse's work)? If some may stay empty, how does HR learn what is missing?",
+      "severity": "major"
+    },
+    {
+      "file": "features/FEAT-05-source-tax-tariff-questions.md",
+      "question": "AC-05.2.3 says earlier answers are reused for the tariff determination. Does reuse only mean we don't ask again, or should Lonio also show the employee and HR these reused answers inside the source tax step? Can the employee correct a reused answer there, and if so, does the correction also update the pension fund data (FEAT-03)?",
+      "severity": "minor"
+    },
+    {
+      "file": "features/FEAT-05-source-tax-tariff-questions.md",
+      "question": "Where do the tariff questions come in the questionnaire? Must they come after all FEAT-03/FEAT-04 questions in one block, or may they be mixed with other steps? The README puts the order of questions in scope, but this feature does not specify it.",
+      "severity": "minor"
+    },
+    {
+      "file": "features/FEAT-05-source-tax-tariff-questions.md",
+      "question": "The Context says the feature 'depends on the decision from FEAT-04'. Is this only the subject / not subject result of US-04.3, or does it also include open points in FEAT-04 (OQ-05, OQ-06) that must be resolved before this feature can be accepted?",
+      "severity": "minor"
+    },
+    {
+      "file": "features/FEAT-05-source-tax-tariff-questions.md",
+      "question": "Should the employee be told why they are getting the source tax questions (i.e. that they were found to be subject to source tax)? Should a non-subject employee be told that the source tax step does not apply to them? The goal is to stop calls to HR (F-TR-004), so this wording matters.",
+      "severity": "minor"
+    }
+  ],
+  "already_flagged": [
+    "OQ-01: Which questions, answer options and conditions the Zurich tariff calculator needs (married employees and whether the spouse works, children, extra questions / German forms for employees living abroad). This includes whether nationality or spouse data are needed for employees living abroad, which FEAT-04 deliberately does not ask (AC-04.1.1). That would conflict with the reuse in AC-05.2.3 and the data minimisation in AC-05.1.1.",
+    "AC-05.2.2 can only be tested once OQ-01 is resolved ('exactly the questions ... the calculator needs')."
+  ],
+  "tech_leaks": []
+}

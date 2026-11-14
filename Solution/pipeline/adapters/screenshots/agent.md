@@ -37,4 +37,8 @@ and under which conditions.
   what it requires are `desired` (our product must satisfy them).
 
 ## Problem guidance
+Context for interpreting the source. Its conventions (ids, value wording,
+formats) are NOT facts of this source: never extract a fact that only the
+guidance states.
+
 {{guidance}}

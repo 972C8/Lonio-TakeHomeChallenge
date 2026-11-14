@@ -1,0 +1,17 @@
+# Information catalogue
+
+Every piece of information the process needs, **asked once** and reused by
+every stakeholder. This view answers, for each piece: what, when we ask, when
+it is required, what it depends on, and who needs it.
+
+| Information | What? | When do we ask? | When is it required? | Depends on | Who needs it? | Feature |
+|---|---|---|---|---|---|---|
+{% for it in km.items %}
+| **{{ it.name | cell }}** | {{ it.description | cell }}{% if it.form %} Form: {{ it.form | cell }}{% endif %}{% if it.allowed_values %} Values: {{ it.allowed_values | join(" · ") | cell }}{% endif %} | {{ it.asked_when | cell }} | {{ it.required_when | cell }} | {% for d in it.depends_on %}{{ names.get(d, d) }}{{ ", " if not loop.last }}{% endfor %} | {% for n in it.needed_by %}{{ n.stakeholder }}{{ ", " if not loop.last }}{% endfor %} | {% if it.id in owner %}[{{ owner[it.id].id }}](features/{{ owner[it.id].id }}.md){% endif %} |
+{% endfor %}
+
+## Derived results (never asked)
+
+{% for r in km.rules %}
+- **{{ r.name }}** – {{ r.statement }} ({% if r.id in owner %}[{{ owner[r.id].id }}](features/{{ owner[r.id].id }}.md){% endif %})
+{% endfor %}

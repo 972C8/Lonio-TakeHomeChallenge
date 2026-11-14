@@ -1,132 +1,147 @@
 [
   {
-    "id": "field.first_name",
+    "id": "item.first_name",
+    "verdict": "supported",
+    "note": "Required first name for pension fund registration is backed by F-SC-002 and F-SC-015."
+  },
+  {
+    "id": "item.last_name",
+    "verdict": "supported",
+    "note": "F-SC-003 and the 'Last name is required.' error in F-SC-015 back it."
+  },
+  {
+    "id": "item.date_of_birth",
+    "verdict": "supported",
+    "note": "Required field and the DD.MM.YYYY format are backed by F-SC-004, F-SC-005 and F-SC-015."
+  },
+  {
+    "id": "item.address_street",
+    "verdict": "supported",
+    "note": "HR's full address need, completeness reason and envelope-style form are backed by F-TR-009 and F-TR-010."
+  },
+  {
+    "id": "item.address_house_number",
+    "verdict": "supported",
+    "note": "House number is named as part of the full address by HR, and the notes correctly flag the open question."
+  },
+  {
+    "id": "item.address_postcode",
+    "verdict": "supported",
+    "note": "Postcode is named as part of the complete address that HR needs."
+  },
+  {
+    "id": "item.address_town",
+    "verdict": "supported",
+    "note": "HR needs the full address including town, as on an envelope, so it is always asked and required."
+  },
+  {
+    "id": "item.address_country",
+    "verdict": "supported",
+    "note": "The country is part of the full address (F-TR-009/010), and F-TR-034/036/037/040 back its use as country of residence for source tax."
+  },
+  {
+    "id": "item.nationality",
+    "verdict": "supported",
+    "note": "Nationality is needed for the source tax decision for residents (F-TR-038/037), and F-TR-034 plus G-01 support not asking people who live abroad; the expression matches the wording."
+  },
+  {
+    "id": "item.permit_type",
+    "verdict": "supported",
+    "note": "The permit type is needed for non-Swiss residents because C permit holders are treated like Swiss nationals (F-TR-025/037/039), and the asked-when condition matches its expression."
+  },
+  {
+    "id": "item.residence_canton",
     "verdict": "partial",
-    "note": "Pension portal required field is backed, but the HR consumer (correspondence and payroll administration) is only weakly inferred from the address quote, and the passport/ID help text and trim validation are not backed by any cited fact."
+    "note": "The restriction to asking only residents of Switzerland is not backed: the fund marks Canton required for everyone, and F-SC-017 says what applies to people living abroad (and residence versus work canton) is unclear."
   },
   {
-    "id": "field.last_name",
-    "verdict": "partial",
-    "note": "Pension fund required field is backed, but HR consumer (correspondence/payroll), the passport/ID help text and trim validation are not supported by the cited facts."
-  },
-  {
-    "id": "field.date_of_birth",
-    "verdict": "partial",
-    "note": "Required field, DD.MM.YYYY display and ISO storage are backed, but the validation rules (valid calendar date, not in the future) are not supported by any cited fact."
-  },
-  {
-    "id": "field.address_street",
+    "id": "item.first_working_day",
     "verdict": "supported",
-    "note": "HR needs full postal address including street, and nothing extra, so the required text field is backed."
+    "note": "F-TR-014/015/018/019, F-SC-008 and G-08 back an always-asked, always-required first working day that HR confirms and the insurance start date is derived from."
   },
   {
-    "id": "field.address_house_number",
-    "verdict": "partial",
-    "note": "Required house number for HR is backed, but the free-text allowing '12a' is not stated in the cited facts."
-  },
-  {
-    "id": "field.address_postcode",
+    "id": "item.civil_status",
     "verdict": "supported",
-    "note": "Postcode is required for HR address, and no format check is consistent with G-06 (no source gives one)."
+    "note": "Options, always-asked/required and the three needs are backed by F-SC-010/011/015, F-TR-029 and F-TR-030."
   },
   {
-    "id": "field.address_town",
+    "id": "item.spouse_date_of_birth",
     "verdict": "supported",
-    "note": "Town is part of the complete address HR requires."
+    "note": "Format, married-only display and required-when-shown are backed by F-TR-021 and F-SC-012 to F-SC-016."
   },
   {
-    "id": "field.address_country",
+    "id": "item.spouse_nationality",
     "verdict": "supported",
-    "note": "Country is part of HR's address, ISO alpha-2 is per G-09, and use as residence country for source tax is backed by F-TR-037/040/043/045."
+    "note": "F-TR-031 and F-TR-032 back the need and the condition, and the expression matches the text."
   },
   {
-    "id": "field.residence_canton",
-    "verdict": "partial",
-    "note": "The 26 labels and required status are backed, but the two-letter option values and the ask_when address_country==\"CH\" restriction are not backed by the cited facts (F-SC-018 leaves residents abroad and residence-vs-work canton unresolved)."
-  },
-  {
-    "id": "field.nationality",
+    "id": "item.spouse_permit_type",
     "verdict": "supported",
-    "note": "Source-tax liability needs nationality for people living in CH (F-TR-040/041), residents abroad are always subject (F-TR-037), and G-01 backs asking only when needed."
+    "note": "F-TR-032 says the permit is only needed if the spouse is not Swiss, and 'if they have one' backs the optional answer."
   },
   {
-    "id": "field.permit_type",
+    "id": "item.spouse_residence_country",
     "verdict": "supported",
-    "note": "The C-permit exemption (F-TR-025/040/042), the first-day permit reminder (F-TR-029), and the option values (G-10) back the field and its ask condition."
-  },
-  {
-    "id": "field.first_working_day",
-    "verdict": "supported",
-    "note": "The first working day is needed for the fund, is confirmed by the employee, changes often, and the insurance start is derived from it (F-TR-015/016/019, G-08)."
-  },
-  {
-    "id": "field.civil_status",
-    "verdict": "supported",
-    "note": "The fund's required dropdown with exactly four options (F-SC-009/010, G-07), the source-tax use (F-TR-031/030), and the values (G-10) are all backed."
-  },
-  {
-    "id": "field.spouse_date_of_birth",
-    "verdict": "partial",
-    "note": "Asking when married, required, and the DD.MM.YYYY format are backed, but the 'must not be in the future' validation is not backed by any cited fact."
-  },
-  {
-    "id": "field.spouse_nationality",
-    "verdict": "supported",
-    "note": "The spouse-exemption rule (F-TR-031/033/040) and the ask condition limited to cases where the exemption could apply (F-TR-044) are backed."
-  },
-  {
-    "id": "field.spouse_permit_type",
-    "verdict": "supported",
-    "note": "The spouse's permit matters only for non-Swiss spouses (F-TR-034/035) and only when the exemption could apply (F-TR-044), with option values per G-10."
-  },
-  {
-    "id": "field.spouse_residence_country",
-    "verdict": "partial",
-    "note": "Facts support asking spouse residence for the exemption, but the country-type ISO alpha-2 format/validation and required_when=true are not backed, and the 'ask_when' narrowing is only inferred, since facts only give 'lives here' (in CH), not a country field."
-  },
-  {
-    "id": "field.spouse_employed",
-    "verdict": "partial",
-    "note": "Calculator asking whether the spouse works for married employees is supported (F-TR-030), but the boolean yes/no format, validation and required_when=true are not backed, and the notes admit the calculator wording is unknown."
+    "note": "F-TR-031 and F-TR-032 back the need, and G-01 backs asking only when the answer can change the outcome."
   },
   {
     "id": "rule.subject_to_source_tax",
     "verdict": "supported",
-    "note": "F-TR-040, F-TR-025, F-TR-031 and F-TR-037 back every branch: abroad always subject, and in CH exempt if Swiss, C permit, or married to a Swiss/C-permit spouse living in CH."
+    "note": "The statement, every table row and the expression match F-TR-034, F-TR-006, F-TR-025, F-TR-030, F-TR-037 and F-TR-005."
   },
   {
     "id": "rule.insurance_start_date",
-    "verdict": "supported",
-    "note": "F-TR-017/018/019 give the derivation rule and F-SC-007/008 give the pension fund's required DD.MM.YYYY 1st-of-month format."
+    "verdict": "supported"
   },
   {
-    "id": "exclusion.EX-01",
-    "verdict": "supported",
-    "note": "F-TR-013 confirms the photo is postponed to next year because of the badge system change."
+    "id": "story.US-01.1",
+    "verdict": "supported"
   },
   {
-    "id": "exclusion.EX-02",
-    "verdict": "supported",
-    "note": "F-TR-028 and G-03 confirm IT equipment is out of scope because IT has its own process."
+    "id": "story.US-01.2",
+    "verdict": "supported"
   },
   {
-    "id": "exclusion.EX-03",
-    "verdict": "supported",
-    "note": "G-03 explicitly puts AHV data out of scope."
+    "id": "story.US-02.1",
+    "verdict": "supported"
   },
   {
-    "id": "exclusion.EX-04",
-    "verdict": "supported",
-    "note": "F-TR-019 and G-08 state the insurance start date is derived from first_working_day, not asked."
+    "id": "story.US-02.2",
+    "verdict": "partial",
+    "note": "The cited facts never mention a pension fund canton question or say it is skipped for residents abroad and asked for residents in Switzerland (AC-02.2.2, AC-02.2.3), and the claim that source tax and HR receive the country of residence is not backed either."
   },
   {
-    "id": "exclusion.EX-05",
-    "verdict": "supported",
-    "note": "F-TR-007 confirms the Zurich calculator is used for every employee and G-05 confirms Zurich is the only source tax system, so canton-specific calculators are out of scope."
+    "id": "story.US-03.1",
+    "verdict": "supported"
   },
   {
-    "id": "exclusion.EX-06",
-    "verdict": "supported",
-    "note": "G-04 places transmission and change notifications in a separate requirement package, and F-TR-016 shows first-working-day changes as an example of that concern."
+    "id": "story.US-03.2",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-03.3",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-03.4",
+    "verdict": "partial",
+    "note": "The cited facts leave open whether the canton means residence or work and what applies to people abroad (F-SC-006, F-SC-017), so asking only Swiss-resident employees and naming the item residence_canton is an unbacked assumption."
+  },
+  {
+    "id": "story.US-04.1",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-04.2",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-04.3",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-04.4",
+    "verdict": "partial",
+    "note": "AC-04.4.5 states that HR has checked the rules against Stefan, Maria and Tomás and that gaps go through OQ-05, but the facts only show HR hedging ('I think that's it') and say nothing about such a check or that handling; the other criteria are backed by F-TR-005/025/030/034/037/040."
   }
 ]

@@ -1,9 +1,13 @@
 # Out of scope
 
-Explicitly **not** part of the onboarding questionnaire. Do not build these.
+Explicitly **not** part of these feature specs.
 
-{% for x in spec.exclusions %}
-- **{{ x.item }}** – {{ x.reason }} ({% for e in evidence(x.source_refs) %}{{ e.id }}{% for q in e.quotes %}: "{{ q.quote }}"{% endfor %}{{ "; " if not loop.last }}{% endfor %})
+{% for x in km.exclusions %}
+- **{{ x.item }}** – {{ x.reason }}
+{% for e in evidence(x.source_refs) %}
+  - {{ e.id }}: {{ e.statement }}{% for q in e.quotes %} — "{{ q.quote }}" ({{ q.where }}){% endfor %}
+
+{% endfor %}
 {% else %}
 - None.
 {% endfor %}

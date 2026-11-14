@@ -1,0 +1,258 @@
+{
+  "id": "FEAT-01-new-address",
+  "order": 1,
+  "title": "Capture the new address",
+  "goal": "HR gets the complete new address of a moving employee so master data is updated and documents such as payslips reach the right address.",
+  "context": "When an employee moves, HR has to update the employee master data and send documents to the new address (F-TR-001, F-TR-006, F-TR-013). The new address is street, house number, postcode, town and country, all needed every time (F-TR-016). The country also shows whether the move is within Switzerland or abroad, which the payroll and canton features depend on (F-TR-010). Countries are written by their English names (G-02). Only what HR needs is asked (G-01). The reason for the move is explicitly excluded (EX-01, F-TR-009). This feature comes first because every other feature builds on the new address, and especially on the country.",
+  "stakeholders": [
+    "employee",
+    "hr"
+  ],
+  "items": [
+    "new_street",
+    "new_house_number",
+    "new_postcode",
+    "new_town",
+    "new_country"
+  ],
+  "rules": [],
+  "open_questions": [
+    "OQ-06"
+  ],
+  "source_refs": [
+    "F-TR-001",
+    "F-TR-002",
+    "F-TR-003",
+    "F-TR-004",
+    "F-TR-005",
+    "F-TR-006",
+    "F-TR-009",
+    "F-TR-013",
+    "F-TR-016",
+    "G-01",
+    "G-02"
+  ],
+  "stories": [
+    {
+      "id": "US-01.1",
+      "title": "Report the street, house number, postcode and town of the new address",
+      "as_a": "hr",
+      "i_want": "every employee who reports a move to give me the street, house number, postcode and town of their new address",
+      "so_that": "I can update the employee master data and send documents such as payslips to the correct address",
+      "priority": "P1",
+      "priority_reason": "Without the new address HR cannot update master data and documents such as payslips go to the wrong address. Every other part of the address change depends on it.",
+      "status": "confirmed",
+      "items": [
+        "new_street",
+        "new_house_number",
+        "new_postcode",
+        "new_town"
+      ],
+      "rules": [],
+      "source_refs": [
+        "F-TR-001",
+        "F-TR-002",
+        "F-TR-003",
+        "F-TR-004",
+        "F-TR-006",
+        "F-TR-013",
+        "F-TR-016",
+        "F-TR-009",
+        "G-01"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.1.1",
+          "title": "Street, house number, postcode and town are always asked and must be given",
+          "given": "an employee reports a change of address",
+          "when": "they give their new address",
+          "then": "they are asked for the street, house number, postcode and town of the new address, whether the move is within Switzerland or abroad, and the report cannot be completed while any of these four is missing",
+          "source_refs": [
+            "F-TR-001",
+            "F-TR-002",
+            "F-TR-003",
+            "F-TR-004",
+            "F-TR-006",
+            "F-TR-013",
+            "F-TR-016"
+          ],
+          "examples": [
+            {
+              "name": "Move within Switzerland",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "new_street",
+                  "expect": "required"
+                },
+                {
+                  "target": "new_house_number",
+                  "expect": "required"
+                },
+                {
+                  "target": "new_postcode",
+                  "expect": "required"
+                },
+                {
+                  "target": "new_town",
+                  "expect": "required"
+                }
+              ]
+            },
+            {
+              "name": "Move abroad",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "new_street",
+                  "expect": "required"
+                },
+                {
+                  "target": "new_house_number",
+                  "expect": "required"
+                },
+                {
+                  "target": "new_postcode",
+                  "expect": "required"
+                },
+                {
+                  "target": "new_town",
+                  "expect": "required"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-01.1.2",
+          "title": "HR receives the new address",
+          "given": "an employee has completed their change of address report",
+          "when": "HR looks at the report",
+          "then": "HR has the street, house number, postcode and town of the new address and can update the master data and send documents such as payslips there",
+          "source_refs": [
+            "F-TR-001",
+            "F-TR-002",
+            "F-TR-003",
+            "F-TR-004",
+            "F-TR-006"
+          ]
+        },
+        {
+          "id": "AC-01.1.3",
+          "title": "The reason for the move is never asked",
+          "given": "an employee reports a change of address",
+          "when": "they go through the questions",
+          "then": "they are not asked why they are moving, because that is private and HR does not want to know it",
+          "source_refs": [
+            "F-TR-009",
+            "G-01"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "US-01.2",
+      "title": "Report the country of the new address",
+      "as_a": "hr",
+      "i_want": "every employee who reports a move to give me the country of their new address, written by its English name",
+      "so_that": "I have the complete address for master data and documents, and I can tell whether the move is within Switzerland or abroad",
+      "priority": "P1",
+      "priority_reason": "The country completes the address and decides whether the move is abroad; the payroll (source tax) and canton steps depend on it.",
+      "status": "confirmed",
+      "items": [
+        "new_country"
+      ],
+      "rules": [],
+      "source_refs": [
+        "F-TR-005",
+        "F-TR-006",
+        "F-TR-010",
+        "F-TR-016",
+        "G-02"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.2.1",
+          "title": "The country is always asked and must be given",
+          "given": "an employee reports a change of address",
+          "when": "they give their new address",
+          "then": "they are asked for the country of the new address, and the report cannot be completed without it, whether the move is within Switzerland or abroad",
+          "source_refs": [
+            "F-TR-005",
+            "F-TR-006",
+            "F-TR-010",
+            "F-TR-016"
+          ],
+          "examples": [
+            {
+              "name": "Move within Switzerland",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "new_country",
+                  "expect": "required"
+                }
+              ]
+            },
+            {
+              "name": "Move abroad",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "new_country",
+                  "expect": "required"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-01.2.2",
+          "title": "Countries are written by their English names",
+          "given": "an employee gives the country of the new address",
+          "when": "the country is recorded",
+          "then": "it is shown by its English name, for example \"Switzerland\" or \"Germany\". Whether employees choose from a fixed list of countries or from all countries is still open (see OQ-06); until it is decided, no country is excluded",
+          "source_refs": [
+            "G-02",
+            "F-TR-005"
+          ]
+        },
+        {
+          "id": "AC-01.2.3",
+          "title": "HR receives the country and can tell a move abroad from a move within Switzerland",
+          "given": "an employee has completed their change of address report",
+          "when": "HR looks at the report",
+          "then": "HR has the country of the new address, can use it for master data and documents, and can see whether the move is within Switzerland or abroad (the new country of residence)",
+          "source_refs": [
+            "F-TR-005",
+            "F-TR-010"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,17 +1,20 @@
 """The pipeline: stages, in order.
 
-    1 normalize   per source, adapter      -> build/<p>/normalize/<src>.json   (Units)
-    2 extract     per source, LLM agent    -> build/<p>/extract/<src>.json     (Facts)
-    3 verify      anchors (code) + fact judge (LLM)  -> build/<p>/facts.json
-    4 synthesize  LLM agent                -> build/<p>/spec.raw.json
-    5 decide      decisions.yaml (code)    -> build/<p>/spec.json
-    6 check       lint, coverage, personas, eval (code); trace judge (LLM)
-    7 render      templates (code)         -> requirements/<p>/
-    8 builder     naive builder agent reads requirements/ -> questions
-    9 review      reviewer agent           -> build/<p>/review.md (verdict)
+     1 normalize    per source, adapter          -> build/<p>/normalize/<src>.json  (Units)
+     2 extract      per source, agent            -> build/<p>/extract/<src>.json    (Facts)
+     3 verify       anchors (code) + fact judge  -> build/<p>/facts.json
+     4 knowledge    agent                        -> build/<p>/knowledge.raw.json    (items, rules, open questions)
+     5 features     planner agent, then one writer agent per feature (parallel)
+                                                 -> build/<p>/features.plan.json, features/<id>.json
+     6 decide       decisions.yaml (code)        -> build/<p>/spec.json
+     7 check        checklist lint, examples executed against the knowledge model,
+                    coverage, tech-leak scan, gold eval (code); trace judge (agent)
+     8 render       templates (code)             -> requirements/<p>/
+     9 refinement   one dev-refinement agent per feature reads the rendered spec
+    10 review       reviewer agent               -> build/<p>/review.md (verdict)
 
-Every LLM stage is cached by a fingerprint of its inputs; unchanged inputs are
-not recomputed. `--force <stage>` reruns a stage regardless.
+Every LLM stage is cached by a fingerprint of its inputs. `--force <stage>`
+reruns a stage regardless.
 """
 from __future__ import annotations
 
@@ -29,7 +32,7 @@ from .engine import decisions as D
 from .engine.context import Context, sha
 from .engine.llm import COSTS, load_prompt, run_agent
 from .engine.paths import PIPELINE, REQUIREMENTS
-from .engine.schemas import Fact, Finding, Spec, Unit
+from .engine.schemas import Fact, Feature, FeaturePlan, Finding, KnowledgeModel, Spec, Unit
 from .render.render import TEMPLATES, render
 
 AGENTS = PIPELINE / "agents"
@@ -48,15 +51,22 @@ class Verdicts(BaseModel):
     verdicts: list[Verdict]
 
 
-class BuilderQuestion(BaseModel):
+class RefinementQuestion(BaseModel):
     file: str
     question: str
     severity: Literal["blocker", "major", "minor"]
 
 
-class BuilderReport(BaseModel):
-    questions: list[BuilderQuestion]
+class TechLeak(BaseModel):
+    file: str
+    quote: str
+    why: str
+
+
+class RefinementReport(BaseModel):
+    questions: list[RefinementQuestion]
     already_flagged: list[str] = F(default_factory=list)
+    tech_leaks: list[TechLeak] = F(default_factory=list)
 
 
 class ReviewFinding(BaseModel):
@@ -137,72 +147,141 @@ async def stage_verify_facts(ctx, adapters, units, facts) -> tuple[list[Fact], l
     return facts, findings
 
 
-async def stage_synthesize(ctx, facts: list[Fact]) -> Spec:
+def _profile_ctx(ctx: Context) -> dict:
+    p = ctx.profile
+    return dict(
+        goal=p["goal"],
+        stakeholders="\n".join(f"- `{k}`: {v}" for k, v in p["stakeholders"].items()),
+        sources="\n".join(f"- `{s['id']}` ({s['type']}, precedence {s.get('precedence', 9)}): {s.get('authority', '')}"
+                          for s in p["sources"]),
+        guidance=(ctx.problem_dir / "guidance.md").read_text(),
+        conventions=COND_LANG.read_text(),
+    )
+
+
+def _fact_payload(facts: list[Fact]) -> list[dict]:
+    return [{"id": f.id, "source": f.source_id, "kind": f.kind, "subject": f.subject, "statement": f.statement,
+             "basis": f.basis, "temporality": f.temporality, "superseded_by": f.superseded_by,
+             "quotes": [a.quote for a in f.anchors]} for f in facts]
+
+
+async def stage_knowledge(ctx, facts: list[Fact]) -> KnowledgeModel:
     usable = [f for f in facts if f.anchor_ok and f.judge != "unsupported"]
-    sources = "\n".join(f"- `{s['id']}` ({s['type']}, precedence {s.get('precedence', 9)}): {s.get('authority', '')}"
-                        for s in ctx.profile["sources"])
-    consumers = "\n".join(f"- `{k}`: {v}" for k, v in ctx.profile["consumers"].items())
-    prev = ctx.out("spec")
+    prev = ctx.out("knowledge")
     existing = []
     if prev.exists():
-        sp = json.loads(prev.read_text())
-        existing = [f["id"] for f in sp["fields"]] + [r["id"] for r in sp.get("rules", [])]
-    system = load_prompt(AGENTS / "synthesizer.md", goal=ctx.profile["goal"], consumers=consumers, sources=sources,
-                         guidance=(ctx.problem_dir / "guidance.md").read_text(),
-                         conventions=COND_LANG.read_text(), existing_ids=", ".join(existing) or "(none yet)")
-    payload = [{"id": f.id, "source": f.source_id, "kind": f.kind, "subject": f.subject, "statement": f.statement,
-                "basis": f.basis, "temporality": f.temporality, "superseded_by": f.superseded_by,
-                "quotes": [a.quote for a in f.anchors]} for f in usable]
+        km = json.loads(prev.read_text())
+        existing = [i["id"] for i in km["items"]] + [r["id"] for r in km.get("rules", [])]
+    system = load_prompt(AGENTS / "knowledge_modeler.md", **_profile_ctx(ctx), existing_ids=", ".join(existing) or "(none yet)")
+    payload = _fact_payload(usable)
 
     async def go():
-        return await run_agent("synthesize", system,
-                               "Facts (JSON):\n" + json.dumps(payload, ensure_ascii=False, indent=1) +
-                               "\n\nProduce the complete Spec.", Spec, model=ctx.model("synthesize"), max_turns=8)
+        return await run_agent("knowledge", system, "Facts (JSON):\n" + json.dumps(payload, ensure_ascii=False, indent=1)
+                               + "\n\nProduce the complete KnowledgeModel.", KnowledgeModel,
+                               model=ctx.model("synthesize"), max_turns=8)
 
-    raw = await ctx.stage("spec.raw", [payload, system], go)
-    return Spec.model_validate(raw)
+    return KnowledgeModel.model_validate(await ctx.stage("knowledge.raw", [payload, system], go))
+
+
+async def stage_features(ctx, km: KnowledgeModel, facts: list[Fact]) -> list[Feature]:
+    pc = _profile_ctx(ctx)
+    constraints = ctx.profile.get("feature_constraints", "")
+    plan_system = load_prompt(AGENTS / "feature_planner.md", **pc,
+                              plan_constraints=f"# Constraints from the problem profile\n{constraints}" if constraints else "")
+    kmj = km.model_dump(exclude={"items": {"__all__": {"asked_when_expr", "required_when_expr", "depends_on"}},
+                                 "rules": {"__all__": {"expression", "depends_on"}}})
+    facts_by_id = {f.id: f for f in facts}
+
+    async def plan():
+        return await run_agent("plan_features", plan_system,
+                               "Knowledge model (JSON):\n" + json.dumps(kmj, ensure_ascii=False, indent=1),
+                               FeaturePlan, model=ctx.model("synthesize"), max_turns=6)
+
+    planned = FeaturePlan.model_validate(await ctx.stage("features.plan", [kmj, plan_system], plan)).features
+    write_system = load_prompt(AGENTS / "feature_writer.md", **pc)
+    full_km = km.model_dump(exclude={"items": {"__all__": {"depends_on"}}, "rules": {"__all__": {"depends_on"}}})
+
+    async def write(feat: Feature):
+        refs = set(feat.source_refs)
+        for i in km.items:
+            if i.id in feat.items:
+                refs |= set(i.source_refs)
+        for r in km.rules:
+            if r.id in feat.rules:
+                refs |= set(r.source_refs)
+        cited = _fact_payload([facts_by_id[r] for r in sorted(refs) if r in facts_by_id])
+        prompt = ("Feature to write (JSON):\n" + feat.model_dump_json(indent=1) +
+                  "\n\nFull knowledge model (JSON; *_expr/expression are the internal formalisation your examples are "
+                  "checked against):\n" + json.dumps(full_km, ensure_ascii=False, indent=1) +
+                  "\n\nCited facts (JSON):\n" + json.dumps(cited, ensure_ascii=False, indent=1) +
+                  "\n\nReturn this Feature with its stories written.")
+
+        async def go():
+            return await run_agent(f"write_feature/{feat.id}", write_system, prompt, Feature,
+                                   model=ctx.model("synthesize"), max_turns=6)
+
+        out = Feature.model_validate(await ctx.stage(f"features/{feat.id}", [prompt, write_system], go))
+        # ownership and metadata stay as planned; the writer only adds stories
+        return feat.model_copy(update={"stories": out.stories})
+
+    return list(await asyncio.gather(*[write(f) for f in sorted(planned, key=lambda f: f.order)]))
 
 
 async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact]) -> tuple[dict, list[Finding]]:
     fb = {f.id: f for f in facts}
     guidance = ctx.guidance_items()
-    items = []
-    for kind, coll in (("field", spec.fields), ("rule", spec.rules), ("exclusion", spec.exclusions)):
-        for it in coll:
-            items.append({"id": f"{kind}.{it.id}",
-                          "requirement": it.model_dump(exclude={"source_refs", "depends_on"}, exclude_none=True),
-                          "cited": [{"id": r, "statement": fb[r].statement, "quotes": [a.quote for a in fb[r].anchors]}
-                                    if r in fb else {"id": r, "statement": "product owner guidance: " + guidance[r]}
-                                    if r in guidance else {"id": r, "statement": "product decision"}
-                                    for r in it.source_refs]})
+
+    def cite(refs):
+        return [{"id": r, "statement": fb[r].statement, "quotes": [a.quote for a in fb[r].anchors]} if r in fb
+                else {"id": r, "statement": "product owner guidance: " + guidance[r]} if r in guidance
+                else {"id": r, "statement": "product decision"} for r in refs]
+
+    items = [{"id": f"item.{i.id}", "element": i.model_dump(exclude={"source_refs", "depends_on"}), "cited": cite(i.source_refs)}
+             for i in spec.knowledge.items]
+    items += [{"id": f"rule.{r.id}", "element": r.model_dump(exclude={"source_refs", "depends_on"}), "cited": cite(r.source_refs)}
+              for r in spec.knowledge.rules]
+    for f in spec.features:
+        for s in f.stories:
+            refs = sorted(set(s.source_refs) | {r for ac in s.acceptance_criteria for r in ac.source_refs})
+            items.append({"id": f"story.{s.id}", "element": s.model_dump(exclude={"source_refs"}), "cited": cite(refs)})
     system = load_prompt(AGENTS / "requirement_judge.md")
 
     async def go():
-        batches = [items[i:i + 8] for i in range(0, len(items), 8)]
-        res = await asyncio.gather(*[run_agent(f"judge_trace/batch{n}", system,
-                                               json.dumps(b, ensure_ascii=False, indent=1), Verdicts,
-                                               model=ctx.model("judge")) for n, b in enumerate(batches)])
+        batches = [items[i:i + 6] for i in range(0, len(items), 6)]
+        res = await asyncio.gather(*[run_agent(f"judge_trace/batch{n}", system, json.dumps(b, ensure_ascii=False, indent=1),
+                                               Verdicts, model=ctx.model("judge")) for n, b in enumerate(batches)])
         return [v for r in res for v in r["verdicts"]]
 
-    verdicts = await ctx.stage("judge_trace", [items, AGENTS / "requirement_judge.md"], go)
+    verdicts = await ctx.stage("judge_trace", [items, system], go)
     vmap = {v["id"]: v for v in verdicts}
-    findings = [Finding(check="trace_judge", severity="warning" if v["verdict"] == "partial" else "error",
-                        target=v["id"], message=f"{v['verdict']}: {v.get('note', '')}")
-                for v in verdicts if v["verdict"] != "supported"]
-    return vmap, findings
+    return vmap, [Finding(check="trace_judge", severity="warning" if v["verdict"] == "partial" else "error",
+                          target=v["id"], message=f"{v['verdict']}: {v.get('note', '')}")
+                  for v in verdicts if v["verdict"] != "supported"]
 
 
-async def stage_builder(ctx, req_dir: Path) -> tuple[dict, list[Finding]]:
-    async def go():
-        return await run_agent("naive_builder", load_prompt(AGENTS / "naive_builder.md"),
-                               f"The requirements folder is: {req_dir}\nRead every file in it, then answer.",
-                               BuilderReport, model=ctx.model("builder"), tools=["Read", "Glob", "Grep"],
-                               add_dirs=[req_dir], max_turns=60)
+async def stage_dev_refinement(ctx, req_dir: Path, spec: Spec) -> tuple[dict, list[Finding]]:
+    system = load_prompt(AGENTS / "dev_refinement.md")
 
-    rep = await ctx.stage("naive_builder", [req_dir, AGENTS / "naive_builder.md"], go)
+    async def one(f: Feature):
+        path = next((p for p in (req_dir / "features").glob(f"{f.id}*.md")), req_dir / "features")
+
+        async def go():
+            return await run_agent(f"dev_refinement/{f.id}", system,
+                                   f"Feature file: {path}\nShared files are in: {req_dir}\nRead them, then answer.",
+                                   RefinementReport, model=ctx.model("builder"), tools=["Read", "Glob", "Grep"],
+                                   add_dirs=[req_dir], max_turns=40)
+        return await ctx.stage(f"dev_refinement/{f.id}", [path, req_dir / "information.md", system], go)
+
+    reps = await asyncio.gather(*[one(f) for f in spec.features])
+    merged = {"questions": [q for r in reps for q in r["questions"]],
+              "already_flagged": [q for r in reps for q in r.get("already_flagged", [])],
+              "tech_leaks": [t for r in reps for t in r.get("tech_leaks", [])]}
     sev = {"blocker": "error", "major": "warning", "minor": "info"}
-    return rep, [Finding(check="naive_builder", severity=sev[q["severity"]], target=q["file"], message=q["question"])
-                 for q in rep["questions"]]
+    F = [Finding(check="dev_refinement", severity=sev[q["severity"]], target=q["file"], message=q["question"])
+         for q in merged["questions"]]
+    F += [Finding(check="tech_leak", severity="warning", target=t["file"], message=f"\"{t['quote']}\" - {t['why']}")
+          for t in merged["tech_leaks"]]
+    return merged, F
 
 
 async def stage_review(ctx, report: dict) -> dict:
@@ -229,59 +308,68 @@ async def run(problem: str, force: set[str] | None = None, skip_llm_checks: bool
     findings += ff
     facts = D.apply_to_facts(decisions, facts)
 
-    ctx.log("[4] synthesize")
-    spec = await stage_synthesize(ctx, facts)
+    ctx.log("[4] knowledge model")
+    km = await stage_knowledge(ctx, facts)
+    ctx.log("[5] features and stories")
+    features = await stage_features(ctx, km, facts)
+    spec = Spec(knowledge=km, features=features)
 
-    ctx.log("[5] apply decisions")
+    ctx.log("[6] apply decisions")
     spec, df = D.apply_to_spec(decisions, spec)
     findings += df
-    M.compute_depends_on(spec)
+    M.compute_depends_on(spec.knowledge)
     ctx.write("spec", spec.model_dump())
 
-    ctx.log("[6] checks")
-    valid_facts = {f.id for f in facts if f.anchor_ok and f.judge != "unsupported"}
+    ctx.log("[7] checks")
     guidance = ctx.guidance_items()
-    findings += M.lint(spec, valid_facts, {d.id for d in decisions} | set(guidance), set(ctx.profile["consumers"]))
-    cov, cf = M.coverage(units, facts, spec, {d.id for d in decisions})
+    valid = {f.id for f in facts if f.anchor_ok and f.judge != "unsupported"} | {d.id for d in decisions} | set(guidance)
+    checklist = ctx.profile.get("item_checklist", [])
+    findings += M.lint(spec, valid, set(ctx.profile["stakeholders"]), checklist)
+    leak_cfg = ctx.profile.get("tech_vocabulary", {})
+    findings += M.tech_leaks(spec, leak_cfg.get("flag", []), leak_cfg.get("allow", []))
+    cov, cf = M.coverage(units, facts, spec)
     findings += cf
-    personas = yaml.safe_load((ctx.problem_dir / "personas.yaml").read_text())["personas"] \
-        if (ctx.problem_dir / "personas.yaml").exists() else []
-    presults, pf = M.persona_tests(spec, personas)
-    findings += pf
-    gold_path = ctx.problem_dir / "gold.yaml"
-    metrics, ef = M.evaluate_gold(spec, yaml.safe_load(gold_path.read_text())) if gold_path.exists() else ({}, [])
+    ex_path = ctx.problem_dir / "examples.yaml"
+    profile_examples = (yaml.safe_load(ex_path.read_text()) or {}).get("examples", []) if ex_path.exists() else []
+    examples, ef = M.run_examples(spec, profile_examples)
     findings += ef
+    gold_path = ctx.problem_dir / "gold.yaml"
+    metrics, gf = M.evaluate_gold(spec, yaml.safe_load(gold_path.read_text())) if gold_path.exists() else ({}, [])
+    findings += gf
     judge = {}
     if not skip_llm_checks:
         judge, jf = await stage_trace_judge(ctx, spec, facts)
         findings += jf
 
-    ctx.log("[7] render requirements")
+    ctx.log("[8] render feature specs")
     req_dir = REQUIREMENTS / problem
-    render(req_dir, ctx, spec, facts, unit_by_id, decisions, judge, guidance)
+    render(req_dir, ctx, spec, facts, unit_by_id, decisions, judge, guidance, examples)
 
-    builder = {"questions": [], "already_flagged": []}
+    refinement = {"questions": [], "already_flagged": [], "tech_leaks": []}
     if not skip_llm_checks:
-        ctx.log("[8] naive builder")
-        builder, bf = await stage_builder(ctx, req_dir)
-        findings += bf
+        ctx.log("[9] dev refinement")
+        refinement, rf = await stage_dev_refinement(ctx, req_dir, spec)
+        findings += rf
 
+    stories = [s for f in spec.features for s in f.stories]
     report = {
         "problem": problem,
-        "counts": {"units": len(units), "facts": len(facts), "steps": len(spec.steps), "fields": len(spec.fields),
-                   "rules": len(spec.rules), "notices": len(spec.notices),
-                   "open_questions": len(spec.open_questions), "exclusions": len(spec.exclusions)},
+        "counts": {"units": len(units), "facts": len(facts), "items": len(km.items), "rules": len(km.rules),
+                   "features": len(spec.features), "stories": len(stories),
+                   "acceptance_criteria": sum(len(s.acceptance_criteria) for s in stories),
+                   "open_questions": len(km.open_questions), "exclusions": len(km.exclusions)},
         "findings": {sev: [f.model_dump() for f in findings if f.severity == sev] for sev in ("error", "warning", "info")},
-        "coverage": cov, "personas": presults, "eval": metrics,
-        "open_questions": [q.model_dump() for q in spec.open_questions],
-        "inferred_items": [f"field.{f.id}" for f in spec.fields if f.status == "inferred"] +
-                          [f"rule.{r.id}" for r in spec.rules if r.status == "inferred"],
-        "naive_builder": builder,
+        "coverage": cov, "examples": examples, "eval": metrics,
+        "open_questions": [q.model_dump() for q in km.open_questions],
+        "inferred_items": [f"item.{i.id}" for i in km.items if i.status == "inferred"] +
+                          [f"rule.{r.id}" for r in km.rules if r.status == "inferred"] +
+                          [f"story.{s.id}" for s in stories if s.status == "inferred"],
+        "dev_refinement": refinement,
         "skipped_sources": [s["id"] for s in ctx.profile["sources"] if not any(u.source_id == s["id"] for u in units)],
     }
     review = None
     if not skip_llm_checks:
-        ctx.log("[9] review")
+        ctx.log("[10] review")
         review = await stage_review(ctx, report)
     report["review"] = review
     report["stages"] = {"ran": ctx.ran, "reused": ctx.reused}
@@ -294,44 +382,44 @@ async def run(problem: str, force: set[str] | None = None, skip_llm_checks: bool
 def write_review_md(ctx: Context, r: dict, facts: list[Fact]) -> None:
     L = [f"# Review: {r['problem']}", ""]
     if r.get("review"):
-        L += [f"**Verdict: {r['review']['verdict'].replace('_', ' ').upper()}**", "", r["review"]["summary"], ""]
-        L += ["## Reviewer findings", ""]
+        L += [f"**Verdict: {r['review']['verdict'].replace('_', ' ').upper()}**", "", r["review"]["summary"], "",
+              "## Reviewer findings", ""]
         for i, f in enumerate(r["review"]["findings"], 1):
             L += [f"{i}. **{f['title']}** – {f['why']}  ", f"   Evidence: {f['evidence']}  ", f"   Action: {f['action']}"]
         L.append("")
     c = r["counts"]
-    L += ["## Numbers", "", f"{c['units']} source units → {c['facts']} facts → {c['fields']} fields, {c['rules']} rules, "
-          f"{c['notices']} notices in {c['steps']} steps; {c['open_questions']} open questions, {c['exclusions']} exclusions.", ""]
+    L += ["## Numbers", "", f"{c['units']} source units → {c['facts']} facts → {c['items']} information items, "
+          f"{c['rules']} business rules → {c['features']} features, {c['stories']} stories, "
+          f"{c['acceptance_criteria']} acceptance criteria; {c['open_questions']} open questions, {c['exclusions']} exclusions.", ""]
     if r["skipped_sources"]:
         L += [f"⚠ Sources without data (not explored / empty): {', '.join(r['skipped_sources'])}", ""]
     errs = r["findings"]["error"]
     L += [f"## Errors ({len(errs)})", ""] + [f"- [{f['check']}] `{f['target']}` {f['message']}" for f in errs] + [""]
-    pr = r["personas"]
-    L += [f"## Persona tests ({sum(p['pass'] for p in pr)}/{len(pr)} pass)", ""]
-    for p in pr:
-        L.append(f"- {'✅' if p['pass'] else '❌'} **{p['id']}** – {p['from']}" + ("" if p["pass"] else f": {'; '.join(p['failures'])}"))
-    L.append("")
+    ex = r["examples"]
+    L += [f"## Examples executed against the knowledge model ({sum(e['pass'] for e in ex)}/{len(ex)} pass)", ""]
+    L += [f"- {'✅' if e['pass'] else '❌'} {e['case']} ({e['origin']})" + ("" if e["pass"] else f": {'; '.join(e['failures'])}")
+          for e in ex] + [""]
     if r["open_questions"]:
         L += ["## Open questions (need your decision)", ""]
-        for q in r["open_questions"]:
-            L.append(f"- **{q['id']}**{' (blocking)' if q['blocking'] else ''}: {q['question']} → recommended: {q['recommendation']}")
-        L.append("")
+        L += [f"- **{q['id']}**{' (blocking)' if q['blocking'] else ''}: {q['question']} → recommended: {q['recommendation']}"
+              for q in r["open_questions"]] + [""]
     inferred = [f for f in facts if f.basis == "inferred" and f.anchor_ok]
-    L += [f"## Inferred items to confirm", ""] + [f"- {i}" for i in r["inferred_items"]] + \
+    L += ["## Inferred items to confirm", ""] + [f"- {i}" for i in r["inferred_items"]] + \
          [f"- fact {f.id}: {f.statement}" for f in inferred] + [""]
-    nb = r["naive_builder"]["questions"]
-    L += [f"## Naive builder questions ({len(nb)})", ""] + \
-         [f"- [{q['severity']}] `{q['file']}` {q['question']}" for q in nb] + [""]
+    dr = r["dev_refinement"]
+    L += [f"## Dev refinement questions ({len(dr['questions'])})", ""] + \
+         [f"- [{q['severity']}] `{q['file']}` {q['question']}" for q in dr["questions"]] + [""]
+    leaks = [f for f in r["findings"]["warning"] if f["check"] == "tech_leak"]
+    L += [f"## Technical decisions leaking into the spec ({len(leaks)})", ""] + \
+         [f"- `{f['target']}` {f['message']}" for f in leaks] + [""]
     if r["eval"]:
         L += ["## Eval against gold set", "", "```", yaml.safe_dump(r["eval"], sort_keys=False).strip(), "```", ""]
     cov = r["coverage"]
-    L += [f"## Coverage", "", f"{cov['units_covered']}/{cov['units_total']} source units cited; "
-          f"{cov['facts_used']}/{cov['facts_total']} facts used.", "",
-          "Uncovered units (confirm they are irrelevant):", ""] + \
-         [f"- {u['id']}: {u['text']}" for u in cov["uncovered_units"]] + [""]
-    warns = r["findings"]["warning"]
-    L += [f"## Warnings ({len(warns)})", ""] + [f"- [{f['check']}] `{f['target']}` {f['message']}" for f in warns] + [""]
+    L += ["## Coverage", "", f"{cov['units_cited']}/{cov['units_total']} source units cited; "
+          f"{cov['facts_used']}/{cov['facts_total']} facts used.", "", "Uncited units (confirm they are irrelevant):", ""] + \
+         [f"- {u['id']}: {u['text']}" for u in cov["uncited_units"]] + [""]
+    warns = [f for f in r["findings"]["warning"] if f["check"] != "tech_leak"]
+    L += [f"## Other warnings ({len(warns)})", ""] + [f"- [{f['check']}] `{f['target']}` {f['message']}" for f in warns] + [""]
     L += ["## Run", "", f"Stages run: {', '.join(r['stages']['ran']) or '-'}", "",
-          f"Stages reused from cache: {', '.join(r['stages']['reused']) or '-'}", "",
-          f"LLM cost this run: ${r['cost_usd_this_run']}"]
+          f"Stages reused from cache: {', '.join(r['stages']['reused']) or '-'}", "", f"LLM cost this run: ${r['cost_usd_this_run']}"]
     (ctx.build / "review.md").write_text("\n".join(L) + "\n")

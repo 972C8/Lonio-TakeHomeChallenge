@@ -1,0 +1,488 @@
+[
+  {
+    "id": "F-TR-001",
+    "source_id": "hr_meeting",
+    "kind": "field",
+    "subject": "new_street",
+    "statement": "HR needs the street of the employee's new address.",
+    "anchors": [
+      {
+        "unit_id": "T-002",
+        "quote": "Street, number, postcode, town and country."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f1",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-002",
+    "source_id": "hr_meeting",
+    "kind": "field",
+    "subject": "new_house_number",
+    "statement": "HR needs the house number of the employee's new address.",
+    "anchors": [
+      {
+        "unit_id": "T-002",
+        "quote": "Street, number, postcode, town and country."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f2",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "'number' in an address context means house number.",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-003",
+    "source_id": "hr_meeting",
+    "kind": "field",
+    "subject": "new_postcode",
+    "statement": "HR needs the postcode of the employee's new address.",
+    "anchors": [
+      {
+        "unit_id": "T-002",
+        "quote": "Street, number, postcode, town and country."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f3",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-004",
+    "source_id": "hr_meeting",
+    "kind": "field",
+    "subject": "new_town",
+    "statement": "HR needs the town of the employee's new address.",
+    "anchors": [
+      {
+        "unit_id": "T-002",
+        "quote": "Street, number, postcode, town and country."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f4",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-005",
+    "source_id": "hr_meeting",
+    "kind": "field",
+    "subject": "new_country",
+    "statement": "HR needs the country of the employee's new address.",
+    "anchors": [
+      {
+        "unit_id": "T-002",
+        "quote": "Street, number, postcode, town and country."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f5",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-006",
+    "source_id": "hr_meeting",
+    "kind": "format",
+    "subject": "new_address",
+    "statement": "The new address consists of street, house number, postcode, town and country.",
+    "anchors": [
+      {
+        "unit_id": "T-002",
+        "quote": "The new address, obviously. Street, number, postcode, town and country."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f6",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "'number' read as house number; reasonable.",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-007",
+    "source_id": "hr_meeting",
+    "kind": "field",
+    "subject": "valid_from",
+    "statement": "HR needs the date from which the new address is valid.",
+    "anchors": [
+      {
+        "unit_id": "T-002",
+        "quote": "And the date from which it is valid"
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f7",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-008",
+    "source_id": "hr_meeting",
+    "kind": "context",
+    "subject": "payslip_timing",
+    "statement": "Payslips are sent out on the 25th, so HR needs the valid-from date to know which address to use.",
+    "anchors": [
+      {
+        "unit_id": "T-002",
+        "quote": "because payslips go out on the 25th and we need to know which address to use."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "current_state",
+    "supersedes": [],
+    "local_id": "f8",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-009",
+    "source_id": "hr_meeting",
+    "kind": "exclusion",
+    "subject": "move_reason",
+    "statement": "The reason for the move must not be asked; it is private.",
+    "anchors": [
+      {
+        "unit_id": "T-004",
+        "quote": "No, we don't want to know why people move. That's private. Please don't ask that."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f9",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-010",
+    "source_id": "hr_meeting",
+    "kind": "condition",
+    "subject": "new_country",
+    "statement": "For a move abroad, HR needs the new country of residence.",
+    "anchors": [
+      {
+        "unit_id": "T-006",
+        "quote": "So for a move abroad I need the new country of residence"
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f10",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-011",
+    "source_id": "hr_meeting",
+    "kind": "rule",
+    "subject": "payroll_must_be_informed",
+    "statement": "If the employee moves abroad, payroll must be informed, because the employee may then be subject to source tax.",
+    "anchors": [
+      {
+        "unit_id": "T-006",
+        "quote": "If somebody moves abroad, payroll needs to know, because then they may have to do source tax."
+      },
+      {
+        "unit_id": "T-006",
+        "quote": "and payroll has to be informed."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f11",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-012",
+    "source_id": "hr_meeting",
+    "kind": "rule",
+    "subject": "source_tax",
+    "statement": "An employee moving abroad may become subject to source tax (hedged: 'may').",
+    "anchors": [
+      {
+        "unit_id": "T-006",
+        "quote": "because then they may have to do source tax."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f12",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-013",
+    "source_id": "hr_meeting",
+    "kind": "condition",
+    "subject": "domestic_move",
+    "statement": "For a move within Switzerland, only the address is needed.",
+    "anchors": [
+      {
+        "unit_id": "T-007",
+        "quote": "And moves within Switzerland?"
+      },
+      {
+        "unit_id": "T-008",
+        "quote": "Then it's only the address."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f13",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "Sara says 'Then it's only the address' for moves within Switzerland, though she adds a canton exception.",
+    "superseded_by": [
+      "F-TR-014"
+    ]
+  },
+  {
+    "id": "F-TR-014",
+    "source_id": "hr_meeting",
+    "kind": "condition",
+    "subject": "new_canton",
+    "statement": "If the employee moves to a different Swiss canton, the new canton is also needed, for the tax office.",
+    "anchors": [
+      {
+        "unit_id": "T-008",
+        "quote": "if someone moves to a different canton, we need the new canton too, for the tax office."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [
+      "F-TR-013"
+    ],
+    "local_id": "f14",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-015",
+    "source_id": "hr_meeting",
+    "kind": "condition",
+    "subject": "new_canton",
+    "statement": "For a move within the same canton, the new canton is not asked.",
+    "anchors": [
+      {
+        "unit_id": "T-008",
+        "quote": "Within the same canton, no."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f15",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-016",
+    "source_id": "hr_meeting",
+    "kind": "rule",
+    "subject": "new_canton",
+    "statement": "Final rule for Swiss moves: always ask the new address; additionally ask the new canton only when the canton changes (needed for the tax office); not for moves within the same canton.",
+    "anchors": [
+      {
+        "unit_id": "T-008",
+        "quote": "Then it's only the address."
+      },
+      {
+        "unit_id": "T-008",
+        "quote": "if someone moves to a different canton, we need the new canton too, for the tax office."
+      },
+      {
+        "unit_id": "T-008",
+        "quote": "Within the same canton, no."
+      }
+    ],
+    "basis": "inferred",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f16",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "Sara says only the address for Swiss moves, plus new canton if the canton changes, not within the same canton.",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-017",
+    "source_id": "hr_meeting",
+    "kind": "field",
+    "subject": "previous_canton",
+    "statement": "To determine whether the canton changes, the previous canton (or current canton) must be known; the stakeholder did not state how.",
+    "anchors": [
+      {
+        "unit_id": "T-008",
+        "quote": "if someone moves to a different canton, we need the new canton too"
+      }
+    ],
+    "basis": "inferred",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f17",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "Reasonable inference: detecting a canton change requires knowing the current canton, and Sara does not say how.",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-018",
+    "source_id": "hr_meeting",
+    "kind": "rule",
+    "subject": "valid_from",
+    "statement": "The valid-from date is always required.",
+    "anchors": [
+      {
+        "unit_id": "T-009",
+        "quote": "Is the valid-from date always required?"
+      },
+      {
+        "unit_id": "T-010",
+        "quote": "Always. Without it I can't do anything."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f18",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "Sara answers 'Always' to whether valid-from is required.",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-019",
+    "source_id": "hr_meeting",
+    "kind": "rule",
+    "subject": "valid_from",
+    "statement": "The valid-from date may be in the past, but not more than three months ago.",
+    "anchors": [
+      {
+        "unit_id": "T-010",
+        "quote": "It can be in the past, people often tell us late, but not more than three months ago."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f19",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "Sara states it can be in the past but not more than three months ago.",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-020",
+    "source_id": "hr_meeting",
+    "kind": "context",
+    "subject": "late_reporting",
+    "statement": "Employees often report their move late.",
+    "anchors": [
+      {
+        "unit_id": "T-010",
+        "quote": "people often tell us late"
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "current_state",
+    "supersedes": [],
+    "local_id": "f20",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "Sara says people often tell them late.",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-021",
+    "source_id": "hr_meeting",
+    "kind": "open",
+    "subject": "valid_from",
+    "statement": "No upper limit for a future valid-from date was stated.",
+    "anchors": [
+      {
+        "unit_id": "T-010",
+        "quote": "It can be in the past, people often tell us late, but not more than three months ago."
+      }
+    ],
+    "basis": "inferred",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f21",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "No future limit is mentioned in the units; reasonable inference from absence.",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-022",
+    "source_id": "hr_meeting",
+    "kind": "context",
+    "subject": "scope_completeness",
+    "statement": "Sara thinks the list of requirements is complete for now (hedged).",
+    "anchors": [
+      {
+        "unit_id": "T-012",
+        "quote": "I think that's all for now."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "current_state",
+    "supersedes": [],
+    "local_id": "f22",
+    "anchor_ok": true,
+    "judge": "supported",
+    "judge_note": "Sara says 'I think that's all for now' in response to 'Anything else?'.",
+    "superseded_by": []
+  }
+]

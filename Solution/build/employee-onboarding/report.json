@@ -2,13 +2,14 @@
   "problem": "employee-onboarding",
   "counts": {
     "units": 266,
-    "facts": 68,
-    "steps": 6,
-    "fields": 18,
+    "facts": 61,
+    "items": 17,
     "rules": 2,
-    "notices": 2,
-    "open_questions": 9,
-    "exclusions": 6
+    "features": 4,
+    "stories": 12,
+    "acceptance_criteria": 37,
+    "open_questions": 8,
+    "exclusions": 5
   },
   "findings": {
     "error": [],
@@ -16,205 +17,415 @@
       {
         "check": "fact_judge",
         "severity": "warning",
-        "target": "F-TR-015",
-        "message": "partial: First working day and confirmation are supported, but 'for the pension fund' is only implied by Leo's question and 'most important item' is 'number one thing' for the fund context. | The employee's first working day is needed (for the pension fund) and is the most important item; the employee should confirm it."
+        "target": "F-TR-001",
+        "message": "partial: Goal is stated by Leo (interviewer), and Anna's 'Yes, please' responds to a different question; her explicit agreement to the goal is not clearly shown. | The goal is for new employees to give their information once, so that HR stops chasing them for the same information several times. The stakeholder agreed to this goal."
       },
       {
         "check": "fact_judge",
         "severity": "warning",
-        "target": "F-TR-030",
-        "message": "partial: Calculator asking whether the spouse works is supported, but 'Zurich' is not mentioned in these units. | For married employees subject to source tax, the Zurich calculator asks whether the spouse works."
+        "target": "F-TR-002",
+        "message": "partial: Word, Excel, manual typing into 'the portals' and the afternoon for two hires are supported, but 'receiving parties' portals' is an embellishment. | Today HR uses a Word document and an Excel file, then types everything into the receiving parties' portals by hand. Last month this took a full afternoon for two new hires."
       },
       {
         "check": "fact_judge",
         "severity": "warning",
-        "target": "F-TR-044",
-        "message": "partial: Gist is reasonable, but the explicit condition about when to ask spouse data is not stated; it is an inferred design choice. | Spouse nationality, permit and residence only need to be asked when the employee is married and the spouse exemption could apply (i.e. employee is non-Swiss without C permit and lives in CH)."
+        "target": "F-TR-008",
+        "message": "partial: She uses Zurich for everybody, not only those subject to source tax (though only they would use it); interviewer 'keep that for now' is supported. | For now, the Zurich calculator is used for every employee subject to source tax. The stakeholder knows this is not exactly how it works, and the interviewer agreed to keep it this way."
       },
       {
         "check": "fact_judge",
         "severity": "warning",
-        "target": "F-SC-013",
-        "message": "partial: Shown for Married (05, 07) and absent for Single (04), and no spouse field appears in 01/03 units, but screenshot 06 and 02 are not evidenced and 'only when' is an inference. | 'Spouse's date of birth' appears only when Civil status is 'Married': it is shown in screenshots 05 and 07 (civil status Married) and absent in screenshot 04 (civil status Single) and in 01, 02, 03, 06 (civil status not selected)."
+        "target": "F-TR-014",
+        "message": "partial: First working day and confirmation are supported, but it is said to be the number one thing generally, and 'for the pension fund' is reasonable given context; 'changes often' is supported. | HR needs the employee's first working day for the pension fund. It is the most important item, and HR asks the employee to confirm it because it changes often."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-TR-018",
+        "message": "partial: The derivation rule is supported, but 'the employee is not asked for it' is not stated in these units. | Final rule: the insurance start date is derived from the first working day. If the first working day is the 1st of a month, insurance starts that day. Otherwise it starts on the 1st of the following month. The employee is not asked for it."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-TR-019",
+        "message": "partial: The incident is supported, but 'it should have been 1 April' is fine while the 'must follow the latest confirmed first working day' conclusion is an inference; the units also say 'I had entered something else', not specifically that HR failed to update the insurance date, though she did say she didn't update it. | Incident: Julia moved her first working day to 15 March, HR did not update it, and the fund ended up with a wrong insurance start date (it should have been 1 April). This led to an unfriendly letter and took weeks to fix. It shows that the insurance start date must follow the latest confirmed first working day."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-TR-032",
+        "message": "partial: Scoping to otherwise-subject employees and the 'permit only if spouse not Swiss' detail are reasonable readings but not stated. | Spouse nationality, permit and residence are only needed for married employees whose own status would otherwise make them subject to source tax: non-Swiss, no C permit, living in Switzerland. The spouse permit is only needed if the spouse is not Swiss."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-TR-040",
+        "message": "partial: 'Lives here' = Switzerland is supported, but nothing in these units links residence to the home address country. | 'Lives here' in the source tax rules means living in Switzerland. The employee's country of residence can be taken from the country of the home address."
+      },
+      {
+        "check": "fact_judge",
+        "severity": "warning",
+        "target": "F-SC-001",
+        "message": "partial: Page and portal are shown, but 'employer Muster AG' and 'insured employees' are not stated explicitly. | The source is the 'Register new employee' page of the Pensionskasse Muster employer portal, used by the employer Muster AG to register new insured employees."
       },
       {
         "check": "fact_judge",
         "severity": "warning",
         "target": "F-SC-014",
-        "message": "partial: The banner text is shown in screenshot 06, but the units don't show the submit trigger or that every empty required field is highlighted (only an error-highlighted spouse field in 07). | Submitting the form with missing required fields shows the banner 'Please correct the highlighted fields.' and highlights each empty required field."
+        "message": "partial: Absence in screenshots 01, 02, 03, 06 and 04 is not shown by the units given (only 04 label list lacks it); conditional-only-on-Married is a reasonable inference but the empty-form claims are unverified. | The 'Spouse's date of birth' field appears only when civil status is 'Married': it is shown in screenshots 05 and 07 (civil status Married) and absent in screenshot 04 (civil status Single) and in the empty forms (01, 02, 03, 06)."
       },
       {
         "check": "fact_judge",
         "severity": "warning",
-        "target": "F-SC-018",
-        "message": "partial: Only Zug and Zurich options are visible, so 'only Swiss cantons' is plausible but the ambiguity about residence/work canton is the extractor's inference, not in the units. | The Canton dropdown lists only Swiss cantons; it is unclear what to enter for an employee living abroad (e.g. cross-border commuter), and whether 'Canton' means residence canton or work canton."
+        "target": "F-SC-020",
+        "message": "partial: The units show only a hint (DD.MM.YYYY, must be 1st of month) and a required error, with no format or non-1st-date error visible, but the claim that no screenshot shows them goes beyond these units, which cover only one screenshot. | No screenshot shows the error for a badly formatted date or for an insurance start date that is not the 1st of a month, so the wording and behaviour of these errors are unknown."
       },
       {
         "check": "coverage",
         "severity": "warning",
-        "target": "F-SC-014",
-        "message": "fact not used by any requirement, exclusion or open question: Submitting the form with missing required fields shows the banner 'Please correct the highlighted fields.' and highlights each empty required field."
+        "target": "F-SC-019",
+        "message": "fact not used anywhere in the spec: The portal requires an insurance start date that is the 1st of a month, but does not say how it relates to the employee's first working day (e.g. whether a mid-month start rounds to the same or the next month's 1st); the derivation rule is open."
+      },
+      {
+        "check": "coverage",
+        "severity": "warning",
+        "target": "F-SC-020",
+        "message": "fact not used anywhere in the spec: No screenshot shows the error for a badly formatted date or for an insurance start date that is not the 1st of a month, so the wording and behaviour of these errors are unknown."
+      },
+      {
+        "check": "eval",
+        "severity": "warning",
+        "target": "nationality",
+        "message": "missing stakeholder source_tax"
+      },
+      {
+        "check": "eval",
+        "severity": "warning",
+        "target": "permit_type",
+        "message": "missing stakeholder source_tax"
+      },
+      {
+        "check": "eval",
+        "severity": "warning",
+        "target": "spouse_nationality",
+        "message": "missing stakeholder source_tax"
+      },
+      {
+        "check": "eval",
+        "severity": "warning",
+        "target": "spouse_permit_type",
+        "message": "missing stakeholder source_tax"
+      },
+      {
+        "check": "eval",
+        "severity": "warning",
+        "target": "spouse_residence_country",
+        "message": "missing stakeholder source_tax"
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "field.first_name",
-        "message": "partial: Pension portal required field is backed, but the HR consumer (correspondence and payroll administration) is only weakly inferred from the address quote, and the passport/ID help text and trim validation are not backed by any cited fact."
+        "target": "item.residence_canton",
+        "message": "partial: The restriction to asking only residents of Switzerland is not backed: the fund marks Canton required for everyone, and F-SC-017 says what applies to people living abroad (and residence versus work canton) is unclear."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "field.last_name",
-        "message": "partial: Pension fund required field is backed, but HR consumer (correspondence/payroll), the passport/ID help text and trim validation are not supported by the cited facts."
+        "target": "story.US-02.2",
+        "message": "partial: The cited facts never mention a pension fund canton question or say it is skipped for residents abroad and asked for residents in Switzerland (AC-02.2.2, AC-02.2.3), and the claim that source tax and HR receive the country of residence is not backed either."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "field.date_of_birth",
-        "message": "partial: Required field, DD.MM.YYYY display and ISO storage are backed, but the validation rules (valid calendar date, not in the future) are not supported by any cited fact."
+        "target": "story.US-03.4",
+        "message": "partial: The cited facts leave open whether the canton means residence or work and what applies to people abroad (F-SC-006, F-SC-017), so asking only Swiss-resident employees and naming the item residence_canton is an unbacked assumption."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "field.address_house_number",
-        "message": "partial: Required house number for HR is backed, but the free-text allowing '12a' is not stated in the cited facts."
+        "target": "story.US-04.4",
+        "message": "partial: AC-04.4.5 states that HR has checked the rules against Stefan, Maria and Tomás and that gaps go through OQ-05, but the facts only show HR hedging ('I think that's it') and say nothing about such a check or that handling; the other criteria are backed by F-TR-005/025/030/034/037/040."
       },
       {
-        "check": "trace_judge",
+        "check": "dev_refinement",
         "severity": "warning",
-        "target": "field.residence_canton",
-        "message": "partial: The 26 labels and required status are backed, but the two-letter option values and the ask_when address_country==\"CH\" restriction are not backed by the cited facts (F-SC-018 leaves residents abroad and residence-vs-work canton unresolved)."
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "Does 'first working day' mean the contractual start date or the first day the employee actually works? E.g. a contract starting 01.01.2027 (a public holiday; the spec uses it as an example) where the person first works on 04.01.2027 gives 01.01.2027 under one reading and 01.02.2027 under the other. The same applies to a start on the 1st that falls on a weekend. Which date do we ask for, and how do we word the question?"
       },
       {
-        "check": "trace_judge",
+        "check": "dev_refinement",
         "severity": "warning",
-        "target": "field.spouse_date_of_birth",
-        "message": "partial: Asking when married, required, and the DD.MM.YYYY format are backed, but the 'must not be in the future' validation is not backed by any cited fact."
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "'Confirm' suggests the employee checks a date Lonio already has. Does Lonio get the contract start date from HR and show it for confirmation or correction, or does the employee type the date in from scratch? This changes the flow, and whether HR has to supply data first."
       },
       {
-        "check": "trace_judge",
+        "check": "dev_refinement",
         "severity": "warning",
-        "target": "field.spouse_residence_country",
-        "message": "partial: Facts support asking spouse residence for the exemption, but the country-type ISO alpha-2 format/validation and required_when=true are not backed, and the 'ask_when' narrowing is only inferred, since facts only give 'lives here' (in CH), not a country field."
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "AC-01.2.4 / F-TR-019: what happens if the start date moves AFTER the employee has finished onboarding (Julia's case)? Can the employee (or HR) change the confirmed date later, and is the insurance start date then worked out again? Or does this feature only cover the date given during onboarding?"
       },
       {
-        "check": "trace_judge",
+        "check": "dev_refinement",
         "severity": "warning",
-        "target": "field.spouse_employed",
-        "message": "partial: Calculator asking whether the spouse works for married employees is supported (F-TR-030), but the boolean yes/no format, validation and required_when=true are not backed, and the notes admit the calculator wording is unknown."
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "Which first working days are allowed? Can it be in the past (onboarding finished after the start), and how far in the future can it be? Should a weekend or public holiday be rejected or flagged? Without limits, a typo (wrong year) goes straight into a wrong insurance start date, which is exactly the incident this feature is meant to prevent."
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "warning",
-        "target": "flow.md",
-        "message": "Step 6 'Source tax details' is shown whenever subject_to_source_tax is true, but its only field (spouse_employed) is asked only when the employee is married. A single, divorced or widowed person who is subject (including every unmarried resident abroad) would get a step with only the intro text 'You are subject to source tax. We need a few more details…' and no questions. Should an empty step be skipped, shown as an information-only page, or should the step condition include civil_status == \"married\" until OQ-01 is resolved?"
+        "target": "features/FEAT-02-home-address.md",
+        "message": "How is 'country of residence' meant to be defined? The Notes say using the address country as the country of residence is 'confirmed by the product owner convention (G-09)', but G-09 is only 'Questionnaire language: English', so nothing confirms the inference. Which address should the employee give if the address HR posts documents to is not where they legally live? Examples: a weekly resident in Switzerland (Wochenaufenthalter) whose home is abroad, an employee with a second home, or an employee who moves around the start date. The answer decides whether one address is enough or we need a residence question or a separate postal address."
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-02-home-address.md",
+        "message": "Is the house number really required for everyone? The spec says it is 'Always' required, but its own note says 'whether every address has a house number is not discussed'. Some rural or foreign addresses have no number, or use a building name. Should those employees be able to finish the step, for example by leaving the number empty or confirming 'no number'?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-02-home-address.md",
+        "message": "'No extra parts' (AC-02.1.2) rules out things like a c/o line, an apartment or flat number, or a second address line. Is that intended even when the post needs them to deliver (e.g. a new employee living c/o someone, or a large building abroad)? Or did HR only mean 'nothing beyond a normal envelope address'? This decides exactly which parts we collect."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-02-home-address.md",
+        "message": "AC-02.1.3 ('HR receives the complete home address' when 'the onboarding data is made available to the receiving parties') and AC-02.2.2 ('source tax and HR receive the country of residence') describe passing data on to other parties. out-of-scope.md (G-04) says that is a separate topic. What should these criteria be tested against in this feature? Should they be reworded to 'the information is collected and marked as needed by HR / source tax'?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-02-home-address.md",
+        "message": "What should happen if the employee goes back and changes the country after later steps were answered (e.g. Switzerland → Germany, or the reverse)? Should answers that no longer apply (nationality, canton, permit, spouse data) be discarded, which data minimisation (G-01) suggests? And should questions that now apply be asked again?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "The goal says a registration is \"never blocked by missing data\", but the fund requires a canton for every employee and US-03.4 skips the canton for anyone living abroad (Germany, Liechtenstein). Until OQ-02 is answered, these registrations will be blocked. For now, should Lonio still let these employees complete the questionnaire, or should the case be marked as incomplete or flagged to HR? Or do we accept that the goal is not met for them yet? This is separate from OQ-02 itself, which asks what the canton means."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "For employees living in Switzerland, the canton follows from the Swiss postcode and town they already give in FEAT-02. Guidance prefers deriving values over asking for them. Should the canton be derived from the address instead of asked? If it is still asked, what happens when the chosen canton does not match the postcode? Should it be checked, or accepted as entered?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "Suppose an employee answers a dependent question and then changes the answer it depends on: civil status from Married to something else, or country from Switzerland to abroad. Should the spouse's date of birth or canton they already gave be discarded? Data minimisation (G-01) suggests yes, but the spec does not say."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "Who makes the source tax decision: Lonio automatically, or HR? AC-04.1.1, AC-04.2.1 and AC-04.3.1 say 'HR uses it to decide', but US-04.4 and AC-04.4.1–4 say Lonio decides and that this gates the tariff questions straight away. If Lonio decides, can HR review or override it (for example in a case the rule does not cover, OQ-05) before the employee gets or skips the source tax step?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "Does the spouse rule apply to anyone other than civil status 'Married'? Registered partners (e.g. Daniel), separated spouses and anyone else outside the pension fund's 4 values would currently go straight to 'subject'. OQ-03 raises this for source tax but is not linked to this feature. Should FEAT-04 wait for it, or ship treating only 'Married' as married?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "The rule only needs to know whether someone is Swiss, holds a C permit or lives in Switzerland. Should Lonio ask for the full nationality (employee and spouse) and the spouse's full country of residence, or only 'Swiss yes/no' and 'lives in Switzerland yes/no'? The 'What?' rows say '(whether they hold a Swiss passport)' / '(whether they live in Switzerland)', but the ACs say 'asks for the nationality' and 'asks where the spouse lives'. Under data minimisation (G-01) the answer changes what we collect. Does HR need the actual nationality for anything else?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "How should dual nationals be handled? Is someone who holds Swiss and another nationality treated as Swiss, both for the employee and for the spouse? This decides whether one nationality answer is enough or several are allowed."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "Permit type is required for every non-Swiss employee living in Switzerland. What should an employee answer if their permit is still being applied for or has not been issued yet, or if they hold something that is not a residence permit (e.g. a short-term or asylum status)? Can they finish the questionnaire, and what does the rule decide for them? This goes beyond OQ-06, which only covers the list of permit types."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "\"they give the start date as currently agreed with Muster AG, as a full date in the form DD.MM.YYYY\" - Sets the input format the employee must type. G-10 covers business wording for values in examples. The fund's DD.MM.YYYY requirement (F-SC-009) applies to the insurance start date sent to the fund, not to how the employee enters the first working day. How the date is entered (date picker, locale format) is a UI decision for engineering."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "\"When they reach the employment details\" - Assumes a questionnaire step called 'employment details' that no source asks for. How the questions are split into steps is a design choice."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "features/FEAT-02-home-address.md",
+        "message": "\"When the onboarding data is made available to the receiving parties … Then HR receives the complete home address\" - This describes how and when the system hands data over to recipients. Nobody asked for that behaviour here, and G-04 puts transmission out of scope. The business need is only that the address is collected once and is available for HR."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "features/FEAT-02-home-address.md",
+        "message": "\"and cannot complete the step while any of these five parts is empty\" - This prescribes how the form behaves (blocking the step). The business requirement is only that all five parts are required. How completeness is enforced (blocking, warning, review before submitting) is a design decision."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "\"It depends on address_country from FEAT-02.\" - Uses an internal field id in business prose. The business term is \"country of home address\"."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "\"naming the item residence_canton is an unbacked assumption\" - Refers to an internal field or data-model name in the body text. What to call the field is an engineering decision."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "\"they are asked for their date of birth as a day, month and year (shown as DD.MM.YYYY, e.g. 14.02.1990)\" - The fund's DD.MM.YYYY format is a constraint on the data delivered to the fund. Telling the questionnaire to ask for day, month and year as separate parts and to display them that way is an input and UI decision that belongs to engineering and design."
+      },
+      {
+        "check": "tech_leak",
         "severity": "warning",
         "target": "open-questions.md",
-        "message": "README says to implement each open-question recommendation. OQ-01 recommends extracting the calculator's questions *before building the source_tax step*, yet flow.md and spouse_employed.md fully specify step 6. Should I build step 6 now with only 'spouse_employed', or leave step 6 out of the first release and ship liability determination only?"
+        "message": "\"Analyse the Zurich calculator and add its questions, asked only when subject_to_source_tax is true\" - Uses an internal field id and a boolean value in prose. The business statement is 'asked only of employees subject to source tax'."
       },
       {
-        "check": "naive_builder",
+        "check": "tech_leak",
         "severity": "warning",
-        "target": "fields/first_working_day.md",
-        "message": "The step text says 'Please confirm your first working day' and F-TR-015 says HR asks the employee to *confirm* it. Is first_working_day pre-filled by HR (from the contract) for the employee to confirm, or does the employee type it in with no starting value? Is an explicit confirmation action (checkbox or button) required, or is filling in the date enough?"
-      },
-      {
-        "check": "naive_builder",
-        "severity": "warning",
-        "target": "notices.md",
-        "message": "The first_working_day_confirm notice and the first_working_day help text tell the employee to 'update it here right away' if the date changes. That means the questionnaire stays editable after it is submitted. Is editing after submission in scope? If so, which steps or fields can be edited, and does a re-submission re-run the conditions (for example a new civil status hiding or adding fields)? Notifications are out of scope, but editing itself is not addressed."
-      },
-      {
-        "check": "naive_builder",
-        "severity": "warning",
-        "target": "fields/permit_type.md",
-        "message": "permit_type is asked only of Swiss residents, but its consumers include employer_hr for first-day logistics (bring your permit). Non-Swiss cross-border commuters (e.g. the woman living in Liechtenstein) also have a Swiss work permit, but they are never asked and never get the reminder. Should residents abroad who are not Swiss be asked their permit (for example a cross-border permit) and shown the reminder?"
-      },
-      {
-        "check": "naive_builder",
-        "severity": "warning",
-        "target": "conventions.md",
-        "message": "The general form behaviour is not specified. Can the employee go back to earlier steps? Is there a save-and-resume across sessions? Is there a final review/summary and an explicit submit? What happens after submission (confirmation screen, read-only view)? Is the employee identified or invited (for example with an HR-prefilled name)?"
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "\"Lonio asks for the employee's nationality, the employee must answer it, and HR uses it to decide\" - Says how the decision is made (a question that HR then uses) instead of what outcome is needed. It also conflicts with US-04.4, where Lonio itself decides. This is a borderline case: how the decision is handled internally should be left to the design."
       }
     ],
     "info": [
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "fields/date_of_birth.md",
-        "message": "Contradiction: date_of_birth.md and spouse_date_of_birth.md add the validation 'must not be in the future', but OQ-09's recommendation (affecting date_of_birth and spouse_date_of_birth) says 'validate as a calendar date only'. Which one wins? (The trace judge also notes that no source supports 'not in the future'.)"
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "AC-01.1.3 talks about handing data on to HR and the pension fund, but G-04 / out-of-scope.md exclude transmission. What exactly do we build and test for AC-01.1.3? Does HR see the derived insurance start date, and where?"
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "notices.md",
-        "message": "The permit_reminder is shown when is_set(permit_type), so it also appears when permit_type == \"other\", whose label is 'Other permit / no permit yet'. Should someone without a permit yet be told to bring their permit? Should the notice be limited to B/C, or worded differently for 'other'?"
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "Should the derived insurance start date be shown to the employee (e.g. as information on the summary), or only to HR? AC-01.2.1 only says the employee is not asked for it."
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "notices.md",
-        "message": "Should the first_working_day_confirm notice show the computed insurance_start_date (e.g. 'Your insurance starts on 01.04.2026') or only the generic rule text as written? Is insurance_start_date displayed to the employee anywhere?"
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "AC-01.1.2 ('as currently agreed with Muster AG') cannot be checked by the system. Is it only guidance wording for the question (e.g. a hint that the date may have changed since the contract was signed)? If so, what should the text say?"
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "rules/subject_to_source_tax.md",
-        "message": "Because of the outer `not (...)`, subject_to_source_tax is TRUE while the spouse questions are still unanswered (e.g. married B-permit holder, spouse_nationality = CH, spouse_residence_country not yet answered). That contradicts the conventions.md statement that 'a rule is never true because of a missing answer'. Should the rule (and step 6 visibility) count as undetermined/false until every input needed for the spouse exemption is answered, or is this temporary true value acceptable because step 5 must be finished first?"
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "AC-01.1.1 says the question appears 'when they reach the employment details'. No such step is defined in the shared files. Where does this question go in the order of the questionnaire?"
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "fields/spouse_residence_country.md",
-        "message": "The source only needs to know whether the spouse lives in Switzerland ('and that they live here'). For data minimisation (G-01), should this be a yes/no question ('Does your spouse live in Switzerland?') instead of a full country picker? The trace judge flags the country type as unsupported."
+        "target": "features/FEAT-01-first-working-day-insurance-start.md",
+        "message": "Does the 1st-of-month rule apply to every employee, including re-hires, short or temporary contracts and people below the BVG thresholds? Or are some employees not registered with the fund at all, so no insurance start date is needed?"
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "conventions.md",
-        "message": "What error/validation messages should our form show (required, invalid date, invalid choice)? Should we reuse the portal's pattern '<Field label> is required.' and the banner 'Please correct the highlighted fields.', or does Lonio have its own wording?"
+        "target": "features/FEAT-02-home-address.md",
+        "message": "Which countries can the employee choose: any country in the world, or a limited list (e.g. Switzerland and neighbouring countries)? The examples confirm that Liechtenstein counts as 'abroad'. Is that confirmed by HR or the source tax office, given how closely Liechtenstein is tied to Switzerland?"
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "fields/address_country.md",
-        "message": "Which country list and labels should the country pickers (address_country, nationality, spouse_nationality, spouse_residence_country) use: all ISO 3166-1 alpha-2 entries with English names? Should Switzerland and neighbouring countries be listed first? How do we handle stateless persons, refugees, or nationality 'unknown', which have no ISO country code?"
+        "target": "features/FEAT-02-home-address.md",
+        "message": "Should address parts be checked for plausibility for the chosen country (e.g. a Swiss postcode must exist and match the town)? Or is any non-empty entry accepted? HR's need is mail that arrives, so wrong postcodes matter to them."
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "fields/first_name.md",
-        "message": "Are there length or character limits for the text fields (first/last name, street, house number, postcode, town) imposed by the pension portal or HR systems? Should names include middle names / all given names as on the passport? Should values be stored trimmed?"
+        "target": "features/FEAT-02-home-address.md",
+        "message": "Does HR or the employer already know the employee's address before onboarding, so it could be pre-filled for the employee to confirm, or must the employee always type it in?"
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "fields/address_house_number.md",
-        "message": "The house number is always required, but some addresses (rural or foreign) have no house number. Should it stay mandatory, or be optional, or allow an explicit 'no house number' choice?"
+        "target": "features/FEAT-02-home-address.md",
+        "message": "AC-02.2.4 only says the address step comes before the pension and source tax steps. Does it have to come at a particular place relative to FEAT-01 (first working day) or other steps, or is anything acceptable as long as it comes before the dependent steps?"
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "open-questions.md",
-        "message": "OQ-03's recommendation says to 'flag registrations of residents abroad for HR'. What is this flag in the questionnaire build: a stored derived flag, a visible marker in the HR output, or something else? Transmission to parties is out of scope, so where should the flag live?"
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "Which names should the employee enter: the official names exactly as on their passport or ID, including all first names and middle names, or the name they use day to day? The fund's registration and later matching may depend on this, and it changes the question wording and help text."
       },
       {
-        "check": "naive_builder",
+        "check": "dev_refinement",
         "severity": "info",
-        "target": "traceability.md",
-        "message": "Requirements cite product-owner guidance ids (G-01 … G-10, e.g. G-03, G-04, G-05 in out-of-scope.md) and a decisions.yaml, but neither the guidance document nor decisions.yaml is in the package, and traceability.md does not resolve G-ids. Can these be provided, so that no guidance affecting the build (for example G-02) is missing?"
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "Are there plausibility rules for the employee's date of birth and the spouse's date of birth? For example: not in the future, a minimum or maximum age for the employee, the spouse being an adult. Today the only rules are \"not empty\" and \"a valid date\", so a mistyped year would reach the fund."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "AC-03.1.3 (\"another part of the onboarding or another receiving party needs the same detail … not asked again\") cannot be tested as written. Which other features or parties reuse name and date of birth? The information catalogue lists only the pension fund. What should the test check?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "The title of AC-03.2.3 says civil status is reused \"for source tax and HR\", but its Then clause covers only source tax. Is there an HR reuse that needs its own acceptance criterion? If not, should \"HR\" be removed from the title?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "features/FEAT-03-pension-fund-registration-data.md",
+        "message": "Where in the questionnaire flow does the canton question go? FEAT-02 (AC-02.2.3) says employees living in Switzerland \"continue to nationality and canton\" straight after the address. FEAT-03 groups name and date of birth under \"personal details\" and civil status under \"family details\" but does not place the canton. Is there a required order across FEAT-02, FEAT-03 and FEAT-04?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "'Lives in Switzerland' comes only from the country of the home address. What about weekly residents and others with two homes, e.g. a Swiss address during the week and a family home abroad? Which address should the employee give, and does HR accept that the rule follows it?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "If the employee changes an earlier answer (address country, nationality, permit, civil status, spouse details) after the follow-up questions were answered, should the answers that are no longer needed be discarded (data minimisation), and should the source tax decision and the source tax step be recalculated? What happens to tariff answers already given if the employee turns out not to be subject?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "Should the employee see the outcome (e.g. 'you are / are not subject to source tax'), or is it only stored for HR and the source tax step? No AC says who sees the decision or where."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "AC-04.4.5 is a release precondition ('HR has checked the rules against real cases'), not behaviour we can test in the product, and its own trace check says the sources do not support it. Who signs this off, and is it a release gate for this feature or just part of resolving OQ-05?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "features/FEAT-04-source-tax-liability.md",
+        "message": "Can a spouse who holds a C permit be living abroad (a C permit usually lapses after a long stay abroad)? If not, can we skip the residence question for C-permit spouses? Should the residence question be asked even when the spouse obviously lives with the employee?"
       }
     ]
   },
   "coverage": {
     "units_total": 266,
-    "units_covered": 102,
-    "facts_total": 68,
-    "facts_used": 59,
-    "uncovered_units": [
+    "units_cited": 91,
+    "facts_total": 61,
+    "facts_used": 51,
+    "uncited_units": [
       {
         "id": "T-000",
         "text": "HR meeting transcript Everyone and everything here is fictional. Anna is the HR manager at Muster AG. Leo works in product at Lonio."
@@ -232,8 +443,16 @@
         "text": "Much better. So, thanks for making the time. The idea today is simple. We want your new employees to give us everything once, so that you stop chasing them for "
       },
       {
+        "id": "T-004",
+        "text": "Yes, please. Right now it's a mess. I have a Word document, then an Excel file, and then I type everything into the portals by hand. Last month I spent a full a"
+      },
+      {
         "id": "T-005",
         "text": "Okay. And how many people do you hire in a year?"
+      },
+      {
+        "id": "T-006",
+        "text": "Around twenty. More in summer. We're about a hundred and fifty people now, mostly here in Zurich."
       },
       {
         "id": "T-007",
@@ -258,6 +477,10 @@
       {
         "id": "T-019",
         "text": "It could. Do you want that from day one?"
+      },
+      {
+        "id": "T-022",
+        "text": "We're with Pensionskasse Muster. They have a portal, it's quite old. I'll send you some screenshots of it after this call, that's easier than me explaining it."
       },
       {
         "id": "T-023",
@@ -304,6 +527,14 @@
         "text": "Okay. Anything else on who needs to do it? I'd rather hear all of it now."
       },
       {
+        "id": "T-052",
+        "text": "Only the timing. When can we have this?"
+      },
+      {
+        "id": "T-053",
+        "text": "I'll come back to you on that this week, once we've gone through your screenshots."
+      },
+      {
         "id": "T-054",
         "text": "Good. I'll send them after lunch. Thanks, Leo."
       },
@@ -312,8 +543,16 @@
         "text": "Thanks, Anna. Talk soon."
       },
       {
+        "id": "S01-E01",
+        "text": "Pensionskasse Muster"
+      },
+      {
         "id": "S01-E02",
         "text": "Employer portal"
+      },
+      {
+        "id": "S01-E03",
+        "text": "Muster AG"
       },
       {
         "id": "S01-E04",
@@ -324,12 +563,24 @@
         "text": "Home"
       },
       {
+        "id": "S01-E06",
+        "text": "Insured persons"
+      },
+      {
         "id": "S01-E07",
         "text": "Register new employee"
       },
       {
-        "id": "S01-E09",
-        "text": "Employee"
+        "id": "S01-E08",
+        "text": "Register new employee"
+      },
+      {
+        "id": "S01-E15",
+        "text": "Please select"
+      },
+      {
+        "id": "S01-E20",
+        "text": "Please select"
       },
       {
         "id": "S01-E21",
@@ -756,6 +1007,10 @@
         "text": ""
       },
       {
+        "id": "S06-E23",
+        "text": "DD.MM.YYYY. Must be the 1st of a month."
+      },
+      {
         "id": "S06-E25",
         "text": "Civil status"
       },
@@ -873,662 +1128,421 @@
       }
     ]
   },
-  "personas": [
+  "examples": [
     {
-      "id": "maria",
-      "from": "T: Maria in sales, Portuguese, C permit, no source tax",
+      "case": "AC-01.1.1 / Julia (F-TR-019)",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status"
-        ],
-        "rules": {
-          "subject_to_source_tax": false,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "tomas",
-      "from": "T: Tomás, Brazilian, B permit, wife Swiss, live in Winterthur -> no source tax",
+      "case": "AC-01.2.2 / Starts on the 1st of a month",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth",
-          "spouse_nationality",
-          "spouse_residence_country"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth",
-          "spouse_nationality",
-          "spouse_residence_country"
-        ],
-        "rules": {
-          "subject_to_source_tax": false,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "stefan",
-      "from": "T: Stefan, Swiss, lives in Konstanz -> source tax regardless of passport",
+      "case": "AC-01.2.2 / Starts on 1st January",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "first_working_day",
-          "civil_status"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "first_working_day",
-          "civil_status"
-        ],
-        "rules": {
-          "subject_to_source_tax": true,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "liechtenstein_resident",
-      "from": "T: woman in the warehouse who lives in Liechtenstein -> source tax",
+      "case": "AC-01.2.3 / Julia (F-TR-019)",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "first_working_day",
-          "civil_status"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "first_working_day",
-          "civil_status"
-        ],
-        "rules": {
-          "subject_to_source_tax": true,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "swiss_resident",
-      "from": "T: if you have a Swiss passport (and live here) you do not do source tax",
+      "case": "AC-01.2.3 / Starts on the 2nd of a month",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth"
-        ],
-        "rules": {
-          "subject_to_source_tax": false,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "b_permit_single",
-      "from": "T: all non-Swiss without C permit do source tax",
+      "case": "AC-01.2.3 / Starts on the last day of a month",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status"
-        ],
-        "rules": {
-          "subject_to_source_tax": true,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "b_permit_spouse_b_permit",
-      "from": "T: spouse exemption only for Swiss or C-permit spouses living here",
+      "case": "AC-01.2.3 / Starts in December (year end)",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth",
-          "spouse_nationality",
-          "spouse_permit_type",
-          "spouse_employed"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth",
-          "spouse_nationality",
-          "spouse_permit_type",
-          "spouse_employed"
-        ],
-        "rules": {
-          "subject_to_source_tax": true,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "b_permit_spouse_c_permit",
-      "from": "T: married to someone with a C permit who lives here -> no source tax",
+      "case": "AC-01.2.4 / Julia moved her start to 15 March (F-TR-019)",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth",
-          "spouse_nationality",
-          "spouse_permit_type",
-          "spouse_residence_country"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "permit_type",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth",
-          "spouse_nationality",
-          "spouse_permit_type",
-          "spouse_residence_country"
-        ],
-        "rules": {
-          "subject_to_source_tax": false,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "b_permit_swiss_spouse_abroad",
-      "from": "T: spouse exemption requires that the spouse lives here",
+      "case": "AC-02.1.1 / Employee living in Switzerland",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth",
-          "spouse_employed"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth",
-          "spouse_employed"
-        ],
-        "rules": {
-          "subject_to_source_tax": true,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "julia",
-      "from": "T: Julia moved her first working day to 15 March -> insurance starts 1 April",
+      "case": "AC-02.1.1 / Employee living abroad",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status"
-        ],
-        "rules": {
-          "subject_to_source_tax": false,
-          "insurance_start_date": "2026-04-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "starts_on_first",
-      "from": "T: unless somebody starts exactly on the first, then it's just that day",
+      "case": "AC-02.2.2 / Stefan, Swiss, lives in Konstanz (F-TR-034)",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status"
-        ],
-        "rules": {
-          "subject_to_source_tax": false,
-          "insurance_start_date": "2026-05-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "marco_married",
-      "from": "S: married -> Spouse's date of birth appears and is required (screens 05, 07)",
+      "case": "AC-02.2.2 / Employee living in Liechtenstein",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status",
-          "spouse_date_of_birth"
-        ],
-        "rules": {
-          "subject_to_source_tax": false,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
     },
     {
-      "id": "lena_single",
-      "from": "S: single -> no spouse field (screen 04)",
+      "case": "AC-02.2.3 / Employee living in Winterthur",
+      "origin": "spec",
       "pass": true,
-      "failures": [],
-      "simulation": {
-        "asked": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status"
-        ],
-        "required": [
-          "first_name",
-          "last_name",
-          "date_of_birth",
-          "address_street",
-          "address_house_number",
-          "address_postcode",
-          "address_town",
-          "address_country",
-          "residence_canton",
-          "nationality",
-          "first_working_day",
-          "civil_status"
-        ],
-        "rules": {
-          "subject_to_source_tax": false,
-          "insurance_start_date": "2026-06-01"
-        }
-      },
-      "unused_inputs_alias_or_not_in_spec": [
-        "residence_country"
-      ]
+      "failures": []
+    },
+    {
+      "case": "AC-03.3.1 / Tomás, married, wife lives with him in Winterthur (F-TR-030)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.3.1 / Single employee",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.3.1 / Divorced employee",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.3.1 / Widowed employee",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.4.1 / Tomás, lives in Winterthur (F-TR-030)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.4.1 / Cross-border employee living in Germany",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.4.1 / Employee living in Liechtenstein",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.1 / Tomás (F-TR-030), lives in Winterthur",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.2 / Stefan (F-TR-034), Swiss, lives in Konstanz",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.2 / Employee living in Liechtenstein",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.2.1 / Tomás (F-TR-030), Brazilian living in Winterthur",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.2.1 / Maria (F-TR-025), Portuguese, assumed to live in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.2.2 / Swiss employee living in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.2.2 / Stefan (F-TR-034), lives in Konstanz",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.1 / Tomás (F-TR-030), Brazilian, B permit, married",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.1 / Single B permit holder in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.1 / Married C permit holder in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.1 / Married Swiss employee in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.1 / Married employee living abroad",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.2 / Tomás (F-TR-030), wife is Swiss",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.2 / B permit holder with an Italian spouse",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.3 / Tomás (F-TR-030), Swiss wife in Winterthur",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.3 / Spouse is Italian with a C permit",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.3.3 / Spouse is Italian with a B permit",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.4.1 / Stefan (F-TR-034), Swiss, lives in Konstanz",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.4.2 / Swiss employee living in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.4.2 / Maria (F-TR-025), Portuguese with a C permit, assumed to live in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.4.3 / Tomás (F-TR-030), Brazilian, B permit, Swiss wife in Winterthur",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.4.3 / Spouse is Italian with a C permit and lives in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.4.3 / Swiss spouse lives in Germany",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.4.3 / Spouse is Italian with a B permit",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.4.3 / Single B permit holder in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "maria",
+      "origin": "profile: T: Maria in sales, Portuguese, C permit, no source tax",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "tomas",
+      "origin": "profile: T: Tomás, Brazilian, B permit, wife Swiss, live in Winterthur -> no source tax",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "stefan",
+      "origin": "profile: T: Stefan, Swiss, lives in Konstanz -> source tax regardless of passport",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "liechtenstein_resident",
+      "origin": "profile: T: woman in the warehouse who lives in Liechtenstein -> source tax",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "swiss_resident",
+      "origin": "profile: T: if you have a Swiss passport (and live here) you do not do source tax",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "b_permit_single",
+      "origin": "profile: T: all non-Swiss without C permit do source tax",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "b_permit_spouse_b_permit",
+      "origin": "profile: T: spouse exemption only for Swiss or C-permit spouses living here",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "b_permit_spouse_c_permit",
+      "origin": "profile: T: married to someone with a C permit who lives here -> no source tax",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "b_permit_swiss_spouse_abroad",
+      "origin": "profile: T: spouse exemption requires that the spouse lives here",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "julia",
+      "origin": "profile: T: Julia moved her first working day to 15 March -> insurance starts 1 April",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "starts_on_first",
+      "origin": "profile: T: unless somebody starts exactly on the first, then it's just that day",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "marco_married",
+      "origin": "profile: S: married -> Spouse's date of birth appears and is required (screens 05, 07)",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "lena_single",
+      "origin": "profile: S: single -> no spouse field (screen 04)",
+      "pass": true,
+      "failures": []
     }
   ],
   "eval": {
-    "field_recall": 1.0,
-    "field_precision": 0.94,
-    "consumer_recall": 1.0,
+    "item_recall": 1.0,
+    "item_precision": 1.0,
+    "stakeholder_recall": 0.74,
     "rules_found": "2/2",
     "exclusions_found": "2/2",
-    "notices_found": "1/1",
     "open_questions_found": "2/2",
-    "fields_not_in_gold": [
-      "spouse_employed"
-    ]
+    "stories_found": "2/2",
+    "items_not_in_gold": []
   },
   "open_questions": [
     {
       "id": "OQ-01",
-      "question": "Which questions does the Zurich source tax calculator ask to determine the tariff code (including the extra questions and German forms for residents abroad), with their options and conditions?",
-      "why_it_matters": "No facts were extracted from the calculator source. The source tax step currently holds only 'spouse works' (from the transcript). Without the calculator's questions, Lonio cannot collect enough to determine the tariff.",
+      "question": "Which questions does the Zurich source tax calculator ask to set the tariff code, with which options and under which conditions (including the different questions for married employees, such as whether the spouse works, and the extra questions and German forms for employees living abroad)?",
+      "why_it_matters": "The source tax questions for subject employees cannot be specified; the calculator source has not been analysed yet. It may also need data not asked today (e.g. nationality of employees living abroad).",
       "options": [
-        "Extract the calculator facts and extend the source_tax step",
-        "Ship liability determination only; HR collects the tariff inputs manually"
+        "Analyse the Zurich calculator and add its questions, asked only when subject_to_source_tax is true",
+        "Release without source tax questions at first"
       ],
-      "recommendation": "Extract the calculator's questions before building the source_tax step. The liability rule and the other steps can be built now.",
+      "recommendation": "Analyse the calculator before specifying the source tax step; ask its questions only to employees subject to source tax.",
       "affects": [
-        "spouse_employed",
-        "source_tax",
+        "subject_to_source_tax",
         "nationality",
-        "permit_type",
-        "subject_to_source_tax"
+        "civil_status",
+        "address_country"
       ],
       "source_refs": [
-        "F-TR-039",
-        "F-TR-030",
-        "F-TR-007"
+        "F-TR-007",
+        "F-TR-008",
+        "F-TR-029",
+        "F-TR-036",
+        "F-TR-005"
+      ],
+      "blocking": true
+    },
+    {
+      "id": "OQ-02",
+      "question": "Does the pension fund's 'Canton' mean the canton of residence or of work, and what should be entered for employees living abroad, given that only Swiss cantons are offered?",
+      "why_it_matters": "The canton is required for every registration; cross-border employees (e.g. living in Konstanz or Liechtenstein) cannot be registered without an answer.",
+      "options": [
+        "Canton of residence; ask the fund what to use for employees living abroad",
+        "Canton of work (would not need to be asked of the employee, e.g. Zurich)"
+      ],
+      "recommendation": "Ask Pensionskasse Muster. Until then, ask the canton only of employees living in Switzerland.",
+      "affects": [
+        "residence_canton"
+      ],
+      "source_refs": [
+        "F-SC-006",
+        "F-SC-007",
+        "F-SC-017",
+        "F-TR-035"
       ],
       "blocking": true
     },
     {
       "id": "OQ-03",
-      "question": "What should be entered in the pension portal's required 'Canton' field for employees living abroad, and does 'Canton' mean the residence canton or the work canton?",
-      "why_it_matters": "The dropdown lists only Swiss cantons, and the field is required. Cross-border employees exist (Konstanz, Liechtenstein). If it means the work canton, the employee should not be asked at all.",
+      "question": "How should an employee in a registered partnership (or other status not in the list, e.g. separated) be registered with the pension fund, does the fund want the partner's details, and does a registered partnership count as married for the source tax spouse rule?",
+      "why_it_matters": "The fund's civil status list has only Single, Married, Divorced, Widowed; such employees cannot answer correctly and the source tax outcome may be wrong.",
       "options": [
-        "Residence canton; ask only Swiss residents; ask the fund what to use for residents abroad",
-        "Work canton; do not ask the employee; HR/employer supplies it (e.g. Zurich)",
-        "Ask everyone abroad for a canton"
+        "Ask the fund and HR and extend the list if the fund supports it",
+        "Treat registered partnership as Married",
+        "Leave the list as is"
       ],
-      "recommendation": "Ask Pensionskasse Muster. Until then, ask only Swiss residents for their residence canton and flag registrations of residents abroad for HR.",
-      "affects": [
-        "residence_canton"
-      ],
-      "source_refs": [
-        "F-SC-005",
-        "F-SC-006",
-        "F-SC-018",
-        "F-TR-038"
-      ],
-      "blocking": true
-    },
-    {
-      "id": "OQ-04",
-      "question": "How should employees in a registered partnership (or with other statuses such as separated) be recorded, and does the fund want the partner's date of birth?",
-      "why_it_matters": "Such an employee exists (Daniel), but the portal offers only Single, Married, Divorced, Widowed. Adding an option the fund does not support would break the registration.",
-      "options": [
-        "Keep the four portal options; HR handles partnerships manually",
-        "Add 'registered_partnership' and map it per the fund's answer; ask partner's date of birth if required",
-        "Treat registered partnership as married"
-      ],
-      "recommendation": "Keep the four portal options for now and ask the fund. Add a 'registered_partnership' option once its mapping and partner-data requirements are known.",
+      "recommendation": "Ask Pensionskasse Muster; do not add values the fund does not accept.",
       "affects": [
         "civil_status",
         "spouse_date_of_birth",
@@ -1537,239 +1551,360 @@
       "source_refs": [
         "F-TR-023",
         "F-TR-024",
-        "F-SC-019",
-        "F-SC-010"
+        "F-SC-011",
+        "F-SC-018"
       ],
       "blocking": false
     },
     {
-      "id": "OQ-02",
-      "question": "Is the source tax liability rule complete? Anna ended with 'I think that's it'.",
-      "why_it_matters": "Any missing exemption or condition would wrongly show or hide the source tax questions.",
+      "id": "OQ-04",
+      "question": "Does the pension fund portal show extra fields (e.g. spouse data) when civil status is Divorced or Widowed?",
+      "why_it_matters": "Missing a field would block registration for these employees.",
       "options": [
-        "Confirm the rule as specified",
-        "Add missing conditions"
+        "Check the portal with these values",
+        "Assume no extra fields"
       ],
-      "recommendation": "Confirm with HR and cross-check against the calculator.",
+      "recommendation": "Ask HR for screenshots with Divorced and Widowed selected.",
       "affects": [
-        "subject_to_source_tax",
-        "spouse_nationality",
-        "spouse_permit_type",
-        "spouse_residence_country"
+        "civil_status",
+        "spouse_date_of_birth"
       ],
       "source_refs": [
-        "F-TR-040"
+        "F-SC-018"
       ],
       "blocking": false
     },
     {
       "id": "OQ-05",
-      "question": "Is 'Spouse's date of birth' hidden in the portal for Divorced and Widowed?",
-      "why_it_matters": "No screenshot shows these states. The spec asks for the spouse's date of birth only when the employee is married.",
+      "question": "Is the source tax rule complete? HR answered 'I think so' / 'I think that's it'.",
+      "why_it_matters": "Missing cases would ask the wrong people the source tax questions or skip people who must answer them.",
       "options": [
-        "Only for Married (as specified)",
-        "Also for divorced/widowed"
+        "Confirm with HR / payroll",
+        "Accept the rule as is"
       ],
-      "recommendation": "Keep 'only married' (consistent with the transcript) and verify in the portal.",
+      "recommendation": "Have HR confirm the decision table with a few real cases.",
       "affects": [
-        "spouse_date_of_birth"
+        "subject_to_source_tax"
       ],
       "source_refs": [
-        "F-SC-020",
-        "F-SC-013",
-        "F-TR-021"
+        "F-TR-025",
+        "F-TR-037"
       ],
       "blocking": false
     },
     {
       "id": "OQ-06",
-      "question": "Which permit types must the permit fields offer?",
-      "why_it_matters": "The sources name only B and C. The calculator may need to distinguish other permits.",
+      "question": "Which permit types may the employee and spouse choose from? Sources mention only the B permit and the C permit.",
+      "why_it_matters": "The question needs a list of answers; only 'C permit' versus other matters for the source tax rule.",
       "options": [
-        "B, C, other (as specified)",
-        "The full permit list from the calculator"
+        "Get the list from HR or the calculator",
+        "Offer B permit, C permit and 'other'"
       ],
-      "recommendation": "Keep B / C / other until the calculator facts are extracted.",
+      "recommendation": "Take the list from the Zurich calculator once analysed (OQ-01) or confirm with HR.",
       "affects": [
         "permit_type",
         "spouse_permit_type"
       ],
       "source_refs": [
         "F-TR-025",
-        "F-TR-031",
-        "F-TR-034",
-        "G-10"
+        "F-TR-030",
+        "F-TR-039"
       ],
       "blocking": false
     },
     {
       "id": "OQ-07",
-      "question": "Is the postal address always the residence address, so that address_country can serve as the residence country?",
-      "why_it_matters": "Liability depends on the country of residence. A different mailing address would give the wrong result.",
+      "question": "Should the questionnaire remind employees to bring their permit, and with which wording?",
+      "why_it_matters": "HR wished for it because half of new employees forget; wording was deferred.",
       "options": [
-        "Yes, one address (as specified)",
-        "Ask for the residence country separately"
+        "Add a reminder for employees with a permit",
+        "Leave it out"
       ],
-      "recommendation": "Use one address. Anna described a normal home address.",
+      "recommendation": "Decide with HR; a reminder for non-Swiss employees living in Switzerland seems natural.",
       "affects": [
-        "address_country",
-        "subject_to_source_tax",
-        "residence_canton"
+        "permit_type"
       ],
       "source_refs": [
-        "F-TR-011",
-        "F-TR-043"
+        "F-TR-028"
       ],
       "blocking": false
     },
     {
       "id": "OQ-08",
-      "question": "What exact wording should the permit reminder use, and when should it be shown?",
-      "why_it_matters": "Anna deferred the wording.",
+      "question": "The Zurich calculator is used for every employee subject to source tax, though HR knows this is not exactly correct. Should this be revisited?",
+      "why_it_matters": "Known simplification agreed for now; may produce incorrect tariffs for employees in other cantons.",
       "options": [
-        "Use the drafted wording",
-        "HR provides the wording"
+        "Keep Zurich for all (current decision)",
+        "Revisit later"
       ],
-      "recommendation": "Use the draft and let HR review it.",
+      "recommendation": "Keep for now as agreed and per the assignment's simplification.",
       "affects": [
-        "permit_reminder"
+        "subject_to_source_tax"
       ],
       "source_refs": [
-        "F-TR-029"
-      ],
-      "blocking": false
-    },
-    {
-      "id": "OQ-09",
-      "question": "Are there limits on dates (e.g. first working day not in the past, or a maximum distance in the future) and how does the portal word date errors?",
-      "why_it_matters": "The sources give only formats.",
-      "options": [
-        "Validate only as a calendar date (as specified)",
-        "Add range limits"
-      ],
-      "recommendation": "Validate as a calendar date only, until HR or the fund defines limits.",
-      "affects": [
-        "first_working_day",
-        "date_of_birth",
-        "spouse_date_of_birth"
-      ],
-      "source_refs": [
-        "F-SC-022"
+        "F-TR-008",
+        "G-05"
       ],
       "blocking": false
     }
   ],
   "inferred_items": [
-    "field.first_name",
-    "field.last_name",
-    "field.address_country",
-    "field.residence_canton",
-    "field.nationality",
-    "field.permit_type",
-    "field.civil_status",
-    "field.spouse_nationality",
-    "field.spouse_permit_type",
-    "field.spouse_residence_country",
-    "field.spouse_employed",
-    "rule.subject_to_source_tax"
+    "item.address_country",
+    "item.nationality",
+    "item.permit_type",
+    "item.residence_canton",
+    "item.spouse_nationality",
+    "item.spouse_permit_type",
+    "item.spouse_residence_country",
+    "rule.subject_to_source_tax",
+    "story.US-02.2",
+    "story.US-03.4",
+    "story.US-04.1",
+    "story.US-04.2",
+    "story.US-04.3",
+    "story.US-04.4"
   ],
-  "naive_builder": {
-    "already_flagged": [
-      "OQ-01 (blocking): Which questions the Zurich source tax calculator asks (incl. extra questions / German forms for residents abroad), with options and conditions – the source_tax step is incomplete",
-      "OQ-03 (blocking): What to enter in the pension portal's required 'Canton' field for residents abroad, and whether 'Canton' means residence or work canton",
-      "OQ-04: How to record registered partnership / separated etc. and whether the partner's date of birth is needed",
-      "OQ-02: Whether the source tax liability rule is complete ('I think that's it')",
-      "OQ-05: Whether 'Spouse's date of birth' is hidden in the portal for Divorced and Widowed",
-      "OQ-06: Which permit types the permit fields must offer (B / C / other vs. full calculator list)",
-      "OQ-07: Whether the postal address is always the residence address (address_country used as residence country)",
-      "OQ-08: Exact wording of the permit reminder and when it is shown",
-      "OQ-09: Date range limits (past/future) and error wording for dates"
-    ],
+  "dev_refinement": {
     "questions": [
       {
-        "file": "flow.md",
-        "question": "Step 6 'Source tax details' is shown whenever subject_to_source_tax is true, but its only field (spouse_employed) is asked only when the employee is married. A single, divorced or widowed person who is subject (including every unmarried resident abroad) would get a step with only the intro text 'You are subject to source tax. We need a few more details…' and no questions. Should an empty step be skipped, shown as an information-only page, or should the step condition include civil_status == \"married\" until OQ-01 is resolved?",
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "question": "Does 'first working day' mean the contractual start date or the first day the employee actually works? E.g. a contract starting 01.01.2027 (a public holiday; the spec uses it as an example) where the person first works on 04.01.2027 gives 01.01.2027 under one reading and 01.02.2027 under the other. The same applies to a start on the 1st that falls on a weekend. Which date do we ask for, and how do we word the question?",
         "severity": "major"
+      },
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "question": "'Confirm' suggests the employee checks a date Lonio already has. Does Lonio get the contract start date from HR and show it for confirmation or correction, or does the employee type the date in from scratch? This changes the flow, and whether HR has to supply data first.",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "question": "AC-01.2.4 / F-TR-019: what happens if the start date moves AFTER the employee has finished onboarding (Julia's case)? Can the employee (or HR) change the confirmed date later, and is the insurance start date then worked out again? Or does this feature only cover the date given during onboarding?",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "question": "Which first working days are allowed? Can it be in the past (onboarding finished after the start), and how far in the future can it be? Should a weekend or public holiday be rejected or flagged? Without limits, a typo (wrong year) goes straight into a wrong insurance start date, which is exactly the incident this feature is meant to prevent.",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "question": "AC-01.1.3 talks about handing data on to HR and the pension fund, but G-04 / out-of-scope.md exclude transmission. What exactly do we build and test for AC-01.1.3? Does HR see the derived insurance start date, and where?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "question": "Should the derived insurance start date be shown to the employee (e.g. as information on the summary), or only to HR? AC-01.2.1 only says the employee is not asked for it.",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "question": "AC-01.1.2 ('as currently agreed with Muster AG') cannot be checked by the system. Is it only guidance wording for the question (e.g. a hint that the date may have changed since the contract was signed)? If so, what should the text say?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "question": "AC-01.1.1 says the question appears 'when they reach the employment details'. No such step is defined in the shared files. Where does this question go in the order of the questionnaire?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "question": "Does the 1st-of-month rule apply to every employee, including re-hires, short or temporary contracts and people below the BVG thresholds? Or are some employees not registered with the fund at all, so no insurance start date is needed?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "question": "How is 'country of residence' meant to be defined? The Notes say using the address country as the country of residence is 'confirmed by the product owner convention (G-09)', but G-09 is only 'Questionnaire language: English', so nothing confirms the inference. Which address should the employee give if the address HR posts documents to is not where they legally live? Examples: a weekly resident in Switzerland (Wochenaufenthalter) whose home is abroad, an employee with a second home, or an employee who moves around the start date. The answer decides whether one address is enough or we need a residence question or a separate postal address.",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "question": "Is the house number really required for everyone? The spec says it is 'Always' required, but its own note says 'whether every address has a house number is not discussed'. Some rural or foreign addresses have no number, or use a building name. Should those employees be able to finish the step, for example by leaving the number empty or confirming 'no number'?",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "question": "'No extra parts' (AC-02.1.2) rules out things like a c/o line, an apartment or flat number, or a second address line. Is that intended even when the post needs them to deliver (e.g. a new employee living c/o someone, or a large building abroad)? Or did HR only mean 'nothing beyond a normal envelope address'? This decides exactly which parts we collect.",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "question": "AC-02.1.3 ('HR receives the complete home address' when 'the onboarding data is made available to the receiving parties') and AC-02.2.2 ('source tax and HR receive the country of residence') describe passing data on to other parties. out-of-scope.md (G-04) says that is a separate topic. What should these criteria be tested against in this feature? Should they be reworded to 'the information is collected and marked as needed by HR / source tax'?",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "question": "What should happen if the employee goes back and changes the country after later steps were answered (e.g. Switzerland → Germany, or the reverse)? Should answers that no longer apply (nationality, canton, permit, spouse data) be discarded, which data minimisation (G-01) suggests? And should questions that now apply be asked again?",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "question": "Which countries can the employee choose: any country in the world, or a limited list (e.g. Switzerland and neighbouring countries)? The examples confirm that Liechtenstein counts as 'abroad'. Is that confirmed by HR or the source tax office, given how closely Liechtenstein is tied to Switzerland?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "question": "Should address parts be checked for plausibility for the chosen country (e.g. a Swiss postcode must exist and match the town)? Or is any non-empty entry accepted? HR's need is mail that arrives, so wrong postcodes matter to them.",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "question": "Does HR or the employer already know the employee's address before onboarding, so it could be pre-filled for the employee to confirm, or must the employee always type it in?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "question": "AC-02.2.4 only says the address step comes before the pension and source tax steps. Does it have to come at a particular place relative to FEAT-01 (first working day) or other steps, or is anything acceptable as long as it comes before the dependent steps?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "severity": "major",
+        "question": "The goal says a registration is \"never blocked by missing data\", but the fund requires a canton for every employee and US-03.4 skips the canton for anyone living abroad (Germany, Liechtenstein). Until OQ-02 is answered, these registrations will be blocked. For now, should Lonio still let these employees complete the questionnaire, or should the case be marked as incomplete or flagged to HR? Or do we accept that the goal is not met for them yet? This is separate from OQ-02 itself, which asks what the canton means."
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "severity": "major",
+        "question": "For employees living in Switzerland, the canton follows from the Swiss postcode and town they already give in FEAT-02. Guidance prefers deriving values over asking for them. Should the canton be derived from the address instead of asked? If it is still asked, what happens when the chosen canton does not match the postcode? Should it be checked, or accepted as entered?"
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "severity": "major",
+        "question": "Suppose an employee answers a dependent question and then changes the answer it depends on: civil status from Married to something else, or country from Switzerland to abroad. Should the spouse's date of birth or canton they already gave be discarded? Data minimisation (G-01) suggests yes, but the spec does not say."
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "severity": "minor",
+        "question": "Which names should the employee enter: the official names exactly as on their passport or ID, including all first names and middle names, or the name they use day to day? The fund's registration and later matching may depend on this, and it changes the question wording and help text."
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "severity": "minor",
+        "question": "Are there plausibility rules for the employee's date of birth and the spouse's date of birth? For example: not in the future, a minimum or maximum age for the employee, the spouse being an adult. Today the only rules are \"not empty\" and \"a valid date\", so a mistyped year would reach the fund."
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "severity": "minor",
+        "question": "AC-03.1.3 (\"another part of the onboarding or another receiving party needs the same detail … not asked again\") cannot be tested as written. Which other features or parties reuse name and date of birth? The information catalogue lists only the pension fund. What should the test check?"
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "severity": "minor",
+        "question": "The title of AC-03.2.3 says civil status is reused \"for source tax and HR\", but its Then clause covers only source tax. Is there an HR reuse that needs its own acceptance criterion? If not, should \"HR\" be removed from the title?"
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "severity": "minor",
+        "question": "Where in the questionnaire flow does the canton question go? FEAT-02 (AC-02.2.3) says employees living in Switzerland \"continue to nationality and canton\" straight after the address. FEAT-03 groups name and date of birth under \"personal details\" and civil status under \"family details\" but does not place the canton. Is there a required order across FEAT-02, FEAT-03 and FEAT-04?"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "Who makes the source tax decision: Lonio automatically, or HR? AC-04.1.1, AC-04.2.1 and AC-04.3.1 say 'HR uses it to decide', but US-04.4 and AC-04.4.1–4 say Lonio decides and that this gates the tariff questions straight away. If Lonio decides, can HR review or override it (for example in a case the rule does not cover, OQ-05) before the employee gets or skips the source tax step?",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "Does the spouse rule apply to anyone other than civil status 'Married'? Registered partners (e.g. Daniel), separated spouses and anyone else outside the pension fund's 4 values would currently go straight to 'subject'. OQ-03 raises this for source tax but is not linked to this feature. Should FEAT-04 wait for it, or ship treating only 'Married' as married?",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "The rule only needs to know whether someone is Swiss, holds a C permit or lives in Switzerland. Should Lonio ask for the full nationality (employee and spouse) and the spouse's full country of residence, or only 'Swiss yes/no' and 'lives in Switzerland yes/no'? The 'What?' rows say '(whether they hold a Swiss passport)' / '(whether they live in Switzerland)', but the ACs say 'asks for the nationality' and 'asks where the spouse lives'. Under data minimisation (G-01) the answer changes what we collect. Does HR need the actual nationality for anything else?",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "How should dual nationals be handled? Is someone who holds Swiss and another nationality treated as Swiss, both for the employee and for the spouse? This decides whether one nationality answer is enough or several are allowed.",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "Permit type is required for every non-Swiss employee living in Switzerland. What should an employee answer if their permit is still being applied for or has not been issued yet, or if they hold something that is not a residence permit (e.g. a short-term or asylum status)? Can they finish the questionnaire, and what does the rule decide for them? This goes beyond OQ-06, which only covers the list of permit types.",
+        "severity": "major"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "'Lives in Switzerland' comes only from the country of the home address. What about weekly residents and others with two homes, e.g. a Swiss address during the week and a family home abroad? Which address should the employee give, and does HR accept that the rule follows it?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "If the employee changes an earlier answer (address country, nationality, permit, civil status, spouse details) after the follow-up questions were answered, should the answers that are no longer needed be discarded (data minimisation), and should the source tax decision and the source tax step be recalculated? What happens to tariff answers already given if the employee turns out not to be subject?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "Should the employee see the outcome (e.g. 'you are / are not subject to source tax'), or is it only stored for HR and the source tax step? No AC says who sees the decision or where.",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "AC-04.4.5 is a release precondition ('HR has checked the rules against real cases'), not behaviour we can test in the product, and its own trace check says the sources do not support it. Who signs this off, and is it a release gate for this feature or just part of resolving OQ-05?",
+        "severity": "minor"
+      },
+      {
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "question": "Can a spouse who holds a C permit be living abroad (a C permit usually lapses after a long stay abroad)? If not, can we skip the residence question for C-permit spouses? Should the residence question be asked even when the spouse obviously lives with the employee?",
+        "severity": "minor"
+      }
+    ],
+    "already_flagged": [
+      "OQ-01: Extra source tax calculator questions for employees living abroad (German forms etc.) are undefined, and the calculator may need the nationality of employees living abroad. This conflicts with AC-02.2.2, which says nationality is never asked of them.",
+      "OQ-02: Whether the pension fund 'Canton' means residence or work canton, and what to enter for employees living abroad. AC-02.2.2/AC-02.2.3 present 'canton not asked abroad' as final, but it is only the interim recommendation of OQ-02 (the trace check also notes it is not backed by the sources).",
+      "OQ-05: Completeness of the source tax rule that AC-02.2.2 relies on (living abroad → always subject).",
+      "OQ-02: whether the fund's Canton means the canton of residence or of work, and what to enter for employees living abroad (US-03.4, AC-03.4.1)",
+      "OQ-03: how to register employees in a registered partnership or another status such as separated, and whether the fund wants the partner's details (AC-03.2.2)",
+      "OQ-04: whether the portal shows extra spouse fields for Divorced or Widowed. The AC-03.3.1 example rows already mark these as 'not asked ✅' although the question is open",
+      "OQ-01: the Zurich calculator's tariff questions are undefined, including the questions for married employees and employees living abroad, and whether nationality is needed for employees living abroad (blocking; AC-04.1.2, AC-04.4.4)",
+      "OQ-05: HR is not sure the source tax rule is complete (AC-04.4.5)",
+      "OQ-06: full list of permit types for the employee and the spouse (AC-04.2.3, AC-04.3.2)",
+      "OQ-07: whether to add a reminder to bring the permit, and its wording (AC-04.2.3)",
+      "OQ-08: Zurich calculator used for every subject employee as an agreed simplification (AC-04.4.4)"
+    ],
+    "tech_leaks": [
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "quote": "they give the start date as currently agreed with Muster AG, as a full date in the form DD.MM.YYYY",
+        "why": "Sets the input format the employee must type. G-10 covers business wording for values in examples. The fund's DD.MM.YYYY requirement (F-SC-009) applies to the insurance start date sent to the fund, not to how the employee enters the first working day. How the date is entered (date picker, locale format) is a UI decision for engineering."
+      },
+      {
+        "file": "features/FEAT-01-first-working-day-insurance-start.md",
+        "quote": "When they reach the employment details",
+        "why": "Assumes a questionnaire step called 'employment details' that no source asks for. How the questions are split into steps is a design choice."
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "quote": "When the onboarding data is made available to the receiving parties … Then HR receives the complete home address",
+        "why": "This describes how and when the system hands data over to recipients. Nobody asked for that behaviour here, and G-04 puts transmission out of scope. The business need is only that the address is collected once and is available for HR."
+      },
+      {
+        "file": "features/FEAT-02-home-address.md",
+        "quote": "and cannot complete the step while any of these five parts is empty",
+        "why": "This prescribes how the form behaves (blocking the step). The business requirement is only that all five parts are required. How completeness is enforced (blocking, warning, review before submitting) is a design decision."
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "quote": "It depends on address_country from FEAT-02.",
+        "why": "Uses an internal field id in business prose. The business term is \"country of home address\"."
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "quote": "naming the item residence_canton is an unbacked assumption",
+        "why": "Refers to an internal field or data-model name in the body text. What to call the field is an engineering decision."
+      },
+      {
+        "file": "features/FEAT-03-pension-fund-registration-data.md",
+        "quote": "they are asked for their date of birth as a day, month and year (shown as DD.MM.YYYY, e.g. 14.02.1990)",
+        "why": "The fund's DD.MM.YYYY format is a constraint on the data delivered to the fund. Telling the questionnaire to ask for day, month and year as separate parts and to display them that way is an input and UI decision that belongs to engineering and design."
       },
       {
         "file": "open-questions.md",
-        "question": "README says to implement each open-question recommendation. OQ-01 recommends extracting the calculator's questions *before building the source_tax step*, yet flow.md and spouse_employed.md fully specify step 6. Should I build step 6 now with only 'spouse_employed', or leave step 6 out of the first release and ship liability determination only?",
-        "severity": "major"
+        "quote": "Analyse the Zurich calculator and add its questions, asked only when subject_to_source_tax is true",
+        "why": "Uses an internal field id and a boolean value in prose. The business statement is 'asked only of employees subject to source tax'."
       },
       {
-        "file": "fields/date_of_birth.md",
-        "question": "Contradiction: date_of_birth.md and spouse_date_of_birth.md add the validation 'must not be in the future', but OQ-09's recommendation (affecting date_of_birth and spouse_date_of_birth) says 'validate as a calendar date only'. Which one wins? (The trace judge also notes that no source supports 'not in the future'.)",
-        "severity": "minor"
-      },
-      {
-        "file": "fields/first_working_day.md",
-        "question": "The step text says 'Please confirm your first working day' and F-TR-015 says HR asks the employee to *confirm* it. Is first_working_day pre-filled by HR (from the contract) for the employee to confirm, or does the employee type it in with no starting value? Is an explicit confirmation action (checkbox or button) required, or is filling in the date enough?",
-        "severity": "major"
-      },
-      {
-        "file": "notices.md",
-        "question": "The first_working_day_confirm notice and the first_working_day help text tell the employee to 'update it here right away' if the date changes. That means the questionnaire stays editable after it is submitted. Is editing after submission in scope? If so, which steps or fields can be edited, and does a re-submission re-run the conditions (for example a new civil status hiding or adding fields)? Notifications are out of scope, but editing itself is not addressed.",
-        "severity": "major"
-      },
-      {
-        "file": "notices.md",
-        "question": "The permit_reminder is shown when is_set(permit_type), so it also appears when permit_type == \"other\", whose label is 'Other permit / no permit yet'. Should someone without a permit yet be told to bring their permit? Should the notice be limited to B/C, or worded differently for 'other'?",
-        "severity": "minor"
-      },
-      {
-        "file": "fields/permit_type.md",
-        "question": "permit_type is asked only of Swiss residents, but its consumers include employer_hr for first-day logistics (bring your permit). Non-Swiss cross-border commuters (e.g. the woman living in Liechtenstein) also have a Swiss work permit, but they are never asked and never get the reminder. Should residents abroad who are not Swiss be asked their permit (for example a cross-border permit) and shown the reminder?",
-        "severity": "major"
-      },
-      {
-        "file": "notices.md",
-        "question": "Should the first_working_day_confirm notice show the computed insurance_start_date (e.g. 'Your insurance starts on 01.04.2026') or only the generic rule text as written? Is insurance_start_date displayed to the employee anywhere?",
-        "severity": "minor"
-      },
-      {
-        "file": "rules/subject_to_source_tax.md",
-        "question": "Because of the outer `not (...)`, subject_to_source_tax is TRUE while the spouse questions are still unanswered (e.g. married B-permit holder, spouse_nationality = CH, spouse_residence_country not yet answered). That contradicts the conventions.md statement that 'a rule is never true because of a missing answer'. Should the rule (and step 6 visibility) count as undetermined/false until every input needed for the spouse exemption is answered, or is this temporary true value acceptable because step 5 must be finished first?",
-        "severity": "minor"
-      },
-      {
-        "file": "fields/spouse_residence_country.md",
-        "question": "The source only needs to know whether the spouse lives in Switzerland ('and that they live here'). For data minimisation (G-01), should this be a yes/no question ('Does your spouse live in Switzerland?') instead of a full country picker? The trace judge flags the country type as unsupported.",
-        "severity": "minor"
-      },
-      {
-        "file": "conventions.md",
-        "question": "The general form behaviour is not specified. Can the employee go back to earlier steps? Is there a save-and-resume across sessions? Is there a final review/summary and an explicit submit? What happens after submission (confirmation screen, read-only view)? Is the employee identified or invited (for example with an HR-prefilled name)?",
-        "severity": "major"
-      },
-      {
-        "file": "conventions.md",
-        "question": "What error/validation messages should our form show (required, invalid date, invalid choice)? Should we reuse the portal's pattern '<Field label> is required.' and the banner 'Please correct the highlighted fields.', or does Lonio have its own wording?",
-        "severity": "minor"
-      },
-      {
-        "file": "fields/address_country.md",
-        "question": "Which country list and labels should the country pickers (address_country, nationality, spouse_nationality, spouse_residence_country) use: all ISO 3166-1 alpha-2 entries with English names? Should Switzerland and neighbouring countries be listed first? How do we handle stateless persons, refugees, or nationality 'unknown', which have no ISO country code?",
-        "severity": "minor"
-      },
-      {
-        "file": "fields/first_name.md",
-        "question": "Are there length or character limits for the text fields (first/last name, street, house number, postcode, town) imposed by the pension portal or HR systems? Should names include middle names / all given names as on the passport? Should values be stored trimmed?",
-        "severity": "minor"
-      },
-      {
-        "file": "fields/address_house_number.md",
-        "question": "The house number is always required, but some addresses (rural or foreign) have no house number. Should it stay mandatory, or be optional, or allow an explicit 'no house number' choice?",
-        "severity": "minor"
-      },
-      {
-        "file": "open-questions.md",
-        "question": "OQ-03's recommendation says to 'flag registrations of residents abroad for HR'. What is this flag in the questionnaire build: a stored derived flag, a visible marker in the HR output, or something else? Transmission to parties is out of scope, so where should the flag live?",
-        "severity": "minor"
-      },
-      {
-        "file": "traceability.md",
-        "question": "Requirements cite product-owner guidance ids (G-01 … G-10, e.g. G-03, G-04, G-05 in out-of-scope.md) and a decisions.yaml, but neither the guidance document nor decisions.yaml is in the package, and traceability.md does not resolve G-ids. Can these be provided, so that no guidance affecting the build (for example G-02) is missing?",
-        "severity": "minor"
+        "file": "features/FEAT-04-source-tax-liability.md",
+        "quote": "Lonio asks for the employee's nationality, the employee must answer it, and HR uses it to decide",
+        "why": "Says how the decision is made (a question that HR then uses) instead of what outcome is needed. It also conflicts with US-04.4, where Lonio itself decides. This is a borderline case: how the decision is handled internally should be left to the design."
       }
     ]
   },
@@ -1778,86 +1913,94 @@
   ],
   "review": {
     "verdict": "not_ready",
-    "summary": "Not ready. All 13 persona tests pass. Field and consumer recall are both 1.0, all 2 rules are found, and no errors were reported. Two open questions still block the build:\n- **OQ-01:** what the Zurich source tax calculator asks. The calculator source was skipped, so step 6 is incomplete.\n- **OQ-03:** what goes in the required 'Canton' field for people living abroad, and whether it means residence or work canton.\n\nThe naive builder also raised 6 major questions: an empty step 6, whether the first working day is pre-filled or just confirmed, editing after submission, overall form behaviour, the permit question for cross-border commuters, and whether to build step 6 at all. 12 of the 18 fields and the source tax rule are inferred and only partly backed by sources. Most of these can be settled by product owner decisions in decisions.yaml.",
+    "summary": "Not ready. All 58 examples pass, and item recall and precision are 1.0. Two open questions block release: OQ-01 (the Zurich source tax calculator was never analysed) and OQ-02 (what the pension fund's canton means). Some traceability is broken: FEAT-02 cites G-09 as confirmation, but G-09 is only the language rule, and AC-04.4.5 claims HR checked the rules, which no source supports. Several acceptance criteria describe passing data on to other parties, which G-04 puts out of scope. FEAT-04 contradicts itself on who decides source tax. Dev refinement left about 18 major questions. The biggest gaps are in FEAT-01, which comes from the Julia incident, and in FEAT-04. There are also 9 technical leaks. 14 inferred items or stories still need product owner confirmation.",
     "findings": [
       {
-        "title": "The source tax step (step 6) cannot be specified because the calculator source was never read",
-        "why": "Without the calculator's questions, Lonio cannot collect enough to work out the tax rate code. The package contradicts itself: OQ-01 says not to build step 6 yet, while flow.md fully specifies it with only spouse_employed.",
-        "evidence": "OQ-01 (blocking); skipped_sources: zh_source_tax_calculator; naive_builder major question on open-questions.md; fields_not_in_gold: spouse_employed",
-        "action": "Extract the calculator's questions now. Or record in decisions.yaml that release 1 only decides who is subject to source tax: drop step 6 and HR collects the rate inputs by hand."
+        "title": "OQ-01 blocking: the source tax tariff questions are undefined",
+        "why": "The source tax step for employees who are subject to it can't be specified. The calculator may also need data the spec rules out, such as nationality for employees living abroad, which conflicts with AC-02.2.2.",
+        "evidence": "OQ-01 (blocking); skipped_sources: zh_source_tax_calculator; dev_refinement already_flagged (AC-02.2.2, AC-04.1.2, AC-04.4.4).",
+        "action": "Either analyse the Zurich calculator now, or record a decision in decisions.yaml to release FEAT-04 as the liability decision only, with no tariff step yet. Re-check AC-02.2.2 against the result."
       },
       {
-        "title": "Step 6 is empty for unmarried people who are subject to source tax",
-        "why": "Single, divorced or widowed people who are subject to source tax, including every unmarried resident abroad, get a step with intro text and no questions. That is a visible UX defect.",
-        "evidence": "naive_builder major question on flow.md; personas stefan and liechtenstein_resident (subject_to_source_tax=true, civil_status not married)",
-        "action": "Decide whether to skip the empty step, show it as an information-only page, or add civil_status=='married' to the step condition until OQ-01 is resolved."
+        "title": "OQ-02 blocking: the canton's meaning is unknown, but the interim answer is written as final",
+        "why": "The fund requires a canton for every registration. Cross-border employees (Konstanz, Liechtenstein) can't be registered, which contradicts the FEAT-03 goal 'never blocked by missing data'. AC-02.2.2, AC-02.2.3 and US-03.4 treat 'canton not asked abroad' as settled.",
+        "evidence": "OQ-02; trace_judge partial on item.residence_canton, story.US-02.2 and story.US-03.4; FEAT-03 dev_refinement major question on the 'never blocked' goal.",
+        "action": "Ask Pensionskasse Muster whether it means canton of residence or of work, and what to enter for people living abroad. Until then, record in decisions.yaml how incomplete registrations are handled, for example flagged to HR. Mark the affected ACs as interim."
       },
       {
-        "title": "Meaning of the required 'Canton' field is unresolved",
-        "why": "The pension portal requires a canton, but the list only has Swiss cantons. Cross-border employees (Konstanz, Liechtenstein) currently get no canton, so their registration cannot be completed in the portal.",
-        "evidence": "OQ-03 (blocking); F-SC-018; trace_judge partial on field.residence_canton (ask_when and option values not backed)",
-        "action": "Ask Pensionskasse Muster. Meanwhile, record the interim decision (residence canton, asked only of Swiss residents) and say concretely what the 'flag for HR' is: a stored flag or a marker in the HR output."
+        "title": "Broken traceability: citations that confirm nothing",
+        "why": "The notes for the address country used as country of residence say this is confirmed by G-09, but G-09 is only 'Questionnaire language: English'. AC-04.4.5 claims HR checked the rules against real cases, which no source supports. Both make inferred items look confirmed when they aren't.",
+        "evidence": "FEAT-02 Notes (G-09); fact_judge partial F-TR-040; trace_judge partial story.US-04.4 (AC-04.4.5).",
+        "action": "Remove the false G-09 reference and either record a real decision on 'residence = country of home address' or raise an open question. Drop AC-04.4.5 or turn it into a sign-off step under OQ-05 with a named owner."
       },
       {
-        "title": "Unclear whether the first working day is pre-filled or entered, and how it is confirmed",
-        "why": "This is the field Anna calls most important, and it drives insurance_start_date. Whether HR pre-fills it and whether an explicit confirmation is needed changes the data model and the UI.",
-        "evidence": "naive_builder major question on fields/first_working_day.md; fact_judge partial on F-TR-015",
-        "action": "Decide: HR pre-fills the date from the contract or the employee types it, and whether a confirmation checkbox is needed. Add the decision to decisions.yaml."
+        "title": "Acceptance criteria test passing data on, which G-04 puts out of scope",
+        "why": "Engineering can't build or test criteria about how data reaches other parties when that handover is explicitly out of scope.",
+        "evidence": "AC-01.1.3, AC-02.1.3, AC-02.2.2 ('source tax and HR receive…'), AC-03.1.3; tech_leak FEAT-02; dev_refinement FEAT-01 and FEAT-02.",
+        "action": "Reword these to say the data is collected once and marked as needed by HR, the fund or source tax. Add guidance that features must not specify how data is passed on."
       },
       {
-        "title": "No overall form behaviour or post-submit editing is specified",
-        "why": "The notice tells employees to 'update it here right away', which implies editing after submission. Going back to earlier steps, save and resume, a review page and submit are all undefined. A builder will guess.",
-        "evidence": "naive_builder major questions on notices.md and conventions.md",
-        "action": "Write a short conventions decision covering: back navigation, save and resume, a review page and explicit submit, the confirmation screen, whether editing after submission is in scope, and whether conditions re-run when an answer changes."
+        "title": "FEAT-04 contradicts itself: who decides source tax liability?",
+        "why": "AC-04.1.1, AC-04.2.1 and AC-04.3.1 say 'HR uses it to decide', while US-04.4 says Lonio decides automatically and that this decision controls which questions follow. The flow and the option for HR to override depend on which is true.",
+        "evidence": "dev_refinement FEAT-04 (major); tech_leak FEAT-04.",
+        "action": "Record in decisions.yaml whether Lonio decides automatically and whether HR can review or override it, especially for cases OQ-05 doesn't cover. Align the ACs with that decision."
       },
       {
-        "title": "Non-Swiss cross-border commuters are never asked their permit",
-        "why": "permit_type is asked only of Swiss residents. Cross-border commuters, such as the Liechtenstein resident, have a Swiss permit too, but HR never gets it for the first day and they never see the reminder to bring it.",
-        "evidence": "naive_builder major question on fields/permit_type.md; persona liechtenstein_resident (permit_type not asked)",
-        "action": "Decide whether non-Swiss residents abroad are asked their permit (for example a cross-border permit option) and shown the reminder. Link this to OQ-06."
+        "title": "FEAT-01 is underspecified on the very incident it is meant to prevent",
+        "why": "Several things are open. Is the first working day the contract start or the first day actually worked? Is it prefilled from HR or typed in by the employee? What happens if the date changes after onboarding, as in Julia's case? Which dates are allowed (past dates, typos)? Each of these can produce a wrong insurance start date again.",
+        "evidence": "dev_refinement FEAT-01 (4 major); fact_judge partial F-TR-014, F-TR-018, F-TR-019.",
+        "action": "Ask HR to clarify, then record decisions on: the definition of first working day, the source of the date (prefilled or typed), whether HR or the employee can change it after onboarding with the insurance start date recalculated, and the limits on allowed dates."
       },
       {
-        "title": "The source tax rule is true while spouse answers are still missing",
-        "why": "This breaks the convention that 'a rule is never true because of a missing answer'. Step 6 could show or hide wrongly while the employee is still answering.",
-        "evidence": "naive_builder question on rules/subject_to_source_tax.md; rule.subject_to_source_tax is inferred",
-        "action": "State that the rule counts as undetermined until all its spouse inputs are answered, or confirm that step order makes this safe. Also confirm the rule is complete with HR (OQ-02)."
+        "title": "The data collected for the source tax rule is not settled",
+        "why": "Unclear whether to collect full nationality or only 'Swiss yes/no' (data minimisation, G-01). Dual nationals, pending or unusual permits, and registered partners have no defined handling. OQ-03 is not linked to FEAT-04.",
+        "evidence": "dev_refinement FEAT-04 (4 major); OQ-03, OQ-06; eval: source_tax stakeholder missing on nationality, permit_type, spouse_nationality, spouse_permit_type, spouse_residence_country.",
+        "action": "Record decisions on how much nationality detail to collect, on dual nationals counting as Swiss, on pending permits, and on treating only 'Married' as married until OQ-03 is answered. Link OQ-03 to FEAT-04 and add source_tax as a stakeholder on these items."
       },
       {
-        "title": "Validation rules contradict each other and lack sources",
-        "why": "The field files say dates 'must not be in the future', but OQ-09 recommends checking only that a date is a valid calendar date. Trimming, accepting '12a' as a house number, and ISO country codes are also invented. Error wording is undefined, and the portal's error banner (F-SC-014) is not used anywhere.",
-        "evidence": "trace_judge partials on date_of_birth, spouse_date_of_birth, first_name, last_name, address_house_number, spouse_residence_country, spouse_employed; coverage warning F-SC-014; naive_builder questions on validation wording, length limits and country list",
-        "action": "Settle the date validation in one place, approve or remove the inferred validations, and decide the error wording (for example reuse the portal's pattern) and the country list."
+        "title": "No rule for changing earlier answers or for the address details",
+        "why": "If an employee changes their country or civil status, the spec doesn't say whether dependent answers are discarded (G-01) or whether the decision is recalculated. The address also has gaps: a house number is always required, extra parts (c/o, flat) are excluded, and weekly residents aren't handled. Some employees may be unable to finish the address step.",
+        "evidence": "dev_refinement FEAT-02 (major: house number, extra parts, residence definition, country change); FEAT-03 (major: dependent data); FEAT-04 (minor).",
+        "action": "Add a cross-cutting guidance rule: answers that no longer apply are discarded and the decisions are recalculated. Confirm with HR how house number and c/o lines are handled, and which address weekly residents should give."
       },
       {
-        "title": "Guidance ids and decisions.yaml are not in the package",
-        "why": "Requirements cite G-01…G-10, but traceability.md cannot resolve them. A builder cannot check guidance that affects scope, for example G-02.",
-        "evidence": "naive_builder question on traceability.md; OQ-06 cites G-10",
-        "action": "Add the product owner guidance document and decisions.yaml to the package, and resolve the G-ids in traceability.md."
+        "title": "Technical decisions leak into the spec",
+        "why": "Several criteria prescribe UI and data-model choices instead of business needs: DD.MM.YYYY input and separate day, month and year fields, an 'employment details' step, blocking the step until it's complete, and internal field ids (address_country, residence_canton, subject_to_source_tax) used in prose.",
+        "evidence": "tech_leak findings on FEAT-01 (2), FEAT-02 (2), FEAT-03 (3), FEAT-04 (1) and open-questions.md (1).",
+        "action": "Rewrite these in business terms, for example 'all five parts are required' and 'country of home address'. Add guidance that input formats and step layout are design decisions."
       },
       {
-        "title": "Smaller wording and field-type decisions are still open",
-        "why": "The permit reminder also shows for 'no permit yet'. spouse_residence_country is a full country picker where a yes/no question would do (data minimisation, G-01). It is unclear whether insurance_start_date is shown to the employee.",
-        "evidence": "naive_builder questions on notices.md and fields/spouse_residence_country.md; OQ-08",
-        "action": "Decide whether the reminder shows only for B/C, whether to ask 'Does your spouse live in Switzerland?' (yes/no), and whether the notice shows the computed insurance start date."
+        "title": "Canton handling and the fund's open rules",
+        "why": "For Swiss residents the canton could be derived from the postcode, and guidance prefers deriving values over asking. The AC-03.3.1 examples mark Divorced and Widowed as 'not asked ✅' even though OQ-04 is still open. F-SC-020 (unknown error behaviour) is not used anywhere. F-SC-019 still describes the insurance start rule as open even though F-TR-018 settles it.",
+        "evidence": "dev_refinement FEAT-03 (major, canton derivation); OQ-04; coverage F-SC-019, F-SC-020.",
+        "action": "Decide whether to derive the canton or ask for it, and how to handle a canton that doesn't match the postcode. Ask HR for portal screenshots with Divorced and Widowed selected. Mark F-SC-019 as superseded by F-TR-018."
       }
     ]
   },
   "stages": {
     "ran": [
-      "extract/zh_source_tax_calculator",
-      "extract/pension_portal",
-      "extract/hr_transcript",
-      "judge_facts",
-      "spec.raw",
+      "knowledge.raw",
+      "features.plan",
+      "features/FEAT-02-home-address",
+      "features/FEAT-01-first-working-day-insurance-start",
+      "features/FEAT-03-pension-fund-registration-data",
+      "features/FEAT-04-source-tax-liability",
       "judge_trace",
-      "naive_builder",
+      "dev_refinement/FEAT-01-first-working-day-insurance-start",
+      "dev_refinement/FEAT-02-home-address",
+      "dev_refinement/FEAT-04-source-tax-liability",
+      "dev_refinement/FEAT-03-pension-fund-registration-data",
       "review"
     ],
     "reused": [
       "normalize/hr_transcript",
+      "extract/hr_transcript",
       "normalize/pension_portal",
-      "normalize/zh_source_tax_calculator"
+      "extract/pension_portal",
+      "normalize/zh_source_tax_calculator",
+      "extract/zh_source_tax_calculator",
+      "judge_facts"
     ]
   },
-  "cost_usd_this_run": 2.38
+  "cost_usd_this_run": 5.29
 }

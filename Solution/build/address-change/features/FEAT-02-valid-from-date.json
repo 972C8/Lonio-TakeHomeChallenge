@@ -1,0 +1,289 @@
+{
+  "id": "FEAT-02-valid-from-date",
+  "order": 2,
+  "title": "Date from which the new address is valid",
+  "goal": "HR knows from which date to use the new address, for example for payslips sent on the 25th, and late reports are accepted only within three months.",
+  "context": "HR said that without the valid-from date \"I can't do anything\" (F-TR-018), because it decides which address is used, for example for payslips that go out on the 25th (F-TR-007, F-TR-008). People often report late, so past dates must be accepted, but not more than three months back (F-TR-019, F-TR-021). Dates use the format DD.MM.YYYY (G-02). Still open: whether future dates have a limit (OQ-04), exactly how 'three months ago' is counted, and what happens to reports made more than three months late (OQ-05).",
+  "stakeholders": [
+    "employee",
+    "hr"
+  ],
+  "items": [
+    "valid_from"
+  ],
+  "rules": [
+    "valid_from_not_older_than_three_months"
+  ],
+  "open_questions": [
+    "OQ-04",
+    "OQ-05"
+  ],
+  "source_refs": [
+    "F-TR-007",
+    "F-TR-008",
+    "F-TR-018",
+    "F-TR-019",
+    "F-TR-021",
+    "F-TR-023",
+    "G-02"
+  ],
+  "stories": [
+    {
+      "id": "US-02.1",
+      "title": "Every address change states the date from which the new address is valid",
+      "as_a": "hr",
+      "i_want": "every reported change of address to include the date from which the new address is valid",
+      "so_that": "I know which address to use from when, for example for the payslips that go out on the 25th",
+      "priority": "P1",
+      "priority_reason": "HR said that without this date \"I can't do anything\" - the address change cannot be processed and payslips may go to the wrong address (F-TR-018, F-TR-008).",
+      "status": "confirmed",
+      "items": [
+        "valid_from"
+      ],
+      "rules": [],
+      "source_refs": [
+        "F-TR-007",
+        "F-TR-008",
+        "F-TR-018",
+        "G-02"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-02.1.1",
+          "title": "The valid-from date is always asked and cannot be left empty",
+          "given": "an employee reports a change of address, whether within Switzerland or abroad",
+          "when": "they give the details of their move",
+          "then": "they are always asked from which date the new address is valid, and the report cannot be completed without this date",
+          "source_refs": [
+            "F-TR-007",
+            "F-TR-018"
+          ],
+          "examples": [
+            {
+              "name": "Move within Switzerland",
+              "illustrative": true,
+              "source_refs": [
+                "F-TR-018"
+              ],
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "valid_from",
+                  "expect": "asked"
+                },
+                {
+                  "target": "valid_from",
+                  "expect": "required"
+                }
+              ]
+            },
+            {
+              "name": "Move abroad",
+              "illustrative": true,
+              "source_refs": [
+                "F-TR-018"
+              ],
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "valid_from",
+                  "expect": "asked"
+                },
+                {
+                  "target": "valid_from",
+                  "expect": "required"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-02.1.2",
+          "title": "The date is given as a calendar date in the form DD.MM.YYYY",
+          "given": "an employee gives the date from which the new address is valid",
+          "when": "the date is shown back to them or passed on",
+          "then": "it is a single calendar day written as DD.MM.YYYY, for example 01.12.2026",
+          "source_refs": [
+            "G-02"
+          ]
+        },
+        {
+          "id": "AC-02.1.3",
+          "title": "HR receives the valid-from date together with the new address",
+          "given": "an employee has completed a change of address report",
+          "when": "HR receives the report",
+          "then": "HR sees the date from which the new address is valid next to the new address, so it can decide which address applies, for example for the payslips sent on the 25th",
+          "source_refs": [
+            "F-TR-007",
+            "F-TR-008"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "US-02.2",
+      "title": "Report a move late, but at most three months back",
+      "as_a": "employee",
+      "i_want": "to give a valid-from date in the past when I report my move late, as long as it is not more than three months ago",
+      "so_that": "I can still report my move correctly even if I did not do it on time, while HR is not confronted with address changes from long ago",
+      "priority": "P1",
+      "priority_reason": "HR reports that people often tell them late (F-TR-021); without accepting past dates these employees could not report their move at all.",
+      "status": "inferred",
+      "items": [
+        "valid_from"
+      ],
+      "rules": [
+        "valid_from_not_older_than_three_months"
+      ],
+      "source_refs": [
+        "F-TR-019",
+        "F-TR-021",
+        "F-TR-023",
+        "G-02"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-02.2.1",
+          "title": "Past dates within the last three months and today are accepted",
+          "given": "an employee reports a move late",
+          "when": "they give a valid-from date that is today or within the last three months before the day of reporting",
+          "then": "the date is accepted",
+          "source_refs": [
+            "F-TR-019",
+            "F-TR-021"
+          ],
+          "examples": [
+            {
+              "name": "Reported on the move date",
+              "illustrative": true,
+              "source_refs": [
+                "F-TR-019"
+              ],
+              "given": [
+                {
+                  "item": "today",
+                  "value": "14.11.2026"
+                },
+                {
+                  "item": "valid_from",
+                  "value": "14.11.2026"
+                }
+              ],
+              "then": [
+                {
+                  "target": "valid_from_not_older_than_three_months",
+                  "expect": "Accepted"
+                }
+              ]
+            },
+            {
+              "name": "Reported about six weeks late",
+              "illustrative": true,
+              "source_refs": [
+                "F-TR-019",
+                "F-TR-021"
+              ],
+              "given": [
+                {
+                  "item": "today",
+                  "value": "14.11.2026"
+                },
+                {
+                  "item": "valid_from",
+                  "value": "01.10.2026"
+                }
+              ],
+              "then": [
+                {
+                  "target": "valid_from_not_older_than_three_months",
+                  "expect": "Accepted"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-02.2.2",
+          "title": "Dates more than three months in the past are not accepted",
+          "given": "an employee reports a move very late",
+          "when": "they give a valid-from date more than three months before the day of reporting",
+          "then": "the date is not accepted and the employee is told that the date may be at most three months in the past. What the employee should do next, and whether the exact day three months ago counts as accepted, is still open (OQ-05)",
+          "source_refs": [
+            "F-TR-019"
+          ],
+          "examples": [
+            {
+              "name": "Reported about five months late",
+              "illustrative": true,
+              "source_refs": [
+                "F-TR-019"
+              ],
+              "given": [
+                {
+                  "item": "today",
+                  "value": "14.11.2026"
+                },
+                {
+                  "item": "valid_from",
+                  "value": "01.06.2026"
+                }
+              ],
+              "then": [
+                {
+                  "target": "valid_from_not_older_than_three_months",
+                  "expect": "Not accepted"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-02.2.3",
+          "title": "Future dates are accepted",
+          "given": "an employee reports a move in advance",
+          "when": "they give a valid-from date after the day of reporting",
+          "then": "the date is accepted; no upper limit for future dates has been stated (OQ-04)",
+          "source_refs": [
+            "F-TR-019",
+            "F-TR-023"
+          ],
+          "examples": [
+            {
+              "name": "Move reported in advance",
+              "illustrative": true,
+              "source_refs": [
+                "F-TR-023"
+              ],
+              "given": [
+                {
+                  "item": "today",
+                  "value": "14.11.2026"
+                },
+                {
+                  "item": "valid_from",
+                  "value": "01.01.2027"
+                }
+              ],
+              "then": [
+                {
+                  "target": "valid_from_not_older_than_three_months",
+                  "expect": "Accepted"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

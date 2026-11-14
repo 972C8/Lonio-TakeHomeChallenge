@@ -12,12 +12,12 @@ product-owner input and may be cited as sources (`source_refs`), like facts.
   source tax (Zurich tariff calculator), and the employer's HR (Muster AG).
 - [G-03] **Out of scope:** social insurance (AHV) data, IT equipment, anything
   not needed by the parties above.
-- [G-04] Scope of this requirement package: the **employee-facing
-  questionnaire** (what we ask, in which steps and order, under which
-  conditions, required or not, derived values). How collected data is
+- [G-04] Scope of these feature specs: what Lonio asks the new employee (which
+  information, in which order, under which conditions, required or not) and
+  the business rules derived from the answers. How collected data is
   transmitted to each receiving party (exports, portal entry, change
-  notifications) is a separate requirement package; the `consumers` of each
-  field document what each party needs for that package.
+  notifications) is a separate topic; each information item documents which
+  stakeholder needs it and why.
 - [G-05] Simplifications given by the assignment: Switzerland has exactly one
   source tax system (Zurich's) and exactly one pension fund (Pensionskasse
   Muster).
@@ -33,18 +33,18 @@ product-owner input and may be cited as sources (`source_refs`), like facts.
   employee for values they cannot know.
 - Stakeholder corrections override earlier statements. Keep both as facts and
   link them.
-- [G-09] Countries as ISO 3166-1 alpha-2 codes; Switzerland = "CH". Dates as
-  ISO YYYY-MM-DD internally; display DD.MM.YYYY. Questionnaire language:
-  English.
-- Use these field ids when the concept exists (do not create a field only
-  because it is listed): first_name, last_name, date_of_birth, nationality,
-  permit_type, residence_country, address_street, address_house_number,
+- [G-09] Questionnaire language: English.
+- Use these information item ids when the concept exists (do not create an
+  item only because it is listed): first_name, last_name, date_of_birth, nationality,
+  permit_type, address_street, address_house_number,
   address_postcode, address_town, address_country, residence_canton,
   first_working_day, civil_status, spouse_date_of_birth, spouse_nationality,
-  spouse_permit_type, spouse_residence_country.
-- [G-10] Option values (stored values) for enums: permit types use the
-  official letter as value ("B", "C", ...; a value "other" if needed);
-  civil status uses lower-case snake_case of the label ("single", "married",
-  "divorced", "widowed", ...). Labels are free.
-- Use these rule ids for derived values when they exist:
+  spouse_permit_type, spouse_residence_country. The country of residence is
+  the country of the home address (address_country).
+- [G-10] Business wording for values (used in allowed values and examples):
+  countries by English name ("Switzerland", "Germany", "Liechtenstein"),
+  permits as "B permit", "C permit", civil status exactly as the pension
+  fund's list shows it ("Single", "Married", ...), dates as DD.MM.YYYY,
+  yes/no as "yes"/"no".
+- Use these business rule ids when they exist:
   subject_to_source_tax, insurance_start_date.

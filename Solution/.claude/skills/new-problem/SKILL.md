@@ -8,12 +8,17 @@ description: Start a new investigation (a new process to extract requirements fo
 Everything problem-specific lives in `problems/<name>/`; engine and adapters
 are reused.
 
-1. Interview the user briefly: goal, receiving parties (consumers), sources
-   (type, location, authority), what is out of scope, requirement shape
-   (today: `data_field`; other shapes need a new schema + templates).
-2. Create `problems/<name>/` with `profile.yaml`, `guidance.md`,
-   `decisions.yaml` (empty), `personas.yaml` (test cases taken from the
-   sources), `gold.yaml` (hand-labelled expectations; ask the user to write or
-   confirm it – never generate it from pipeline output).
-   Use `problems/employee-onboarding/` as the reference.
+1. Interview the user briefly: goal, stakeholders, sources (type, location,
+   authority, precedence), what is out of scope, the checklist every
+   information item must answer (`item_checklist`), optional feature
+   constraints.
+2. Create `problems/<name>/` with `profile.yaml`, `guidance.md` (tag citable
+   product-owner statements `[G-nn]`; give id and value vocabulary),
+   `decisions.yaml` (empty), `examples.yaml` (named cases taken from the
+   sources) and `gold.yaml` (hand-labelled expectations; ask the user to
+   write or confirm it – never generate it from pipeline output).
+   `problems/address-change/` is the minimal reference,
+   `problems/employee-onboarding/` the full one. Never change `pipeline/`
+   for a new problem; if you think you must, the change belongs in a profile
+   or an adapter.
 3. Run `python -m pipeline --problem <name> run`.

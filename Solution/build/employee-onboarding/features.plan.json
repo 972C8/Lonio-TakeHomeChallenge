@@ -1,0 +1,167 @@
+{
+  "features": [
+    {
+      "id": "FEAT-01-first-working-day-insurance-start",
+      "order": 1,
+      "title": "Confirmed first working day and derived pension insurance start date",
+      "goal": "Every new employee confirms their first working day, and Lonio works out the pension insurance start date from it, so the fund never gets a wrong or outdated start date.",
+      "context": "HR calls the first working day the most important item. It often changes, so HR asks the employee to confirm it (F-TR-014, F-TR-015). The pension fund requires an insurance start date that is always the 1st of a month (F-SC-008, F-SC-009). HR works it out by hand: if the first working day is the 1st of a month, insurance starts that day, otherwise on the 1st of the following month (F-TR-016, F-TR-017, F-TR-018). Once, an outdated first working day led to a wrong insurance start date at the fund (F-TR-019). Employees cannot know the insurance start date, so Lonio asks only for the primary fact and derives the date (G-08). The employee is not asked for the insurance start date (EX-05).",
+      "stakeholders": [
+        "employee",
+        "hr",
+        "pension_fund"
+      ],
+      "items": [
+        "first_working_day"
+      ],
+      "rules": [
+        "insurance_start_date"
+      ],
+      "open_questions": [],
+      "source_refs": [
+        "F-TR-014",
+        "F-TR-015",
+        "F-TR-016",
+        "F-TR-017",
+        "F-TR-018",
+        "F-TR-019",
+        "F-SC-008",
+        "F-SC-009",
+        "G-08"
+      ],
+      "stories": []
+    },
+    {
+      "id": "FEAT-02-home-address",
+      "order": 2,
+      "title": "Complete home address and country of residence",
+      "goal": "Every new employee gives a complete postal address once, so HR can post documents, and its country tells the other steps whether the employee lives in Switzerland.",
+      "context": "HR posts many documents to employees and needs the complete address as written on an envelope: street, number, postcode, town and country, with no extra parts (F-TR-009, F-TR-010). The country of the home address is also the employee's country of residence (F-TR-040, G-09). Several later questions depend on it. Employees living abroad are always subject to source tax (F-TR-034, F-TR-037), and the pension fund canton is asked only of employees living in Switzerland. This feature therefore comes before the pension and source tax features that depend on it.",
+      "stakeholders": [
+        "employee",
+        "hr",
+        "source_tax"
+      ],
+      "items": [
+        "address_street",
+        "address_house_number",
+        "address_postcode",
+        "address_town",
+        "address_country"
+      ],
+      "rules": [],
+      "open_questions": [],
+      "source_refs": [
+        "F-TR-009",
+        "F-TR-010",
+        "F-TR-034",
+        "F-TR-036",
+        "F-TR-037",
+        "F-TR-040",
+        "G-09"
+      ],
+      "stories": []
+    },
+    {
+      "id": "FEAT-03-pension-fund-registration-data",
+      "order": 3,
+      "title": "Personal and family details for pension fund registration",
+      "goal": "Lonio collects every field Pensionskasse Muster requires, including the spouse's date of birth for married employees, so that a registration is never blocked by missing data.",
+      "context": "The pension fund portal requires first name, last name, date of birth, canton and civil status for every employee (F-SC-002 to F-SC-007, F-SC-010, F-SC-015). For married employees it also requires the spouse's date of birth and blocks the registration without it (F-TR-021, F-SC-012 to F-SC-014, F-SC-016). The civil status list shows only Single, Married, Divorced and Widowed (F-SC-011, G-07). HR's recollection of civil status matches the fund's list (F-TR-020, F-TR-022). Civil status is also an input for the source tax rule and the calculator (F-TR-029, F-TR-030). The fund offers only Swiss cantons and does not say whether it means the canton of residence or of work. Until the fund answers (OQ-02), the canton is asked only of employees living in Switzerland. It depends on address_country from FEAT-02. Registered partnerships, and portal behaviour for Divorced or Widowed, are still open.",
+      "stakeholders": [
+        "employee",
+        "hr",
+        "pension_fund"
+      ],
+      "items": [
+        "first_name",
+        "last_name",
+        "date_of_birth",
+        "civil_status",
+        "spouse_date_of_birth",
+        "residence_canton"
+      ],
+      "rules": [],
+      "open_questions": [
+        "OQ-02",
+        "OQ-03",
+        "OQ-04"
+      ],
+      "source_refs": [
+        "F-SC-002",
+        "F-SC-003",
+        "F-SC-004",
+        "F-SC-005",
+        "F-SC-006",
+        "F-SC-007",
+        "F-SC-010",
+        "F-SC-011",
+        "F-SC-012",
+        "F-SC-013",
+        "F-SC-014",
+        "F-SC-015",
+        "F-SC-016",
+        "F-SC-017",
+        "F-SC-018",
+        "F-TR-020",
+        "F-TR-021",
+        "F-TR-022",
+        "F-TR-023",
+        "F-TR-024",
+        "G-07"
+      ],
+      "stories": []
+    },
+    {
+      "id": "FEAT-04-source-tax-liability",
+      "order": 4,
+      "title": "Decide whether the employee is subject to source tax",
+      "goal": "Lonio asks only the questions needed to decide whether an employee is subject to source tax, so that only those employees get the source tax questions and nobody gives nationality, permit or spouse data that is not needed.",
+      "context": "HR decides by hand whether an employee is subject to source tax. Employees living abroad always are. Swiss nationals and C permit holders living in Switzerland are not. Other foreigners living in Switzerland are not subject if married to a spouse who is Swiss or holds a C permit and lives in Switzerland (F-TR-005, F-TR-006, F-TR-025, F-TR-030, F-TR-034, F-TR-037). Data minimisation means each of these questions is asked only when its answer can change the outcome (G-01). The rule uses address_country (FEAT-02) and civil_status (FEAT-03). The tariff questions of the Zurich calculator have not been analysed yet (OQ-01, blocking). Until they are, this feature delivers the subject or not-subject decision that gates them. HR is not sure the rule is complete (OQ-05). The permit list is undefined (OQ-06). HR wished for a permit reminder because half of new employees forget to bring it (F-TR-028, OQ-07). Using the Zurich calculator for every employee is an agreed simplification (F-TR-008, G-05, OQ-08).",
+      "stakeholders": [
+        "employee",
+        "hr",
+        "source_tax"
+      ],
+      "items": [
+        "nationality",
+        "permit_type",
+        "spouse_nationality",
+        "spouse_permit_type",
+        "spouse_residence_country"
+      ],
+      "rules": [
+        "subject_to_source_tax"
+      ],
+      "open_questions": [
+        "OQ-01",
+        "OQ-05",
+        "OQ-06",
+        "OQ-07",
+        "OQ-08"
+      ],
+      "source_refs": [
+        "F-TR-005",
+        "F-TR-006",
+        "F-TR-007",
+        "F-TR-008",
+        "F-TR-025",
+        "F-TR-028",
+        "F-TR-029",
+        "F-TR-030",
+        "F-TR-031",
+        "F-TR-032",
+        "F-TR-033",
+        "F-TR-034",
+        "F-TR-036",
+        "F-TR-037",
+        "F-TR-038",
+        "F-TR-039",
+        "F-TR-040",
+        "G-01",
+        "G-05"
+      ],
+      "stories": []
+    }
+  ]
+}

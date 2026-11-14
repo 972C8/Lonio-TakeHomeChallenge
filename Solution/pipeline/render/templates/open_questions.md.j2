@@ -1,11 +1,12 @@
 # Open questions
 
-Things the sources do not settle. Each needs a product decision
-(`decisions.yaml`) or clarification with the stakeholder. Until then, builders
-implement the **recommendation** and keep it easy to change.
+What the sources do not settle. Each needs a product decision or a
+clarification with the stakeholder. Until then, follow the recommendation.
 
-{% for q in spec.open_questions %}
-## {{ q.id }}{% if q.blocking %} (blocking){% endif %}: {{ q.question }}
+{% for q in km.open_questions %}
+## {{ q.id }}
+**{{ q.question }}**{% if q.blocking %} _(blocking)_{% endif %}
+
 
 {{ q.why_it_matters }}
 
@@ -14,12 +15,12 @@ Options:
 {% for o in q.options %}
 - {{ o }}
 {% endfor %}
-{% endif %}
 
+{% endif %}
 {% if q.recommendation %}**Recommendation:** {{ q.recommendation }}
 
 {% endif %}
-{% if q.affects %}Affects: {% for a in q.affects %}`{{ a }}`{{ ", " if not loop.last }}{% endfor %}
+{% if q.affects %}Affects: {% for a in q.affects %}{{ names.get(a, a) }}{{ ", " if not loop.last }}{% endfor %}
 
 {% endif %}
 {% for e in evidence(q.source_refs) %}

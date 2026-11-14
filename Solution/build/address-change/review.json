@@ -1,0 +1,66 @@
+{
+  "verdict": "not_ready",
+  "summary": "Not ready. Examples pass (23/23), all 22 facts are used and the gold eval is good (item recall 1.0). Three things block release: (1) the canton logic is circular (lint error on item.new_canton) and its open question OQ-01 is still undecided; (2) dev refinement raised a blocker on who passes moves abroad to payroll, and how; (3) the spec contradicts itself on what payroll receives. Several criteria also prescribe validation behaviour that no stakeholder asked for (tech_leak and trace_judge both flag it). Once HR and payroll have answered, most of the rest can be settled in decisions.yaml.",
+  "findings": [
+    {
+      "title": "Canton detection is circular and its open question is unresolved",
+      "why": "FEAT-04 can't be built or tested. The spec asks for the new canton only when the canton changes, but can't know that without the new canton. Three examples (AC-04.1.1, AC-04.2.1, AC-04.3.1) pass only because they assume it is already known.",
+      "evidence": "lint error: item.new_canton 'asked_when depends on itself'; OQ-01 blocking=true; items new_canton and previous_canton plus rule canton_changes are inferred",
+      "action": "Decide OQ-01 with HR (Sara) in decisions.yaml. Recommended: take the previous canton from HR records and work out the new canton from the postcode. Then rewrite asked_when for new_canton. Alternatively, take FEAT-04 out of this release and have HR handle canton changes by hand."
+    },
+    {
+      "title": "No one has decided who informs payroll, or how",
+      "why": "P1 source-tax risk. Engineers can't tell whether to build automatic forwarding to payroll or a step where HR passes the report on. They also don't know whether payroll is an internal team or an external provider.",
+      "evidence": "dev_refinement blocker on FEAT-03. AC-03.1.1 says payroll is informed 'when the employee submits', but AC-03.2.1 has HR in the loop.",
+      "action": "Record in decisions.yaml: who sends the report to payroll, when (on submission, after HR accepts it, or before the payroll run on the 25th), and whether payroll is internal or external."
+    },
+    {
+      "title": "The spec contradicts itself on what payroll receives",
+      "why": "Data minimisation (G-01) depends on this. Some parts say payroll gets the valid-from date, others say it doesn't. No source says payroll gets even the country.",
+      "evidence": "trace_judge partial: US-03.1 and rule.payroll_must_be_informed (Switzerland row not backed). FEAT-02 lists HR as the only user of the valid-from date, but FEAT-03's context and OQ-05 assume payroll gets it. Payroll was never interviewed.",
+      "action": "Interview payroll (this also closes OQ-05). Then list exactly what payroll receives: who the employee is, the country, the valid-from date, and whether the full address is included. Confirm whether payroll is involved in Swiss canton changes for source-taxed staff."
+    },
+    {
+      "title": "Validation and blocking behaviour that no source supports",
+      "why": "These criteria force a UX and system design no stakeholder asked for. Engineering would build rules that may be wrong.",
+      "evidence": "tech_leak and trace_judge on FEAT-01 'report cannot be completed while any of these four is missing'; FEAT-02 'date is not accepted and the employee is told…' (US-02.2 partial); OQ-03",
+      "action": "Confirm with HR whether an incomplete or late report is blocked or sent to HR for manual handling (closes OQ-03). Until then, describe only what HR needs and leave out how the system enforces it."
+    },
+    {
+      "title": "Address completeness rules are not defined",
+      "why": "House number and postcode are always required, which would block rural addresses, named buildings and foreign addresses. There is also no plausibility rule (for example, 4-digit Swiss postcodes).",
+      "evidence": "dev_refinement major questions on FEAT-01 (house number and postcode, plausibility); trace_judge partial on US-01.1",
+      "action": "Decide whether the house number and postcode can be left empty, and whether there is any format check beyond 'filled in'. Also decide whether the employee answers a separate 'within Switzerland or abroad?' question, or whether that comes from the country only."
+    },
+    {
+      "title": "Moves by cross-border staff and moves into Switzerland are undefined",
+      "why": "The payroll rule and the canton logic both assume the employee lives in Switzerland today. Someone moving into Switzerland has no previous canton, and payroll could be informed wrongly.",
+      "evidence": "OQ-04 (not linked in FEAT-01); FEAT-04 dev_refinement major question 'no previous canton'; Liechtenstein, Büsingen and Campione questions",
+      "action": "Decide OQ-04 with HR and payroll. Add how a move into Switzerland is treated to both FEAT-03 and FEAT-04, and link OQ-04 from FEAT-01."
+    },
+    {
+      "title": "The canton value and its handover are not specified",
+      "why": "AC-04.1.3 can't be tested without a list of canton names. It is also unclear whether reporting to the tax office is part of the product or a manual HR step.",
+      "evidence": "dev_refinement major questions on FEAT-04 (canton naming, HR records missing or outdated, tax office handover); trace_judge partial on US-04.3 (AC-04.3.3 and P1 not backed)",
+      "action": "Add guidance: the 26 cantons and one naming convention. Make the tax office handover a manual HR step, out of scope. Decide what happens when HR's records have no canton or an old one. Confirm the P1 priority for US-04.x."
+    },
+    {
+      "title": "How reports reach HR is not specified",
+      "why": "Engineering can't tell whether to build a notification, an HR task list, or a direct update of the employee record.",
+      "evidence": "dev_refinement major question on FEAT-01 (AC-01.1.2 and AC-01.2.3 say HR 'looks at the report')",
+      "action": "Decide whether HR is notified of new reports, and whether HR updates the master data manually or the report updates it directly."
+    },
+    {
+      "title": "Wording that describes system internals",
+      "why": "These phrases lock in implementation choices and code names that don't belong in business wording.",
+      "evidence": "tech_leak on FEAT-02 'rule valid_from_within_three_months'; FEAT-04 'The internal condition can only check…'; FEAT-01 'choose from a fixed list'",
+      "action": "Rewrite them in business terms: name the rule in plain words, describe the condition by its result, and phrase OQ-06 as 'which countries are allowed'."
+    },
+    {
+      "title": "Small inconsistencies in traceability and status",
+      "why": "These make it unclear how firm the requirements are, and they make estimates harder.",
+      "evidence": "The payslip purpose is not sourced (trace_judge on new_street, new_house_number, new_postcode, new_town, new_country and US-01.1). US-02.2 is marked inferred but its rule is marked confirmed. The AC-03.1.1 table shows 'asked' for Germany but '–' for France. AC-03.1.2 duplicates AC-01.2.x. The rule 'no future limit' is not backed (OQ-02).",
+      "action": "Cite or remove the payslip purpose. Align US-02.2's status with its rule. Fix the AC-03.1.1 table and drop AC-03.1.2. Confirm OQ-02 with HR."
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "id": "FEAT-03-inform-payroll-move-abroad",
+  "order": 3,
+  "title": "Inform payroll of moves abroad",
+  "goal": "Payroll is told about every move abroad, so it can check for source tax, and is not told about moves within Switzerland.",
+  "context": "When an employee moves abroad, they may have to pay source tax, so payroll must know (F-TR-010, F-TR-011, F-TR-012). Moves within Switzerland do not concern payroll (F-TR-017). This feature uses the new country captured in FEAT-01. Payroll's needs are known only second-hand from HR, and HR said the list is complete only 'for now' (F-TR-022). We have not yet asked payroll whether it also needs the valid-from date or the full foreign address (OQ-06).",
+  "stakeholders": [
+    "hr",
+    "payroll",
+    "employee"
+  ],
+  "items": [],
+  "rules": [
+    "payroll_must_be_informed"
+  ],
+  "open_questions": [
+    "OQ-06"
+  ],
+  "source_refs": [
+    "F-TR-010",
+    "F-TR-011",
+    "F-TR-012",
+    "F-TR-017",
+    "F-TR-022"
+  ],
+  "stories": [
+    {
+      "id": "US-03.1",
+      "title": "Payroll learns about every move abroad",
+      "as_a": "payroll",
+      "i_want": "to be informed whenever an employee reports a move to a country other than Switzerland, including the new country of residence",
+      "so_that": "I can check whether the employee now has to pay source tax",
+      "priority": "P1",
+      "priority_reason": "HR stated this as a firm requirement ('payroll has to be informed'). If payroll is not told, source tax may be missed for employees who move abroad.",
+      "status": "confirmed",
+      "items": [
+        "new_country"
+      ],
+      "rules": [
+        "payroll_must_be_informed"
+      ],
+      "source_refs": [
+        "F-TR-010",
+        "F-TR-011",
+        "F-TR-012",
+        "F-TR-017"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-03.1.1",
+          "title": "Payroll is informed when the new country is not Switzerland",
+          "given": "an employee reports a change of address and gives a new country other than Switzerland",
+          "when": "the report is submitted",
+          "then": "payroll is informed of the move abroad, because the employee may have to pay source tax",
+          "source_refs": [
+            "F-TR-010",
+            "F-TR-011",
+            "F-TR-012"
+          ],
+          "examples": [
+            {
+              "name": "Move to Germany",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "payroll_must_be_informed",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [
+                "F-TR-011"
+              ]
+            },
+            {
+              "name": "Move to France",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "France"
+                }
+              ],
+              "then": [
+                {
+                  "target": "payroll_must_be_informed",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [
+                "F-TR-011"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-03.1.2",
+          "title": "Payroll receives the new country of residence",
+          "given": "payroll is informed of a move abroad",
+          "when": "payroll receives the information",
+          "then": "it includes the new country of residence, given by its English name (for example \"Germany\"). Whether payroll also needs the valid-from date or the full foreign address is not yet decided (see OQ-06).",
+          "source_refs": [
+            "F-TR-010",
+            "F-TR-012",
+            "F-TR-022",
+            "G-02"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "US-03.2",
+      "title": "Payroll is not told about moves within Switzerland",
+      "as_a": "hr",
+      "i_want": "payroll to be informed only about moves abroad and not about moves within Switzerland",
+      "so_that": "payroll only gets information it needs for source tax, and employees' address data is shared no more than necessary",
+      "priority": "P2",
+      "priority_reason": "This follows from the stated rule and from data minimisation. It avoids needless work and sharing, but nothing is blocked if it is missing.",
+      "status": "confirmed",
+      "items": [
+        "new_country"
+      ],
+      "rules": [
+        "payroll_must_be_informed"
+      ],
+      "source_refs": [
+        "F-TR-011",
+        "F-TR-017",
+        "G-01"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-03.2.1",
+          "title": "Payroll is not informed when the new country is Switzerland",
+          "given": "an employee reports a change of address and gives Switzerland as the new country",
+          "when": "the report is submitted",
+          "then": "payroll is not informed of the move",
+          "source_refs": [
+            "F-TR-011",
+            "F-TR-017",
+            "G-01"
+          ],
+          "examples": [
+            {
+              "name": "Move within Switzerland",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "payroll_must_be_informed",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [
+                "F-TR-017"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

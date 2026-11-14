@@ -57,67 +57,50 @@ class Fact(BaseModel):
     superseded_by: list[str] = F(default_factory=list)
 
 
-# ------------------------------------------------------------------- spec ---
+# ---------------------------------------------------------- knowledge ---
+# What we learned, in business language. Generic across problems.
+# `*_expr` / `expression` are an INTERNAL formalisation used only by the
+# pipeline to verify examples; they are never rendered into the feature specs.
 
-class Option(BaseModel):
-    value: str
-    label: str
-
-
-class Consumer(BaseModel):
-    party: str                   # consumer id from the profile, e.g. pension_fund
-    purpose: str                 # why they need it
-    target: str = ""             # name of the field on their side, e.g. "Spouse's date of birth"
+class Need(BaseModel):
+    stakeholder: str             # stakeholder id from the profile
+    purpose: str                 # why they need it, in business terms
 
 
-class FieldReq(BaseModel):
-    id: str                      # snake_case, stable across runs
-    step: str                    # step id
-    order: int                   # order within step
-    label: str                   # UI label
-    question: str                # wording shown to the employee
-    help_text: str = ""
-    type: Literal["text", "date", "enum", "boolean", "country", "integer", "file"]
-    format: str = ""             # e.g. DD.MM.YYYY, ISO country code
-    options: list[Option] = F(default_factory=list)
-    validation: list[str] = F(default_factory=list)
-    ask_when: str = "true"       # condition expression (see conventions)
-    required_when: str = "true"  # condition expression, evaluated only when asked
-    consumers: list[Consumer]
-    source_refs: list[str]       # fact ids / decision ids
+class InfoItem(BaseModel):
+    """A piece of information the process needs (asked, provided or produced)."""
+    id: str                      # stable snake_case id
+    name: str                    # business name
+    description: str             # what exactly is needed, in business terms
+    form: str = ""               # the form the SOURCES require (e.g. "date as DD.MM.YYYY", "full postal address"), else ""
+    allowed_values: list[str] = F(default_factory=list)   # business values, if the sources define a closed list
+    asked_when: str              # business-language condition, "Always" if unconditional
+    required_when: str           # business-language: when it may not be left empty / when it may
+    asked_when_expr: str = "true"     # internal
+    required_when_expr: str = "true"  # internal
+    needed_by: list[Need]
+    source_refs: list[str]
     status: Literal["confirmed", "inferred", "decision"] = "confirmed"
     notes: str = ""
     depends_on: list[str] = F(default_factory=list)   # computed by the engine
 
 
-class Rule(BaseModel):
-    """A derived value. Never asked; computed from answers."""
+class DecisionRow(BaseModel):
+    when: list[str]              # one cell per input, business language ("lives abroad", "any")
+    then: str
+    source_refs: list[str] = F(default_factory=list)
+
+
+class BusinessRule(BaseModel):
     id: str
-    description: str
-    expression: str              # expression over field / rule ids
-    output_type: Literal["boolean", "date", "text", "enum"]
-    consumers: list[Consumer] = F(default_factory=list)
+    name: str
+    statement: str               # the rule in plain business language
+    inputs: list[str] = F(default_factory=list)       # column headers of the decision table (business names)
+    table: list[DecisionRow] = F(default_factory=list)
+    expression: str = ""         # internal formalisation over item / rule ids
     source_refs: list[str]
     status: Literal["confirmed", "inferred", "decision"] = "confirmed"
     depends_on: list[str] = F(default_factory=list)
-
-
-class Step(BaseModel):
-    id: str
-    order: int
-    title: str
-    purpose: str
-    ask_when: str = "true"
-    intro_text: str = ""         # text shown at the top of the step
-
-
-class Notice(BaseModel):
-    """Non-data content shown to the employee (reminders, hints)."""
-    id: str
-    step: str
-    text: str
-    show_when: str = "true"
-    source_refs: list[str]
 
 
 class OpenQuestion(BaseModel):
@@ -126,8 +109,8 @@ class OpenQuestion(BaseModel):
     why_it_matters: str
     options: list[str] = F(default_factory=list)
     recommendation: str = ""
-    affects: list[str] = F(default_factory=list)   # field / rule ids
-    source_refs: list[str]
+    affects: list[str] = F(default_factory=list)
+    source_refs: list[str] = F(default_factory=list)
     blocking: bool = False
 
 
@@ -138,13 +121,79 @@ class Exclusion(BaseModel):
     source_refs: list[str]
 
 
-class Spec(BaseModel):
-    steps: list[Step]
-    fields: list[FieldReq]
-    rules: list[Rule] = F(default_factory=list)
-    notices: list[Notice] = F(default_factory=list)
+class KnowledgeModel(BaseModel):
+    items: list[InfoItem]
+    rules: list[BusinessRule] = F(default_factory=list)
     open_questions: list[OpenQuestion] = F(default_factory=list)
     exclusions: list[Exclusion] = F(default_factory=list)
+
+
+# -------------------------------------------------------- feature specs ---
+
+class ExampleValue(BaseModel):
+    item: str                    # info item id
+    value: str                   # business value as the examples are written
+
+
+class Expectation(BaseModel):
+    target: str                  # info item id or business rule id
+    expect: str                  # item: asked | not asked | required | optional ; rule: its value ("yes", "no", "01.04.2026"...)
+
+
+class Example(BaseModel):
+    name: str                    # e.g. "Julia (T-021)" - real cases first
+    given: list[ExampleValue]
+    then: list[Expectation]
+    source_refs: list[str] = F(default_factory=list)
+    illustrative: bool = False   # true if not a real case from a source
+
+
+class AcceptanceCriterion(BaseModel):
+    id: str                      # AC-03.1
+    title: str
+    given: str
+    when: str
+    then: str
+    examples: list[Example] = F(default_factory=list)
+    source_refs: list[str]
+
+
+class Story(BaseModel):
+    id: str                      # US-03
+    title: str
+    as_a: str                    # stakeholder id
+    i_want: str
+    so_that: str
+    priority: Literal["P1", "P2", "P3"]
+    priority_reason: str
+    acceptance_criteria: list[AcceptanceCriterion]
+    items: list[str] = F(default_factory=list)       # info items this story covers
+    rules: list[str] = F(default_factory=list)       # business rules this story covers
+    source_refs: list[str]
+    status: Literal["confirmed", "inferred", "decision"] = "confirmed"
+
+
+class Feature(BaseModel):
+    id: str                      # FEAT-02-start-date
+    order: int
+    title: str
+    goal: str
+    context: str                 # the problem today, from the sources
+    stakeholders: list[str]
+    stories: list[Story] = F(default_factory=list)
+    items: list[str] = F(default_factory=list)
+    rules: list[str] = F(default_factory=list)
+    open_questions: list[str] = F(default_factory=list)
+    source_refs: list[str] = F(default_factory=list)
+
+
+class FeaturePlan(BaseModel):
+    features: list[Feature]      # stories left empty at planning time
+
+
+class Spec(BaseModel):
+    knowledge: KnowledgeModel
+    features: list[Feature]
 
 
 # -------------------------------------------------------------- decisions ---

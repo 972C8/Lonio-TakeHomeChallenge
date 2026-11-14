@@ -1,22 +1,32 @@
 # Traceability
 
-Every requirement cites facts; every fact quotes its source verbatim. Quotes
-are machine-checked against the normalized sources (`build/`).
+Every story, criterion, information item and rule cites facts; every fact
+quotes its source verbatim, and the quotes are machine-checked against the
+sources.
 
-## Requirement → facts
+## Stories → sources
 
-| Requirement | Facts / decisions |
+| Story | Acceptance criteria | Sources |
+|---|---|---|
+{% for f in features %}{% for s in f.stories %}
+| {{ s.id }} {{ s.title | cell }} | {% for ac in s.acceptance_criteria %}{{ ac.id }}{{ ", " if not loop.last }}{% endfor %} | {{ s.source_refs | join(", ") }} |
+{% endfor %}{% endfor %}
+
+## Information and rules → sources
+
+| Element | Sources |
 |---|---|
-{% for f in spec.fields %}| field `{{ f.id }}` | {{ f.source_refs | join(", ") }} |
+{% for it in km.items %}
+| {{ it.name | cell }} | {{ it.source_refs | join(", ") }} |
 {% endfor %}
-{% for r in spec.rules %}| rule `{{ r.id }}` | {{ r.source_refs | join(", ") }} |
-{% endfor %}
-{% for n in spec.notices %}| notice `{{ n.id }}` | {{ n.source_refs | join(", ") }} |
+{% for r in km.rules %}
+| rule: {{ r.name | cell }} | {{ r.source_refs | join(", ") }} |
 {% endfor %}
 
 ## Facts
 
 | Fact | Source | Kind | Basis | Statement | Anchors |
 |---|---|---|---|---|---|
-{% for f in facts %}| {{ f.id }} | {{ f.source_id }} | {{ f.kind }} | {{ f.basis }}{% if f.superseded_by %}, superseded by {{ f.superseded_by | join(", ") }}{% endif %} | {{ f.statement | replace("|", "/") }} | {% for a in f.anchors %}{{ a.unit_id }}{{ ", " if not loop.last }}{% endfor %} |
+{% for f in facts %}
+| {{ f.id }} | {{ f.source_id }} | {{ f.kind }} | {{ f.basis }}{% if f.superseded_by %}, superseded by {{ f.superseded_by | join(", ") }}{% endif %} | {{ f.statement | cell }} | {% for a in f.anchors %}{{ a.unit_id }}{{ ", " if not loop.last }}{% endfor %} |
 {% endfor %}

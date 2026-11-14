@@ -49,4 +49,8 @@ Source: {{source_description}}
    out of scope. Skip pure small talk.
 
 ## Problem guidance
+Context for interpreting the source. Its conventions (ids, value wording,
+formats) are NOT facts of this source: never extract a fact that only the
+guidance states.
+
 {{guidance}}

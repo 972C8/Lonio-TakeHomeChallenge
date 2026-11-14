@@ -1,0 +1,299 @@
+{
+  "id": "FEAT-02-home-address",
+  "order": 2,
+  "title": "Complete home address and country of residence",
+  "goal": "Every new employee gives a complete postal address once, so HR can post documents, and its country tells the other steps whether the employee lives in Switzerland.",
+  "context": "HR posts many documents to employees and needs the complete address as written on an envelope: street, number, postcode, town and country, with no extra parts (F-TR-009, F-TR-010). The country of the home address is also the employee's country of residence (F-TR-040, G-09). Several later questions depend on it. Employees living abroad are always subject to source tax (F-TR-034, F-TR-037), and the pension fund canton is asked only of employees living in Switzerland. This feature therefore comes before the pension and source tax features that depend on it.",
+  "stakeholders": [
+    "employee",
+    "hr",
+    "source_tax"
+  ],
+  "items": [
+    "address_street",
+    "address_house_number",
+    "address_postcode",
+    "address_town",
+    "address_country"
+  ],
+  "rules": [],
+  "open_questions": [],
+  "source_refs": [
+    "F-TR-009",
+    "F-TR-010",
+    "F-TR-034",
+    "F-TR-036",
+    "F-TR-037",
+    "F-TR-040",
+    "G-09"
+  ],
+  "stories": [
+    {
+      "id": "US-02.1",
+      "title": "Complete postal address for HR mail",
+      "as_a": "hr",
+      "i_want": "every new employee to give their complete home address (street, house number, postcode, town and country) as it would be written on an envelope",
+      "so_that": "I can post documents to the employee without chasing missing address parts",
+      "priority": "P1",
+      "priority_reason": "HR posts many documents to employees and states the address 'has to be complete'; an incomplete address blocks HR's postal communication (F-TR-010).",
+      "status": "confirmed",
+      "items": [
+        "address_street",
+        "address_house_number",
+        "address_postcode",
+        "address_town",
+        "address_country"
+      ],
+      "rules": [],
+      "source_refs": [
+        "F-TR-009",
+        "F-TR-010"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-02.1.1",
+          "title": "All address parts are always asked and required",
+          "given": "a new employee is filling in the onboarding questionnaire",
+          "when": "they reach the home address step",
+          "then": "they are asked for street, house number, postcode, town and country of their home address, and cannot complete the step while any of these five parts is empty",
+          "source_refs": [
+            "F-TR-009",
+            "F-TR-010"
+          ],
+          "examples": [
+            {
+              "name": "Employee living in Switzerland",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "address_street",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_house_number",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_postcode",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_town",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_country",
+                  "expect": "required"
+                }
+              ]
+            },
+            {
+              "name": "Employee living abroad",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "address_street",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_house_number",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_postcode",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_town",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_country",
+                  "expect": "required"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-02.1.2",
+          "title": "Normal postal address with no extra parts",
+          "given": "a new employee is at the home address step",
+          "when": "they enter their address",
+          "then": "only the parts of a normal postal address as written on an envelope are asked (street, house number, postcode, town, country); no further address parts are asked",
+          "source_refs": [
+            "F-TR-010"
+          ]
+        },
+        {
+          "id": "AC-02.1.3",
+          "title": "Address is asked once and received by HR",
+          "given": "a new employee has completed the home address step",
+          "when": "the onboarding data is made available to the receiving parties",
+          "then": "HR receives the complete home address, and the employee is not asked for the address again in any later step",
+          "source_refs": [
+            "F-TR-009",
+            "F-TR-010",
+            "G-01"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "US-02.2",
+      "title": "Country of home address as country of residence",
+      "as_a": "source_tax",
+      "i_want": "the country of the employee's home address to be used as their country of residence",
+      "so_that": "employees living abroad are recognised as subject to source tax and only the questions relevant to where the employee lives are asked later",
+      "priority": "P1",
+      "priority_reason": "Whether the employee lives in Switzerland decides source tax liability (F-TR-034, F-TR-037) and which later questions are asked; without it later steps cannot be determined.",
+      "status": "inferred",
+      "items": [
+        "address_country"
+      ],
+      "rules": [],
+      "source_refs": [
+        "F-TR-034",
+        "F-TR-036",
+        "F-TR-037",
+        "F-TR-040",
+        "G-09"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-02.2.1",
+          "title": "Country of residence is not asked separately",
+          "given": "a new employee has given the country of their home address",
+          "when": "a later step needs to know whether the employee lives in Switzerland",
+          "then": "the country of the home address is used as the country of residence and the employee is not asked a separate question about where they live",
+          "source_refs": [
+            "F-TR-040",
+            "G-09",
+            "G-01"
+          ]
+        },
+        {
+          "id": "AC-02.2.2",
+          "title": "Employees living abroad are subject to source tax whatever their nationality",
+          "given": "a new employee's home address is outside Switzerland",
+          "when": "the questionnaire determines the following steps",
+          "then": "the employee is treated as subject to source tax, is not asked their nationality or the pension fund canton, and source tax and HR receive the country of residence",
+          "source_refs": [
+            "F-TR-034",
+            "F-TR-037",
+            "F-TR-040"
+          ],
+          "examples": [
+            {
+              "name": "Stefan, Swiss, lives in Konstanz (F-TR-034)",
+              "illustrative": false,
+              "source_refs": [
+                "F-TR-034"
+              ],
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "residence_canton",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                }
+              ]
+            },
+            {
+              "name": "Employee living in Liechtenstein",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "residence_canton",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-02.2.3",
+          "title": "Employees living in Switzerland continue to nationality and canton",
+          "given": "a new employee's home address is in Switzerland",
+          "when": "the questionnaire determines the following steps",
+          "then": "the employee is asked their nationality and the pension fund canton, which decide the later source tax and pension steps",
+          "source_refs": [
+            "F-TR-037",
+            "F-TR-040"
+          ],
+          "examples": [
+            {
+              "name": "Employee living in Winterthur",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "asked"
+                },
+                {
+                  "target": "residence_canton",
+                  "expect": "asked"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-02.2.4",
+          "title": "Address comes before dependent steps",
+          "given": "a new employee starts the onboarding questionnaire",
+          "when": "the steps are presented",
+          "then": "the home address step comes before the pension and source tax steps that depend on the country of residence; the additional source tax questions for employees living abroad are defined by the Zurich calculator and remain open (OQ-01)",
+          "source_refs": [
+            "F-TR-036",
+            "F-TR-040"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "questions": [
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "Which home address do we ask for: where the employee lives today, or where they will live from their first working day? A new hire who is moving to Switzerland (or abroad) at the start of the job would get a different source tax result and a different postal address depending on the answer. US-01.3 treats the address country as the country of residence, and AC-01.2.3 says the address is asked only once.",
+      "severity": "major"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "What happens with employees who have more than one residence, for example weekly residents who have a Swiss address during the week and a family home abroad? Which address is the 'home address' that HR posts to, and which one counts as 'lives here' for source tax? Rule F-TR-040 is inferred, and the spec only allows one address.",
+      "severity": "major"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "House number is required for every employee, and 'no extra address parts' are allowed. What should an employee do if their address has no house number (some rural or foreign addresses), or if they need a c/o line, a flat number or a PO box to receive post? Do we accept a 'no house number' answer, or is an extra address line allowed after all?",
+      "severity": "major"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "If the employee changes the country of their home address after answering later, country-dependent questions (nationality, permit, spouse data), what should happen to those answers? Because of data minimisation (G-01), should answers that no longer apply be thrown away? And should the employee be able to go back to the address step at all?",
+      "severity": "major"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "Which countries may the employee choose for the home address: every country in the world, or only Switzerland and its neighbours (where cross-border commuters live)? Is there a reference list of English country names to use (G-10 gives only examples)?",
+      "severity": "minor"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "Besides being filled in, are there checks on the date of birth (for example not in the future, a minimum or maximum working age)? What should the employee see when the date is not a valid DD.MM.YYYY date? F-SC-020 says the fund's wording for this case is unknown.",
+      "severity": "minor"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "Should first and last name be given exactly as on the official ID or passport (all first names, special characters such as umlauts)? Or is the name the employee usually goes by acceptable? This matters if the pension fund matches the registration against official records.",
+      "severity": "minor"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "Do the postcode and town have to be checked against the country (for example 4 digits for Switzerland), or is free entry enough for HR's postal process?",
+      "severity": "minor"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "AC-01.1.3 says only missing identity data must be pointed out. Should missing address parts be pointed out the same way, telling the employee which part is missing? And should the message wording follow the pension fund's ('<Field> is required.')?",
+      "severity": "minor"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "AC-01.3.2 states the source tax result and when nationality is asked, but both belong to FEAT-04 (AC-04.1.1, rule table). Which feature owns this behaviour and its acceptance test? Is FEAT-01 done without FEAT-04?",
+      "severity": "minor"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "Several ACs end with 'is passed on to the pension fund / to HR', but G-04 puts passing data on to the receiving parties out of scope. What does this part of the AC require us to build and test in this feature?",
+      "severity": "minor"
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "question": "Are identity and address one step or two separate steps ('identity step' and 'address step' in the ACs)? Does the order between them matter, as long as both come before any question that depends on where the employee lives?",
+      "severity": "minor"
+    }
+  ],
+  "already_flagged": [
+    "OQ-01: Whether the Zurich calculator needs more data (e.g. nationality, German forms) from employees living abroad. This affects Country of home address and whether 'nationality not asked' (AC-01.3.2) holds for them.",
+    "OQ-05: Whether the source tax rule is complete. AC-01.3.2 relies on rule (1), employees living abroad are always subject.",
+    "OQ-02: What canton the pension fund expects for employees whose home address is abroad. This depends on the country captured here."
+  ],
+  "tech_leaks": [
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "quote": "they are told which of these is missing and cannot complete the step until each is provided",
+      "why": "Prescribes how the form checks input and blocks the user (block the step, show which field is missing) instead of stating the business need: no registration may reach the fund with these values missing. When and how to check is an engineering/UX choice."
+    },
+    {
+      "file": "FEAT-01-identity-and-postal-address.md",
+      "quote": "information: [first_name, last_name, date_of_birth, address_street, address_house_number, address_postcode, address_town, address_country]",
+      "why": "Field ids that look like a data model are fixed in the spec's header. Naming fields is up to engineering. (Borderline: this is metadata, not prose.)"
+    }
+  ]
+}

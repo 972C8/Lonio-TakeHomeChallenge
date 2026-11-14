@@ -1,0 +1,470 @@
+{
+  "items": [
+    {
+      "id": "new_street",
+      "name": "Street of the new address",
+      "description": "The street of the address the employee is moving to.",
+      "form": "Part of the new address: street, number, postcode, town and country.",
+      "allowed_values": [],
+      "asked_when": "Always",
+      "asked_when_expr": "true",
+      "required_when": "Always",
+      "required_when_expr": "true",
+      "needed_by": [
+        {
+          "stakeholder": "hr",
+          "purpose": "Update the employee's master data and send documents (e.g. payslips) to the correct address."
+        }
+      ],
+      "source_refs": [
+        "F-TR-001",
+        "F-TR-006",
+        "F-TR-013",
+        "F-TR-016"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "new_house_number",
+      "name": "House number of the new address",
+      "description": "The house number of the address the employee is moving to.",
+      "form": "Part of the new address: street, number, postcode, town and country.",
+      "allowed_values": [],
+      "asked_when": "Always",
+      "asked_when_expr": "true",
+      "required_when": "Always",
+      "required_when_expr": "true",
+      "needed_by": [
+        {
+          "stakeholder": "hr",
+          "purpose": "Update the employee's master data and send documents to the correct address."
+        }
+      ],
+      "source_refs": [
+        "F-TR-002",
+        "F-TR-006",
+        "F-TR-016"
+      ],
+      "status": "confirmed",
+      "notes": "The meeting did not discuss addresses without a house number; whether it may be left empty is not stated."
+    },
+    {
+      "id": "new_postcode",
+      "name": "Postcode of the new address",
+      "description": "The postcode of the address the employee is moving to.",
+      "form": "Part of the new address: street, number, postcode, town and country.",
+      "allowed_values": [],
+      "asked_when": "Always",
+      "asked_when_expr": "true",
+      "required_when": "Always",
+      "required_when_expr": "true",
+      "needed_by": [
+        {
+          "stakeholder": "hr",
+          "purpose": "Update the employee's master data and send documents to the correct address."
+        }
+      ],
+      "source_refs": [
+        "F-TR-003",
+        "F-TR-006",
+        "F-TR-016"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "new_town",
+      "name": "Town of the new address",
+      "description": "The town of the address the employee is moving to.",
+      "form": "Part of the new address: street, number, postcode, town and country.",
+      "allowed_values": [],
+      "asked_when": "Always",
+      "asked_when_expr": "true",
+      "required_when": "Always",
+      "required_when_expr": "true",
+      "needed_by": [
+        {
+          "stakeholder": "hr",
+          "purpose": "Update the employee's master data and send documents to the correct address."
+        }
+      ],
+      "source_refs": [
+        "F-TR-004",
+        "F-TR-006",
+        "F-TR-016"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "new_country",
+      "name": "Country of the new address",
+      "description": "The country the employee is moving to (the new country of residence). It shows whether the move is within Switzerland or abroad.",
+      "form": "Part of the new address: street, number, postcode, town and country. Country written as its English name, e.g. \"Switzerland\", \"Germany\".",
+      "allowed_values": [],
+      "asked_when": "Always",
+      "asked_when_expr": "true",
+      "required_when": "Always",
+      "required_when_expr": "true",
+      "needed_by": [
+        {
+          "stakeholder": "hr",
+          "purpose": "Update the employee's master data and send documents to the correct address; tell whether the move is within Switzerland or abroad."
+        },
+        {
+          "stakeholder": "payroll",
+          "purpose": "Find out about moves abroad, because the employee may then be subject to source tax."
+        }
+      ],
+      "source_refs": [
+        "F-TR-005",
+        "F-TR-006",
+        "F-TR-010",
+        "F-TR-011",
+        "G-02"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "valid_from",
+      "name": "Valid from",
+      "description": "The date from which the new address applies.",
+      "form": "Date in the format DD.MM.YYYY.",
+      "allowed_values": [],
+      "asked_when": "Always",
+      "asked_when_expr": "true",
+      "required_when": "Always. It may be in the past, but not more than three months ago (see rule valid_from_within_three_months).",
+      "required_when_expr": "true",
+      "needed_by": [
+        {
+          "stakeholder": "hr",
+          "purpose": "Know which address to use for documents, in particular the payslips sent out on the 25th."
+        }
+      ],
+      "source_refs": [
+        "F-TR-007",
+        "F-TR-008",
+        "F-TR-018",
+        "F-TR-019",
+        "G-02"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "new_canton",
+      "name": "New canton",
+      "description": "The Swiss canton the employee is moving to. Only needed if the employee moves to a different canton.",
+      "form": "",
+      "allowed_values": [],
+      "asked_when": "Only if the employee moves within Switzerland to a different canton than before. Not asked if the move stays in the same canton or is abroad.",
+      "asked_when_expr": "new_country == \"Switzerland\" and new_canton != previous_canton",
+      "required_when": "Whenever it is asked",
+      "required_when_expr": "new_country == \"Switzerland\" and new_canton != previous_canton",
+      "needed_by": [
+        {
+          "stakeholder": "hr",
+          "purpose": "Pass the change of canton to the tax office."
+        }
+      ],
+      "source_refs": [
+        "F-TR-014",
+        "F-TR-015",
+        "F-TR-016",
+        "G-01"
+      ],
+      "status": "inferred",
+      "notes": "The meeting did not say how a canton change is found out before the new canton is known (see OQ-01). The internal condition can only check this once both cantons are known."
+    },
+    {
+      "id": "previous_canton",
+      "name": "Previous canton",
+      "description": "The Swiss canton the employee lived in before the move. It is used only to tell whether the canton changes.",
+      "form": "",
+      "allowed_values": [],
+      "asked_when": "Only for moves within Switzerland. It is open whether the employee is asked or HR takes it from its own employee records (see OQ-01).",
+      "asked_when_expr": "new_country == \"Switzerland\"",
+      "required_when": "For moves within Switzerland, so HR can tell whether the canton changes",
+      "required_when_expr": "new_country == \"Switzerland\"",
+      "needed_by": [
+        {
+          "stakeholder": "hr",
+          "purpose": "Tell whether the employee moves to a different canton, so the new canton is asked only when needed."
+        }
+      ],
+      "source_refs": [
+        "F-TR-017",
+        "F-TR-014",
+        "G-01"
+      ],
+      "status": "inferred",
+      "notes": "Data minimisation (G-01) suggests not asking the employee if HR already has this information."
+    }
+  ],
+  "rules": [
+    {
+      "id": "payroll_must_be_informed",
+      "name": "Payroll must be informed of a move abroad",
+      "statement": "If the employee moves abroad (the new country is not Switzerland), payroll must be informed, because the employee may then be subject to source tax. For moves within Switzerland, payroll does not have to be informed.",
+      "inputs": [
+        "Country of the new address"
+      ],
+      "table": [
+        {
+          "when": [
+            "Switzerland"
+          ],
+          "then": "Payroll does not have to be informed",
+          "source_refs": [
+            "F-TR-013",
+            "F-TR-016"
+          ]
+        },
+        {
+          "when": [
+            "Any other country"
+          ],
+          "then": "Payroll must be informed (the employee may be subject to source tax)",
+          "source_refs": [
+            "F-TR-011",
+            "F-TR-012"
+          ]
+        }
+      ],
+      "expression": "new_country != \"Switzerland\"",
+      "depends_on": [
+        "new_country"
+      ],
+      "source_refs": [
+        "F-TR-011",
+        "F-TR-012",
+        "F-TR-010"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "canton_changes",
+      "name": "Move to a different canton",
+      "statement": "A move within Switzerland changes canton when the new canton is different from the previous canton. Only then is the new canton needed for the tax office.",
+      "inputs": [
+        "Country of the new address",
+        "New canton compared with previous canton"
+      ],
+      "table": [
+        {
+          "when": [
+            "Switzerland",
+            "Different"
+          ],
+          "then": "Canton changes – new canton is needed for the tax office",
+          "source_refs": [
+            "F-TR-014",
+            "F-TR-016"
+          ]
+        },
+        {
+          "when": [
+            "Switzerland",
+            "Same"
+          ],
+          "then": "Canton does not change – new canton is not asked",
+          "source_refs": [
+            "F-TR-015",
+            "F-TR-016"
+          ]
+        },
+        {
+          "when": [
+            "Any other country",
+            "–"
+          ],
+          "then": "Not applicable (move abroad) – new canton is not asked",
+          "source_refs": [
+            "F-TR-010",
+            "F-TR-016"
+          ]
+        }
+      ],
+      "expression": "new_country == \"Switzerland\" and is_set(previous_canton) and is_set(new_canton) and new_canton != previous_canton",
+      "depends_on": [
+        "new_country",
+        "new_canton",
+        "previous_canton"
+      ],
+      "source_refs": [
+        "F-TR-014",
+        "F-TR-015",
+        "F-TR-016",
+        "F-TR-017"
+      ],
+      "status": "inferred"
+    },
+    {
+      "id": "valid_from_within_three_months",
+      "name": "Valid-from date at most three months in the past",
+      "statement": "The valid-from date may be in the past, because people often report late, but not more than three months before the day the employee reports the move. The meeting set no limit for future dates.",
+      "inputs": [
+        "Valid from compared with three months before today"
+      ],
+      "table": [
+        {
+          "when": [
+            "On or after the date three months before today"
+          ],
+          "then": "Accepted",
+          "source_refs": [
+            "F-TR-019"
+          ]
+        },
+        {
+          "when": [
+            "Before the date three months before today"
+          ],
+          "then": "Not accepted",
+          "source_refs": [
+            "F-TR-019"
+          ]
+        }
+      ],
+      "expression": "valid_from >= add_months(today, -3)",
+      "depends_on": [
+        "valid_from"
+      ],
+      "source_refs": [
+        "F-TR-019",
+        "F-TR-020",
+        "F-TR-021"
+      ],
+      "status": "confirmed"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "OQ-01",
+      "question": "How do we find out whether the canton changes for a move within Switzerland? Options: ask the employee for the new canton on every Swiss move, ask them whether the canton changes, or have HR compare the new address with the canton it already has on record.",
+      "why_it_matters": "The new canton should be asked only when the canton changes, but that can't be known without the new canton or the previous canton. Data minimisation (G-01) argues against asking for anything HR already holds.",
+      "options": [
+        "Ask 'Are you moving to a different canton?' and ask for the new canton only if the answer is yes",
+        "HR takes the previous canton from its own records, and the new canton is worked out from the new address or asked only when it differs",
+        "Always ask for the new canton on Swiss moves and keep it only if it changed"
+      ],
+      "recommendation": "Clarify with HR (Sara). Prefer taking the previous canton from HR's existing records so the employee is not asked for data HR already has.",
+      "affects": [
+        "new_canton",
+        "previous_canton",
+        "canton_changes"
+      ],
+      "blocking": true,
+      "source_refs": [
+        "F-TR-014",
+        "F-TR-015",
+        "F-TR-017",
+        "G-01"
+      ]
+    },
+    {
+      "id": "OQ-02",
+      "question": "Is there a latest allowed valid-from date in the future?",
+      "why_it_matters": "The meeting gave only a limit for past dates. Without a limit for the future, a move could be reported for any date ahead.",
+      "options": [
+        "No future limit",
+        "A fixed future limit (e.g. a number of months ahead)"
+      ],
+      "recommendation": "Confirm with HR. Until then, apply no future limit.",
+      "affects": [
+        "valid_from",
+        "valid_from_within_three_months"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-TR-021"
+      ]
+    },
+    {
+      "id": "OQ-03",
+      "question": "Does 'not more than three months ago' include a date exactly three months back, and what happens if the employee reports an older date (rejected, or passed to HR for manual handling)?",
+      "why_it_matters": "It sets the exact cut-off date and what happens to a late report that misses it.",
+      "options": [
+        "Exactly three months back is allowed; older dates are rejected",
+        "Exactly three months back is allowed; older dates go to HR for manual handling"
+      ],
+      "recommendation": "Treat a date exactly three months back as allowed, and confirm with HR how older reports are handled.",
+      "affects": [
+        "valid_from_within_three_months",
+        "valid_from"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-TR-019",
+        "F-TR-020"
+      ]
+    },
+    {
+      "id": "OQ-04",
+      "question": "Does 'move abroad' always mean the new country is not Switzerland? What about employees who already live abroad and move within their country or into Switzerland?",
+      "why_it_matters": "The payroll rule assumes employees currently live in Switzerland. Cross-border staff could be informed wrongly, or not at all.",
+      "options": [
+        "Any new country other than Switzerland means payroll is informed",
+        "Payroll is informed whenever the country of residence changes (including moves into Switzerland)"
+      ],
+      "recommendation": "Clarify with HR and payroll.",
+      "affects": [
+        "payroll_must_be_informed",
+        "new_country"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-TR-010",
+        "F-TR-011",
+        "F-TR-013"
+      ]
+    },
+    {
+      "id": "OQ-05",
+      "question": "Does payroll need any further information from the employee for a move abroad (to assess source tax), beyond the new country and the valid-from date?",
+      "why_it_matters": "Only HR was interviewed. HR said the employee 'may' be subject to source tax, and Sara thinks the list is complete only 'for now'. Payroll's own needs are unknown.",
+      "options": [
+        "No further information needed",
+        "Payroll lists additional information"
+      ],
+      "recommendation": "Talk to payroll before finalising the questions for moves abroad.",
+      "affects": [
+        "payroll_must_be_informed",
+        "new_country",
+        "valid_from"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "F-TR-011",
+        "F-TR-012",
+        "F-TR-022"
+      ]
+    },
+    {
+      "id": "OQ-06",
+      "question": "Is there a fixed list of countries the employee can choose from?",
+      "why_it_matters": "No source defines the allowed countries. Only the wording (English names) is given.",
+      "options": [
+        "All countries",
+        "A defined list"
+      ],
+      "recommendation": "Use all countries, written by their English names (G-02), unless HR or payroll restricts them.",
+      "affects": [
+        "new_country"
+      ],
+      "blocking": false,
+      "source_refs": [
+        "G-02",
+        "F-TR-005"
+      ]
+    }
+  ],
+  "exclusions": [
+    {
+      "id": "EX-01",
+      "item": "Reason for the move",
+      "reason": "HR explicitly does not want to know why people move. It is private and must not be asked.",
+      "source_refs": [
+        "F-TR-009",
+        "G-01"
+      ]
+    }
+  ]
+}

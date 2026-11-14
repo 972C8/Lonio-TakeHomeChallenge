@@ -1,0 +1,9 @@
+examples:
+  - id: move_abroad
+    from: "T: moving abroad -> payroll must be informed"
+    given: {new_country: Germany}
+    expect: {payroll_must_be_informed: "yes"}
+  - id: move_within_switzerland
+    from: "T: moves within Switzerland -> only the address"
+    given: {new_country: Switzerland}
+    expect: {payroll_must_be_informed: "no"}

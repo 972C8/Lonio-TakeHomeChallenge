@@ -6,7 +6,7 @@ goal: >
   Define what Lonio asks a new employee during onboarding: which information,
   in which steps and order, and under which conditions - asking each piece of
   information once and reusing it for every receiving party.
-requirement_shape: data_field     # see pipeline/render/templates/conventions.md.j2
+output: feature_specs
 
 sources:
   - id: hr_transcript
@@ -32,12 +32,37 @@ sources:
     description: Canton of Zurich source tax tariff calculator (real).
     authority: Source tax data - which questions determine the tariff code, options, conditions.
     precedence: 1
+    explore_hints: >
+      The calculator is embedded directly on the page (section "Tarifrechner
+      Quellensteuer") and reveals one question at a time. Pay special attention
+      to: residence in Switzerland vs abroad (and per country), civil status,
+      spouse working, children, church tax, permit type, cross-border cases.
 
-# Receiving parties ("Who needs it?")
-consumers:
-  pension_fund: Pensionskasse Muster (BVG registration via employer portal)
-  source_tax: Source tax tariff determination (Canton of Zurich calculator)
-  employer_hr: Muster AG HR (correspondence, payroll admin, first-day logistics)
+# Stakeholders: who needs information ("Who needs it?") and who can be the
+# actor of a user story.
+stakeholders:
+  employee: new employee - provides the information
+  hr: HR - the customer company's HR (Muster AG), runs onboarding and registrations
+  pension_fund: pension fund - Pensionskasse Muster, registers the employee for occupational pension (BVG)
+  source_tax: source tax office - source tax tariff determination (Canton of Zurich calculator)
+
+# The questions every information item must answer (enforced by the linter).
+# This is the assignment's checklist; another problem can declare its own.
+item_checklist:
+  - {question: "What? What exactly do we need, and in what form?", attribute: description}
+  - {question: "When do we ask? Always, or only under which conditions?", attribute: asked_when}
+  - {question: "When is it required? When can it be left empty?", attribute: required_when}
+  - {question: "What does it depend on?", attribute: asked_when_expr}
+  - {question: "Who needs it? Which source asks for it?", attribute: needed_by}
+
+# Optional: pin features or slicing constraints (free text for the planner).
+feature_constraints: ""
+
+# Implementation vocabulary to flag in addition to the engine's default list,
+# and words that are legitimate business terms in this domain.
+tech_vocabulary:
+  flag: []
+  allow: []
 
 # Decisions by the product owner have the highest precedence (0).
 decisions_file: decisions.yaml

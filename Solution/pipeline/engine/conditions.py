@@ -4,10 +4,10 @@ It is a deliberately tiny, Python-flavoured expression language so that it is
 unambiguous for builder agents, parseable by our linter and executable in tests:
 
     nationality != "CH" and permit_type != "C"
-    civil_status in ["married", "registered_partnership"]
-    residence_country != "CH" or subject_by_permit
-    first_of_month_on_or_after(first_working_day)
-    is_set(spouse_nationality)
+    country != "CH" and status != "X"
+    choice in ["a", "b"]
+    if_else(day(d) == 1, d, first_day_of_month(add_months(d, 1)))
+    is_set(other_item)
 
 Identifiers are field ids or rule ids. Literals: strings, numbers, true/false/null.
 Operators: and, or, not, ==, !=, in, not in, <, <=, >, >=.
@@ -21,15 +21,6 @@ import datetime as dt
 from typing import Any
 
 
-def _first_of_month_on_or_after(d):
-    if d is None:
-        return None
-    d = _as_date(d)
-    if d.day == 1:
-        return d
-    return dt.date(d.year + (d.month == 12), d.month % 12 + 1, 1)
-
-
 def _as_date(v):
     if v is None or isinstance(v, dt.date):
         return v
@@ -40,20 +31,43 @@ def _as_date(v):
     return dt.date.fromisoformat(s)
 
 
+def _add_months(d, n):
+    if d is None:
+        return None
+    d = _as_date(d)
+    m = d.month - 1 + int(n)
+    y, m = d.year + m // 12, m % 12 + 1
+    import calendar
+    return dt.date(y, m, min(d.day, calendar.monthrange(y, m)[1]))
+
+
+def _first_day_of_month(d):
+    return None if d is None else _as_date(d).replace(day=1)
+
+
+# Generic functions only. Domain logic (e.g. "insurance starts on the 1st of
+# the following month") is expressed WITH these in a business rule of the
+# problem, never added here.
 FUNCTIONS = {
-    "first_of_month_on_or_after": _first_of_month_on_or_after,
     "is_set": lambda v: v not in (None, "", []),
     "date": _as_date,
+    "day": lambda d: None if d is None else _as_date(d).day,
+    "first_day_of_month": _first_day_of_month,
+    "add_months": _add_months,
+    "if_else": lambda c, a, b: a if c else b,
 }
 
 _ALLOWED = (
-    ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp, ast.Not, ast.Compare,
+    ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp, ast.Not, ast.USub, ast.Compare,
     ast.Eq, ast.NotEq, ast.In, ast.NotIn, ast.Lt, ast.LtE, ast.Gt, ast.GtE,
     ast.Name, ast.Load, ast.Constant, ast.List, ast.Tuple, ast.Call,
 )
 
 
 _CONSTS = {"true": True, "false": False, "null": None, "True": True, "False": False, "None": None}
+
+
+BUILTINS = {"today"}  # context values every problem may use; examples may set them
 
 
 class ConditionError(ValueError):
@@ -80,7 +94,7 @@ def references(expr: str) -> set[str]:
     tree = parse(expr)
     funcs = {n.func.id for n in ast.walk(tree) if isinstance(n, ast.Call)}
     names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
-    return names - funcs - set(_CONSTS)
+    return names - funcs - set(_CONSTS) - BUILTINS
 
 
 def evaluate(expr: str, env: dict[str, Any]) -> Any:
@@ -94,6 +108,8 @@ def _eval(node, env):
     if isinstance(node, ast.Name):
         if node.id in _CONSTS:
             return _CONSTS[node.id]
+        if node.id == "today" and "today" not in env:
+            return dt.date.today()
         return env.get(node.id)
     if isinstance(node, (ast.List, ast.Tuple)):
         return [_eval(e, env) for e in node.elts]
@@ -101,7 +117,10 @@ def _eval(node, env):
         vals = (_eval(v, env) for v in node.values)
         return all(bool(v) for v in vals) if isinstance(node.op, ast.And) else any(bool(v) for v in vals)
     if isinstance(node, ast.UnaryOp):
-        return not bool(_eval(node.operand, env))
+        v = _eval(node.operand, env)
+        if isinstance(node.op, ast.USub):
+            return None if v is None else -v
+        return not bool(v)
     if isinstance(node, ast.Call):
         return FUNCTIONS[node.func.id](*[_eval(a, env) for a in node.args])
     if isinstance(node, ast.Compare):

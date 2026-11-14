@@ -63,11 +63,13 @@ def main(argv=None):
 def _summary(rep, problem):
     c = rep["counts"]
     errs, warns = len(rep["findings"]["error"]), len(rep["findings"]["warning"])
-    pp = sum(p["pass"] for p in rep["personas"])
+    ex = rep["examples"]
     print()
-    print(f"{c['facts']} facts -> {c['fields']} fields, {c['rules']} rules, {c['open_questions']} open questions")
-    print(f"errors {errs}, warnings {warns}, personas {pp}/{len(rep['personas'])}, "
-          f"builder questions {len(rep['naive_builder']['questions'])}")
+    print(f"{c['facts']} facts -> {c['items']} information items, {c['rules']} rules -> {c['features']} features, "
+          f"{c['stories']} stories, {c['acceptance_criteria']} acceptance criteria; {c['open_questions']} open questions")
+    print(f"errors {errs}, warnings {warns}, examples {sum(e['pass'] for e in ex)}/{len(ex)} pass, "
+          f"dev refinement questions {len(rep['dev_refinement']['questions'])}, "
+          f"tech leaks {len(rep['dev_refinement']['tech_leaks'])}")
     if rep.get("review"):
         print(f"verdict: {rep['review']['verdict']}")
     print(f"cost this run: ${rep['cost_usd_this_run']}")

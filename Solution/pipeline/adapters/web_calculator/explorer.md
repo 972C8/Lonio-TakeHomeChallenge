@@ -10,12 +10,17 @@ Procedure
 3. Explore branches systematically (depth-first): for each option of each
    question, select it and record which new questions appear or disappear.
    Express this in `shown_when` using earlier question ids and option labels.
-   Pay special attention to: residence in Switzerland vs abroad (and per
-   country), civil status, spouse working, children, religion/church tax,
-   permit type, and cross-border special cases.
+   To keep your context small, record each question as soon as it appears,
+   and restart from a fresh page load for each branch instead of navigating
+   back.
 4. Record test vectors: complete answer sets with the verbatim result
    (e.g. tariff code). Cover at least one vector per major branch.
 5. Note anything you could not explore in `notes` (e.g. captchas, timeouts).
 
+Copy all text verbatim in the site's own language (do not translate).
+
 Never submit personal data; use neutral dummy values where free text or dates
 are required, and say so in `notes`.
+
+## Exploration hints for this source (from the problem profile)
+{{hints}}

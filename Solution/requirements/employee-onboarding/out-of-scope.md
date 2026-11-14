@@ -1,10 +1,17 @@
 # Out of scope
 
-Explicitly **not** part of the onboarding questionnaire. Do not build these.
+Explicitly **not** part of these feature specs.
 
-- **Employee photo for badges** – Postponed to next year because of the badge system change. (F-TR-013: "Let's not do that now. Forget the photo for the moment, we'll talk about it next year.": "Okay, no photo."; F-TR-012: "Oh, that would be so nice, actually. For the badges.": "Could the form ask for a photo?")
-- **IT equipment / laptops** – IT has its own process. (F-TR-028: "IT does laptops, they have their own process, keep them out of this, please."; G-03)
-- **Social insurance (AHV) data** – Out of scope by product-owner guidance. (G-03)
-- **Asking the insurance start date** – Derived from first_working_day; the employee is never asked. (F-TR-019: "because insurance starts on the first of the following month.": "Unless somebody starts exactly on the first, of course, then it's just that day."; G-08)
-- **Canton-specific source tax calculators** – The Zurich calculator is used for every employee. (F-TR-007: "I use the Zurich calculator on the canton's website. The one that gives you the tariff code.": "For everybody I use Zurich, by the way. I know it's not exactly how it works, but that's what we do for now.": "Understood. We'll keep that for now."; G-05)
-- **Transmission to parties and change notifications (e.g. first working day changes)** – This belongs to a separate requirement package. (G-04; F-TR-016: "because it moves more often than you'd think.": "She moved her first working day to the 15th of March, and I didn't update it.": "It took weeks to fix.")
+- **Employee photo for badges** – Security is changing the badge system next year; to be revisited then.
+  - F-TR-011: The stakeholder would like the form to ask for a photo of the employee for badges. Today reception takes badge photos with a phone and they come out badly. — "Oh, that would be so nice, actually. For the badges." (T-018, Anna) — "Could the form ask for a photo?" (T-018, Anna)
+  - F-TR-012: No photo will be collected for now, because security is changing the badge system next year. The topic will be revisited next year. — "Let's not do that now. Forget the photo for the moment, we'll talk about it next year." (T-020, Anna) — "Okay, no photo." (T-021, Leo)
+- **Laptops and IT equipment** – IT has its own process.
+  - F-TR-027: Laptops and IT equipment are out of scope. IT has its own process. — "IT does laptops, they have their own process, keep them out of this, please." (T-042, Anna)
+  - G-03: **Out of scope:** social insurance (AHV) data, IT equipment, anything not needed by the parties above.
+- **Social insurance (AHV) data** – Out of scope by product owner guidance.
+  - G-03: **Out of scope:** social insurance (AHV) data, IT equipment, anything not needed by the parties above.
+- **Transmission of collected data to receiving parties (exports, portal entry, change notifications)** – A separate topic; these specs cover only what is asked and the derived rules.
+  - G-04: Scope of these feature specs: what Lonio asks the new employee (which information, in which order, under which conditions, required or not) and the business rules derived from the answers. How collected data is transmitted to each receiving party (exports, portal entry, change notifications) is a separate topic; each information item documents which stakeholder needs it and why.
+- **Asking the employee for the insurance start date** – It is derived from the first working day; employees cannot know it.
+  - F-TR-018: Final rule: the insurance start date is derived from the first working day. If the first working day is the 1st of a month, insurance starts that day. Otherwise it starts on the 1st of the following month. The employee is not asked for it. — "because insurance starts on the first of the following month." (T-026, Anna) — "Unless somebody starts exactly on the first, of course, then it's just that day." (T-028, Anna)
+  - G-08: Prefer asking for primary facts and **deriving** values (e.g. ask the first working day, derive the insurance start date) instead of asking the employee for values they cannot know.

@@ -1,0 +1,306 @@
+{
+  "id": "FEAT-04-canton-change",
+  "order": 4,
+  "title": "Capture a change of canton for the tax office",
+  "goal": "When an employee moves to a different Swiss canton, HR gets the new canton and can pass the change to the tax office, without asking for the canton in any other case.",
+  "context": "For a move within Switzerland to a different canton, HR has to pass the new canton to the tax office (F-TR-014, F-TR-016). If the move stays in the same canton or goes abroad, the canton is not needed and must not be asked (F-TR-015, G-01). To see whether the canton changes, the previous canton is compared with the new one (F-TR-017). The previous canton might already be in HR's records. How the change is detected is not yet decided, and this blocks the feature (OQ-01). It comes last because it depends on the country from FEAT-01 and on that decision.",
+  "stakeholders": [
+    "employee",
+    "hr"
+  ],
+  "items": [
+    "new_canton",
+    "previous_canton"
+  ],
+  "rules": [
+    "canton_changes"
+  ],
+  "open_questions": [
+    "OQ-01"
+  ],
+  "source_refs": [
+    "F-TR-014",
+    "F-TR-015",
+    "F-TR-016",
+    "F-TR-017",
+    "G-01"
+  ],
+  "stories": [
+    {
+      "id": "US-04.1",
+      "title": "HR receives the new canton when the employee moves to a different canton",
+      "as_a": "hr",
+      "i_want": "to receive the new canton whenever an employee moves within Switzerland to a different canton",
+      "so_that": "I can pass the change of canton to the tax office",
+      "priority": "P1",
+      "priority_reason": "HR states the new canton is needed for the tax office (F-TR-014); without it HR cannot meet its reporting duty for a change of canton. Delivery is blocked until OQ-01 is decided.",
+      "items": [
+        "new_canton"
+      ],
+      "rules": [
+        "canton_changes"
+      ],
+      "status": "inferred",
+      "source_refs": [
+        "F-TR-014",
+        "F-TR-016",
+        "F-TR-017"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-04.1.1",
+          "title": "New canton is asked and required when the canton changes",
+          "given": "an employee reports a move whose new country is Switzerland and whose new canton differs from the previous canton",
+          "when": "the employee reports the change of address",
+          "then": "the new canton is asked and must be given; the move counts as a change of canton. How the change is recognised before the new canton is known is still open (see OQ-01).",
+          "source_refs": [
+            "F-TR-014",
+            "F-TR-016",
+            "F-TR-017"
+          ],
+          "examples": [
+            {
+              "name": "Move from Bern to Zurich",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "previous_canton",
+                  "value": "Bern"
+                },
+                {
+                  "item": "new_canton",
+                  "value": "Zurich"
+                }
+              ],
+              "then": [
+                {
+                  "target": "new_canton",
+                  "expect": "required"
+                },
+                {
+                  "target": "canton_changes",
+                  "expect": "yes"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-04.1.2",
+          "title": "HR receives the new canton for the tax office",
+          "given": "an employee has reported a move to a different Swiss canton and given the new canton",
+          "when": "the report is submitted",
+          "then": "HR receives the new canton together with the new address, so it can pass the change of canton to the tax office. No other stakeholder receives the new canton.",
+          "source_refs": [
+            "F-TR-014",
+            "F-TR-016"
+          ]
+        },
+        {
+          "id": "AC-04.1.3",
+          "title": "Form of the new canton",
+          "given": "the new canton is asked",
+          "when": "the employee gives the new canton",
+          "then": "the employee names a Swiss canton. The sources define no further list or wording for cantons.",
+          "source_refs": [
+            "F-TR-014"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "US-04.2",
+      "title": "Employee is not asked for a canton when it is not needed",
+      "as_a": "employee",
+      "i_want": "not to be asked for a new canton when I move within the same canton or abroad",
+      "so_that": "I only give information that HR actually needs for me",
+      "priority": "P2",
+      "priority_reason": "Data minimisation is a product guideline (G-01) and HR explicitly said the canton is not needed within the same canton (F-TR-015); asking anyway causes no blocked process but adds needless questions.",
+      "items": [
+        "new_canton"
+      ],
+      "rules": [
+        "canton_changes"
+      ],
+      "status": "inferred",
+      "source_refs": [
+        "F-TR-015",
+        "F-TR-016",
+        "G-01"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-04.2.1",
+          "title": "No new canton for a move within the same canton",
+          "given": "an employee moves within Switzerland and stays in the same canton",
+          "when": "the employee reports the change of address",
+          "then": "only the new address is asked; the new canton is not asked and the move does not count as a change of canton. How this is recognised without asking for the canton is still open (see OQ-01).",
+          "source_refs": [
+            "F-TR-015",
+            "F-TR-016",
+            "G-01"
+          ],
+          "examples": [
+            {
+              "name": "Move within Zurich",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "previous_canton",
+                  "value": "Zurich"
+                },
+                {
+                  "item": "new_canton",
+                  "value": "Zurich"
+                }
+              ],
+              "then": [
+                {
+                  "target": "new_canton",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "canton_changes",
+                  "expect": "no"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-04.2.2",
+          "title": "No new canton for a move abroad",
+          "given": "an employee moves to a country other than Switzerland",
+          "when": "the employee reports the change of address",
+          "then": "the new canton is not asked and the change-of-canton rule does not apply.",
+          "source_refs": [
+            "F-TR-016",
+            "G-01"
+          ],
+          "examples": [
+            {
+              "name": "Move to Germany",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "new_canton",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "canton_changes",
+                  "expect": "no"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "US-04.3",
+      "title": "HR knows the previous canton for moves within Switzerland",
+      "as_a": "hr",
+      "i_want": "the employee's previous canton to be known for every move within Switzerland",
+      "so_that": "I can tell whether the canton changes and the new canton is asked only when needed",
+      "priority": "P1",
+      "priority_reason": "The change of canton cannot be determined without the previous canton (F-TR-017), so US-04.1 and US-04.2 depend on it; how it is obtained is the blocking open question OQ-01.",
+      "items": [
+        "previous_canton"
+      ],
+      "rules": [
+        "canton_changes"
+      ],
+      "status": "inferred",
+      "source_refs": [
+        "F-TR-017",
+        "F-TR-014",
+        "G-01"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-04.3.1",
+          "title": "Previous canton is needed for moves within Switzerland",
+          "given": "an employee reports a move whose new country is Switzerland",
+          "when": "the change of address is reported",
+          "then": "the previous canton is known and must be available so HR can compare it with the new canton. Whether the employee is asked for it or HR takes it from its own employee records is still open (see OQ-01); following data minimisation, the employee should not be asked for what HR already holds.",
+          "source_refs": [
+            "F-TR-017",
+            "G-01"
+          ],
+          "examples": [
+            {
+              "name": "Swiss move",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "previous_canton",
+                  "expect": "required"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-04.3.2",
+          "title": "Previous canton is not needed for moves abroad",
+          "given": "an employee moves to a country other than Switzerland",
+          "when": "the change of address is reported",
+          "then": "the previous canton is not asked, because no change of canton has to be determined.",
+          "source_refs": [
+            "F-TR-017",
+            "G-01"
+          ],
+          "examples": [
+            {
+              "name": "Move to Germany",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "new_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "previous_canton",
+                  "expect": "not asked"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-04.3.3",
+          "title": "Previous canton is used only to detect the change",
+          "given": "the previous canton is known for a move within Switzerland",
+          "when": "HR processes the report",
+          "then": "the previous canton is used by HR only to tell whether the canton changes; it is not passed to any other stakeholder.",
+          "source_refs": [
+            "F-TR-017",
+            "G-01"
+          ]
+        }
+      ]
+    }
+  ]
+}

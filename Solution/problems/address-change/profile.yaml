@@ -1,0 +1,36 @@
+# Second, deliberately tiny problem: proves the engine is generic.
+# Nothing in pipeline/ was changed to support it.
+id: address-change
+title: Employee address change
+goal: >
+  Define what an employee is asked when they report a change of address, under
+  which conditions, and who needs the information.
+output: feature_specs
+
+sources:
+  - id: hr_meeting
+    type: transcript
+    path: problems/address-change/sources/meeting.md
+    speakers: [Leo, Sara]
+    description: Fictional meeting between Leo (product, interviewer) and Sara (HR manager, stakeholder).
+    authority: Policy and scope.
+    precedence: 1
+
+stakeholders:
+  employee: employee - reports the move
+  hr: HR - keeps employee master data and sends documents
+  payroll: payroll - produces payslips and handles source tax
+
+item_checklist:
+  - {question: "What? What exactly do we need, and in what form?", attribute: description}
+  - {question: "When do we ask?", attribute: asked_when}
+  - {question: "When is it required?", attribute: required_when}
+  - {question: "Who needs it?", attribute: needed_by}
+
+feature_constraints: ""
+tech_vocabulary: {flag: [], allow: []}
+decisions_file: decisions.yaml
+
+models:
+  default: claude-opus-5-5
+  judge: claude-sonnet-5-5

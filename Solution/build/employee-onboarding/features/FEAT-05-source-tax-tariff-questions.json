@@ -1,0 +1,417 @@
+{
+  "id": "FEAT-05-source-tax-tariff-questions",
+  "order": 5,
+  "title": "Source tax tariff questions for subject employees",
+  "goal": "Ask employees who are subject to source tax the questions the Zurich tariff calculator needs to set their tariff code, and spare everyone else these questions.",
+  "context": "Once an employee is subject to source tax, HR has to determine the tariff with the Zurich calculator. Lonio uses that calculator for every subject employee, whatever their canton (F-TR-004, F-TR-005, F-TR-008, G-05). Employees who are not subject (e.g. Swiss residents) must not see these questions (G-01). We have no facts yet on which questions the calculator asks or under which conditions, e.g. for the spouse, children, or employees living abroad (F-TR-007, F-TR-029, F-TR-036). This feature is blocked until the calculator has been analysed, and it depends on the decision from FEAT-04.",
+  "stakeholders": [
+    "employee",
+    "hr",
+    "source_tax"
+  ],
+  "items": [],
+  "rules": [
+    "source_tax_questions_scope"
+  ],
+  "open_questions": [
+    "OQ-01"
+  ],
+  "source_refs": [
+    "F-TR-004",
+    "F-TR-005",
+    "F-TR-007",
+    "F-TR-008",
+    "F-TR-029",
+    "F-TR-036",
+    "G-01",
+    "G-05"
+  ],
+  "stories": [
+    {
+      "id": "US-05.1",
+      "title": "Spare employees who are not subject to source tax from the tariff questions",
+      "as_a": "employee",
+      "i_want": "to see the source tax tariff questions only if I am subject to source tax",
+      "so_that": "I am not asked for personal data that nobody needs from me and I don't have to call HR about questions that don't apply to me",
+      "priority": "P1",
+      "priority_reason": "Source tax takes HR the most time; today everybody gets the whole questionnaire, Swiss employees get annoyed and call HR (F-TR-004). Asking unneeded data also breaks data minimisation (G-01).",
+      "status": "inferred",
+      "items": [],
+      "rules": [
+        "source_tax_questions_scope"
+      ],
+      "source_refs": [
+        "F-TR-004",
+        "F-TR-005",
+        "G-01"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-05.1.1",
+          "title": "Tariff questions shown only to employees who are subject to source tax",
+          "given": "the employee has answered the questions that decide whether they are subject to source tax (home address country, and where asked nationality, permit, civil status and spouse details - see FEAT-04)",
+          "when": "Lonio decides whether to show the source tax tariff questions",
+          "then": "the tariff questions are shown if the employee is subject to source tax and are not shown otherwise (e.g. Swiss nationals or C permit holders living in Switzerland, or employees married to a Swiss or C permit spouse living in Switzerland)",
+          "source_refs": [
+            "F-TR-005",
+            "F-TR-004",
+            "G-01",
+            "F-TR-037"
+          ],
+          "examples": [
+            {
+              "name": "Swiss national living in Switzerland",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "source_tax_questions_scope",
+                  "expect": "no"
+                }
+              ]
+            },
+            {
+              "name": "C permit holder living in Switzerland",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Germany"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "C permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "source_tax_questions_scope",
+                  "expect": "no"
+                }
+              ]
+            },
+            {
+              "name": "Single B permit holder living in Switzerland",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Germany"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "source_tax_questions_scope",
+                  "expect": "yes"
+                }
+              ]
+            },
+            {
+              "name": "B permit holder married to a Swiss spouse living in Switzerland",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Germany"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "source_tax_questions_scope",
+                  "expect": "no"
+                }
+              ]
+            },
+            {
+              "name": "B permit holder married to a Swiss spouse living abroad",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Germany"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "source_tax_questions_scope",
+                  "expect": "yes"
+                }
+              ]
+            },
+            {
+              "name": "B permit holder married to a B permit spouse",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "spouse_permit_type",
+                  "value": "B permit"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "source_tax_questions_scope",
+                  "expect": "yes"
+                }
+              ]
+            },
+            {
+              "name": "Employee living in Germany",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "source_tax_questions_scope",
+                  "expect": "yes"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "US-05.2",
+      "title": "Collect the Zurich calculator answers from every subject employee",
+      "as_a": "hr",
+      "i_want": "every employee who is subject to source tax to answer the questions the Zurich tariff calculator needs, whatever canton they are in",
+      "so_that": "I can determine their tariff code with the Zurich calculator without chasing the employee for missing answers",
+      "priority": "P1",
+      "priority_reason": "Source tax is HR's most time-consuming task (F-TR-004); without the answers the tariff cannot be determined. Blocked until the calculator is analysed (OQ-01).",
+      "status": "inferred",
+      "items": [],
+      "rules": [
+        "source_tax_questions_scope"
+      ],
+      "source_refs": [
+        "F-TR-004",
+        "F-TR-007",
+        "F-TR-008",
+        "F-TR-029",
+        "F-TR-036",
+        "G-05"
+      ],
+      "acceptance_criteria": [
+        {
+          "id": "AC-05.2.1",
+          "title": "Zurich calculator questions apply to every subject employee regardless of canton",
+          "given": "an employee is subject to source tax",
+          "when": "Lonio decides which source tax tariff questions to ask",
+          "then": "the questions of the Zurich tariff calculator are asked, whatever canton the employee lives in or lives abroad",
+          "source_refs": [
+            "F-TR-007",
+            "F-TR-008",
+            "G-05"
+          ],
+          "examples": [
+            {
+              "name": "B permit holder living in the canton of Bern",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "residence_canton",
+                  "value": "Bern"
+                },
+                {
+                  "item": "nationality",
+                  "value": "France"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Divorced"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_questions_scope",
+                  "expect": "yes"
+                }
+              ]
+            },
+            {
+              "name": "Employee living in Liechtenstein",
+              "illustrative": true,
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_questions_scope",
+                  "expect": "yes"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "AC-05.2.2",
+          "title": "Tariff questions defined from the analysed Zurich calculator (blocked by OQ-01)",
+          "given": "an employee is subject to source tax",
+          "when": "they reach the source tax tariff questions",
+          "then": "they are asked exactly the questions, answer options and conditions the Zurich tariff calculator needs to set the tariff code, including the different questions for married employees (e.g. whether the husband or wife works) and the additional questions for employees living abroad; which questions these are is open until the calculator has been analysed (OQ-01), and no question is added before then",
+          "source_refs": [
+            "F-TR-007",
+            "F-TR-029",
+            "F-TR-036",
+            "G-01",
+            "G-06"
+          ]
+        },
+        {
+          "id": "AC-05.2.3",
+          "title": "Answers already given are not asked again",
+          "given": "an employee subject to source tax has already answered questions in earlier steps (e.g. civil status, home address country, nationality, spouse details)",
+          "when": "the tariff questions need the same information",
+          "then": "the employee is not asked for it again; the earlier answer is reused for the tariff determination",
+          "source_refs": [
+            "G-01"
+          ]
+        }
+      ]
+    }
+  ]
+}

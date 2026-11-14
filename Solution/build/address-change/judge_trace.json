@@ -1,0 +1,98 @@
+[
+  {
+    "id": "item.new_street",
+    "verdict": "partial",
+    "note": "Street, form and always asked/required are backed, but the purpose 'update master data and send documents (e.g. payslips)' is not stated in the cited facts."
+  },
+  {
+    "id": "item.new_house_number",
+    "verdict": "partial",
+    "note": "Form and always asked/required are backed, but the purpose 'update master data and send documents' is not in the cited facts."
+  },
+  {
+    "id": "item.new_postcode",
+    "verdict": "partial",
+    "note": "Form and always asked/required are backed, but the purpose 'update master data and send documents' is not in the cited facts."
+  },
+  {
+    "id": "item.new_town",
+    "verdict": "partial",
+    "note": "Form and always asked/required are backed, but the purpose 'update master data and send documents' is not in the cited facts."
+  },
+  {
+    "id": "item.new_country",
+    "verdict": "partial",
+    "note": "Payroll source-tax need, English-name form and always asked are backed, but the HR purpose 'update master data and send documents' is not in the cited facts."
+  },
+  {
+    "id": "item.valid_from",
+    "verdict": "supported",
+    "note": "Date format, always required, three-month past limit and payslip purpose are all backed."
+  },
+  {
+    "id": "item.new_canton",
+    "verdict": "supported",
+    "note": "F-TR-014, F-TR-015 and F-TR-016 back the asked/required conditions, and the expr matches the business wording."
+  },
+  {
+    "id": "item.previous_canton",
+    "verdict": "partial",
+    "note": "F-TR-017 only says the previous canton must be known to detect a change; the facts don't say it is asked for every Swiss move, and the question of asking versus HR records is open, so the asked_when_expr/required_when_expr are inferred."
+  },
+  {
+    "id": "rule.payroll_must_be_informed",
+    "verdict": "partial",
+    "note": "Abroad row is backed by F-TR-011/012, but the 'payroll does not have to be informed' for Swiss moves is not stated in F-TR-013/016, which cover only the address, so the Switzerland row is not backed."
+  },
+  {
+    "id": "rule.canton_changes",
+    "verdict": "supported",
+    "note": "Different/same/abroad rows are backed by F-TR-014/015/016/010, and the is_set conditions follow from F-TR-017; the rule is marked inferred."
+  },
+  {
+    "id": "rule.valid_from_within_three_months",
+    "verdict": "partial",
+    "note": "The three-month limit and late reporting are backed, but 'The meeting set no limit for future dates' is not backed because F-TR-021 quotes only the past-limit sentence, which doesn't state anything about future dates."
+  },
+  {
+    "id": "story.US-01.1",
+    "verdict": "partial",
+    "note": "The facts back the four address items, the Swiss and abroad cases and the reason never being asked, but they don't support the payslip purpose or the 'cannot be completed while any is missing' requirement."
+  },
+  {
+    "id": "story.US-01.2",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-02.1",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-02.2",
+    "verdict": "partial",
+    "note": "The exact three-month boundary (on or after the same date three months back) and telling the employee about the limit are not stated in F-TR-019, which only says 'not more than three months ago'."
+  },
+  {
+    "id": "story.US-03.1",
+    "verdict": "partial",
+    "note": "The facts say payroll must be informed of a move abroad, but nothing says payroll receives the new country of residence (F-TR-010 is about HR's need)."
+  },
+  {
+    "id": "story.US-03.2",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-04.1",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-04.2",
+    "verdict": "supported",
+    "note": "F-TR-015/016 and G-01 back both criteria: no canton asked within the same canton, and the abroad case follows from the Swiss-moves rule; the story states the recognition method is open."
+  },
+  {
+    "id": "story.US-04.3",
+    "verdict": "partial",
+    "note": "AC-04.3.3 claims the previous canton is used only by HR and not passed to any other stakeholder, which F-TR-017 and G-01 do not state; AC-04.3.2 (not asked abroad) is also only inferred, and the P1 priority is not backed by the facts."
+  }
+]

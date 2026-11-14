@@ -1,66 +1,66 @@
 {
   "verdict": "not_ready",
-  "summary": "Not ready. All 13 persona tests pass. Field and consumer recall are both 1.0, all 2 rules are found, and no errors were reported. Two open questions still block the build:\n- **OQ-01:** what the Zurich source tax calculator asks. The calculator source was skipped, so step 6 is incomplete.\n- **OQ-03:** what goes in the required 'Canton' field for people living abroad, and whether it means residence or work canton.\n\nThe naive builder also raised 6 major questions: an empty step 6, whether the first working day is pre-filled or just confirmed, editing after submission, overall form behaviour, the permit question for cross-border commuters, and whether to build step 6 at all. 12 of the 18 fields and the source tax rule are inferred and only partly backed by sources. Most of these can be settled by product owner decisions in decisions.yaml.",
+  "summary": "Not ready. All 58 examples pass, and item recall and precision are 1.0. Two open questions block release: OQ-01 (the Zurich source tax calculator was never analysed) and OQ-02 (what the pension fund's canton means). Some traceability is broken: FEAT-02 cites G-09 as confirmation, but G-09 is only the language rule, and AC-04.4.5 claims HR checked the rules, which no source supports. Several acceptance criteria describe passing data on to other parties, which G-04 puts out of scope. FEAT-04 contradicts itself on who decides source tax. Dev refinement left about 18 major questions. The biggest gaps are in FEAT-01, which comes from the Julia incident, and in FEAT-04. There are also 9 technical leaks. 14 inferred items or stories still need product owner confirmation.",
   "findings": [
     {
-      "title": "The source tax step (step 6) cannot be specified because the calculator source was never read",
-      "why": "Without the calculator's questions, Lonio cannot collect enough to work out the tax rate code. The package contradicts itself: OQ-01 says not to build step 6 yet, while flow.md fully specifies it with only spouse_employed.",
-      "evidence": "OQ-01 (blocking); skipped_sources: zh_source_tax_calculator; naive_builder major question on open-questions.md; fields_not_in_gold: spouse_employed",
-      "action": "Extract the calculator's questions now. Or record in decisions.yaml that release 1 only decides who is subject to source tax: drop step 6 and HR collects the rate inputs by hand."
+      "title": "OQ-01 blocking: the source tax tariff questions are undefined",
+      "why": "The source tax step for employees who are subject to it can't be specified. The calculator may also need data the spec rules out, such as nationality for employees living abroad, which conflicts with AC-02.2.2.",
+      "evidence": "OQ-01 (blocking); skipped_sources: zh_source_tax_calculator; dev_refinement already_flagged (AC-02.2.2, AC-04.1.2, AC-04.4.4).",
+      "action": "Either analyse the Zurich calculator now, or record a decision in decisions.yaml to release FEAT-04 as the liability decision only, with no tariff step yet. Re-check AC-02.2.2 against the result."
     },
     {
-      "title": "Step 6 is empty for unmarried people who are subject to source tax",
-      "why": "Single, divorced or widowed people who are subject to source tax, including every unmarried resident abroad, get a step with intro text and no questions. That is a visible UX defect.",
-      "evidence": "naive_builder major question on flow.md; personas stefan and liechtenstein_resident (subject_to_source_tax=true, civil_status not married)",
-      "action": "Decide whether to skip the empty step, show it as an information-only page, or add civil_status=='married' to the step condition until OQ-01 is resolved."
+      "title": "OQ-02 blocking: the canton's meaning is unknown, but the interim answer is written as final",
+      "why": "The fund requires a canton for every registration. Cross-border employees (Konstanz, Liechtenstein) can't be registered, which contradicts the FEAT-03 goal 'never blocked by missing data'. AC-02.2.2, AC-02.2.3 and US-03.4 treat 'canton not asked abroad' as settled.",
+      "evidence": "OQ-02; trace_judge partial on item.residence_canton, story.US-02.2 and story.US-03.4; FEAT-03 dev_refinement major question on the 'never blocked' goal.",
+      "action": "Ask Pensionskasse Muster whether it means canton of residence or of work, and what to enter for people living abroad. Until then, record in decisions.yaml how incomplete registrations are handled, for example flagged to HR. Mark the affected ACs as interim."
     },
     {
-      "title": "Meaning of the required 'Canton' field is unresolved",
-      "why": "The pension portal requires a canton, but the list only has Swiss cantons. Cross-border employees (Konstanz, Liechtenstein) currently get no canton, so their registration cannot be completed in the portal.",
-      "evidence": "OQ-03 (blocking); F-SC-018; trace_judge partial on field.residence_canton (ask_when and option values not backed)",
-      "action": "Ask Pensionskasse Muster. Meanwhile, record the interim decision (residence canton, asked only of Swiss residents) and say concretely what the 'flag for HR' is: a stored flag or a marker in the HR output."
+      "title": "Broken traceability: citations that confirm nothing",
+      "why": "The notes for the address country used as country of residence say this is confirmed by G-09, but G-09 is only 'Questionnaire language: English'. AC-04.4.5 claims HR checked the rules against real cases, which no source supports. Both make inferred items look confirmed when they aren't.",
+      "evidence": "FEAT-02 Notes (G-09); fact_judge partial F-TR-040; trace_judge partial story.US-04.4 (AC-04.4.5).",
+      "action": "Remove the false G-09 reference and either record a real decision on 'residence = country of home address' or raise an open question. Drop AC-04.4.5 or turn it into a sign-off step under OQ-05 with a named owner."
     },
     {
-      "title": "Unclear whether the first working day is pre-filled or entered, and how it is confirmed",
-      "why": "This is the field Anna calls most important, and it drives insurance_start_date. Whether HR pre-fills it and whether an explicit confirmation is needed changes the data model and the UI.",
-      "evidence": "naive_builder major question on fields/first_working_day.md; fact_judge partial on F-TR-015",
-      "action": "Decide: HR pre-fills the date from the contract or the employee types it, and whether a confirmation checkbox is needed. Add the decision to decisions.yaml."
+      "title": "Acceptance criteria test passing data on, which G-04 puts out of scope",
+      "why": "Engineering can't build or test criteria about how data reaches other parties when that handover is explicitly out of scope.",
+      "evidence": "AC-01.1.3, AC-02.1.3, AC-02.2.2 ('source tax and HR receive…'), AC-03.1.3; tech_leak FEAT-02; dev_refinement FEAT-01 and FEAT-02.",
+      "action": "Reword these to say the data is collected once and marked as needed by HR, the fund or source tax. Add guidance that features must not specify how data is passed on."
     },
     {
-      "title": "No overall form behaviour or post-submit editing is specified",
-      "why": "The notice tells employees to 'update it here right away', which implies editing after submission. Going back to earlier steps, save and resume, a review page and submit are all undefined. A builder will guess.",
-      "evidence": "naive_builder major questions on notices.md and conventions.md",
-      "action": "Write a short conventions decision covering: back navigation, save and resume, a review page and explicit submit, the confirmation screen, whether editing after submission is in scope, and whether conditions re-run when an answer changes."
+      "title": "FEAT-04 contradicts itself: who decides source tax liability?",
+      "why": "AC-04.1.1, AC-04.2.1 and AC-04.3.1 say 'HR uses it to decide', while US-04.4 says Lonio decides automatically and that this decision controls which questions follow. The flow and the option for HR to override depend on which is true.",
+      "evidence": "dev_refinement FEAT-04 (major); tech_leak FEAT-04.",
+      "action": "Record in decisions.yaml whether Lonio decides automatically and whether HR can review or override it, especially for cases OQ-05 doesn't cover. Align the ACs with that decision."
     },
     {
-      "title": "Non-Swiss cross-border commuters are never asked their permit",
-      "why": "permit_type is asked only of Swiss residents. Cross-border commuters, such as the Liechtenstein resident, have a Swiss permit too, but HR never gets it for the first day and they never see the reminder to bring it.",
-      "evidence": "naive_builder major question on fields/permit_type.md; persona liechtenstein_resident (permit_type not asked)",
-      "action": "Decide whether non-Swiss residents abroad are asked their permit (for example a cross-border permit option) and shown the reminder. Link this to OQ-06."
+      "title": "FEAT-01 is underspecified on the very incident it is meant to prevent",
+      "why": "Several things are open. Is the first working day the contract start or the first day actually worked? Is it prefilled from HR or typed in by the employee? What happens if the date changes after onboarding, as in Julia's case? Which dates are allowed (past dates, typos)? Each of these can produce a wrong insurance start date again.",
+      "evidence": "dev_refinement FEAT-01 (4 major); fact_judge partial F-TR-014, F-TR-018, F-TR-019.",
+      "action": "Ask HR to clarify, then record decisions on: the definition of first working day, the source of the date (prefilled or typed), whether HR or the employee can change it after onboarding with the insurance start date recalculated, and the limits on allowed dates."
     },
     {
-      "title": "The source tax rule is true while spouse answers are still missing",
-      "why": "This breaks the convention that 'a rule is never true because of a missing answer'. Step 6 could show or hide wrongly while the employee is still answering.",
-      "evidence": "naive_builder question on rules/subject_to_source_tax.md; rule.subject_to_source_tax is inferred",
-      "action": "State that the rule counts as undetermined until all its spouse inputs are answered, or confirm that step order makes this safe. Also confirm the rule is complete with HR (OQ-02)."
+      "title": "The data collected for the source tax rule is not settled",
+      "why": "Unclear whether to collect full nationality or only 'Swiss yes/no' (data minimisation, G-01). Dual nationals, pending or unusual permits, and registered partners have no defined handling. OQ-03 is not linked to FEAT-04.",
+      "evidence": "dev_refinement FEAT-04 (4 major); OQ-03, OQ-06; eval: source_tax stakeholder missing on nationality, permit_type, spouse_nationality, spouse_permit_type, spouse_residence_country.",
+      "action": "Record decisions on how much nationality detail to collect, on dual nationals counting as Swiss, on pending permits, and on treating only 'Married' as married until OQ-03 is answered. Link OQ-03 to FEAT-04 and add source_tax as a stakeholder on these items."
     },
     {
-      "title": "Validation rules contradict each other and lack sources",
-      "why": "The field files say dates 'must not be in the future', but OQ-09 recommends checking only that a date is a valid calendar date. Trimming, accepting '12a' as a house number, and ISO country codes are also invented. Error wording is undefined, and the portal's error banner (F-SC-014) is not used anywhere.",
-      "evidence": "trace_judge partials on date_of_birth, spouse_date_of_birth, first_name, last_name, address_house_number, spouse_residence_country, spouse_employed; coverage warning F-SC-014; naive_builder questions on validation wording, length limits and country list",
-      "action": "Settle the date validation in one place, approve or remove the inferred validations, and decide the error wording (for example reuse the portal's pattern) and the country list."
+      "title": "No rule for changing earlier answers or for the address details",
+      "why": "If an employee changes their country or civil status, the spec doesn't say whether dependent answers are discarded (G-01) or whether the decision is recalculated. The address also has gaps: a house number is always required, extra parts (c/o, flat) are excluded, and weekly residents aren't handled. Some employees may be unable to finish the address step.",
+      "evidence": "dev_refinement FEAT-02 (major: house number, extra parts, residence definition, country change); FEAT-03 (major: dependent data); FEAT-04 (minor).",
+      "action": "Add a cross-cutting guidance rule: answers that no longer apply are discarded and the decisions are recalculated. Confirm with HR how house number and c/o lines are handled, and which address weekly residents should give."
     },
     {
-      "title": "Guidance ids and decisions.yaml are not in the package",
-      "why": "Requirements cite G-01…G-10, but traceability.md cannot resolve them. A builder cannot check guidance that affects scope, for example G-02.",
-      "evidence": "naive_builder question on traceability.md; OQ-06 cites G-10",
-      "action": "Add the product owner guidance document and decisions.yaml to the package, and resolve the G-ids in traceability.md."
+      "title": "Technical decisions leak into the spec",
+      "why": "Several criteria prescribe UI and data-model choices instead of business needs: DD.MM.YYYY input and separate day, month and year fields, an 'employment details' step, blocking the step until it's complete, and internal field ids (address_country, residence_canton, subject_to_source_tax) used in prose.",
+      "evidence": "tech_leak findings on FEAT-01 (2), FEAT-02 (2), FEAT-03 (3), FEAT-04 (1) and open-questions.md (1).",
+      "action": "Rewrite these in business terms, for example 'all five parts are required' and 'country of home address'. Add guidance that input formats and step layout are design decisions."
     },
     {
-      "title": "Smaller wording and field-type decisions are still open",
-      "why": "The permit reminder also shows for 'no permit yet'. spouse_residence_country is a full country picker where a yes/no question would do (data minimisation, G-01). It is unclear whether insurance_start_date is shown to the employee.",
-      "evidence": "naive_builder questions on notices.md and fields/spouse_residence_country.md; OQ-08",
-      "action": "Decide whether the reminder shows only for B/C, whether to ask 'Does your spouse live in Switzerland?' (yes/no), and whether the notice shows the computed insurance start date."
+      "title": "Canton handling and the fund's open rules",
+      "why": "For Swiss residents the canton could be derived from the postcode, and guidance prefers deriving values over asking. The AC-03.3.1 examples mark Divorced and Widowed as 'not asked ✅' even though OQ-04 is still open. F-SC-020 (unknown error behaviour) is not used anywhere. F-SC-019 still describes the insurance start rule as open even though F-TR-018 settles it.",
+      "evidence": "dev_refinement FEAT-03 (major, canton derivation); OQ-04; coverage F-SC-019, F-SC-020.",
+      "action": "Decide whether to derive the canton or ask for it, and how to handle a canton that doesn't match the postcode. Ask HR for portal screenshots with Divorced and Widowed selected. Mark F-SC-019 as superseded by F-TR-018."
     }
   ]
 }

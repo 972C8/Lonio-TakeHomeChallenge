@@ -3,16 +3,20 @@
     "id": "F-TR-001",
     "source_id": "hr_transcript",
     "kind": "context",
-    "subject": "current_process",
-    "statement": "Today HR collects onboarding data via a Word document and an Excel file, and then types everything into the receiving parties' portals by hand.",
+    "subject": "product_goal",
+    "statement": "The goal is for new employees to give their information once, so that HR stops chasing them for the same information several times. The stakeholder agreed to this goal.",
     "anchors": [
       {
+        "unit_id": "T-003",
+        "quote": "We want your new employees to give us everything once, so that you stop chasing them for the same information three times."
+      },
+      {
         "unit_id": "T-004",
-        "quote": "I have a Word document, then an Excel file, and then I type everything into the portals by hand."
+        "quote": "Yes, please."
       }
     ],
     "basis": "explicit",
-    "temporality": "current_state",
+    "temporality": "desired",
     "supersedes": [],
     "local_id": "f1",
     "anchor_ok": null,
@@ -25,8 +29,12 @@
     "source_id": "hr_transcript",
     "kind": "context",
     "subject": "current_process",
-    "statement": "Manual onboarding is time-consuming: last month HR spent a full afternoon on two new hires.",
+    "statement": "Today HR uses a Word document and an Excel file, then types everything into the receiving parties' portals by hand. Last month this took a full afternoon for two new hires.",
     "anchors": [
+      {
+        "unit_id": "T-004",
+        "quote": "I have a Word document, then an Excel file, and then I type everything into the portals by hand."
+      },
       {
         "unit_id": "T-004",
         "quote": "Last month I spent a full afternoon on two new hires."
@@ -46,7 +54,7 @@
     "source_id": "hr_transcript",
     "kind": "context",
     "subject": "hiring_volume",
-    "statement": "Muster AG hires around twenty people per year (more in summer) and has about 150 employees, mostly in Zurich.",
+    "statement": "Muster AG hires around twenty people a year, more in summer. It has about 150 employees, mostly in Zurich.",
     "anchors": [
       {
         "unit_id": "T-006",
@@ -67,7 +75,7 @@
     "source_id": "hr_transcript",
     "kind": "context",
     "subject": "source_tax_questionnaire",
-    "statement": "Source tax is HR's biggest pain point: because HR doesn't know in advance who must answer the source tax questions, the whole questionnaire is sent to everybody, which annoys Swiss employees.",
+    "statement": "Source tax takes HR the most time. HR does not know up front who must answer the source tax questions, so today it sends the whole questionnaire to everybody, and Swiss employees get annoyed.",
     "anchors": [
       {
         "unit_id": "T-008",
@@ -92,7 +100,7 @@
     "source_id": "hr_transcript",
     "kind": "condition",
     "subject": "source_tax_questionnaire",
-    "statement": "Source tax questions should be asked only to employees who are subject to source tax, not to everybody.",
+    "statement": "Source tax questions should only be asked to employees who are subject to source tax, not to everybody.",
     "anchors": [
       {
         "unit_id": "T-008",
@@ -117,7 +125,7 @@
     "source_id": "hr_transcript",
     "kind": "rule",
     "subject": "subject_to_source_tax",
-    "statement": "Initial statement: all non-Swiss employees (anyone without a Swiss passport) are subject to source tax.",
+    "statement": "First version: all non-Swiss employees (anyone without a Swiss passport) are subject to source tax.",
     "anchors": [
       {
         "unit_id": "T-010",
@@ -136,25 +144,17 @@
   {
     "id": "F-TR-007",
     "source_id": "hr_transcript",
-    "kind": "decision",
+    "kind": "context",
     "subject": "source_tax_calculator",
-    "statement": "The Zurich source tax calculator (canton website, yields the tariff code) is used for every employee regardless of where they actually belong; Anna acknowledges this is not exactly correct but it is what they do for now, and Leo agrees to keep it.",
+    "statement": "HR uses the Zurich tariff calculator on the canton's website to get the tariff code, clicking through it with the employee's answers.",
     "anchors": [
       {
         "unit_id": "T-012",
         "quote": "I use the Zurich calculator on the canton's website. The one that gives you the tariff code."
-      },
-      {
-        "unit_id": "T-012",
-        "quote": "For everybody I use Zurich, by the way. I know it's not exactly how it works, but that's what we do for now."
-      },
-      {
-        "unit_id": "T-013",
-        "quote": "Understood. We'll keep that for now."
       }
     ],
     "basis": "explicit",
-    "temporality": "desired",
+    "temporality": "current_state",
     "supersedes": [],
     "local_id": "f7",
     "anchor_ok": null,
@@ -165,17 +165,21 @@
   {
     "id": "F-TR-008",
     "source_id": "hr_transcript",
-    "kind": "context",
+    "kind": "decision",
     "subject": "source_tax_calculator",
-    "statement": "Today HR clicks through the Zurich calculator manually using the employee's answers.",
+    "statement": "For now, the Zurich calculator is used for every employee subject to source tax. The stakeholder knows this is not exactly how it works, and the interviewer agreed to keep it this way.",
     "anchors": [
       {
         "unit_id": "T-012",
-        "quote": "I sit with the answers and click through it."
+        "quote": "For everybody I use Zurich, by the way. I know it's not exactly how it works, but that's what we do for now."
+      },
+      {
+        "unit_id": "T-013",
+        "quote": "We'll keep that for now."
       }
     ],
     "basis": "explicit",
-    "temporality": "current_state",
+    "temporality": "desired",
     "supersedes": [],
     "local_id": "f8",
     "anchor_ok": null,
@@ -188,11 +192,11 @@
     "source_id": "hr_transcript",
     "kind": "field",
     "subject": "address",
-    "statement": "HR needs the employee's full postal address.",
+    "statement": "HR needs the employee's full address: street, house number, postcode, town and country.",
     "anchors": [
       {
         "unit_id": "T-014",
-        "quote": "Yes, I need the address, obviously. The full address."
+        "quote": "Yes, I need the address, obviously. The full address. Street, number, postcode, town, country."
       }
     ],
     "basis": "explicit",
@@ -209,11 +213,15 @@
     "source_id": "hr_transcript",
     "kind": "format",
     "subject": "address",
-    "statement": "The address must be complete with street, house number, postcode, town and country, because HR posts many documents to employees.",
+    "statement": "The address must be complete, because HR posts many documents to employees. It is a normal postal address, as you would write it on an envelope, with no extra parts.",
     "anchors": [
       {
         "unit_id": "T-014",
-        "quote": "Street, number, postcode, town, country. We post a lot of documents to people, so it has to be complete."
+        "quote": "We post a lot of documents to people, so it has to be complete."
+      },
+      {
+        "unit_id": "T-016",
+        "quote": "No, no. Just a normal address, the way you would write it on an envelope."
       }
     ],
     "basis": "explicit",
@@ -228,13 +236,17 @@
   {
     "id": "F-TR-011",
     "source_id": "hr_transcript",
-    "kind": "format",
-    "subject": "address",
-    "statement": "Nothing beyond a normal postal address (as written on an envelope) is needed for the address.",
+    "kind": "wish",
+    "subject": "photo",
+    "statement": "The stakeholder would like the form to ask for a photo of the employee for badges. Today reception takes badge photos with a phone and they come out badly.",
     "anchors": [
       {
-        "unit_id": "T-016",
-        "quote": "No, no. Just a normal address, the way you would write it on an envelope."
+        "unit_id": "T-018",
+        "quote": "Oh, that would be so nice, actually. For the badges."
+      },
+      {
+        "unit_id": "T-018",
+        "quote": "Could the form ask for a photo?"
       }
     ],
     "basis": "explicit",
@@ -249,34 +261,9 @@
   {
     "id": "F-TR-012",
     "source_id": "hr_transcript",
-    "kind": "wish",
-    "subject": "photo",
-    "statement": "Anna would like the form to ask for a photo for employee badges, since phone photos taken at reception are poor.",
-    "anchors": [
-      {
-        "unit_id": "T-018",
-        "quote": "Oh, that would be so nice, actually. For the badges."
-      },
-      {
-        "unit_id": "T-018",
-        "quote": "Could the form ask for a photo?"
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f12",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-TR-013",
-    "source_id": "hr_transcript",
     "kind": "exclusion",
     "subject": "photo",
-    "statement": "No photo is collected for now; security is changing the badge system next year and the topic is postponed to next year.",
+    "statement": "No photo will be collected for now, because security is changing the badge system next year. The topic will be revisited next year.",
     "anchors": [
       {
         "unit_id": "T-020",
@@ -290,8 +277,33 @@
     "basis": "explicit",
     "temporality": "desired",
     "supersedes": [
-      "F-TR-012"
+      "F-TR-011"
     ],
+    "local_id": "f12",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-013",
+    "source_id": "hr_transcript",
+    "kind": "context",
+    "subject": "pension_fund",
+    "statement": "Muster AG's pension fund is Pensionskasse Muster. It has an old portal, and HR will send screenshots of it.",
+    "anchors": [
+      {
+        "unit_id": "T-022",
+        "quote": "We're with Pensionskasse Muster. They have a portal, it's quite old."
+      },
+      {
+        "unit_id": "T-022",
+        "quote": "I'll send you some screenshots of it after this call"
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "current_state",
+    "supersedes": [],
     "local_id": "f13",
     "anchor_ok": null,
     "judge": null,
@@ -301,17 +313,17 @@
   {
     "id": "F-TR-014",
     "source_id": "hr_transcript",
-    "kind": "context",
-    "subject": "pension_fund",
-    "statement": "Muster AG's pension fund is Pensionskasse Muster, which has an old portal; Anna will send screenshots of it.",
+    "kind": "field",
+    "subject": "first_working_day",
+    "statement": "HR needs the employee's first working day for the pension fund. It is the most important item, and HR asks the employee to confirm it because it changes often.",
     "anchors": [
       {
-        "unit_id": "T-022",
-        "quote": "We're with Pensionskasse Muster. They have a portal, it's quite old. I'll send you some screenshots of it after this call"
+        "unit_id": "T-024",
+        "quote": "I need their first working day. That's the number one thing, and I ask them to confirm it, because it moves more often than you'd think."
       }
     ],
     "basis": "explicit",
-    "temporality": "current_state",
+    "temporality": "desired",
     "supersedes": [],
     "local_id": "f14",
     "anchor_ok": null,
@@ -322,17 +334,17 @@
   {
     "id": "F-TR-015",
     "source_id": "hr_transcript",
-    "kind": "field",
+    "kind": "context",
     "subject": "first_working_day",
-    "statement": "The employee's first working day is needed (for the pension fund) and is the most important item; the employee should confirm it.",
+    "statement": "The first working day often changes, for example when new hires negotiate leaving their old employer a week earlier.",
     "anchors": [
       {
-        "unit_id": "T-024",
-        "quote": "I need their first working day. That's the number one thing, and I ask them to confirm it"
+        "unit_id": "T-026",
+        "quote": "People negotiate with their old employer, they get out a week earlier."
       }
     ],
     "basis": "explicit",
-    "temporality": "desired",
+    "temporality": "current_state",
     "supersedes": [],
     "local_id": "f15",
     "anchor_ok": null,
@@ -343,25 +355,17 @@
   {
     "id": "F-TR-016",
     "source_id": "hr_transcript",
-    "kind": "context",
-    "subject": "first_working_day",
-    "statement": "The first working day changes often, e.g. when people negotiate an earlier exit with their old employer; a missed update (Julia) caused a wrong date at the fund and weeks of fixing.",
+    "kind": "rule",
+    "subject": "insurance_start_date",
+    "statement": "First version: pension fund insurance starts on the first day of the month after the first working day. Example: a first working day of 15.03 gives an insurance start of 01.04.",
     "anchors": [
       {
-        "unit_id": "T-024",
-        "quote": "because it moves more often than you'd think."
-      },
-      {
         "unit_id": "T-026",
-        "quote": "She moved her first working day to the 15th of March, and I didn't update it."
-      },
-      {
-        "unit_id": "T-028",
-        "quote": "It took weeks to fix."
+        "quote": "because insurance starts on the first of the following month. So for her that was the first of April"
       }
     ],
     "basis": "explicit",
-    "temporality": "current_state",
+    "temporality": "desired",
     "supersedes": [],
     "local_id": "f16",
     "anchor_ok": null,
@@ -374,16 +378,18 @@
     "source_id": "hr_transcript",
     "kind": "rule",
     "subject": "insurance_start_date",
-    "statement": "Pension fund insurance starts on the first day of the month following the first working day (e.g. first working day 15 March -> insurance start 1 April).",
+    "statement": "Exception: if the first working day is exactly the first day of a month, insurance starts on that same day.",
     "anchors": [
       {
-        "unit_id": "T-026",
-        "quote": "because insurance starts on the first of the following month. So for her that was the first of April"
+        "unit_id": "T-028",
+        "quote": "Unless somebody starts exactly on the first, of course, then it's just that day."
       }
     ],
     "basis": "explicit",
     "temporality": "desired",
-    "supersedes": [],
+    "supersedes": [
+      "F-TR-016"
+    ],
     "local_id": "f17",
     "anchor_ok": null,
     "judge": null,
@@ -395,30 +401,7 @@
     "source_id": "hr_transcript",
     "kind": "rule",
     "subject": "insurance_start_date",
-    "statement": "Exception: if the first working day is exactly the first of a month, insurance starts on that same day.",
-    "anchors": [
-      {
-        "unit_id": "T-028",
-        "quote": "Unless somebody starts exactly on the first, of course, then it's just that day."
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "desired",
-    "supersedes": [
-      "F-TR-017"
-    ],
-    "local_id": "f18",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-TR-019",
-    "source_id": "hr_transcript",
-    "kind": "rule",
-    "subject": "insurance_start_date",
-    "statement": "Consolidated: insurance_start_date is derived from first_working_day: if first_working_day is the 1st of a month, insurance starts that day; otherwise it starts on the 1st of the following month. It should be derived, not asked.",
+    "statement": "Final rule: the insurance start date is derived from the first working day. If the first working day is the 1st of a month, insurance starts that day. Otherwise it starts on the 1st of the following month. The employee is not asked for it.",
     "anchors": [
       {
         "unit_id": "T-026",
@@ -432,9 +415,38 @@
     "basis": "inferred",
     "temporality": "desired",
     "supersedes": [
-      "F-TR-017",
-      "F-TR-018"
+      "F-TR-016",
+      "F-TR-017"
     ],
+    "local_id": "f18",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-019",
+    "source_id": "hr_transcript",
+    "kind": "context",
+    "subject": "first_working_day",
+    "statement": "Incident: Julia moved her first working day to 15 March, HR did not update it, and the fund ended up with a wrong insurance start date (it should have been 1 April). This led to an unfriendly letter and took weeks to fix. It shows that the insurance start date must follow the latest confirmed first working day.",
+    "anchors": [
+      {
+        "unit_id": "T-026",
+        "quote": "She moved her first working day to the 15th of March, and I didn't update it."
+      },
+      {
+        "unit_id": "T-026",
+        "quote": "I got a very unfriendly letter."
+      },
+      {
+        "unit_id": "T-028",
+        "quote": "It took weeks to fix."
+      }
+    ],
+    "basis": "inferred",
+    "temporality": "current_state",
+    "supersedes": [],
     "local_id": "f19",
     "anchor_ok": null,
     "judge": null,
@@ -467,7 +479,7 @@
     "source_id": "hr_transcript",
     "kind": "condition",
     "subject": "spouse_date_of_birth",
-    "statement": "If the employee is married, the pension fund wants the spouse's date of birth.",
+    "statement": "If the employee is married, the pension fund wants the date of birth of the husband or wife.",
     "anchors": [
       {
         "unit_id": "T-032",
@@ -488,7 +500,7 @@
     "source_id": "hr_transcript",
     "kind": "option",
     "subject": "civil_status",
-    "statement": "Civil status options are, per Anna's uncertain recollection, single, married, divorced, and 'I think' widowed; she defers to the pension fund screenshots for the actual list.",
+    "statement": "Civil status options, from the stakeholder's memory and not confirmed: Single, Married, Divorced, and she thinks Widowed. She deferred to the pension fund screenshots for the actual list.",
     "anchors": [
       {
         "unit_id": "T-034",
@@ -509,11 +521,15 @@
     "source_id": "hr_transcript",
     "kind": "context",
     "subject": "civil_status",
-    "statement": "At least one current employee (Daniel in finance) is in a registered partnership, so this civil status occurs in practice.",
+    "statement": "One current employee (Daniel, in finance) is in a registered partnership. He was entered before the current HR manager's time.",
     "anchors": [
       {
         "unit_id": "T-034",
         "quote": "we do have one colleague in a registered partnership. Daniel, in finance."
+      },
+      {
+        "unit_id": "T-036",
+        "quote": "That was before my time."
       }
     ],
     "basis": "explicit",
@@ -530,7 +546,7 @@
     "source_id": "hr_transcript",
     "kind": "open",
     "subject": "civil_status",
-    "statement": "Unknown how the pension fund's screen handles registered partnership and whether the fund wants the partner's details (e.g. date of birth) in that case.",
+    "statement": "Unresolved: how the pension fund's screen handles a registered partnership, and whether the fund wants the partner's details.",
     "anchors": [
       {
         "unit_id": "T-036",
@@ -551,12 +567,8 @@
     "source_id": "hr_transcript",
     "kind": "rule",
     "subject": "subject_to_source_tax",
-    "statement": "Correction: non-Swiss employees holding a C permit are not subject to source tax; they are treated like Swiss people for this.",
+    "statement": "Correction: employees with a C permit are not subject to source tax and are treated like Swiss nationals (example: Maria, Portuguese with a C permit). So the rule becomes non-Swiss, except C permit holders. Asked if that was everything, the stakeholder answered only 'I think so'.",
     "anchors": [
-      {
-        "unit_id": "T-038",
-        "quote": "No, that's actually not right."
-      },
       {
         "unit_id": "T-038",
         "quote": "So, not the people with a C permit. They're treated like Swiss people for this."
@@ -564,6 +576,10 @@
       {
         "unit_id": "T-039",
         "quote": "Okay, so non-Swiss, but not with a C permit."
+      },
+      {
+        "unit_id": "T-040",
+        "quote": "I think so."
       }
     ],
     "basis": "explicit",
@@ -581,12 +597,12 @@
     "id": "F-TR-026",
     "source_id": "hr_transcript",
     "kind": "context",
-    "subject": "subject_to_source_tax",
-    "statement": "Example: Maria in sales is Portuguese with a C permit and does not pay source tax.",
+    "subject": "metrics",
+    "statement": "The stakeholder offered to get numbers on how long the process takes from their payroll person.",
     "anchors": [
       {
-        "unit_id": "T-038",
-        "quote": "I'm thinking of Maria in sales, she's Portuguese, and she doesn't do source tax at all. She has a C permit."
+        "unit_id": "T-040",
+        "quote": "Do you want some numbers on how long this takes? I could get that for you from our payroll person."
       }
     ],
     "basis": "explicit",
@@ -601,17 +617,17 @@
   {
     "id": "F-TR-027",
     "source_id": "hr_transcript",
-    "kind": "context",
-    "subject": "timing_data",
-    "statement": "Anna offered to get numbers from the payroll person on how long the source tax process takes.",
+    "kind": "exclusion",
+    "subject": "it_equipment",
+    "statement": "Laptops and IT equipment are out of scope. IT has its own process.",
     "anchors": [
       {
-        "unit_id": "T-040",
-        "quote": "Do you want some numbers on how long this takes? I could get that for you from our payroll person."
+        "unit_id": "T-042",
+        "quote": "IT does laptops, they have their own process, keep them out of this, please."
       }
     ],
     "basis": "explicit",
-    "temporality": "current_state",
+    "temporality": "desired",
     "supersedes": [],
     "local_id": "f27",
     "anchor_ok": null,
@@ -622,13 +638,17 @@
   {
     "id": "F-TR-028",
     "source_id": "hr_transcript",
-    "kind": "exclusion",
-    "subject": "it_equipment",
-    "statement": "Laptops/IT equipment are out of scope; IT has its own process.",
+    "kind": "wish",
+    "subject": "permit_reminder",
+    "statement": "The stakeholder would love the form to remind employees to bring their permit, because half of them forget. Not decided: the interviewer deferred the wording to later.",
     "anchors": [
       {
         "unit_id": "T-042",
-        "quote": "IT does laptops, they have their own process, keep them out of this, please."
+        "quote": "What I would love is if the form could remind people to bring their permit. Half of them forget."
+      },
+      {
+        "unit_id": "T-043",
+        "quote": "We can look at the wording later."
       }
     ],
     "basis": "explicit",
@@ -643,17 +663,13 @@
   {
     "id": "F-TR-029",
     "source_id": "hr_transcript",
-    "kind": "wish",
-    "subject": "permit_reminder",
-    "statement": "Anna would love the form to remind employees to bring their permit (on the first day), because half of them forget; wording to be looked at later, not decided.",
+    "kind": "rule",
+    "subject": "source_tax_calculator",
+    "statement": "For married employees, the source tax calculator asks different questions, for example whether the husband or wife works.",
     "anchors": [
       {
-        "unit_id": "T-042",
-        "quote": "What I would love is if the form could remind people to bring their permit. Half of them forget."
-      },
-      {
-        "unit_id": "T-043",
-        "quote": "We can look at the wording later."
+        "unit_id": "T-044",
+        "quote": "It changes the questions in the calculator, yes. Whether the husband or wife works."
       }
     ],
     "basis": "explicit",
@@ -668,30 +684,9 @@
   {
     "id": "F-TR-030",
     "source_id": "hr_transcript",
-    "kind": "field",
-    "subject": "spouse_employment",
-    "statement": "For married employees subject to source tax, the Zurich calculator asks whether the spouse works.",
-    "anchors": [
-      {
-        "unit_id": "T-044",
-        "quote": "It changes the questions in the calculator, yes. Whether the husband or wife works."
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f30",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-TR-031",
-    "source_id": "hr_transcript",
     "kind": "rule",
     "subject": "subject_to_source_tax",
-    "statement": "An employee married to a Swiss national or to a C permit holder who lives in Switzerland is not subject to source tax (e.g. Tomás: Brazilian, B permit, Swiss wife, living in Winterthur).",
+    "statement": "Addition: an employee married to someone who is Swiss or holds a C permit, and who lives in Switzerland, is not subject to source tax. Example: Tomás, Brazilian with a B permit, whose Swiss wife lives with him in Winterthur.",
     "anchors": [
       {
         "unit_id": "T-044",
@@ -707,43 +702,18 @@
     "supersedes": [
       "F-TR-025"
     ],
-    "local_id": "f31",
+    "local_id": "f30",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
     "superseded_by": []
   },
   {
-    "id": "F-TR-032",
-    "source_id": "hr_transcript",
-    "kind": "context",
-    "subject": "spouse_data",
-    "statement": "Today HR checks the spouse exemption by hand and asks for spouse data by email, which takes very long.",
-    "anchors": [
-      {
-        "unit_id": "T-044",
-        "quote": "I always have to check that one by hand."
-      },
-      {
-        "unit_id": "T-046",
-        "quote": "I ask them by email, and it takes forever."
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "current_state",
-    "supersedes": [],
-    "local_id": "f32",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-TR-033",
+    "id": "F-TR-031",
     "source_id": "hr_transcript",
     "kind": "field",
-    "subject": "spouse_nationality",
-    "statement": "For married employees (source tax determination), the spouse's nationality is needed.",
+    "subject": "spouse_details",
+    "statement": "To decide on source tax, HR needs the spouse's nationality, the spouse's permit (if they have one), and whether the spouse lives in Switzerland.",
     "anchors": [
       {
         "unit_id": "T-045",
@@ -757,6 +727,56 @@
     "basis": "explicit",
     "temporality": "desired",
     "supersedes": [],
+    "local_id": "f31",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-032",
+    "source_id": "hr_transcript",
+    "kind": "condition",
+    "subject": "spouse_details",
+    "statement": "Spouse nationality, permit and residence are only needed for married employees whose own status would otherwise make them subject to source tax: non-Swiss, no C permit, living in Switzerland. The spouse permit is only needed if the spouse is not Swiss.",
+    "anchors": [
+      {
+        "unit_id": "T-044",
+        "quote": "it also changes who has to do it at all."
+      },
+      {
+        "unit_id": "T-046",
+        "quote": "Their nationality, their permit if they have one, and that they live here."
+      }
+    ],
+    "basis": "inferred",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f32",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-TR-033",
+    "source_id": "hr_transcript",
+    "kind": "context",
+    "subject": "spouse_details",
+    "statement": "Today HR checks the spouse case by hand and collects spouse details by email, which takes a long time.",
+    "anchors": [
+      {
+        "unit_id": "T-044",
+        "quote": "I always have to check that one by hand."
+      },
+      {
+        "unit_id": "T-046",
+        "quote": "I ask them by email, and it takes forever."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "current_state",
+    "supersedes": [],
     "local_id": "f33",
     "anchor_ok": null,
     "judge": null,
@@ -766,18 +786,32 @@
   {
     "id": "F-TR-034",
     "source_id": "hr_transcript",
-    "kind": "field",
-    "subject": "spouse_permit_type",
-    "statement": "For married employees (source tax determination), the spouse's permit type is needed if the spouse has one.",
+    "kind": "rule",
+    "subject": "subject_to_source_tax",
+    "statement": "Addition: employees who live abroad and work in Switzerland are always subject to source tax, whatever their nationality. Example: Stefan is Swiss, lives in Konstanz, and is still subject.",
     "anchors": [
       {
-        "unit_id": "T-046",
-        "quote": "their permit if they have one"
+        "unit_id": "T-048",
+        "quote": "Those people do source tax because they work here and they don't live here."
+      },
+      {
+        "unit_id": "T-048",
+        "quote": "And there it doesn't matter what passport you have, by the way."
+      },
+      {
+        "unit_id": "T-049",
+        "quote": "So someone living abroad and working here always does it?"
+      },
+      {
+        "unit_id": "T-050",
+        "quote": "Yes."
       }
     ],
     "basis": "explicit",
     "temporality": "desired",
-    "supersedes": [],
+    "supersedes": [
+      "F-TR-030"
+    ],
     "local_id": "f34",
     "anchor_ok": null,
     "judge": null,
@@ -787,17 +821,17 @@
   {
     "id": "F-TR-035",
     "source_id": "hr_transcript",
-    "kind": "condition",
-    "subject": "spouse_permit_type",
-    "statement": "The spouse's permit is only relevant when the spouse is not Swiss (Swiss nationals have no permit).",
+    "kind": "context",
+    "subject": "cross_border_employees",
+    "statement": "Some employees live across the border, for example in Konstanz (Germany) and in Liechtenstein.",
     "anchors": [
       {
-        "unit_id": "T-046",
-        "quote": "their permit if they have one"
+        "unit_id": "T-048",
+        "quote": "Stefan lives in Konstanz, and there's a woman in the warehouse who lives in Liechtenstein."
       }
     ],
-    "basis": "inferred",
-    "temporality": "desired",
+    "basis": "explicit",
+    "temporality": "current_state",
     "supersedes": [],
     "local_id": "f35",
     "anchor_ok": null,
@@ -808,13 +842,21 @@
   {
     "id": "F-TR-036",
     "source_id": "hr_transcript",
-    "kind": "field",
-    "subject": "spouse_residence_country",
-    "statement": "For married employees (source tax determination), whether the spouse lives in Switzerland is needed.",
+    "kind": "rule",
+    "subject": "source_tax_calculator",
+    "statement": "For employees living abroad, the source tax calculator asks more questions. Germany has its own forms, which the stakeholder cannot name. The interviewer said the calculator will define these questions.",
     "anchors": [
       {
-        "unit_id": "T-046",
-        "quote": "and that they live here."
+        "unit_id": "T-050",
+        "quote": "And with them the calculator gets much more complicated, there are more questions."
+      },
+      {
+        "unit_id": "T-050",
+        "quote": "Germany has its own forms, I can never remember what they're called."
+      },
+      {
+        "unit_id": "T-051",
+        "quote": "the calculator will tell us."
       }
     ],
     "basis": "explicit",
@@ -831,90 +873,7 @@
     "source_id": "hr_transcript",
     "kind": "rule",
     "subject": "subject_to_source_tax",
-    "statement": "Employees who live abroad and work in Switzerland are always subject to source tax, regardless of nationality (e.g. Stefan, Swiss, lives in Konstanz; a warehouse employee lives in Liechtenstein).",
-    "anchors": [
-      {
-        "unit_id": "T-048",
-        "quote": "Those people do source tax because they work here and they don't live here. And there it doesn't matter what passport you have, by the way."
-      },
-      {
-        "unit_id": "T-048",
-        "quote": "Stefan is actually Swiss, and he still has it."
-      },
-      {
-        "unit_id": "T-049",
-        "quote": "So someone living abroad and working here always does it?"
-      },
-      {
-        "unit_id": "T-050",
-        "quote": "Yes."
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "desired",
-    "supersedes": [
-      "F-TR-006",
-      "F-TR-025",
-      "F-TR-031"
-    ],
-    "local_id": "f37",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-TR-038",
-    "source_id": "hr_transcript",
-    "kind": "context",
-    "subject": "cross_border",
-    "statement": "Muster AG has a few employees living across the border (Germany, Liechtenstein).",
-    "anchors": [
-      {
-        "unit_id": "T-048",
-        "quote": "We have a few who live across the border. Stefan lives in Konstanz, and there's a woman in the warehouse who lives in Liechtenstein."
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "current_state",
-    "supersedes": [],
-    "local_id": "f38",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-TR-039",
-    "source_id": "hr_transcript",
-    "kind": "open",
-    "subject": "cross_border",
-    "statement": "For employees living abroad the calculator asks more questions (Germany has its own forms); Anna cannot name them, and Leo defers to the calculator for the details.",
-    "anchors": [
-      {
-        "unit_id": "T-050",
-        "quote": "And with them the calculator gets much more complicated, there are more questions. Germany has its own forms, I can never remember what they're called."
-      },
-      {
-        "unit_id": "T-051",
-        "quote": "Okay, that's fine, the calculator will tell us."
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f39",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-TR-040",
-    "source_id": "hr_transcript",
-    "kind": "rule",
-    "subject": "subject_to_source_tax",
-    "statement": "Consolidated final rule (Anna hedged completeness with 'I think'): an employee is subject to source tax if residence_country is not CH (regardless of nationality). If living in CH: not subject if nationality is CH; not subject if permit_type is C; not subject if married to a spouse who is Swiss or holds a C permit and lives in CH; otherwise subject.",
+    "statement": "Consolidated final rule. (1) An employee whose home address is outside Switzerland is subject to source tax, whatever their nationality. (2) An employee living in Switzerland who is Swiss or holds a C permit is not subject. (3) An employee living in Switzerland who is non-Swiss without a C permit is not subject if married to a spouse who is Swiss or holds a C permit and lives in Switzerland. (4) Otherwise the employee is subject. The stakeholder hedged on completeness ('I think that's it').",
     "anchors": [
       {
         "unit_id": "T-010",
@@ -930,7 +889,7 @@
       },
       {
         "unit_id": "T-048",
-        "quote": "Those people do source tax because they work here and they don't live here. And there it doesn't matter what passport you have, by the way."
+        "quote": "Those people do source tax because they work here and they don't live here."
       },
       {
         "unit_id": "T-048",
@@ -942,21 +901,21 @@
     "supersedes": [
       "F-TR-006",
       "F-TR-025",
-      "F-TR-031",
-      "F-TR-037"
+      "F-TR-030",
+      "F-TR-034"
     ],
-    "local_id": "f40",
+    "local_id": "f37",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
     "superseded_by": []
   },
   {
-    "id": "F-TR-041",
+    "id": "F-TR-038",
     "source_id": "hr_transcript",
     "kind": "field",
     "subject": "nationality",
-    "statement": "The employee's nationality is needed to determine source tax liability.",
+    "statement": "The employee's nationality is needed to decide whether they are subject to source tax.",
     "anchors": [
       {
         "unit_id": "T-010",
@@ -966,110 +925,64 @@
     "basis": "inferred",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f41",
+    "local_id": "f38",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
     "superseded_by": []
   },
   {
-    "id": "F-TR-042",
+    "id": "F-TR-039",
     "source_id": "hr_transcript",
     "kind": "field",
     "subject": "permit_type",
-    "statement": "Non-Swiss employees' permit type (at least whether it is a C permit) is needed to determine source tax liability.",
+    "statement": "Non-Swiss employees' permit type (e.g. B permit, C permit) is needed to decide whether they are subject to source tax.",
     "anchors": [
       {
         "unit_id": "T-038",
-        "quote": "So, not the people with a C permit."
+        "quote": "She has a C permit. So, not the people with a C permit."
       }
     ],
     "basis": "inferred",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f42",
+    "local_id": "f39",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
     "superseded_by": []
   },
   {
-    "id": "F-TR-043",
+    "id": "F-TR-040",
     "source_id": "hr_transcript",
-    "kind": "field",
+    "kind": "rule",
     "subject": "residence_country",
-    "statement": "The employee's country of residence is needed to determine source tax liability (living abroad means always subject).",
+    "statement": "'Lives here' in the source tax rules means living in Switzerland. The employee's country of residence can be taken from the country of the home address.",
     "anchors": [
       {
         "unit_id": "T-048",
         "quote": "Those people do source tax because they work here and they don't live here."
-      }
-    ],
-    "basis": "inferred",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f43",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-TR-044",
-    "source_id": "hr_transcript",
-    "kind": "condition",
-    "subject": "spouse_data",
-    "statement": "Spouse nationality, permit and residence only need to be asked when the employee is married and the spouse exemption could apply (i.e. employee is non-Swiss without C permit and lives in CH).",
-    "anchors": [
-      {
-        "unit_id": "T-044",
-        "quote": "If you're married to someone Swiss, or to someone with a C permit, and that person lives here, then you don't do source tax either."
       },
-      {
-        "unit_id": "T-048",
-        "quote": "And there it doesn't matter what passport you have, by the way."
-      }
-    ],
-    "basis": "inferred",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f44",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-TR-045",
-    "source_id": "hr_transcript",
-    "kind": "rule",
-    "subject": "spouse_residence_country",
-    "statement": "'Lives here' in Anna's statements means living in Switzerland.",
-    "anchors": [
       {
         "unit_id": "T-044",
         "quote": "and they live in Winterthur."
-      },
-      {
-        "unit_id": "T-048",
-        "quote": "they work here and they don't live here."
       }
     ],
     "basis": "inferred",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f45",
+    "local_id": "f40",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
     "superseded_by": []
   },
   {
-    "id": "F-TR-046",
+    "id": "F-TR-041",
     "source_id": "hr_transcript",
     "kind": "context",
-    "subject": "project_timing",
-    "statement": "Anna asked when the product will be available; Leo will reply this week after reviewing the screenshots.",
+    "subject": "timeline",
+    "statement": "The stakeholder asked when the product can be delivered. The interviewer will reply this week, after reviewing the screenshots.",
     "anchors": [
       {
         "unit_id": "T-052",
@@ -1083,7 +996,7 @@
     "basis": "explicit",
     "temporality": "current_state",
     "supersedes": [],
-    "local_id": "f46",
+    "local_id": "f41",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",

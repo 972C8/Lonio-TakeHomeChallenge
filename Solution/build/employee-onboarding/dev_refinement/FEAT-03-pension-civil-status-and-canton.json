@@ -1,0 +1,60 @@
+{
+  "questions": [
+    {
+      "file": "features/FEAT-03-pension-civil-status-and-canton.md",
+      "question": "Is every new employee registered with Pensionskasse Muster? The spec assumes so. Occupational pension (BVG) only applies above an age and salary threshold, so some hires (low pay, short contracts, young staff) may not be registered. If so, should we still ask them for canton and spouse's date of birth, which only the pension fund needs (G-01)? And is civil status still needed for them for source tax?",
+      "severity": "major"
+    },
+    {
+      "file": "features/FEAT-03-pension-civil-status-and-canton.md",
+      "question": "AC-03.1.4 says no extra option is offered while OQ-03 is open, but not what an employee like Daniel should do now. Which value should a registered partner (or a legally separated employee) pick: Married, Single, or contact HR? Do we show guidance text? Without this the field is required but has no correct answer for them, and their choice also feeds the source tax rule (FEAT-04).",
+      "severity": "major"
+    },
+    {
+      "file": "features/FEAT-03-pension-civil-status-and-canton.md",
+      "question": "For employees living in Switzerland, the canton follows from the postcode and town we already collect in FEAT-01. Should we fill it in from the address instead of asking (G-01: ask once)? If we keep asking, what happens when the chosen canton does not match the address (e.g. postcode 8400 Winterthur but canton Bern)?",
+      "severity": "major"
+    },
+    {
+      "file": "features/FEAT-03-pension-civil-status-and-canton.md",
+      "question": "AC-03.1.3, AC-03.2.3 and AC-03.3.3 say 'the pension fund receives it', but out-of-scope.md (G-04) puts sending data to receiving parties outside these specs. What makes these criteria pass within this feature? Is it enough that the value is collected and available to HR?",
+      "severity": "minor"
+    },
+    {
+      "file": "features/FEAT-03-pension-civil-status-and-canton.md",
+      "question": "Spouse's date of birth: what counts as a valid date (no future dates, any age limits)? And what can a married employee do if they don't know the exact date? AC-03.2.2 requires a complete date and the field cannot be left empty, so they could not finish onboarding.",
+      "severity": "minor"
+    },
+    {
+      "file": "features/FEAT-03-pension-civil-status-and-canton.md",
+      "question": "If an employee first chooses Married, enters a spouse's date of birth, then changes to another status (or moves their home address abroad after picking a canton), should the earlier answer be thrown away so we don't keep data we no longer need (G-01)? Or should HR still see it?",
+      "severity": "minor"
+    }
+  ],
+  "tech_leaks": [
+    {
+      "file": "features/FEAT-03-pension-civil-status-and-canton.md",
+      "quote": "information: [civil_status, spouse_date_of_birth, residence_canton]",
+      "why": "Field ids in the spec are an engineering naming choice. 'residence_canton' also assumes the canton means the residence canton, which OQ-02 leaves open."
+    },
+    {
+      "file": "features/FEAT-03-pension-civil-status-and-canton.md",
+      "quote": "Then it is a complete date in the form DD.MM.YYYY, as the pension fund expects (e.g. 14.06.1988)",
+      "why": "The fund's DD.MM.YYYY format is a valid business constraint on the output. Requiring the employee to type it in that form is an input/UI decision that should be left to engineering."
+    },
+    {
+      "file": "features/FEAT-03-pension-civil-status-and-canton.md",
+      "quote": "stakeholders: [employee, hr, pension_fund, source_tax] ... rules: []",
+      "why": "Internal ids and data-structure metadata in the frontmatter are not product requirements."
+    }
+  ],
+  "already_flagged": [
+    "OQ-02: whether the pension fund's canton means residence or work canton; if it is the work canton, it may be filled in and not asked",
+    "OQ-02: what canton to enter for cross-border employees (Konstanz, Liechtenstein); without it their registration stays blocked, which conflicts with the goal 'register every employee'",
+    "OQ-02: whether US-03.3 can ship before this is settled, since its own AC-03.3.3 says the question is not final",
+    "OQ-03: how a registered partnership or other unlisted status is entered with the pension fund",
+    "OQ-03: whether registered partners must give partner data (spouse's date of birth)",
+    "OQ-03: whether a registered partner counts as a spouse for the source tax exemption (FEAT-04)",
+    "OQ-04: whether Divorced or Widowed need extra fields (e.g. spouse data) in the pension portal"
+  ]
+}

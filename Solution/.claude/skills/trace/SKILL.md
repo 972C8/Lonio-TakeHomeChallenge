@@ -5,8 +5,9 @@ description: Explain why a requirement says what it says, down to the verbatim s
 
 # /trace <id>
 
-1. Read `build/<problem>/spec.json` and find the item (`field.<id>`, `rule.<id>`,
-   open question or notice). Also accept a bare id or a fact id `F-…`.
+1. Read `build/<problem>/spec.json` and find the element: a story (`US-…`),
+   acceptance criterion (`AC-…`), information item, business rule or open
+   question. Also accept a fact id `F-…`, guidance `G-…` or decision `D-…`.
 2. For each id in `source_refs`: look it up in `build/<problem>/facts.json`
    (or `decisions.yaml` for `D-…`). Show statement, kind, basis, the judge
    verdict, and each anchor quote with its unit id.
@@ -14,6 +15,7 @@ description: Explain why a requirement says what it says, down to the verbatim s
    `build/<problem>/normalize/<source>.json` (speaker / screenshot file), so
    the quote is seen in context. Mention superseded facts and what superseded
    them.
-4. Show the trace-judge verdict from `build/<problem>/judge_trace.json`.
+4. Show the trace-judge verdict from `build/<problem>/judge_trace.json` and,
+   for acceptance criteria, whether their examples pass (`report.json`).
 5. Conclude in two sentences: is the requirement fully backed, and what (if
    anything) rests on inference or a decision.
