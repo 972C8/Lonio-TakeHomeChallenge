@@ -86,7 +86,6 @@ features/<name>/             EVERYTHING SPECIFIC to one feature (one process)
   profile.yaml               sources (+ authority, precedence), stakeholders, item checklist, models
   guidance.md                product-owner guidance; [G-nn] items are citable
   decisions.yaml             product decisions (the override layer)
-  examples.yaml              named real cases from the sources, executed every run
 .claude/skills/              /run-pipeline · /review · /decide · /trace · /new-adapter · /new-feature · /learn
 build/<feature>/             every intermediate result (units, facts, verdicts, knowledge, feature plan, sections, report, review.md)
 requirements/<feature>/      the deliverable: feature.md + shared files
@@ -226,7 +225,7 @@ precedence.
 1. **Mechanical checks (code):**
    - **Checklist:** every information item answers the feature's checklist from `profile.yaml`. For this assignment that is what, when asked, when required, depends on, and who needs it.
    - **References:** every condition refers to items that exist, and every element cites a valid fact, guideline or decision.
-   - **Example execution:** **every example in every acceptance criterion is executed** against the internal formalisation, plus the named cases in `examples.yaml`. Shown as ✅ in the specs.
+   - **Example execution:** **every example in every acceptance criterion is executed** against the internal formalisation, including the real cases named in the sources (Maria, Tomás, Stefan, Julia, …). Shown as ✅ in the specs.
    - **Coverage, both ways:** every item and rule sits in a story, and uncited source units and unused facts are listed.
    - **Tech-leak scan:** a vocabulary scan flags implementation terms.
 2. **Trace judge (agent):** each item, rule and story is compared with the facts it cites.
@@ -239,7 +238,7 @@ precedence.
 4. **Dev refinement (one agent):** an engineer agent that reads `feature.md` and the shared files lists every question it would ask in refinement, plus any technical decisions that leaked into the spec. This is the acceptance test of the task: "built without anyone asking a single question".
 5. **Review (agent):** summarises everything into one verdict (ready / ready with caveats / not ready), with prioritised findings and suggested decisions.
 
-**In → out.** `spec.json`, facts, units, `examples.yaml` →
+**In → out.** `spec.json`, facts, units →
 `requirements/<feature>/` (the deliverable), `report.json` and **`review.md`**,
 the one file the product owner reads.
 
@@ -298,18 +297,15 @@ type the name in Claude Code opened in this folder.
    the story writer both read it, so its wording shapes the sections and
    stories), the `stakeholders`, each source's `authority` and `precedence`,
    and the `item_checklist`. Optionally add `section_hints`. For a **new
-   feature**, `/new-feature` interviews you and drafts steps 1–3; for a new
+   feature**, `/new-feature` interviews you and drafts steps 1–2; for a new
    *kind* of source (emails, regulation PDFs, …), `/new-adapter`.
 2. **`features/<f>/guidance.md`** – state scope and what is out of scope,
    value and id conventions, and product-owner statements tagged `[G-nn]` that
    may be cited as sources. Do not put facts of a source here.
-3. **`examples.yaml`** – confirm the named real cases from the sources and
-   what is expected for each (`/new-feature` drafts them for a new feature). They are executed on every run, and no agent
-   sees them.
-4. **Optional: explore a live source once** – `pipeline explore <source>`
+3. **Optional: explore a live source once** – `pipeline explore <source>`
    (for the Zurich calculator, 20–60 minutes and a few dollars). Skip it and
    the calculator is reported as an open question.
-5. **Run** – `pipeline run`, or `/run-pipeline`, which also summarises the
+4. **Run** – `pipeline run`, or `/run-pipeline`, which also summarises the
    result (about 15–20 minutes, roughly $5–7 for the first run). Output is
    created, not committed: `build/<f>/` and `requirements/<f>/`.
 
@@ -325,7 +321,7 @@ rule, fact or open question):
 1. **Verdict and errors** – ready / ready with caveats / not ready, and what
    blocks it.
 2. **Failing examples** – decide who is wrong: the source (fix or replace it),
-   the example (`examples.yaml`), or the generated rule (add a decision).
+   the example (written by the story writer: override the story's criterion), or the generated rule (override the rule).
 3. **Open questions** – each has options and a recommendation. Answer them in
    `decisions.yaml` (`resolve`, or `override` / `add` the resulting change), or
    with the `/decide` skill in plain words.

@@ -22,7 +22,6 @@ import asyncio
 import json
 from pathlib import Path
 
-import yaml
 from pydantic import BaseModel, Field as F
 from typing import Literal
 
@@ -331,9 +330,7 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
     findings += M.tech_leaks(spec, leak_cfg.get("flag", []), leak_cfg.get("allow", []))
     cov, cf = M.coverage(units, facts, spec)
     findings += cf
-    ex_path = ctx.feature_dir / "examples.yaml"
-    profile_examples = (yaml.safe_load(ex_path.read_text()) or {}).get("examples", []) if ex_path.exists() else []
-    examples, ef = M.run_examples(spec, profile_examples)
+    examples, ef = M.run_examples(spec)
     findings += ef
     judge = {}
     if not skip_llm_checks:

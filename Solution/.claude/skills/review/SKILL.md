@@ -33,8 +33,9 @@ never answer for them.
 1. **Errors** – anything that blocks the verdict that is not covered below.
 2. **Failing examples** – for each: the case, what the rules produce versus
    what was expected, and your reading of who is wrong: the source, the
-   example (`examples.yaml`, owned by the user) or the generated rule.
-   Options: fix the example, add an override decision, or leave and rerun.
+   example (written by the story writer, part of a story's acceptance
+   criteria) or the generated rule. Options: override the story's criterion,
+   override the rule, fix the source, or leave and rerun.
 3. **Open questions** (`open_questions`, blocking ones first) – question, why
    it matters, options and the pipeline's recommendation, plus the quote that
    raised it. Record the answer as **two things**: the change itself
@@ -64,7 +65,7 @@ If the user says "skip", move on and keep a list of skipped items.
   condition and its internal expression together, as two decisions.
 - Collect the decisions as you go. After each part (not each item), show the
   YAML you are about to add and **ask for confirmation before writing** to
-  `decisions.yaml`. Changes to `examples.yaml` or `guidance.md`
+  `decisions.yaml`. Changes to `guidance.md`
   also need confirmation and belong to the user: propose, never silently edit.
 - Never edit anything under `requirements/` or `build/`.
 

@@ -14,9 +14,7 @@ are reused.
    hints.
 2. Create `features/<name>/` with `profile.yaml`, `guidance.md` (tag citable
    product-owner statements `[G-nn]`; give id and value vocabulary),
-   `decisions.yaml` (empty), `examples.yaml` (named cases taken from the
-   sources; ask the user to confirm them – never generate them from pipeline
-   output).
+   `decisions.yaml` (empty).
    `features/employee-onboarding/` is the reference. Never change `pipeline/`
    for a new feature; if you think you must, the change belongs in a profile
    or an adapter.

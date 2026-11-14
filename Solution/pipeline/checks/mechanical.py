@@ -257,8 +257,8 @@ def check_example(km: KnowledgeModel, given: dict, then: list[tuple[str, str]]) 
     return fails, sim
 
 
-def run_examples(spec: Spec, profile_examples: list[dict]) -> tuple[list[dict], list[Finding]]:
-    """Execute every acceptance-criterion example and every profile example against the knowledge model."""
+def run_examples(spec: Spec) -> tuple[list[dict], list[Finding]]:
+    """Execute every acceptance-criterion example (written by the story writer) against the knowledge model."""
     results, F = [], []
     km = spec.knowledge
     cases = []
@@ -268,9 +268,6 @@ def run_examples(spec: Spec, profile_examples: list[dict]) -> tuple[list[dict], 
                 for ex in ac.examples:
                     cases.append((f"{ac.id} / {ex.name}", "spec", {g.item: g.value for g in ex.given},
                                   [(t.target, t.expect) for t in ex.then]))
-    for p in profile_examples:
-        then = [(k, str(v)) for k, v in p.get("expect", {}).items()]
-        cases.append((p["id"], f"profile: {p.get('from', '')}", {k: str(v) for k, v in p["given"].items()}, then))
     for name, origin, given, then in cases:
         fails, sim = check_example(km, given, then)
         results.append({"case": name, "origin": origin, "pass": not fails, "failures": fails})
