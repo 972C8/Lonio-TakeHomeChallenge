@@ -193,6 +193,7 @@ and precedence) + `guidance.md` → `knowledge.raw.json`.
 **What and why.**
 1. **Plan:** the whole process is **one feature**. A planner agent writes its goal and context and groups the knowledge model into **sections** (epic-style headings), following the stakeholder goals and pain points the sources state. This is a generic heuristic, not a fixed journey. Each information item and rule is owned by exactly one section.
 2. **Write:** one writer agent per section, in parallel, writes **user stories** (*As a … I want … so that …*, with a priority and its reason) and **acceptance criteria** in Given / When / Then.
+3. **Flow (optional):** when the profile has `flow:`, a flow planner agent (`agents/flow_planner.md`) lays out the steps the user goes through, in order, with the information asked in each step. Code checks that every asked item is in exactly one step, links each step to its stories, and lists the rules that are never asked but derived. The overview is rendered at the top of `feature.md`. On a rerun, steps whose items did not change are kept word for word (`feature.flow.json`).
 
 Where a criterion involves conditions or rules, it gets an **examples
 table**: real cases named in the sources first (Maria, Tomás, Stefan,

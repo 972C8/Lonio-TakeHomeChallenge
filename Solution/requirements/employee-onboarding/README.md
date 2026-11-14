@@ -24,7 +24,7 @@ is its own file in [stories/](stories/); the stories are grouped into sections:
 | 7 | [Employees living abroad (Germany, Liechtenstein)](feature.md#SEC-07-living-abroad) | Derive the calculator's residence answers from the home address country. Ask employees living in Germany or Liechtenstein the cross-border questions about their expected year, which decide the cross-border tariff or the Liechtenstein result. | 3 | 0 |
 | 8 | [Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission) | Close the questionnaire. Remind non-Swiss employees and employees living abroad to bring their permit, and on submission record only the answers to questions that still apply. | 3 | 0 |
 
-The order in which the employee is asked is in [Questionnaire flow](feature.md#questionnaire-flow).
+The order in which the user is asked is in [Questionnaire flow](feature.md#flow).
 
 ## How to read the feature spec
 - **User stories** (`US-x.y`): who wants what and why, with priority.

@@ -91,7 +91,18 @@ def render(out_dir: Path, ctx, spec: Spec, facts: list[Fact], units: dict[str, U
     # stakeholders: "id: short name - description" -> rendered by short name
     stakeholders = {k: str(v).split(" - ")[0].strip() for k, v in ctx.profile["stakeholders"].items()}
     story_path = {s.id: f"stories/{story_file(s)}" for sec in sections for s in sec.stories}
-    common = dict(spec=spec, km=km, items=items, rules=rules, names=names, stakeholders=stakeholders,
+    all_stories = [s for sec in sections for s in sec.stories]
+    flow_stories, flow_derived = {}, []
+    if feature.flow:
+        placed = set()
+        for st in feature.flow.steps:
+            placed |= set(st.rules)
+            flow_stories[st.order] = [s.id for s in all_stories
+                                      if set(s.items) & set(st.items) or set(s.rules) & set(st.rules)]
+        flow_derived = [{"name": r.name, "stories": [s.id for s in all_stories if r.id in s.rules]}
+                        for r in km.rules if r.id not in placed]
+    flow_title = (ctx.profile.get("flow") or {}).get("title", "Flow") if isinstance(ctx.profile.get("flow"), dict) else "Flow"
+    common = dict(flow_stories=flow_stories, flow_derived=flow_derived, flow_title=flow_title, spec=spec, km=km, items=items, rules=rules, names=names, stakeholders=stakeholders,
                   owner=owner, evidence=evidence, feature=feature, sections=sections, judge=judge or {}, profile=ctx.profile,
                   oq={q.id: q for q in km.open_questions}, feature_refs=feature_refs, story_refs=story_refs,
                   example_table=example_table, story_path=story_path)

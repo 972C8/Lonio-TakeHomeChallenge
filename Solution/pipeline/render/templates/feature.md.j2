@@ -19,6 +19,29 @@ feature, its sections and the information and rules they share.
 **Stakeholders:** {% for st in feature.stakeholders %}{{ stakeholders.get(st, st) }}{{ ", " if not loop.last }}{% endfor %}
 
 
+{% if feature.flow %}
+<a id="flow"></a>
+
+## {{ flow_title }}
+
+{{ feature.flow.intro }}
+
+| Step | What is asked | Shown to | Stories |
+|---|---|---|---|
+{% for st in feature.flow.steps | sort(attribute="order") %}
+| {{ st.order }}. {{ st.title | cell }} | {{ st.asks | cell }} | {{ st.shown_to | cell }} | {% for sid in flow_stories[st.order] %}[{{ sid }}]({{ story_path[sid] }}){{ ", " if not loop.last }}{% endfor %} |
+{% endfor %}
+
+{% if flow_derived %}
+Never asked, always derived from the answers: {% for d in flow_derived %}{{ d.name }}{% if d.stories %} ({% for sid in d.stories %}[{{ sid }}]({{ story_path[sid] }}){{ ", " if not loop.last }}{% endfor %}){% endif %}{{ ", " if not loop.last else "." }}{% endfor %}
+
+
+{% endif %}
+{% if feature.flow.closing %}
+{{ feature.flow.closing }}
+
+{% endif %}
+{% endif %}
 ## Contents
 
 | Section | Stories |

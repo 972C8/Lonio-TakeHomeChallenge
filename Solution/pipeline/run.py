@@ -33,7 +33,7 @@ from .engine import incremental as I
 from .engine.context import Context, sha
 from .engine.llm import COSTS, load_prompt, run_agent
 from .engine.paths import PIPELINE, REQUIREMENTS
-from .engine.schemas import (AcceptanceCriterion, BusinessRule, Fact, Feature, FeaturePlan, Finding, KnowledgeModel,
+from .engine.schemas import (AcceptanceCriterion, BusinessRule, Fact, Feature, FeaturePlan, Finding, Flow, KnowledgeModel,
                              Section, Spec, Unit)
 from .render.render import TEMPLATES, render
 
@@ -420,7 +420,9 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dic
                 out = await run_agent(f"write_section/{sec.id}", write_system, prompt, Section,
                                       model=ctx.model("synthesize"), max_turns=6)
                 new = Section.model_validate(out)
-            return (await _repair_examples(ctx, write_system, km, new)).model_dump()
+            new = await _repair_examples(ctx, write_system, km, new)
+            # store the section as planned (only the stories are the writer's), so the next run compares like with like
+            return sec.model_copy(update={"stories": new.stories}).model_dump()
 
         # fingerprint: only what this section depends on (not the whole model), so a change elsewhere does not rewrite it
         fingerprint = [meta, rel_elements, cited, head, write_fingerprint_system]
@@ -431,6 +433,73 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dic
     sections = list(await asyncio.gather(*[write(sec) for sec in sorted(planned.sections, key=lambda x: x.order)]))
     return Feature(id=ctx.feature_id, title=ctx.profile["title"], goal=planned.goal, context=planned.context,
                    stakeholders=planned.stakeholders, sections=sections)
+
+
+async def stage_flow(ctx, km: KnowledgeModel, feature: Feature) -> tuple[Flow | None, list[Finding]]:
+    """The flow overview (steps over the asked items), only when the profile asks for one (`flow:`).
+    On reruns the previous flow is updated, and code keeps every step whose items and rules did not change."""
+    if not ctx.profile.get("flow"):
+        return None, []
+    pc = _profile_ctx(ctx)
+    system = load_prompt(AGENTS / "flow_planner.md", **pc)
+    elems = {"items": [{"id": i.id, "name": i.name, "asked_when": i.asked_when, "notes": i.notes} for i in km.items],
+             "rules": [{"id": r.id, "name": r.name, "statement": r.statement} for r in km.rules],
+             "stories": [{"id": s.id, "title": s.title, "items": s.items, "rules": s.rules}
+                         for sec in feature.sections for s in sec.stories]}
+    prev = _previous(ctx, "feature.flow")
+    prev_in = _previous(ctx, "feature.flow.input")
+    item_ids = {i.id for i in km.items}
+    rule_ids = {r.id for r in km.rules}
+
+    def digest(e):
+        return {x["id"]: sha(x) for x in e["items"] + e["rules"]}
+
+    async def go():
+        cur = digest(elems)
+        update = prev is not None and prev_in is not None and prev_in.get("system") == sha(system)
+        if update:
+            old = prev_in.get("elements", {})
+            changed = sorted({i for i in cur.keys() | old.keys() if cur.get(i) != old.get(i)})
+            prompt = ("Elements (JSON):\n" + json.dumps(elems, ensure_ascii=False, indent=1)
+                      + "\n\nPrevious flow (JSON):\n" + json.dumps(prev, ensure_ascii=False, indent=1)
+                      + "\n\nChanged, added or removed elements since then: " + (", ".join(changed) or "none")
+                      + "\n\nReturn the updated Flow.")
+        else:
+            changed = None
+            prompt = "Elements (JSON):\n" + json.dumps(elems, ensure_ascii=False, indent=1) + "\n\nReturn the Flow."
+        if update and not changed:
+            flow = Flow.model_validate(prev)
+        else:
+            flow = Flow.model_validate(await run_agent("flow", system, prompt, Flow, model=ctx.model("synthesize"), max_turns=4))
+            missing = item_ids - {i for st in flow.steps for i in st.items}
+            if missing:
+                ctx.log(f"  flow: placing {len(missing)} items it left out ...")
+                flow = Flow.model_validate(await run_agent(
+                    "flow_repair", system, prompt + "\n\nYour flow:\n" + flow.model_dump_json(indent=1)
+                    + "\n\nThese asked items are in no step: " + ", ".join(sorted(missing))
+                    + ". Return the Flow with each of them in exactly one step.", Flow, model=ctx.model("synthesize"), max_turns=4))
+            if update:                     # code keeps every step the changes do not touch
+                before = {tuple(sorted(st["items"] + st["rules"])): st for st in prev["steps"]}
+                steps = []
+                for st in flow.steps:
+                    old_st = before.get(tuple(sorted(st.items + st.rules)))
+                    if old_st and not (set(st.items + st.rules) & set(changed)):
+                        st = st.model_copy(update={k: old_st[k] for k in ("title", "asks", "shown_to")})
+                    steps.append(st)
+                flow = flow.model_copy(update={"steps": steps,
+                                               "intro": prev["intro"] if len(steps) == len(prev["steps"]) else flow.intro})
+        ctx.write("feature.flow.input", {"system": sha(system), "elements": cur})
+        return flow.model_dump()
+
+    flow = Flow.model_validate(await ctx.stage("feature.flow", [elems, system], go))
+    placed = [i for st in flow.steps for i in st.items]
+    F = [Finding(check="flow", severity="warning", target=f"item.{i}", message="asked item is in no step of the flow")
+         for i in sorted(item_ids - set(placed))]
+    F += [Finding(check="flow", severity="warning", target=f"item.{i}", message="item is in more than one step of the flow")
+          for i in sorted({i for i in placed if placed.count(i) > 1})]
+    F += [Finding(check="flow", severity="error", target=f"flow.{x}", message="unknown item or rule id in the flow")
+          for st in flow.steps for x in st.items + st.rules if x not in item_ids | rule_ids]
+    return flow, F
 
 
 async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact], prev_spec: Spec | None = None) -> tuple[dict, list[Finding]]:
@@ -544,6 +613,9 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
     km = await stage_knowledge(ctx, facts, known_before)
     ctx.log("[5] feature: sections and stories")
     feature = await stage_feature(ctx, km, facts, prev_km)
+    flow, flf = await stage_flow(ctx, km, feature)
+    feature = feature.model_copy(update={"flow": flow})
+    findings += flf
     spec = Spec(knowledge=km, feature=feature)
 
     ctx.log("[6] apply decisions")

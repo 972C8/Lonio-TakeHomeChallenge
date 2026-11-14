@@ -186,6 +186,23 @@ class Section(BaseModel):
     source_refs: list[str] = F(default_factory=list)
 
 
+class FlowStep(BaseModel):
+    """One step of the flow the user goes through (e.g. one page of a questionnaire)."""
+    order: int
+    title: str                   # short business title, e.g. "Home address"
+    asks: str                    # what the user is asked in this step, in business language, with conditions
+    shown_to: str                # who sees the step, e.g. "Everyone", "Employees living in Switzerland"
+    items: list[str] = F(default_factory=list)   # ids of the information items asked in this step
+    rules: list[str] = F(default_factory=list)   # ids of rules that act in this step (e.g. a reminder shown here)
+
+
+class Flow(BaseModel):
+    """The order in which the user is asked: steps over the information items. Rendered as an overview."""
+    intro: str                   # how the flow works and why it is ordered this way (a short paragraph)
+    steps: list[FlowStep]
+    closing: str = ""            # what happens after the last step (optional)
+
+
 class Feature(BaseModel):
     """One feature (one process to specify): its sections hold all the user stories."""
     id: str                      # the feature id (folder name)
@@ -195,6 +212,7 @@ class Feature(BaseModel):
     stakeholders: list[str]
     sections: list[Section]
     source_refs: list[str] = F(default_factory=list)
+    flow: Flow | None = None     # only when the profile asks for a flow overview
 
 
 class FeaturePlan(BaseModel):

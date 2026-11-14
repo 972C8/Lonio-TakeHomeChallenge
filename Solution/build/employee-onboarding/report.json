@@ -234,105 +234,111 @@
         "check": "dev_refinement",
         "severity": "warning",
         "target": "stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md",
-        "message": "US-05.3 and US-06.1 say every employee subject to source tax must answer the denomination and children questions, and Liechtenstein residents count as subject. But the AC-05.7.3 examples show '–' for denomination, children and spouse employment when a Liechtenstein resident returns home daily or has at most 45 non-return days. In that case the result is 'in principle no source tax liability' and needs no tariff inputs. Should Liechtenstein residents with that outcome skip the tariff questions? If so, the Liechtenstein cross-border questions have to come before denomination, spouse employment and children in the flow. Today all of these sit together in step 6."
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "warning",
-        "target": "stories/US-01.3-home-address-country-is-the-country-of-residence-for-later.md",
-        "message": "Many new employees move around their start date. Should they enter their current home address, or the address that will apply from the first working day? Someone moving from Germany to Zurich would get a different liability, canton, cross-border questions and tariff depending on the answer. And what about weekly residents who keep a Swiss address but have their main residence abroad?"
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "warning",
-        "target": "stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md",
-        "message": "Does the employee see any of the derived results before or after submitting? These are the insurance start date, whether they are subject to source tax, and the tariff code or Liechtenstein result. The spec only says results are 'recorded for HR'. Showing them (or not) changes the closing and summary screens."
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "warning",
-        "target": "stories/US-02.1-employee-enters-the-first-working-day.md",
-        "message": "Does the employee type in a blank first working day, or does HR give a pre-filled date (e.g. from the contract) that the employee confirms or corrects? 'Enter and confirm' can be read either way. A pre-filled date needs HR input before the questionnaire starts."
+        "message": "Liechtenstein residents: if the result is 'in principle no source tax liability' (daily return, or at most 45 non-return days), no tariff code is produced. Do they still have to answer the denomination, spouse employment and children questions? The flow in step 6 asks these first and the Liechtenstein daily-return question last. But the AC-05.7.3 examples show '–' for denomination and children, and G-01 says not to collect data no party needs. Should the Liechtenstein questions come first in step 6 and skip the tariff questions when the result is 'no liability'? And what is recorded as 'Subject to source tax' for these employees: yes or no?"
       },
       {
         "check": "dev_refinement",
         "severity": "warning",
         "target": "feature.md",
-        "message": "The evidence for the H tariff (F-zh_source_tax_calculator-96658b) says a child counts with H only when it lives in the employee's household. Row 22 of the child result table, which is not marked inferred, gives 'counts with H' for a minor child outside the household (single parent with custody, alternating care, employee pays more). Which is correct? The answer changes A vs H in the tariff code."
+        "message": "Is this questionnaire built only for Muster AG (Pensionskasse Muster, the Zurich calculator for everyone, HR wording), or for every Lonio customer? If it is for every customer, which parts can each customer set up differently: the pension fund field list, the canton or calculator used, and the reminder text? The answer decides whether we hard-code the rules or make them per-customer settings."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md",
+        "message": "The spec says HR words the permit reminder. Do we get one fixed text from HR before the build, or must HR be able to write and change the text themselves (per company)? If HR edits it, that is an HR-side feature, and the HR side is out of scope."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "stories/US-02.1-employee-enters-the-first-working-day.md",
+        "message": "The employee 'enters and confirms' the first working day. Is the field empty, or filled in beforehand with the date HR agreed so the employee only confirms or corrects it? If filled in, where does that date come from, given that who starts the onboarding is out of scope?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "information.md",
+        "message": "No date rules are given. Can the first working day be in the past, or far in the future? Must the date of birth (and the spouse's date of birth) be plausible, for example not in the future, or a minimum age? Today any date would be accepted, and the insurance start date would be derived from it."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "feature.md",
+        "message": "Can the employee stop part-way and come back later (in another session or on another device) with the answers kept? Is there a deadline, or a reminder for unfinished questionnaires? D-036 only covers moving back and forth before submitting."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "stories/US-07.2-decide-the-cross-border-tariff-for-employees-living-in.md",
+        "message": "The 60-day (Germany) and 45-day (Liechtenstein) thresholds count non-return days 'in the calendar year'. An employee who starts mid-year works only part of that year. Should they use the same 60 and 45, a pro-rated threshold, or be guided to count only their working days at Muster AG? This changes both the question wording and the result."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "information.md",
+        "message": "\"Form: Country by English name (e.g. Switzerland, Germany, Liechtenstein); part of a complete postal address\" - G-10 covers the wording of values in the spec and its examples. Here it becomes a rule for how the employee must enter the country, which is an input and design choice for engineering."
       },
       {
         "check": "tech_leak",
         "severity": "warning",
         "target": "stories/US-02.1-employee-enters-the-first-working-day.md",
-        "message": "\"the employee is asked for their first working day at Muster AG as a date (DD.MM.YYYY)\" - The DD.MM.YYYY format comes from the fund's date-of-birth and insurance-start-date fields and from G-10, which sets the wording used in the spec's examples. No stakeholder asks for the first working day to be typed in this format. How the date is entered is a UI decision."
+        "message": "\"the employee is asked for their first working day at Muster AG as a date (DD.MM.YYYY)\" - The fund requires DD.MM.YYYY for the insurance start date and the dates of birth, not for the first working day. How the employee enters a date is a UI choice for engineering."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "information.md",
+        "message": "\"Expression describes one child.\" - Refers to an internal rule 'expression' from the pipeline or engine, not business language. It implies how the rule is modelled per child."
       },
       {
         "check": "tech_leak",
         "severity": "warning",
         "target": "stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md",
-        "message": "\"the employee can add further children and remove a child, and the child questions repeat per child\" - This copies the calculator's add/remove child buttons as an interaction pattern. The business need is only that every child can be described. How several children are entered is a UI decision."
-      },
-      {
-        "check": "tech_leak",
-        "severity": "warning",
-        "target": "feature.md",
-        "message": "\"Notes | Flow step 1 (personal details).\" - The Notes rows fix a step number for each question (step 1 personal, 2 address, 3 employment, 4 residence status, 5 family, 6 source tax). This is screen sequencing beyond the business dependencies, and it limits the reordering that conditional skipping needs, for example for Liechtenstein."
+        "message": "\"the employee can add further children and remove a child, and the child questions repeat per child\" - Describes the UI interaction (add or remove a child, a repeating block) rather than the business need: collect the per-child facts for every child."
       }
     ],
     "info": [
       {
         "check": "dev_refinement",
         "severity": "info",
-        "target": "stories/US-04.3-decide-whether-the-employee-is-subject-to-source-tax.md",
-        "message": "What is recorded as 'Subject to source tax' for a Liechtenstein resident who gets 'in principle no source tax liability'? Is it 'yes' (lives abroad), 'no', or a third status? Does the recorded liability differ from what the US-05.7 result table shows?"
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "info",
-        "target": "stories/US-02.1-employee-enters-the-first-working-day.md",
-        "message": "Which first working days are valid? Can the date be in the past, or lie very far in the future? Must it be a weekday? The spec only requires a date."
+        "target": "stories/US-07.2-decide-the-cross-border-tariff-for-employees-living-in.md",
+        "message": "For the certificate of residence, what is the difference in meaning between 'no' and 'not yet'? Both count as 'no' for the tariff. Should 'not yet' be recorded for HR as a pending follow-up, unlike 'no'? Also, 'has provided' to whom, and by when, since the questionnaire is filled in before the first working day?"
       },
       {
         "check": "dev_refinement",
         "severity": "info",
         "target": "stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md",
-        "message": "On what date is a child's status (minor, or of age and in first education) judged: the day the questionnaire is filled in, the first working day, or the start of the tax year? This matters for a child who turns 18 around the start date."
+        "message": "On which date is 'minor' or 'of age and in first education' judged: the day the questionnaire is filled in, the first working day, or the start of the year? Does the employee need guidance on what 'first education' covers? A child who turns 18 soon may count differently."
       },
       {
         "check": "dev_refinement",
         "severity": "info",
         "target": "stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md",
-        "message": "For married employees and registered partners the children question includes the spouse's children. For such a stepchild, the custody, 'other parent' and maintenance questions are worded for the employee's own child. Should the wording change for stepchildren, or should those questions be answered from the spouse's point of view?"
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "info",
-        "target": "stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md",
-        "message": "'HR words the reminder': is this a fixed text HR gives us once, or must HR be able to edit it themselves (per customer company, over time)? HR editing it would need a content setting that does not exist in the employee-side scope."
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "info",
-        "target": "stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md",
-        "message": "D-036 says inapplicable answers 'may be kept' until submission, but AC-08.2.1 requires them to come back when the earlier answer is switched back. Is keeping them mandatory? Should progress also survive closing the questionnaire and coming back later (save and resume)? Nothing is said about a partly completed questionnaire across sessions."
+        "message": "For married employees and registered partners, the children include the spouse's or partner's children. For such a stepchild, who is 'the other parent' in the questions about a common household, custody and the larger financial contribution? Should those questions be worded differently for stepchildren?"
       },
       {
         "check": "dev_refinement",
         "severity": "info",
         "target": "stories/US-01.2-complete-home-address-for-posting-documents.md",
-        "message": "Every address part is required, but some valid postal addresses have no house number, such as rural addresses or named buildings. Should the questionnaire accept an address without a house number?"
+        "message": "Every address part is required. What should an employee enter whose address has no house number (rural addresses, some foreign addresses)? Should a PO box or an extra address line (c/o, apartment) be allowed? HR says nothing beyond an envelope address is needed."
       },
       {
         "check": "dev_refinement",
         "severity": "info",
         "target": "stories/US-01.2-complete-home-address-for-posting-documents.md",
-        "message": "The AC-01.2.1 example table gives '–' for the country of a Swiss resident but 'required' for a German resident, although the text says country is always required. AC-01.3.2 mixes '–' and 'not asked' for the canton in the same way. Do '–' and 'not asked' mean the same thing in these tables, so the examples can be used as test cases?"
+        "message": "In the AC-01.2.1 example table, the Switzerland row shows '–' for the country, but the text says the country is always required. Is the country required for every employee? I assume yes."
       },
       {
         "check": "dev_refinement",
         "severity": "info",
-        "target": "stories/US-01.1-personal-details-for-the-pension-fund-registration.md",
-        "message": "Should first and last name be the official names as on the ID document, including all first names? Or is the name the employee normally uses enough for the pension fund registration?"
+        "target": "information.md",
+        "message": "The rules depend on whether the country is exactly Switzerland, Germany or Liechtenstein. Can the employee pick any country in the world? Do special cases need handling, such as Büsingen or Campione (enclaves), or a country typed in another language (for example 'Deutschland')?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md",
+        "message": "The child digit 'equals the number of children that count'. Is there a maximum number of children an employee can add? What is the tariff code if 10 or more children count (a two-digit number)?"
       }
     ]
   },
@@ -2430,179 +2436,182 @@
     "questions": [
       {
         "file": "stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md",
-        "question": "US-05.3 and US-06.1 say every employee subject to source tax must answer the denomination and children questions, and Liechtenstein residents count as subject. But the AC-05.7.3 examples show '–' for denomination, children and spouse employment when a Liechtenstein resident returns home daily or has at most 45 non-return days. In that case the result is 'in principle no source tax liability' and needs no tariff inputs. Should Liechtenstein residents with that outcome skip the tariff questions? If so, the Liechtenstein cross-border questions have to come before denomination, spouse employment and children in the flow. Today all of these sit together in step 6.",
+        "question": "Liechtenstein residents: if the result is 'in principle no source tax liability' (daily return, or at most 45 non-return days), no tariff code is produced. Do they still have to answer the denomination, spouse employment and children questions? The flow in step 6 asks these first and the Liechtenstein daily-return question last. But the AC-05.7.3 examples show '–' for denomination and children, and G-01 says not to collect data no party needs. Should the Liechtenstein questions come first in step 6 and skip the tariff questions when the result is 'no liability'? And what is recorded as 'Subject to source tax' for these employees: yes or no?",
         "severity": "major"
-      },
-      {
-        "file": "stories/US-04.3-decide-whether-the-employee-is-subject-to-source-tax.md",
-        "question": "What is recorded as 'Subject to source tax' for a Liechtenstein resident who gets 'in principle no source tax liability'? Is it 'yes' (lives abroad), 'no', or a third status? Does the recorded liability differ from what the US-05.7 result table shows?",
-        "severity": "minor"
-      },
-      {
-        "file": "stories/US-01.3-home-address-country-is-the-country-of-residence-for-later.md",
-        "question": "Many new employees move around their start date. Should they enter their current home address, or the address that will apply from the first working day? Someone moving from Germany to Zurich would get a different liability, canton, cross-border questions and tariff depending on the answer. And what about weekly residents who keep a Swiss address but have their main residence abroad?",
-        "severity": "major"
-      },
-      {
-        "file": "stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md",
-        "question": "Does the employee see any of the derived results before or after submitting? These are the insurance start date, whether they are subject to source tax, and the tariff code or Liechtenstein result. The spec only says results are 'recorded for HR'. Showing them (or not) changes the closing and summary screens.",
-        "severity": "major"
-      },
-      {
-        "file": "stories/US-02.1-employee-enters-the-first-working-day.md",
-        "question": "Does the employee type in a blank first working day, or does HR give a pre-filled date (e.g. from the contract) that the employee confirms or corrects? 'Enter and confirm' can be read either way. A pre-filled date needs HR input before the questionnaire starts.",
-        "severity": "major"
-      },
-      {
-        "file": "stories/US-02.1-employee-enters-the-first-working-day.md",
-        "question": "Which first working days are valid? Can the date be in the past, or lie very far in the future? Must it be a weekday? The spec only requires a date.",
-        "severity": "minor"
       },
       {
         "file": "feature.md",
-        "question": "The evidence for the H tariff (F-zh_source_tax_calculator-96658b) says a child counts with H only when it lives in the employee's household. Row 22 of the child result table, which is not marked inferred, gives 'counts with H' for a minor child outside the household (single parent with custody, alternating care, employee pays more). Which is correct? The answer changes A vs H in the tariff code.",
+        "question": "Is this questionnaire built only for Muster AG (Pensionskasse Muster, the Zurich calculator for everyone, HR wording), or for every Lonio customer? If it is for every customer, which parts can each customer set up differently: the pension fund field list, the canton or calculator used, and the reminder text? The answer decides whether we hard-code the rules or make them per-customer settings.",
         "severity": "major"
       },
       {
-        "file": "stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md",
-        "question": "On what date is a child's status (minor, or of age and in first education) judged: the day the questionnaire is filled in, the first working day, or the start of the tax year? This matters for a child who turns 18 around the start date.",
-        "severity": "minor"
-      },
-      {
-        "file": "stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md",
-        "question": "For married employees and registered partners the children question includes the spouse's children. For such a stepchild, the custody, 'other parent' and maintenance questions are worded for the employee's own child. Should the wording change for stepchildren, or should those questions be answered from the spouse's point of view?",
-        "severity": "minor"
-      },
-      {
         "file": "stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md",
-        "question": "'HR words the reminder': is this a fixed text HR gives us once, or must HR be able to edit it themselves (per customer company, over time)? HR editing it would need a content setting that does not exist in the employee-side scope.",
+        "question": "The spec says HR words the permit reminder. Do we get one fixed text from HR before the build, or must HR be able to write and change the text themselves (per company)? If HR edits it, that is an HR-side feature, and the HR side is out of scope.",
+        "severity": "major"
+      },
+      {
+        "file": "stories/US-02.1-employee-enters-the-first-working-day.md",
+        "question": "The employee 'enters and confirms' the first working day. Is the field empty, or filled in beforehand with the date HR agreed so the employee only confirms or corrects it? If filled in, where does that date come from, given that who starts the onboarding is out of scope?",
+        "severity": "major"
+      },
+      {
+        "file": "information.md",
+        "question": "No date rules are given. Can the first working day be in the past, or far in the future? Must the date of birth (and the spouse's date of birth) be plausible, for example not in the future, or a minimum age? Today any date would be accepted, and the insurance start date would be derived from it.",
+        "severity": "major"
+      },
+      {
+        "file": "feature.md",
+        "question": "Can the employee stop part-way and come back later (in another session or on another device) with the answers kept? Is there a deadline, or a reminder for unfinished questionnaires? D-036 only covers moving back and forth before submitting.",
+        "severity": "major"
+      },
+      {
+        "file": "stories/US-07.2-decide-the-cross-border-tariff-for-employees-living-in.md",
+        "question": "The 60-day (Germany) and 45-day (Liechtenstein) thresholds count non-return days 'in the calendar year'. An employee who starts mid-year works only part of that year. Should they use the same 60 and 45, a pro-rated threshold, or be guided to count only their working days at Muster AG? This changes both the question wording and the result.",
+        "severity": "major"
+      },
+      {
+        "file": "stories/US-07.2-decide-the-cross-border-tariff-for-employees-living-in.md",
+        "question": "For the certificate of residence, what is the difference in meaning between 'no' and 'not yet'? Both count as 'no' for the tariff. Should 'not yet' be recorded for HR as a pending follow-up, unlike 'no'? Also, 'has provided' to whom, and by when, since the questionnaire is filled in before the first working day?",
         "severity": "minor"
       },
       {
-        "file": "stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md",
-        "question": "D-036 says inapplicable answers 'may be kept' until submission, but AC-08.2.1 requires them to come back when the earlier answer is switched back. Is keeping them mandatory? Should progress also survive closing the questionnaire and coming back later (save and resume)? Nothing is said about a partly completed questionnaire across sessions.",
+        "file": "stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md",
+        "question": "On which date is 'minor' or 'of age and in first education' judged: the day the questionnaire is filled in, the first working day, or the start of the year? Does the employee need guidance on what 'first education' covers? A child who turns 18 soon may count differently.",
+        "severity": "minor"
+      },
+      {
+        "file": "stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md",
+        "question": "For married employees and registered partners, the children include the spouse's or partner's children. For such a stepchild, who is 'the other parent' in the questions about a common household, custody and the larger financial contribution? Should those questions be worded differently for stepchildren?",
         "severity": "minor"
       },
       {
         "file": "stories/US-01.2-complete-home-address-for-posting-documents.md",
-        "question": "Every address part is required, but some valid postal addresses have no house number, such as rural addresses or named buildings. Should the questionnaire accept an address without a house number?",
+        "question": "Every address part is required. What should an employee enter whose address has no house number (rural addresses, some foreign addresses)? Should a PO box or an extra address line (c/o, apartment) be allowed? HR says nothing beyond an envelope address is needed.",
         "severity": "minor"
       },
       {
         "file": "stories/US-01.2-complete-home-address-for-posting-documents.md",
-        "question": "The AC-01.2.1 example table gives '–' for the country of a Swiss resident but 'required' for a German resident, although the text says country is always required. AC-01.3.2 mixes '–' and 'not asked' for the canton in the same way. Do '–' and 'not asked' mean the same thing in these tables, so the examples can be used as test cases?",
+        "question": "In the AC-01.2.1 example table, the Switzerland row shows '–' for the country, but the text says the country is always required. Is the country required for every employee? I assume yes.",
         "severity": "minor"
       },
       {
-        "file": "stories/US-01.1-personal-details-for-the-pension-fund-registration.md",
-        "question": "Should first and last name be the official names as on the ID document, including all first names? Or is the name the employee normally uses enough for the pension fund registration?",
+        "file": "information.md",
+        "question": "The rules depend on whether the country is exactly Switzerland, Germany or Liechtenstein. Can the employee pick any country in the world? Do special cases need handling, such as Büsingen or Campione (enclaves), or a country typed in another language (for example 'Deutschland')?",
+        "severity": "minor"
+      },
+      {
+        "file": "stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md",
+        "question": "The child digit 'equals the number of children that count'. Is there a maximum number of children an employee can add? What is the tariff code if 10 or more children count (a two-digit number)?",
         "severity": "minor"
       }
     ],
     "already_flagged": [
-      "OQ-canton-abroad: what to enter in the fund's 'Canton' for employees living abroad, and whether it means canton of residence or of work",
-      "OQ-civil-status-partnership: how the fund registers registered partnerships and separated employees (provisionally as Married with partner/spouse date of birth)",
-      "OQ-spouse-dob-other-status: whether the fund needs a spouse date of birth or other data for Divorced or Widowed",
-      "OQ-calculator-coverage: unexplored calculator paths (residence block for A/B/H, more than 3 children, H3N/P3N, child paths marked inferred) to be verified by a domain expert before go-live"
+      "OQ-canton-abroad: what to enter in the fund's required 'Canton' for employees living abroad, and whether it means canton of residence or of work",
+      "OQ-civil-status-partnership: how the fund registers registered partnership and separated employees (provisionally Married with spouse/partner date of birth)",
+      "OQ-spouse-dob-other-status: whether the fund needs a spouse date of birth or other data for Divorced/Widowed",
+      "OQ-calculator-coverage: unverified calculator paths (residence block for A/B/H, more than 3 children, H3N/P3N, child result rows marked inferred) need domain-expert comparison before go-live"
     ],
     "tech_leaks": [
       {
+        "file": "information.md",
+        "quote": "Form: Country by English name (e.g. Switzerland, Germany, Liechtenstein); part of a complete postal address",
+        "why": "G-10 covers the wording of values in the spec and its examples. Here it becomes a rule for how the employee must enter the country, which is an input and design choice for engineering."
+      },
+      {
         "file": "stories/US-02.1-employee-enters-the-first-working-day.md",
         "quote": "the employee is asked for their first working day at Muster AG as a date (DD.MM.YYYY)",
-        "why": "The DD.MM.YYYY format comes from the fund's date-of-birth and insurance-start-date fields and from G-10, which sets the wording used in the spec's examples. No stakeholder asks for the first working day to be typed in this format. How the date is entered is a UI decision."
+        "why": "The fund requires DD.MM.YYYY for the insurance start date and the dates of birth, not for the first working day. How the employee enters a date is a UI choice for engineering."
+      },
+      {
+        "file": "information.md",
+        "quote": "Expression describes one child.",
+        "why": "Refers to an internal rule 'expression' from the pipeline or engine, not business language. It implies how the rule is modelled per child."
       },
       {
         "file": "stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md",
         "quote": "the employee can add further children and remove a child, and the child questions repeat per child",
-        "why": "This copies the calculator's add/remove child buttons as an interaction pattern. The business need is only that every child can be described. How several children are entered is a UI decision."
-      },
-      {
-        "file": "feature.md",
-        "quote": "Notes | Flow step 1 (personal details).",
-        "why": "The Notes rows fix a step number for each question (step 1 personal, 2 address, 3 employment, 4 residence status, 5 family, 6 source tax). This is screen sequencing beyond the business dependencies, and it limits the reordering that conditional skipping needs, for example for Liechtenstein."
+        "why": "Describes the UI interaction (add or remove a child, a repeating block) rather than the business need: collect the per-child facts for every child."
       }
     ]
   },
+  "impact": {
+    "added": [],
+    "removed": [],
+    "changed": [],
+    "unchanged": 29,
+    "changed_without_cause": [],
+    "changed_elements": [],
+    "guard_reverted": []
+  },
   "skipped_sources": [],
   "review": {
-    "verdict": "not_ready",
-    "summary": "No mechanical errors, all 200+ examples pass, and none of the 4 open questions is marked blocking. It is still not ready, for four reasons. (1) The child result table contradicts its own evidence on a row that is not marked inferred, so the tariff code can come out wrong (A vs H). (2) The spec is inconsistent about which tariff questions Liechtenstein residents answer, and the fixed step order leaks into the spec. (3) Several rule rows cite facts the rule does not include in its cited set. (4) Four major refinement questions are open: address timing, pre-filled start date, whether employees see results, and the Liechtenstein flow. All of these are small fixes. Once they are settled, the package should move to ready_with_caveats, with the four non-blocking open questions and the inferred child paths verified before go-live.",
+    "verdict": "ready_with_caveats",
+    "summary": "Ready with caveats. Nothing blocks the build: there are no errors, all spec examples pass, and none of the 4 open questions or dev-refinement questions is marked blocking. Before refinement, the product owner should: (1) decide the Liechtenstein 'no liability' flow and what is recorded for it; (2) fix the Separated civil-status contradiction; (3) repair the rule rows that cite facts outside their cited set; (4) remove 4 small technical leaks from the spec text; (5) answer 7 major refinement questions (scope across customers, date rules, prefill of the first working day, saving and resuming, thresholds for mid-year starters, ownership of the reminder text). The child-tariff paths marked inferred and the questions for the pension fund stay as conditions before go-live.",
     "findings": [
       {
-        "title": "Row 22 of the child result table contradicts its evidence (H vs A)",
-        "why": "Row 22 is not marked inferred, yet it counts a minor child outside the household with H. The cited evidence says H applies only to a child in the employee's household. Wrong tariff letter means wrong source tax deduction.",
-        "evidence": "dev_refinement (major) on feature.md; F-zh_source_tax_calculator-96658b; rule.child_tariff_result; AC-06.2.5 / AC-06.3.3",
-        "action": "Decide in decisions.yaml whether the H tariff needs the child in the household. Correct row 22 or mark it inferred, and add the path to the expert check in OQ-calculator-coverage."
+        "title": "Liechtenstein 'no source tax liability' flow is undefined",
+        "why": "These employees may be asked tariff questions no one needs (against G-01), and it is unclear whether 'Subject to source tax' is recorded as yes or no. That changes what HR sees.",
+        "evidence": "dev_refinement (major) on US-05.7; AC-05.7.3 examples show '–' for denomination and children, but step 6 asks those questions before the Liechtenstein daily-return question.",
+        "action": "Add a decision to decisions.yaml: ask the Liechtenstein daily-return and 45-day questions first, skip the tariff questions when the result is 'no liability', and state the value recorded for 'Subject to source tax'."
       },
       {
-        "title": "Liechtenstein flow is inconsistent: tariff questions are required but the examples skip them",
-        "why": "US-05.3 and US-06.1 make the denomination and children questions mandatory for everyone subject to source tax. AC-05.7.3 shows them as '–' when a Liechtenstein resident gets 'in principle no source tax liability'. Developers cannot build both, and what gets recorded as liability is unclear.",
-        "evidence": "dev_refinement (major) US-05.7; dev_refinement (info) US-04.3; AC-05.7.3",
-        "action": "Decide whether a Liechtenstein resident with daily return or ≤45 non-return days skips the tariff questions. Decide what 'Subject to source tax' records for them (yes / no / a third status). Ask the Liechtenstein cross-border questions before the tariff questions."
+        "title": "Separated civil status contradicts itself on the spouse's date of birth",
+        "why": "The fund registration for separated employees would be wrong either way.",
+        "evidence": "trace_judge rule.pension_fund_civil_status: D-003 says Married without the spouse's date of birth, but the Separated row asks for it. OQ-civil-status-partnership says 'both as Married with spouse/partner date of birth'.",
+        "action": "Make D-003, D-004, the rule row and the open-question text say the same thing. Keep the mapping as provisional until the fund confirms it."
       },
       {
-        "title": "Fixed step numbers in feature.md (technical leak)",
-        "why": "The Notes rows fix the screen order (steps 1–6). This is UI sequencing, and it blocks the reordering the Liechtenstein decision needs.",
-        "evidence": "tech_leak feature.md 'Flow step 1 (personal details)'; trace_judge story.US-01.2 (address-after-personal ordering not backed)",
-        "action": "Remove the step numbers. Keep only the business dependencies, i.e. which answer must be known before which question is asked."
+        "title": "Rule rows cite facts outside their cited set",
+        "why": "These are traceability gaps: some outcome rows have no backing in the facts they cite.",
+        "evidence": "trace_judge rule.source_tax_result (b6d9b3), rule.cross_border_tariff_applies (bc1639, 52b67a), rule.single_parent_h_tariff (c78e0c), rule.source_tax_residence (Germany/Liechtenstein questions); US-04.2, US-05.4, US-06.1 and US-08.1 do not cite d7431e/b6d9b3; US-08.3 names the Julia incident without citing it.",
+        "action": "Add the missing fact references to the rules and stories, then rerun trace_judge."
       },
       {
-        "title": "Rule rows cite facts that are not in the rule's cited set",
-        "why": "Some rows are not backed by the cited set, which weakens the audit trail for the computed liability and tariff.",
-        "evidence": "trace_judge rule.source_tax_result (F-hr_transcript-b6d9b3), rule.cross_border_tariff_applies (bc1639, 52b67a), rule.single_parent_h_tariff (c78e0c), rule.source_tax_residence (Germany/Liechtenstein questions), rule.pension_fund_civil_status (D-004 Separated row), item.address_country (D-002); stories US-04.3, US-05.4, US-06.1, US-08.1 (Tomás/d7431e)",
-        "action": "Add the missing facts and decisions to each rule's, item's or story's citations. Fix the Separated row in rule.pension_fund_civil_status: D-003 says 'without a spouse's date of birth' (it also conflicts with OQ-civil-status-partnership option 1)."
+        "title": "Child-tariff paths are inferred and the 'H tariff' purpose has no source",
+        "why": "Lonio now owns the tariff result, so an unverified path can produce a wrong tariff code.",
+        "evidence": "inferred_items: rule.child_tariff_result and US-06.2, 06.3, 06.5, 06.6; examples marked '(inferred, to verify)'; trace_judge on 8 child items (H tariff purpose); OQ-calculator-coverage; several partial fact_judge results on calculator facts (Q10, Q11, Q14 and Q15 labels).",
+        "action": "Keep D-009 as a go-live gate. A domain expert compares the computed codes with the calculator for every inferred row. Add a fact or decision that backs the H tariff purpose."
       },
       {
-        "title": "Which address counts when the employee moves around the start date?",
-        "why": "Liability, canton, cross-border questions and tariff all depend on the home country. Someone moving from Germany to Zurich gets a different result depending on which address they enter. Weekly residents (Swiss address, main residence abroad) are not covered.",
-        "evidence": "dev_refinement (major) US-01.3",
-        "action": "Decide in decisions.yaml whether the employee enters the current address or the address that applies from the first working day, and how weekly residents are handled. Check with HR (Anna) or a domain expert."
+        "title": "Scope: Muster AG only, or every Lonio customer?",
+        "why": "This decides whether the fund field list, canton or calculator, and reminder text are hard-coded or set per customer.",
+        "evidence": "dev_refinement (major) on feature.md.",
+        "action": "State the scope in feature.md, or record it as a decision. If the questionnaire serves every customer, list which parts each customer can set up."
       },
       {
-        "title": "Does the employee type the first working day or confirm one HR pre-filled? Which dates are valid?",
-        "why": "A pre-filled date needs HR input before the questionnaire starts. The date drives the insurance start date.",
-        "evidence": "dev_refinement (major + info) US-02.1",
-        "action": "Decide who supplies the date (employee or HR). Set the valid range: past dates, how far ahead, weekdays only."
+        "title": "Technical decisions leak into the spec",
+        "why": "UI and modelling choices belong to engineering.",
+        "evidence": "tech_leak: information.md 'Country by English name…' and 'Expression describes one child'; US-02.1 'DD.MM.YYYY'; US-06.1 'add/remove a child, the child questions repeat'.",
+        "action": "Rewrite these as business needs: a country of residence, a date, facts collected per child. Keep DD.MM.YYYY only as the fund's output format."
       },
       {
-        "title": "Does the employee see the derived results?",
-        "why": "Showing or hiding the insurance start date, the liability and the tariff code changes the closing and summary screens.",
-        "evidence": "dev_refinement (major) US-05.7",
-        "action": "Decide in decisions.yaml whether the employee sees the results (insurance start date, liability, tariff) or only HR does."
+        "title": "No date rules, and the first-working-day field is unclear",
+        "why": "The insurance start date is derived from unchecked dates, and it is unknown whether the first working day is prefilled by HR.",
+        "evidence": "dev_refinement (major) on information.md and US-02.1; coverage: F-pension_portal-3a97ab (how the insurance start date relates to the first working day) is not used anywhere in the spec.",
+        "action": "Decide the allowed ranges for the first working day and the dates of birth, and whether the first working day is prefilled and from where. Cite 3a97ab where the insurance start date is derived."
       },
       {
-        "title": "Many child-result paths are inferred, and the H-tariff purpose of child items has no backing",
-        "why": "Lonio now owns the tariff result. The unobserved paths and the H-tariff purpose rest on inference, not on a source.",
-        "evidence": "inferred_items US-06.2/06.3/06.5/06.6, rule.child_tariff_result; trace_judge item.has_children, child_* items (H-tariff purpose); trace_judge story.US-06.4 (divorced/widowed grouping); OQ-calculator-coverage",
-        "action": "Keep D-009 as a go-live condition. Cite an H-tariff fact (e.g. 96658b) on the child items. Have a domain expert run the inferred rows and the divorced/widowed grouping through the calculator."
+        "title": "Cross-border day thresholds for mid-year starters",
+        "why": "Using the full 60 or 45 days, or a pro-rated number, changes both the question wording and the tariff.",
+        "evidence": "dev_refinement (major) on US-07.2; there is also a minor question about 'not yet' versus 'no' for the certificate of residence.",
+        "action": "Get the rule from a domain expert and record it as a decision. Decide whether 'not yet' creates a follow-up for HR."
       },
       {
-        "title": "UI leaks in the stories",
-        "why": "The stories fix the date format and the add/remove-child pattern. Those are UI decisions, not business rules.",
-        "evidence": "tech_leak US-02.1 (DD.MM.YYYY), US-06.1 (add/remove child, repeat per child)",
-        "action": "Rewrite as business needs, e.g. 'the first working day is captured as a calendar date' and 'every relevant child can be described'."
+        "title": "Saving and resuming, and who owns the reminder text",
+        "why": "Both decide whether more features are in scope: saving answers, reminders, HR editing of text.",
+        "evidence": "dev_refinement (major) on feature.md (resume, deadline, reminders) and US-08.1 (HR wording of the permit reminder).",
+        "action": "Decide whether a saved draft and a deadline or reminder are in scope. Get one fixed reminder text from HR, or mark HR editing as excluded."
       },
       {
-        "title": "Insurance start date mapping and the effective date for child status are not fully grounded",
-        "why": "The fund's '1st of month' rule is not explicitly tied to the first working day; that fact is unused. Child status (minor / first education) has no effective date.",
-        "evidence": "coverage F-pension_portal-3a97ab unused; dev_refinement (info) US-06.1 child-status date",
-        "action": "Cite 3a97ab against the decision behind AC-02.2.x and confirm it with the fund. Decide the reference date for child status: first working day, submission date or start of the tax year."
+        "title": "Questions for the pension fund are still open",
+        "why": "The fund's required 'Canton' field, and any hidden field for divorced or widowed employees, could block a registration.",
+        "evidence": "OQ-canton-abroad (D-002), OQ-spouse-dob-other-status (D-004); fact_judge partial F-pension_portal-6d3630 and 39bab1.",
+        "action": "Ask Pensionskasse Muster to confirm what 'Canton' means and what to enter for employees abroad, and get screenshots for Divorced and Widowed. Close both before go-live."
       }
     ]
   },
   "stages": {
     "ran": [
-      "knowledge.raw",
-      "feature.plan",
-      "sections/SEC-02-start-date-insurance",
-      "sections/SEC-01-identity-and-address",
-      "sections/SEC-03-civil-status-spouse",
-      "sections/SEC-08-completion-and-submission",
-      "sections/SEC-04-source-tax-liability",
-      "sections/SEC-07-living-abroad",
-      "sections/SEC-05-tariff-basics",
-      "sections/SEC-06-children",
-      "judge_trace",
       "dev_refinement",
       "review"
     ],
@@ -2613,8 +2622,12 @@
       "extract/pension_portal",
       "normalize/zh_source_tax_calculator",
       "extract/zh_source_tax_calculator",
-      "judge_facts"
+      "judge_facts",
+      "knowledge.raw",
+      "feature.plan",
+      "feature.flow",
+      "judge_trace"
     ]
   },
-  "cost_usd_this_run": 9.9
+  "cost_usd_this_run": 2.29
 }

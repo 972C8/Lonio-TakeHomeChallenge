@@ -18,6 +18,10 @@ is its own file in [stories/](stories/); the stories are grouped into sections:
 | {{ sec.order }} | [{{ sec.title | cell }}](feature.md#{{ sec.id }}) | {{ sec.purpose | cell }} | {{ sec.stories | length }} | {{ sec.open_questions | length }} |
 {% endfor %}
 
+{% if feature.flow %}
+The order in which the user is asked is in [{{ flow_title }}](feature.md#flow).
+
+{% endif %}
 ## How to read the feature spec
 - **User stories** (`US-x.y`): who wants what and why, with priority.
 - **Acceptance criteria** (`AC-x.y.z`): Given / When / Then in business
