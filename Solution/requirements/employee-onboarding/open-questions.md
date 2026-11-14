@@ -69,3 +69,18 @@ Affects: Child result (per child), Child digit of the tariff code, Tariff letter
 - **F-zh_source_tax_calculator-3cdbd7**: A hidden 'Beispiele' area shows tags H3N and P3N, which were not explored as inputs. — "A visually hidden 'Beispiele' area shows the tags H3N and P3N. These were not clicked as inputs." (zh_source_tax_calculator/C-N03)
 - **D-009**: Before go-live a domain expert compares Lonio's computed tariff code with the calculator for the paths not explored (residence block for A/B/H, more than 3 children, H3N/P3N). Special tariffs such as D (second job) are out of scope for onboarding. Keep OQ-calculator-coverage open as a non-blocking go-live condition.
 
+## OQ-copy-email-retention
+**Is the email address for the copy kept after the copy has been sent, and is it recorded for HR, or used only for sending?**
+
+No receiving party needs the address; keeping it would hold personal data no party needs (data minimisation).
+
+Options:
+- Use it only to send the copy, do not keep it
+- Keep it and record it for HR
+
+**Recommendation:** Use it only to send the copy and do not record it for any receiving party.
+
+Affects: Email address for the copy, Email copy of the submitted answers
+- **F-hr_email_copy-fd28be**: The copy email address serves only to send the employee their own copy; it is requested by HR for the employee's benefit, not as data a receiving party (pension fund, source tax) needs. — "the employee should be able to send themselves an email with a copy of their form data" (hr_email_copy/T-001, Anna)
+- **G-01**: Lonio collects onboarding data from a new employee **once** and reuses it for every receiving party. Asking too little blocks a registration; asking too much collects personal data we must not have (data minimisation). A question must only be asked when at least one receiving party needs the answer for this person.
+

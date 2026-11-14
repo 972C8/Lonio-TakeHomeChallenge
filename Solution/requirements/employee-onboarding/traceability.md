@@ -37,6 +37,7 @@ sources.
 | US-08.1 Remind employees to bring their permit on the first working day | AC-08.1.1, AC-08.1.2, AC-08.1.3 | F-hr_transcript-c53552, F-hr_transcript-1a20bb, G-01, D-010, D-038 |
 | US-08.2 Discard answers that no longer apply on submission | AC-08.2.1, AC-08.2.2 | G-01, D-036 |
 | US-08.3 Questionnaire is read-only for the employee after submission | AC-08.3.1, AC-08.3.2 | D-037, D-033, D-034, F-hr_transcript-1d5c07 |
+| US-08.4 Send myself an email copy of my submitted answers | AC-08.4.1, AC-08.4.2, AC-08.4.3, AC-08.4.4 | F-hr_email_copy-37cede, F-hr_email_copy-f75a41, F-hr_email_copy-6d2b5a, F-hr_email_copy-029105, F-hr_email_copy-b67d2f, F-hr_email_copy-ab2538, F-hr_email_copy-daa6b1, F-hr_email_copy-fd28be, G-01, D-036 |
 
 ## Information and rules → sources
 
@@ -77,6 +78,8 @@ sources.
 | More than 60 work-related non-return days expected | F-zh_source_tax_calculator-e8ffac, F-zh_source_tax_calculator-ea3cd8, F-zh_source_tax_calculator-33ef31, F-zh_source_tax_calculator-b948fd, D-035 |
 | Daily return to home in Liechtenstein | F-zh_source_tax_calculator-981b6b, F-zh_source_tax_calculator-a2041b, F-zh_source_tax_calculator-e22d17, F-zh_source_tax_calculator-e80d8f, D-007, D-035 |
 | More than 45 work-related non-return days expected | F-zh_source_tax_calculator-e96210, F-zh_source_tax_calculator-0ff846, F-zh_source_tax_calculator-f4ece9, F-zh_source_tax_calculator-ab4e1e, D-007, D-035 |
+| Email copy of the answers wanted | F-hr_email_copy-37cede, F-hr_email_copy-f75a41, F-hr_email_copy-6d2b5a, F-hr_email_copy-fd28be, G-10 |
+| Email address for the copy | F-hr_email_copy-029105, F-hr_email_copy-b67d2f, F-hr_email_copy-fd28be, F-hr_email_copy-37cede |
 | rule: Insurance start date | F-hr_transcript-1d5c07, F-hr_transcript-d7a23b, F-pension_portal-509cbe, F-pension_portal-dd8126, G-08, D-033, D-037 |
 | rule: Civil status for the pension fund | F-pension_portal-3d1ae4, F-pension_portal-9b24c5, F-hr_transcript-f197d6, D-003 |
 | rule: Civil status for source tax | F-zh_source_tax_calculator-051bb9, D-003 |
@@ -94,6 +97,7 @@ sources.
 | rule: Source tax result | F-zh_source_tax_calculator-ecef37, F-zh_source_tax_calculator-e80d8f, F-zh_source_tax_calculator-ab4e1e, F-hr_transcript-4e180e, D-001, D-007, D-034, D-037 |
 | rule: Permit reminder | F-hr_transcript-c53552, D-010, D-038 |
 | rule: Discard answers that no longer apply | G-01, D-036, D-037 |
+| rule: Email copy of the submitted answers | F-hr_email_copy-37cede, F-hr_email_copy-f75a41, F-hr_email_copy-029105, F-hr_email_copy-ab2538, F-hr_email_copy-daa6b1, D-036 |
 
 ## Facts
 
@@ -278,3 +282,13 @@ sources.
 | F-zh_source_tax_calculator-332e2a | zh_source_tax_calculator | open | explicit | The full cross-product of child paths × residence paths × confession × civil status was not enumerated. | zh_source_tax_calculator/C-N06 |
 | F-zh_source_tax_calculator-4957f6 | zh_source_tax_calculator | open | explicit | Not tested: more than 3 children (upper limit unknown), whether 'Kind löschen' recomputes correctly, and tariff D or other special tariffs. | zh_source_tax_calculator/C-N07 |
 | F-zh_source_tax_calculator-3cdbd7 | zh_source_tax_calculator | open | explicit | A hidden 'Beispiele' area shows tags H3N and P3N, which were not explored as inputs. | zh_source_tax_calculator/C-N03 |
+| F-hr_email_copy-6d2b5a | hr_email_copy | context | explicit | New employees keep calling HR (Muster AG) to ask what they entered in the onboarding questionnaire. | hr_email_copy/T-001 |
+| F-hr_email_copy-37cede | hr_email_copy | decision | explicit | At the end of the questionnaire, on submission, the employee should be able to send themselves an email with a copy of their form data. | hr_email_copy/T-001 |
+| F-hr_email_copy-f75a41 | hr_email_copy | condition | explicit | Requesting the email copy of the form data is optional for the employee; not everyone wants it. | hr_email_copy/T-001 |
+| F-hr_email_copy-029105 | hr_email_copy | field | explicit | If the employee wants a copy, they type in the email address the copy should be sent to (asked at the end of the questionnaire, at submission). | hr_email_copy/T-001 |
+| F-hr_email_copy-b67d2f | hr_email_copy | condition | inferred | The copy email address is only needed when the employee chooses to receive a copy of their form data. | hr_email_copy/T-001, hr_email_copy/T-001 |
+| F-hr_email_copy-ab2538 | hr_email_copy | format | explicit | The emailed copy should show the answers exactly as they were submitted, nothing more. | hr_email_copy/T-001 |
+| F-hr_email_copy-daa6b1 | hr_email_copy | exclusion | inferred | The emailed copy must not contain anything beyond the submitted answers (e.g. no derived values or additional information). | hr_email_copy/T-001 |
+| F-hr_email_copy-607694 | hr_email_copy | decision | explicit | Apart from the copy-email feature, everything else stays as discussed in the earlier HR meeting. | hr_email_copy/T-001 |
+| F-hr_email_copy-fe463b | hr_email_copy | context | explicit | The copy-email requirement is an addition HR forgot to mention in the meeting with Lonio, sent by Anna (HR, Muster AG) on 14 November 2026. | hr_email_copy/T-001, hr_email_copy/T-000 |
+| F-hr_email_copy-fd28be | hr_email_copy | rule | inferred | The copy email address serves only to send the employee their own copy; it is requested by HR for the employee's benefit, not as data a receiving party (pension fund, source tax) needs. | hr_email_copy/T-001 |

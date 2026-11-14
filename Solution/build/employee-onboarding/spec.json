@@ -1142,6 +1142,68 @@
         "depends_on": [
           "daily_return_liechtenstein"
         ]
+      },
+      {
+        "id": "wants_copy_email",
+        "name": "Email copy of the answers wanted",
+        "description": "At submission, whether the employee wants to send themselves an email with a copy of their form data. Optional: not everyone wants a copy.",
+        "form": "",
+        "allowed_values": [
+          "yes",
+          "no"
+        ],
+        "asked_when": "Always, at the end of the questionnaire when the employee submits",
+        "required_when": "May be left empty (no answer means no copy)",
+        "asked_when_expr": "true",
+        "required_when_expr": "false",
+        "needed_by": [
+          {
+            "stakeholder": "employee",
+            "purpose": "Keep a copy of what they entered"
+          },
+          {
+            "stakeholder": "hr",
+            "purpose": "Fewer calls from new employees asking what they entered"
+          }
+        ],
+        "source_refs": [
+          "F-hr_email_copy-37cede",
+          "F-hr_email_copy-f75a41",
+          "F-hr_email_copy-6d2b5a",
+          "F-hr_email_copy-fd28be",
+          "G-10"
+        ],
+        "status": "confirmed",
+        "notes": "Last step (submission). Not passed to the pension fund or source tax.",
+        "depends_on": []
+      },
+      {
+        "id": "copy_recipient_email",
+        "name": "Email address for the copy",
+        "description": "The email address the employee types in for the copy of their form data to be sent to. Used only to send the employee their own copy; no receiving party (pension fund, source tax) needs it.",
+        "form": "",
+        "allowed_values": [],
+        "asked_when": "Only if the employee wants an email copy",
+        "required_when": "Whenever asked",
+        "asked_when_expr": "wants_copy_email == \"yes\"",
+        "required_when_expr": "wants_copy_email == \"yes\"",
+        "needed_by": [
+          {
+            "stakeholder": "employee",
+            "purpose": "Receive the copy of their submitted answers"
+          }
+        ],
+        "source_refs": [
+          "F-hr_email_copy-029105",
+          "F-hr_email_copy-b67d2f",
+          "F-hr_email_copy-fd28be",
+          "F-hr_email_copy-37cede"
+        ],
+        "status": "inferred",
+        "notes": "Last step (submission). Whether the address is kept after sending is open (OQ-copy-email-retention).",
+        "depends_on": [
+          "wants_copy_email"
+        ]
       }
     ],
     "rules": [
@@ -2802,6 +2864,54 @@
         ],
         "status": "decision",
         "depends_on": []
+      },
+      {
+        "id": "submission_copy_email",
+        "name": "Email copy of the submitted answers",
+        "statement": "On submission, if the employee asked for a copy, an email with a copy of their form data is sent to the address they typed in. The copy shows the answers exactly as submitted, nothing more: no derived results (such as the insurance start date or the tariff code) and no other information.",
+        "inputs": [
+          "Email copy wanted",
+          "Email address for the copy"
+        ],
+        "table": [
+          {
+            "when": [
+              "yes",
+              "given"
+            ],
+            "then": "Send a copy of the submitted answers, exactly as submitted and nothing more",
+            "source_refs": [
+              "F-hr_email_copy-37cede",
+              "F-hr_email_copy-029105",
+              "F-hr_email_copy-ab2538",
+              "F-hr_email_copy-daa6b1"
+            ]
+          },
+          {
+            "when": [
+              "no or not answered",
+              "-"
+            ],
+            "then": "No copy is sent",
+            "source_refs": [
+              "F-hr_email_copy-f75a41"
+            ]
+          }
+        ],
+        "expression": "wants_copy_email == \"yes\" and is_set(copy_recipient_email)",
+        "source_refs": [
+          "F-hr_email_copy-37cede",
+          "F-hr_email_copy-f75a41",
+          "F-hr_email_copy-029105",
+          "F-hr_email_copy-ab2538",
+          "F-hr_email_copy-daa6b1",
+          "D-036"
+        ],
+        "status": "inferred",
+        "depends_on": [
+          "copy_recipient_email",
+          "wants_copy_email"
+        ]
       }
     ],
     "open_questions": [
@@ -2885,6 +2995,25 @@
           "F-zh_source_tax_calculator-4957f6",
           "F-zh_source_tax_calculator-3cdbd7",
           "D-009"
+        ],
+        "blocking": false
+      },
+      {
+        "id": "OQ-copy-email-retention",
+        "question": "Is the email address for the copy kept after the copy has been sent, and is it recorded for HR, or used only for sending?",
+        "why_it_matters": "No receiving party needs the address; keeping it would hold personal data no party needs (data minimisation).",
+        "options": [
+          "Use it only to send the copy, do not keep it",
+          "Keep it and record it for HR"
+        ],
+        "recommendation": "Use it only to send the copy and do not record it for any receiving party.",
+        "affects": [
+          "copy_recipient_email",
+          "submission_copy_email"
+        ],
+        "source_refs": [
+          "F-hr_email_copy-fd28be",
+          "G-01"
         ],
         "blocking": false
       }
@@ -2971,6 +3100,15 @@
           "D-034",
           "D-037",
           "G-04"
+        ]
+      },
+      {
+        "id": "EX-copy-derived",
+        "item": "Derived results or any other information in the emailed copy (e.g. insurance start date, tariff code)",
+        "reason": "HR wants the copy to show the submitted answers exactly, nothing more.",
+        "source_refs": [
+          "F-hr_email_copy-ab2538",
+          "F-hr_email_copy-daa6b1"
         ]
       }
     ]
@@ -12700,14 +12838,228 @@
               "F-hr_transcript-1d5c07"
             ],
             "status": "decision"
+          },
+          {
+            "id": "US-08.4",
+            "title": "Send myself an email copy of my submitted answers",
+            "as_a": "employee",
+            "i_want": "to choose, when I submit the questionnaire, to receive an email with a copy of my answers at an address I type in",
+            "so_that": "I can look up what I entered myself instead of calling HR, who today get repeated calls from new employees asking what they entered",
+            "priority": "P2",
+            "priority_reason": "HR reports a recurring nuisance ('New employees keep calling us to ask what they entered'), but the copy is optional and blocks no registration with any receiving party.",
+            "acceptance_criteria": [
+              {
+                "id": "AC-08.4.1",
+                "title": "Every employee is offered an optional copy at submission",
+                "given": "an employee has reached the end of the questionnaire",
+                "when": "the employee submits the questionnaire",
+                "then": "the employee is asked whether they want an email with a copy of their answers, answered with \"yes\" or \"no\"; the question may be left unanswered, and no answer means no copy is sent",
+                "examples": [
+                  {
+                    "name": "Employee is offered the copy at submission",
+                    "given": [],
+                    "then": [
+                      {
+                        "target": "wants_copy_email",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "wants_copy_email",
+                        "expect": "optional"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-hr_email_copy-37cede",
+                      "F-hr_email_copy-f75a41"
+                    ],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-hr_email_copy-37cede",
+                  "F-hr_email_copy-f75a41",
+                  "G-10"
+                ]
+              },
+              {
+                "id": "AC-08.4.2",
+                "title": "Email address asked only when a copy is wanted",
+                "given": "an employee is submitting the questionnaire",
+                "when": "the employee answers whether they want a copy",
+                "then": "if the answer is \"yes\", the employee must type in the email address the copy is sent to; if the answer is \"no\" or the question is left unanswered, no email address is asked",
+                "examples": [
+                  {
+                    "name": "Employee wants a copy",
+                    "given": [
+                      {
+                        "item": "wants_copy_email",
+                        "value": "yes"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "copy_recipient_email",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "copy_recipient_email",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-hr_email_copy-029105",
+                      "F-hr_email_copy-b67d2f"
+                    ],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Employee does not want a copy",
+                    "given": [
+                      {
+                        "item": "wants_copy_email",
+                        "value": "no"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "copy_recipient_email",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-hr_email_copy-f75a41",
+                      "F-hr_email_copy-b67d2f"
+                    ],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-hr_email_copy-029105",
+                  "F-hr_email_copy-b67d2f",
+                  "F-hr_email_copy-f75a41"
+                ]
+              },
+              {
+                "id": "AC-08.4.3",
+                "title": "The copy shows the submitted answers exactly, nothing more",
+                "given": "an employee has asked for a copy and typed in an email address",
+                "when": "the employee submits the questionnaire",
+                "then": "an email with a copy of the employee's answers is sent to that address; it shows the answers exactly as submitted (only the answers to questions that still apply, see the discarding of answers that no longer apply) and nothing more - no derived results such as the insurance start date, the civil status for the pension fund, the source tax result or the tariff code, and no other information; if the employee did not ask for a copy, no email is sent",
+                "examples": [
+                  {
+                    "name": "Employee asks for a copy and gives an address",
+                    "given": [
+                      {
+                        "item": "wants_copy_email",
+                        "value": "yes"
+                      },
+                      {
+                        "item": "copy_recipient_email",
+                        "value": "anna.muster@example.com"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "submission_copy_email",
+                        "expect": "yes"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-hr_email_copy-37cede",
+                      "F-hr_email_copy-029105"
+                    ],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Employee declines the copy",
+                    "given": [
+                      {
+                        "item": "wants_copy_email",
+                        "value": "no"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "submission_copy_email",
+                        "expect": "no"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-hr_email_copy-f75a41"
+                    ],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Employee leaves the copy question unanswered",
+                    "given": [],
+                    "then": [
+                      {
+                        "target": "submission_copy_email",
+                        "expect": "no"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-hr_email_copy-f75a41"
+                    ],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-hr_email_copy-37cede",
+                  "F-hr_email_copy-029105",
+                  "F-hr_email_copy-ab2538",
+                  "F-hr_email_copy-daa6b1",
+                  "F-hr_email_copy-f75a41",
+                  "D-036"
+                ]
+              },
+              {
+                "id": "AC-08.4.4",
+                "title": "The copy address is used only to send the employee's own copy",
+                "given": "an employee has typed in an email address for the copy",
+                "when": "the questionnaire is submitted and the copy is sent",
+                "then": "the address serves only to send the employee their own copy; it is not passed to the pension fund or to source tax, as no receiving party needs it. Whether the address is kept after sending or recorded for HR is open (see OQ-copy-email-retention)",
+                "examples": [],
+                "source_refs": [
+                  "F-hr_email_copy-fd28be",
+                  "G-01"
+                ]
+              }
+            ],
+            "items": [
+              "wants_copy_email",
+              "copy_recipient_email"
+            ],
+            "rules": [
+              "submission_copy_email"
+            ],
+            "source_refs": [
+              "F-hr_email_copy-37cede",
+              "F-hr_email_copy-f75a41",
+              "F-hr_email_copy-6d2b5a",
+              "F-hr_email_copy-029105",
+              "F-hr_email_copy-b67d2f",
+              "F-hr_email_copy-ab2538",
+              "F-hr_email_copy-daa6b1",
+              "F-hr_email_copy-fd28be",
+              "G-01",
+              "D-036"
+            ],
+            "status": "inferred"
           }
         ],
-        "items": [],
+        "items": [
+          "copy_recipient_email",
+          "wants_copy_email"
+        ],
         "rules": [
           "permit_reminder",
-          "discard_inapplicable_answers"
+          "discard_inapplicable_answers",
+          "submission_copy_email"
         ],
-        "open_questions": [],
+        "open_questions": [
+          "OQ-copy-email-retention"
+        ],
         "source_refs": [
           "F-hr_transcript-c53552",
           "G-01",
