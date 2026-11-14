@@ -281,19 +281,18 @@ enters at four moments. Nothing generated is edited by hand: you change the
 inputs (profile, guidance, decisions, sources) and rerun.
 
 **Skills you can use.** They are Claude Code skills in `.claude/skills/`;
-type the name in Claude Code opened in this folder. The numbers refer to the
-four moments below.
+type the name in Claude Code opened in this folder.
 
-| Skill | Where (moment) | What it does there |
-|---|---|---|
-| `/new-feature` | 1 · before the first run of a new feature | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions, examples, gold) |
-| `/new-adapter` | 1, 3 · a new *kind* of source appears | scaffolds an adapter (reader + extraction prompt) for it |
-| `/run-pipeline` | 1, 2, 3 · every time you run or rerun | checks which sources changed, runs the pipeline in the background, summarises the result |
-| `/review` | 2, 3 · after every run | guided walk through `review.md`; records your answers as decisions |
-| `/decide` | 2, 3 · whenever you decide one thing | turns a sentence into a `decisions.yaml` entry |
-| `/trace` | 2, 4 · whenever you doubt something | shows why a story, rule or fact says what it says, down to the quote |
-| `/publish-linear` | 4 · optional step 8 | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
-| `/learn` | occasionally · after a few review rounds | turns decisions you keep repeating into examples, gold entries, guidance or checks |
+| Skill | What it does there |
+|---|---|
+| `/new-feature` | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions, examples, gold) |
+| `/new-adapter` | scaffolds an adapter (reader + extraction prompt) for it |
+| `/run-pipeline` | checks which sources changed, runs the pipeline in the background, summarises the result |
+| `/review` | guided walk through `review.md`; records your answers as decisions |
+| `/decide` | turns a sentence into a `decisions.yaml` entry |
+| `/trace` | shows why a story, rule or fact says what it says, down to the quote |
+| `/publish-linear` | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
+| `/learn` | turns decisions you keep repeating into examples, gold entries, guidance or checks |
 
 ### 1. Before the first run (once per feature)
 
