@@ -6,22 +6,22 @@
   "stories": [
     {
       "id": "US-04.1",
-      "title": "Ask nationality and C permit only of employees living in Switzerland",
-      "as_a": "hr",
-      "i_want": "Lonio to ask employees living in Switzerland for their nationality and, if they are not Swiss, only whether they hold a C permit",
-      "so_that": "I know for each new employee whether they could be subject to source tax, without collecting nationality or permit data that no party needs",
+      "title": "Ask Swiss citizenship and C permit only of employees living in Switzerland",
+      "as_a": "employee",
+      "i_want": "to be asked whether I am a Swiss citizen and, if I am not, whether I hold a C permit, but only when I live in Switzerland and never for my full nationality or any other permit type",
+      "so_that": "Lonio learns exactly what decides my source tax liability without collecting personal data that no receiving party needs",
       "priority": "P1",
-      "priority_reason": "HR today never knows up front who has to answer the source tax questions (F-hr_transcript-b84498); without these facts the source tax liability cannot be decided and the tariff code cannot be computed.",
+      "priority_reason": "Swiss citizenship and C permit decide source tax liability. Today HR works this out by hand and does not know in advance who has to answer the source tax questions (F-hr_transcript-b6d9b3, F-hr_transcript-b84498).",
       "acceptance_criteria": [
         {
           "id": "AC-04.1.1",
-          "title": "Nationality is asked only of employees living in Switzerland",
-          "given": "the employee has entered their home address",
-          "when": "the home address country is Switzerland",
-          "then": "the employee is asked for their nationality (countries by English name) and must answer it; employees living abroad are not asked, because they are subject to source tax whatever their nationality and get the permit reminder anyway. Whether the specific nationality or only 'Swiss citizen yes/no' is needed stays open (see OQ-nationality-scope).",
+          "title": "Swiss citizenship is asked only of employees living in Switzerland",
+          "given": "the employee has entered the country of their home address",
+          "when": "the country is Switzerland",
+          "then": "the employee is asked whether they hold Swiss citizenship, with the answers \"yes\" or \"no\", and must answer. Employees whose home address is in another country are not asked, because they are subject to source tax whatever their nationality. The answer is recorded for source tax, and for HR to decide whether the permit reminder is shown.",
           "examples": [
             {
-              "name": "Tomás (hr_transcript/F-hr_transcript-d7431e)",
+              "name": "Employee living in Switzerland",
               "given": [
                 {
                   "item": "address_country",
@@ -39,10 +39,10 @@
                 }
               ],
               "source_refs": [],
-              "illustrative": false
+              "illustrative": true
             },
             {
-              "name": "Stefan, Swiss living abroad (hr_transcript/F-hr_transcript-1a20bb)",
+              "name": "Employee living in Konstanz, Germany (F-hr_transcript-1a20bb)",
               "given": [
                 {
                   "item": "address_country",
@@ -53,17 +53,13 @@
                 {
                   "target": "nationality",
                   "expect": "not asked"
-                },
-                {
-                  "target": "permit_type",
-                  "expect": "not asked"
                 }
               ],
               "source_refs": [],
-              "illustrative": true
+              "illustrative": false
             },
             {
-              "name": "Employee living in Liechtenstein",
+              "name": "Employee living in Liechtenstein (F-hr_transcript-1a20bb)",
               "given": [
                 {
                   "item": "address_country",
@@ -77,60 +73,40 @@
                 }
               ],
               "source_refs": [],
-              "illustrative": true
+              "illustrative": false
             }
           ],
           "source_refs": [
+            "F-hr_transcript-35fae3",
             "F-hr_transcript-b6d9b3",
             "F-hr_transcript-1a20bb",
-            "F-hr_transcript-35fae3",
-            "G-01",
-            "D-010"
+            "D-008",
+            "D-010",
+            "D-038",
+            "G-01"
           ]
         },
         {
           "id": "AC-04.1.2",
-          "title": "Swiss citizenship counts even with another nationality",
-          "given": "an employee living in Switzerland holds Swiss citizenship, alone or together with another nationality",
-          "when": "they answer the nationality question",
-          "then": "they answer Switzerland, they count as Swiss and are not asked about a C permit",
-          "examples": [
-            {
-              "name": "Swiss (or dual Swiss) employee living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "permit_type",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
+          "title": "Dual citizens answer as Swiss citizens",
+          "given": "an employee living in Switzerland holds Swiss citizenship and also another nationality",
+          "when": "they answer the Swiss citizenship question",
+          "then": "they answer \"yes\". Anyone with Swiss citizenship counts as Swiss for source tax. Their other nationality is not asked.",
+          "examples": [],
           "source_refs": [
-            "F-hr_transcript-b6d9b3",
-            "D-008"
+            "D-008",
+            "G-01"
           ]
         },
         {
           "id": "AC-04.1.3",
-          "title": "Only 'C permit yes/no' is asked of non-Swiss employees living in Switzerland",
-          "given": "the employee lives in Switzerland and is not Swiss",
-          "when": "they have answered the nationality question",
-          "then": "they are asked whether they hold a C permit (permanent residence), answered yes or no, and must answer it; no other permit type is asked of anyone",
+          "title": "C permit is asked only of non-Swiss employees living in Switzerland",
+          "given": "the employee lives in Switzerland",
+          "when": "the employee has answered that they do not hold Swiss citizenship",
+          "then": "the employee is asked whether they hold a C permit (permanent residence), with the answers \"yes\" or \"no\", and must answer. Swiss citizens and employees living abroad are not asked. No other permit type is asked. The answer is recorded for source tax.",
           "examples": [
             {
-              "name": "Tomás (hr_transcript/F-hr_transcript-d7431e)",
+              "name": "Non-Swiss employee living in Switzerland",
               "given": [
                 {
                   "item": "address_country",
@@ -138,7 +114,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 }
               ],
               "then": [
@@ -152,10 +128,31 @@
                 }
               ],
               "source_refs": [],
-              "illustrative": false
+              "illustrative": true
             },
             {
-              "name": "Non-Swiss employee living abroad",
+              "name": "Swiss employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "permit_type",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee living in Konstanz, Germany (F-hr_transcript-1a20bb)",
               "given": [
                 {
                   "item": "address_country",
@@ -169,27 +166,15 @@
                 }
               ],
               "source_refs": [],
-              "illustrative": true
+              "illustrative": false
             }
           ],
           "source_refs": [
-            "F-hr_transcript-845204",
             "F-hr_transcript-4ad146",
+            "F-hr_transcript-845204",
+            "F-hr_transcript-b6d9b3",
             "D-005",
             "G-01"
-          ]
-        },
-        {
-          "id": "AC-04.1.4",
-          "title": "Who the answers are recorded for",
-          "given": "the employee has answered nationality and, where asked, the C permit question",
-          "when": "the questionnaire is submitted",
-          "then": "the answers are recorded for HR, for source tax (deciding whether the employee is subject to source tax) and, for nationality, for deciding whether the permit reminder is shown",
-          "examples": [],
-          "source_refs": [
-            "F-hr_transcript-b6d9b3",
-            "D-010",
-            "D-034"
           ]
         }
       ],
@@ -199,33 +184,34 @@
       ],
       "rules": [],
       "source_refs": [
-        "F-hr_transcript-b6d9b3",
         "F-hr_transcript-35fae3",
-        "F-hr_transcript-845204",
         "F-hr_transcript-4ad146",
+        "F-hr_transcript-845204",
+        "F-hr_transcript-b6d9b3",
         "F-hr_transcript-1a20bb",
         "G-01",
         "D-005",
         "D-008",
-        "D-010"
+        "D-010",
+        "D-038"
       ],
-      "status": "inferred"
+      "status": "decision"
     },
     {
       "id": "US-04.2",
       "title": "Ask spouse details only when the spouse could exempt the employee",
-      "as_a": "employee",
-      "i_want": "to be asked about my spouse or registered partner's residence, nationality and C permit only when these answers can change whether I am subject to source tax",
-      "so_that": "I give no personal data about my spouse that no party needs, while a Swiss or C-permit spouse living in Switzerland still exempts me from source tax",
+      "as_a": "source_tax",
+      "i_want": "to know whether a married or registered-partner employee's spouse or partner is Swiss or holds a C permit, and whether they live in Switzerland, but only when this can change the employee's source tax liability",
+      "so_that": "employees exempted through their spouse, such as Tomás, are not wrongly treated as subject to source tax, and no spouse data is collected when it cannot change the result",
       "priority": "P1",
-      "priority_reason": "Without the spouse details HR wrongly treats exempt employees like Tomás as subject to source tax; asking them of everyone would violate data minimisation (G-01).",
+      "priority_reason": "HR's real case Tomás shows that leaving out the spouse leads to the wrong liability decision (F-hr_transcript-d7431e). HR states which spouse facts are needed (F-hr_transcript-f3ce84).",
       "acceptance_criteria": [
         {
           "id": "AC-04.2.1",
-          "title": "Spouse's country of residence is asked only when the exemption can matter",
-          "given": "the employee lives in Switzerland, is not Swiss, holds no C permit and has given their civil status",
-          "when": "the civil status is Married or Registered partnership",
-          "then": "the employee is asked in which country their spouse or registered partner lives (countries by English name) and must answer it; it is not asked of single, divorced, widowed or separated employees (separated counts as single for source tax), nor of employees who are Swiss, hold a C permit or live abroad. See OQ-nationality-scope on whether only 'lives in Switzerland yes/no' is needed.",
+          "title": "Spouse's Swiss citizenship is asked only when the spouse could exempt the employee",
+          "given": "the employee lives in Switzerland, is not a Swiss citizen and holds no C permit",
+          "when": "the employee's civil status is Married or Registered partnership",
+          "then": "the employee is asked whether their spouse or registered partner holds Swiss citizenship (\"yes\" or \"no\"; dual citizens count as \"yes\") and must answer. It is not asked of Single, Divorced, Widowed or Separated employees, because separated employees count as single for source tax. It is not asked of employees who are Swiss, hold a C permit or live abroad. The answer is recorded for source tax.",
           "examples": [
             {
               "name": "Tomás (hr_transcript/F-hr_transcript-d7431e)",
@@ -236,7 +222,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -249,11 +235,11 @@
               ],
               "then": [
                 {
-                  "target": "spouse_residence_country",
+                  "target": "spouse_nationality",
                   "expect": "asked"
                 },
                 {
-                  "target": "spouse_residence_country",
+                  "target": "spouse_nationality",
                   "expect": "required"
                 }
               ],
@@ -261,7 +247,7 @@
               "illustrative": false
             },
             {
-              "name": "Registered partner without C permit",
+              "name": "Registered partnership, non-Swiss without C permit",
               "given": [
                 {
                   "item": "address_country",
@@ -269,7 +255,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Italy"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -282,7 +268,7 @@
               ],
               "then": [
                 {
-                  "target": "spouse_residence_country",
+                  "target": "spouse_nationality",
                   "expect": "asked"
                 }
               ],
@@ -290,7 +276,7 @@
               "illustrative": true
             },
             {
-              "name": "Separated employee without C permit",
+              "name": "Separated, non-Swiss without C permit",
               "given": [
                 {
                   "item": "address_country",
@@ -298,7 +284,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Italy"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -311,7 +297,7 @@
               ],
               "then": [
                 {
-                  "target": "spouse_residence_country",
+                  "target": "spouse_nationality",
                   "expect": "not asked"
                 }
               ],
@@ -319,7 +305,7 @@
               "illustrative": true
             },
             {
-              "name": "Divorced employee without C permit",
+              "name": "Divorced, non-Swiss without C permit",
               "given": [
                 {
                   "item": "address_country",
@@ -327,7 +313,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Italy"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -340,7 +326,7 @@
               ],
               "then": [
                 {
-                  "target": "spouse_residence_country",
+                  "target": "spouse_nationality",
                   "expect": "not asked"
                 }
               ],
@@ -348,7 +334,7 @@
               "illustrative": true
             },
             {
-              "name": "Married employee with C permit",
+              "name": "Married, non-Swiss with C permit",
               "given": [
                 {
                   "item": "address_country",
@@ -356,7 +342,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Italy"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -369,7 +355,7 @@
               ],
               "then": [
                 {
-                  "target": "spouse_residence_country",
+                  "target": "spouse_nationality",
                   "expect": "not asked"
                 }
               ],
@@ -377,7 +363,7 @@
               "illustrative": true
             },
             {
-              "name": "Married Swiss employee",
+              "name": "Married Swiss citizen living in Switzerland",
               "given": [
                 {
                   "item": "address_country",
@@ -385,7 +371,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Switzerland"
+                  "value": "yes"
                 },
                 {
                   "item": "civil_status",
@@ -394,7 +380,7 @@
               ],
               "then": [
                 {
-                  "target": "spouse_residence_country",
+                  "target": "spouse_nationality",
                   "expect": "not asked"
                 }
               ],
@@ -402,7 +388,7 @@
               "illustrative": true
             },
             {
-              "name": "Married employee living abroad",
+              "name": "Married employee living in Germany",
               "given": [
                 {
                   "item": "address_country",
@@ -415,7 +401,7 @@
               ],
               "then": [
                 {
-                  "target": "spouse_residence_country",
+                  "target": "spouse_nationality",
                   "expect": "not asked"
                 }
               ],
@@ -424,22 +410,24 @@
             }
           ],
           "source_refs": [
-            "F-hr_transcript-d7431e",
             "F-hr_transcript-f3ce84",
+            "F-hr_transcript-d7431e",
             "F-hr_transcript-b6d9b3",
-            "G-01",
-            "D-003"
+            "D-003",
+            "D-005",
+            "D-008",
+            "G-01"
           ]
         },
         {
           "id": "AC-04.2.2",
-          "title": "Spouse's nationality is asked only if the spouse lives in Switzerland",
-          "given": "the employee was asked where their spouse or registered partner lives",
-          "when": "the spouse lives in Switzerland",
-          "then": "the employee is asked for the spouse's nationality (countries by English name; anyone with Swiss citizenship counts as Swiss) and must answer it; if the spouse lives abroad, neither the spouse's nationality nor C permit is asked",
+          "title": "Spouse's C permit is asked only for a non-Swiss spouse",
+          "given": "the employee has been asked about their spouse's or partner's Swiss citizenship",
+          "when": "the employee answers that the spouse or partner is not a Swiss citizen",
+          "then": "the employee is asked whether the spouse or partner holds a C permit (permanent residence), with the answers \"yes\" or \"no\", and must answer. No other permit type is asked. When the spouse is Swiss, this question is not asked. The answer is recorded for source tax.",
           "examples": [
             {
-              "name": "Tomás (hr_transcript/F-hr_transcript-d7431e)",
+              "name": "Non-Swiss spouse",
               "given": [
                 {
                   "item": "address_country",
@@ -447,7 +435,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -458,25 +446,25 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
+                  "item": "spouse_nationality",
+                  "value": "no"
                 }
               ],
               "then": [
                 {
-                  "target": "spouse_nationality",
+                  "target": "spouse_permit_type",
                   "expect": "asked"
                 },
                 {
-                  "target": "spouse_nationality",
+                  "target": "spouse_permit_type",
                   "expect": "required"
                 }
               ],
               "source_refs": [],
-              "illustrative": false
+              "illustrative": true
             },
             {
-              "name": "Spouse living abroad",
+              "name": "Tomás - Swiss wife (hr_transcript/F-hr_transcript-d7431e)",
               "given": [
                 {
                   "item": "address_country",
@@ -484,7 +472,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -495,40 +483,36 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_residence_country",
-                  "value": "Brazil"
+                  "item": "spouse_nationality",
+                  "value": "yes"
                 }
               ],
               "then": [
-                {
-                  "target": "spouse_nationality",
-                  "expect": "not asked"
-                },
                 {
                   "target": "spouse_permit_type",
                   "expect": "not asked"
                 }
               ],
               "source_refs": [],
-              "illustrative": true
+              "illustrative": false
             }
           ],
           "source_refs": [
             "F-hr_transcript-f3ce84",
             "F-hr_transcript-d7431e",
-            "G-01",
-            "D-008"
+            "D-005",
+            "G-01"
           ]
         },
         {
           "id": "AC-04.2.3",
-          "title": "Spouse's C permit is asked only if the spouse is not Swiss",
-          "given": "the spouse or registered partner lives in Switzerland",
-          "when": "the spouse is not Swiss",
-          "then": "the employee is asked whether the spouse holds a C permit (permanent residence), answered yes or no, and must answer it; no other permit type is asked; for a Swiss spouse the question is not asked",
+          "title": "Spouse's residence is asked only for a Swiss or C-permit spouse",
+          "given": "the employee has stated that their spouse or partner is a Swiss citizen or holds a C permit",
+          "when": "the spouse questions continue",
+          "then": "the employee is asked whether the spouse or partner lives in Switzerland, with the answers \"Switzerland\" or \"Another country\", and must answer. The spouse's actual country is not collected. When the spouse is neither Swiss nor holds a C permit, the question is not asked, because the spouse cannot exempt the employee. The answer is recorded for source tax.",
           "examples": [
             {
-              "name": "Tomás (hr_transcript/F-hr_transcript-d7431e)",
+              "name": "Tomás - Swiss wife (hr_transcript/F-hr_transcript-d7431e)",
               "given": [
                 {
                   "item": "address_country",
@@ -536,7 +520,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -547,80 +531,25 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                },
-                {
                   "item": "spouse_nationality",
-                  "value": "Switzerland"
+                  "value": "yes"
                 }
               ],
               "then": [
                 {
-                  "target": "spouse_permit_type",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Non-Swiss spouse living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Brazil"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Portugal"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_permit_type",
+                  "target": "spouse_residence_country",
                   "expect": "asked"
                 },
                 {
-                  "target": "spouse_permit_type",
+                  "target": "spouse_residence_country",
                   "expect": "required"
                 }
               ],
               "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-hr_transcript-f3ce84",
-            "F-hr_transcript-d7431e",
-            "D-005"
-          ]
-        },
-        {
-          "id": "AC-04.2.4",
-          "title": "Spouse exemption from source tax",
-          "given": "the employee's civil status and, where asked, the spouse's country of residence, nationality and C permit are known",
-          "when": "Lonio checks the spouse exemption",
-          "then": "the employee is exempted only if married or in a registered partnership with a spouse or partner who lives in Switzerland and is Swiss or holds a C permit; a spouse living abroad, a non-Swiss spouse without a C permit, and separated, single, divorced or widowed employees give no exemption",
-          "examples": [
+              "illustrative": false
+            },
             {
-              "name": "Tomás (hr_transcript/F-hr_transcript-d7431e)",
+              "name": "Non-Swiss spouse with C permit",
               "given": [
                 {
                   "item": "address_country",
@@ -628,7 +557,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -639,49 +568,8 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                },
-                {
                   "item": "spouse_nationality",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_exempts_source_tax",
-                  "expect": "yes"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Registered partner with C permit living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Brazil"
-                },
-                {
-                  "item": "permit_type",
                   "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Registered partnership"
-                },
-                {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Portugal"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -690,8 +578,8 @@
               ],
               "then": [
                 {
-                  "target": "spouse_exempts_source_tax",
-                  "expect": "yes"
+                  "target": "spouse_residence_country",
+                  "expect": "asked"
                 }
               ],
               "source_refs": [],
@@ -706,7 +594,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -717,12 +605,8 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                },
-                {
                   "item": "spouse_nationality",
-                  "value": "Portugal"
+                  "value": "no"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -731,15 +615,30 @@
               ],
               "then": [
                 {
-                  "target": "spouse_exempts_source_tax",
-                  "expect": "no"
+                  "target": "spouse_residence_country",
+                  "expect": "not asked"
                 }
               ],
               "source_refs": [],
               "illustrative": true
-            },
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-f3ce84",
+            "F-hr_transcript-d7431e",
+            "F-hr_transcript-b6d9b3",
+            "G-01"
+          ]
+        },
+        {
+          "id": "AC-04.2.4",
+          "title": "Spouse exemption is decided from civil status and the spouse answers",
+          "given": "the employee has answered the civil status question and every spouse question that was asked",
+          "when": "Lonio decides the spouse exemption",
+          "then": "the employee is exempt only if they are Married or in a Registered partnership and their spouse or partner is a Swiss citizen or holds a C permit and lives in Switzerland. In every other case there is no exemption, including Single, Divorced, Widowed and Separated employees, a spouse living in another country, and a non-Swiss spouse without a C permit.",
+          "examples": [
             {
-              "name": "Spouse living abroad",
+              "name": "Tomás - Swiss wife living in Winterthur (hr_transcript/F-hr_transcript-d7431e)",
               "given": [
                 {
                   "item": "address_country",
@@ -747,7 +646,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -758,8 +657,127 @@
                   "value": "Married"
                 },
                 {
+                  "item": "spouse_nationality",
+                  "value": "yes"
+                },
+                {
                   "item": "spouse_residence_country",
-                  "value": "Brazil"
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_exempts_source_tax",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
+            {
+              "name": "Registered partner is Swiss and lives in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "no"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Registered partnership"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "yes"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_exempts_source_tax",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Spouse with C permit living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "no"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "no"
+                },
+                {
+                  "item": "spouse_permit_type",
+                  "value": "yes"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_exempts_source_tax",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Swiss spouse living in another country",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "no"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "yes"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Another country"
                 }
               ],
               "then": [
@@ -772,7 +790,7 @@
               "illustrative": true
             },
             {
-              "name": "Separated employee",
+              "name": "C-permit spouse living in another country",
               "given": [
                 {
                   "item": "address_country",
@@ -780,7 +798,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -788,7 +806,56 @@
                 },
                 {
                   "item": "civil_status",
-                  "value": "Separated"
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "no"
+                },
+                {
+                  "item": "spouse_permit_type",
+                  "value": "yes"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Another country"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_exempts_source_tax",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Non-Swiss spouse without C permit",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "no"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "no"
+                },
+                {
+                  "item": "spouse_permit_type",
+                  "value": "no"
                 }
               ],
               "then": [
@@ -809,7 +876,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -828,12 +895,42 @@
               ],
               "source_refs": [],
               "illustrative": true
+            },
+            {
+              "name": "Separated employee (counts as single)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "no"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Separated"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_exempts_source_tax",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
             }
           ],
           "source_refs": [
             "F-hr_transcript-d7431e",
             "F-hr_transcript-b6d9b3",
             "F-hr_transcript-f3ce84",
+            "F-zh_source_tax_calculator-051bb9",
             "D-003",
             "D-005",
             "D-008"
@@ -841,10 +938,10 @@
         },
         {
           "id": "AC-04.2.5",
-          "title": "Spouse answers that no longer apply are not recorded",
-          "given": "the employee has answered spouse questions and then changes an earlier answer (e.g. to holding a C permit, or to a civil status other than Married or Registered partnership) so that the spouse questions no longer apply",
-          "when": "the questionnaire is submitted",
-          "then": "the earlier spouse answers are discarded and not recorded for any party; before submission they may be kept so that going back and forth loses no input",
+          "title": "Spouse answers that no longer apply are not kept",
+          "given": "the employee has answered spouse questions",
+          "when": "they change an earlier answer so that the spouse questions no longer apply (for example civil status changed to Single, or they now answer that they hold a C permit) and then submit the questionnaire",
+          "then": "those spouse answers are kept while the employee goes back and forth, but are discarded on submission. Only answers to questions that still apply are recorded.",
           "examples": [],
           "source_refs": [
             "D-036",
@@ -853,17 +950,18 @@
         }
       ],
       "items": [
-        "spouse_residence_country",
         "spouse_nationality",
-        "spouse_permit_type"
+        "spouse_permit_type",
+        "spouse_residence_country"
       ],
       "rules": [
         "spouse_exempts_source_tax"
       ],
       "source_refs": [
-        "F-hr_transcript-d7431e",
         "F-hr_transcript-f3ce84",
+        "F-hr_transcript-d7431e",
         "F-hr_transcript-b6d9b3",
+        "F-zh_source_tax_calculator-051bb9",
         "G-01",
         "D-003",
         "D-005",
@@ -876,20 +974,20 @@
       "id": "US-04.3",
       "title": "Decide whether the employee is subject to source tax",
       "as_a": "hr",
-      "i_want": "Lonio to decide from residence, Swiss citizenship, C permit and the spouse exemption whether a new employee is subject to source tax",
-      "so_that": "only employees subject to source tax get the source tax questions and a tariff result, and I no longer decide this by hand",
+      "i_want": "Lonio to decide from the employee's answers whether they are subject to source tax, and to ask the source tax questions only of those who are",
+      "so_that": "I no longer have to work out by hand who must answer the source tax questions, and employees who are not subject are not asked for data no party needs",
       "priority": "P1",
-      "priority_reason": "HR decides source tax liability by hand today and never knows up front who must answer the source tax questions (F-hr_transcript-b84498); the whole source tax step depends on this decision.",
+      "priority_reason": "HR says they never know in advance who has to answer the source tax questions (F-hr_transcript-b84498). The liability decision gates the whole source tax part and the tariff code (D-001).",
       "acceptance_criteria": [
         {
           "id": "AC-04.3.1",
           "title": "Employees living abroad are always subject to source tax",
-          "given": "the employee's home address country is not Switzerland",
+          "given": "the employee's home address is in a country other than Switzerland",
           "when": "Lonio decides source tax liability",
-          "then": "the employee is subject to source tax whatever their nationality, even if Swiss; this includes residents of Liechtenstein, whose result then follows the Liechtenstein questions",
+          "then": "the employee is subject to source tax whatever their nationality, even as a Swiss citizen. This includes residents of Germany, of Liechtenstein (see D-007) and of any other country.",
           "examples": [
             {
-              "name": "Stefan, Swiss living abroad (hr_transcript/F-hr_transcript-1a20bb)",
+              "name": "Employee living in Konstanz, Germany (F-hr_transcript-1a20bb)",
               "given": [
                 {
                   "item": "address_country",
@@ -903,14 +1001,31 @@
                 }
               ],
               "source_refs": [],
-              "illustrative": true
+              "illustrative": false
             },
             {
-              "name": "Employee living in Liechtenstein",
+              "name": "Employee living in Liechtenstein (F-hr_transcript-1a20bb)",
               "given": [
                 {
                   "item": "address_country",
                   "value": "Liechtenstein"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
+            {
+              "name": "Employee living in another country",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "France"
                 }
               ],
               "then": [
@@ -931,13 +1046,13 @@
         },
         {
           "id": "AC-04.3.2",
-          "title": "Employees living in Switzerland",
-          "given": "the employee lives in Switzerland",
+          "title": "Employees living in Switzerland are subject only without Swiss citizenship, C permit or spouse exemption",
+          "given": "the employee lives in Switzerland and has answered the citizenship, C permit, civil status and spouse questions that were asked",
           "when": "Lonio decides source tax liability",
-          "then": "the employee is not subject if Swiss (including dual nationals with Swiss citizenship), if holding a C permit, or if exempted by a Swiss or C-permit spouse or registered partner living in Switzerland; otherwise the employee is subject to source tax",
+          "then": "the employee is not subject if they hold Swiss citizenship (dual citizens included), hold a C permit, or are exempted by a Swiss or C-permit spouse or registered partner living in Switzerland. Otherwise they are subject to source tax.",
           "examples": [
             {
-              "name": "Swiss employee living in Switzerland",
+              "name": "Swiss citizen (including dual citizens) living in Switzerland",
               "given": [
                 {
                   "item": "address_country",
@@ -945,7 +1060,11 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Switzerland"
+                  "value": "yes"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
                 }
               ],
               "then": [
@@ -958,7 +1077,7 @@
               "illustrative": true
             },
             {
-              "name": "Non-Swiss employee with C permit",
+              "name": "Non-Swiss with C permit living in Switzerland",
               "given": [
                 {
                   "item": "address_country",
@@ -966,7 +1085,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Italy"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -987,7 +1106,7 @@
               "illustrative": true
             },
             {
-              "name": "Tomás (hr_transcript/F-hr_transcript-d7431e)",
+              "name": "Tomás - Brazilian, B permit, Swiss wife, Winterthur (hr_transcript/F-hr_transcript-d7431e)",
               "given": [
                 {
                   "item": "address_country",
@@ -995,7 +1114,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -1006,11 +1125,11 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
+                  "item": "spouse_nationality",
+                  "value": "yes"
                 },
                 {
-                  "item": "spouse_nationality",
+                  "item": "spouse_residence_country",
                   "value": "Switzerland"
                 }
               ],
@@ -1024,7 +1143,7 @@
               "illustrative": false
             },
             {
-              "name": "Single non-Swiss employee without C permit",
+              "name": "Single non-Swiss without C permit",
               "given": [
                 {
                   "item": "address_country",
@@ -1032,7 +1151,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -1053,7 +1172,7 @@
               "illustrative": true
             },
             {
-              "name": "Separated non-Swiss employee without C permit",
+              "name": "Married, Swiss spouse living in another country",
               "given": [
                 {
                   "item": "address_country",
@@ -1061,7 +1180,44 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "yes"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Another country"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Separated non-Swiss without C permit (counts as single)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -1070,80 +1226,6 @@
                 {
                   "item": "civil_status",
                   "value": "Separated"
-                }
-              ],
-              "then": [
-                {
-                  "target": "subject_to_source_tax",
-                  "expect": "yes"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Married, non-Swiss spouse without C permit",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Brazil"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Portugal"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "subject_to_source_tax",
-                  "expect": "yes"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Married, spouse living abroad",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Brazil"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_residence_country",
-                  "value": "Brazil"
                 }
               ],
               "then": [
@@ -1169,9 +1251,26 @@
           "id": "AC-04.3.3",
           "title": "Only employees subject to source tax get the source tax questions",
           "given": "Lonio has decided whether the employee is subject to source tax",
-          "when": "the employee reaches the source tax step",
-          "then": "employees subject to source tax are asked the source tax questions (such as denomination); employees not subject are not asked them and get no source tax result",
+          "when": "the questionnaire reaches the source tax details",
+          "then": "employees subject to source tax are asked the source tax questions, such as denomination. Employees who are not subject are not asked any of them.",
           "examples": [
+            {
+              "name": "Employee living in Konstanz, Germany (F-hr_transcript-1a20bb)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "confession",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
             {
               "name": "Tomás (hr_transcript/F-hr_transcript-d7431e)",
               "given": [
@@ -1181,7 +1280,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Brazil"
+                  "value": "no"
                 },
                 {
                   "item": "permit_type",
@@ -1192,11 +1291,11 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
+                  "item": "spouse_nationality",
+                  "value": "yes"
                 },
                 {
-                  "item": "spouse_nationality",
+                  "item": "spouse_residence_country",
                   "value": "Switzerland"
                 }
               ],
@@ -1210,11 +1309,19 @@
               "illustrative": false
             },
             {
-              "name": "Stefan, Swiss living abroad (hr_transcript/F-hr_transcript-1a20bb)",
+              "name": "Single non-Swiss without C permit living in Switzerland",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Germany"
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "no"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
                 },
                 {
                   "item": "civil_status",
@@ -1236,6 +1343,19 @@
             "F-hr_transcript-b6d9b3",
             "G-01"
           ]
+        },
+        {
+          "id": "AC-04.3.4",
+          "title": "Liability always follows the latest answers",
+          "given": "the employee's answers that decide liability (home address country, Swiss citizenship, C permit, civil status or spouse details) change, either while the employee goes back and forth before submission or through HR after submission",
+          "when": "the liability is decided again",
+          "then": "the decision is always derived again from the latest answers. It is recorded for HR, together with the decision whether the source tax questions apply.",
+          "examples": [],
+          "source_refs": [
+            "D-037",
+            "D-034",
+            "D-036"
+          ]
         }
       ],
       "items": [],
@@ -1244,16 +1364,18 @@
       ],
       "source_refs": [
         "F-hr_transcript-b6d9b3",
+        "F-hr_transcript-b84498",
+        "F-hr_transcript-1a20bb",
         "F-hr_transcript-845204",
         "F-hr_transcript-d7431e",
-        "F-hr_transcript-1a20bb",
-        "F-hr_transcript-b84498",
+        "G-01",
         "D-003",
         "D-005",
         "D-007",
-        "D-008"
+        "D-008",
+        "D-037"
       ],
-      "status": "confirmed"
+      "status": "decision"
     }
   ],
   "items": [
@@ -1267,9 +1389,7 @@
     "subject_to_source_tax",
     "spouse_exempts_source_tax"
   ],
-  "open_questions": [
-    "OQ-nationality-scope"
-  ],
+  "open_questions": [],
   "source_refs": [
     "F-hr_transcript-b6d9b3",
     "F-hr_transcript-845204",

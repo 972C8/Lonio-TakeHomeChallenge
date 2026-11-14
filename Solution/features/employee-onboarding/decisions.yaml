@@ -67,12 +67,13 @@ decisions:
   action: direct
   target: ''
   statement: The spouse's (or registered partner's) date of birth is asked from married employees, registered
-    partners and separated employees (all entered at the fund as Married, see D-003), not from divorced or
-    widowed employees. Keep OQ-spouse-dob-other-status open as non-blocking, to be verified by a domain expert
-    (screenshot of the fund's screen). This closes OQ-separated-spouse-dob; the separated case is verified
-    together with OQ-civil-status-partnership.
+    partners and separated employees (all entered at the fund as Married, see D-003), not from divorced
+    or widowed employees. Keep OQ-spouse-dob-other-status open as non-blocking, to be verified by a domain
+    expert (screenshot of the fund's screen). This closes OQ-separated-spouse-dob; the separated case
+    is verified together with OQ-civil-status-partnership.
   value: null
-  rationale: HR states it for married employees; separated employees go to the fund as Married, which requires it.
+  rationale: HR states it for married employees; separated employees go to the fund as Married, which
+    requires it.
   by: Product owner
   evidence:
   - hr_transcript/T-032
@@ -454,3 +455,32 @@ decisions:
   by: Product owner
   evidence: []
   evidence_hash: e3b0c44298fc
+- id: D-037
+  action: direct
+  target: ''
+  statement: After submission the questionnaire is read-only for the employee. Any later change (a move,
+    a marriage, a new child, a certificate of residence handed in later, a corrected nationality) is made
+    by HR and belongs to the later HR-side spec (D-034). Every derived result (insurance start date, civil
+    status for the fund and for source tax, subject to source tax, tariff code) is always derived again
+    from the latest answers, as for the first working day (D-033).
+  value: null
+  rationale: Closes the review's questions on post-submission edits and the late certificate of residence
+    without designing the HR side now.
+  by: Product owner
+  evidence:
+  - hr_transcript/T-024
+  evidence_hash: f3c59492f1c3
+- id: D-038
+  action: direct
+  target: ''
+  statement: Employees living abroad get the permit reminder whatever their nationality, because nationality
+    is not asked of them (data minimisation, G-01). HR words the reminder so that a Swiss citizen living
+    abroad, such as Stefan, can see that it does not apply to them. Asking everyone 'Swiss citizen yes/no'
+    only for the reminder is not worth the extra question.
+  value: null
+  rationale: A generic reminder costs nothing; an extra question collects data no party needs.
+  by: Product owner
+  evidence:
+  - hr_transcript/T-042
+  - hr_transcript/T-048
+  evidence_hash: 742d1eb0415c

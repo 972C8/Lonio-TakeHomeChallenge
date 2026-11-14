@@ -13,6 +13,7 @@
       "order": 1,
       "title": "Personal details and home address",
       "purpose": "Collect the employee's name, date of birth and complete postal address, which also gives the country of residence, and the canton for Swiss residents, so the fund can register the employee and HR can post documents.",
+      "stories": [],
       "items": [
         "first_name",
         "last_name",
@@ -40,14 +41,14 @@
         "G-09",
         "G-10",
         "D-002"
-      ],
-      "stories": []
+      ]
     },
     {
       "id": "SEC-02-start-date-insurance",
       "order": 2,
       "title": "First working day and insurance start date",
       "purpose": "Ask the employee for the first working day and derive the pension fund insurance start date from it, so that the start date always falls on the 1st of a month and follows the latest first working day.",
+      "stories": [],
       "items": [
         "first_working_day"
       ],
@@ -65,14 +66,14 @@
         "G-08",
         "D-033",
         "D-034"
-      ],
-      "stories": []
+      ]
     },
     {
       "id": "SEC-03-civil-status-spouse",
       "order": 3,
       "title": "Civil status and spouse for the pension fund",
       "purpose": "Ask the civil status once. Map it to the fund's list and to married/single for source tax. Ask the spouse's or partner's date of birth only where the fund requires it.",
+      "stories": [],
       "items": [
         "civil_status",
         "spouse_date_of_birth"
@@ -93,14 +94,14 @@
         "F-zh_source_tax_calculator-051bb9",
         "D-003",
         "D-004"
-      ],
-      "stories": []
+      ]
     },
     {
       "id": "SEC-04-source-tax-liability",
       "order": 4,
       "title": "Source tax liability check",
       "purpose": "Decide from residence, Swiss citizenship, C permit and the spouse exemption whether the employee is subject to source tax. Ask these facts only as far as they are needed, so that only employees subject to source tax get the source tax questions.",
+      "stories": [],
       "items": [
         "nationality",
         "permit_type",
@@ -112,9 +113,7 @@
         "subject_to_source_tax",
         "spouse_exempts_source_tax"
       ],
-      "open_questions": [
-        "OQ-nationality-scope"
-      ],
+      "open_questions": [],
       "source_refs": [
         "F-hr_transcript-b6d9b3",
         "F-hr_transcript-845204",
@@ -125,14 +124,14 @@
         "D-003",
         "D-005",
         "D-008"
-      ],
-      "stories": []
+      ]
     },
     {
       "id": "SEC-05-tariff-basics",
       "order": 5,
       "title": "Source tax tariff basics and computed result",
       "purpose": "Ask the denomination and whether the spouse works. Combine these with the child digit and the cross-border outcome into the full Zurich tariff code (or the Liechtenstein result), which Lonio records for HR instead of HR using the calculator.",
+      "stories": [],
       "items": [
         "confession",
         "spouse_employed"
@@ -160,14 +159,14 @@
         "D-007",
         "D-009",
         "D-034"
-      ],
-      "stories": []
+      ]
     },
     {
       "id": "SEC-06-children",
       "order": 6,
       "title": "Children for the source tax tariff",
       "purpose": "Ask employees subject to source tax about each child, following the calculator's per-child logic, to decide which children count for the tariff digit and whether a single employee gets the H tariff.",
+      "stories": [],
       "items": [
         "has_children",
         "child_age_status",
@@ -198,14 +197,14 @@
         "D-001",
         "D-003",
         "D-009"
-      ],
-      "stories": []
+      ]
     },
     {
       "id": "SEC-07-living-abroad",
       "order": 7,
       "title": "Employees living abroad (Germany, Liechtenstein)",
       "purpose": "Derive the calculator's residence answers from the home address country. Ask employees living in Germany or Liechtenstein the cross-border questions about their expected year, which decide the cross-border tariff or the Liechtenstein result.",
+      "stories": [],
       "items": [
         "daily_return_germany",
         "residence_certificate",
@@ -233,14 +232,14 @@
         "D-001",
         "D-007",
         "D-035"
-      ],
-      "stories": []
+      ]
     },
     {
       "id": "SEC-08-completion-and-submission",
       "order": 8,
       "title": "Completing and submitting the questionnaire",
       "purpose": "Close the questionnaire. Remind non-Swiss employees and employees living abroad to bring their permit, and on submission record only the answers to questions that still apply.",
+      "stories": [],
       "items": [],
       "rules": [
         "permit_reminder",
@@ -253,8 +252,7 @@
         "D-010",
         "D-036",
         "D-034"
-      ],
-      "stories": []
+      ]
     }
   ]
 }

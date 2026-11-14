@@ -372,4 +372,4 @@ New source type → new adapter folder (`/new-adapter`) + one entry in
 `profile.yaml`. New process → new `features/<name>/` folder (`/new-feature`),
 with no change to `pipeline/`.
 
-See [LIMITATIONS.md](LIMITATIONS.md) for where the pipeline stands.
+See [LIMITATIONS.md](LIMITATIONS.md) for where the pipeline stands, and [docs/improvements.md](docs/improvements.md) for the next steps.

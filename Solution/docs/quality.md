@@ -50,15 +50,24 @@ cannot, and the **product owner decides** the rest.
   story ids of the last run are fed back to the agents. Decisions and Linear
   issues stay attached to the right things.
 - **Incremental reruns:** when only facts changed, the modeler returns a delta
-  applied by code, the plan keeps its sections, and only sections whose inputs
-  changed are rewritten; untouched stories are restored word for word.
-- **New evidence flags decisions:** a decision whose shaped elements now cite
-  a fact that did not exist when it was made is flagged for re-confirmation.
+  applied by code, so untouched elements stay exactly as they were. The plan
+  keeps its sections. A section is rewritten only when something it owns
+  changed, or something it merely uses changed in behaviour (conditions,
+  allowed values, expression - not wording or citations); untouched stories are
+  restored word for word and untouched sections are reused without an agent
+  call. In a test with a new source this kept 25 of 28 stories word for word.
+- **New evidence flags decisions:** the facts known when a decision was made
+  are remembered. A decision is flagged for re-confirmation when an element it
+  shapes changed in behaviour and now cites a newer fact (`pipeline reconfirm
+  D-00N` re-stamps it).
 - **Decisions remember their evidence:** if the source text a decision rests on
   changes, it is flagged "needs re-confirmation" instead of applied silently. A
   decision whose target disappeared is reported.
 - **Corrections win:** a stakeholder's later statement supersedes the earlier
   one; both stay linked.
+- **Every rerun is re-checked in full:** quotes, citations and coverage,
+  all examples as tests, the LLM judges and the reviewer run over the whole
+  spec, also when only part of it was rewritten.
 - **`/update-source`** shows what a changed or new source moved in the spec.
 - **`/learn`** turns repeated decisions into prompt lines or new code checks, so
   the same mistake does not come back.
@@ -72,3 +81,8 @@ cannot, and the **product owner decides** the rest.
   that everything they imply was written.
 - LLM judges can be wrong. Their findings go to a human, never straight into
   the spec.
+- **Decisions are not binding during a rerun.** In a test, a newer HR statement
+  overrode decision D-007: it was flagged, but the spec had already changed.
+  The flags are based on citations, so they are coarse. See
+  [improvements.md](improvements.md) for the fix (approved baseline +
+  classifying new facts).

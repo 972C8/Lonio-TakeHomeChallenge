@@ -1,66 +1,66 @@
 {
-  "verdict": "ready_with_caveats",
-  "summary": "Buildable: no errors, all spec examples pass, no blocking open questions. Before the build is final, the PO must decide four major refinement questions: post-submission edits, the late certificate of residence, how non-return days are counted, and the permit reminder for Swiss people living abroad. Six technical or UI leaks should be removed from feature.md. Some rule rows and ACs (AC-07.2.1, AC-08.1.2) rely on fact ids missing from their own citations or say more than the sources do. Fund-dependent questions and the inferred tariff rows remain go-live conditions.",
+  "verdict": "not_ready",
+  "summary": "No mechanical errors, all 200+ examples pass, and none of the 4 open questions is marked blocking. It is still not ready, for four reasons. (1) The child result table contradicts its own evidence on a row that is not marked inferred, so the tariff code can come out wrong (A vs H). (2) The spec is inconsistent about which tariff questions Liechtenstein residents answer, and the fixed step order leaks into the spec. (3) Several rule rows cite facts the rule does not include in its cited set. (4) Four major refinement questions are open: address timing, pre-filled start date, whether employees see results, and the Liechtenstein flow. All of these are small fixes. Once they are settled, the package should move to ready_with_caveats, with the four non-blocking open questions and the inferred child paths verified before go-live.",
   "findings": [
     {
-      "title": "No rule for changing answers after submission",
-      "why": "Only the first working day (AC-02.1.4) is covered. A move, marriage or new child could leave the source-tax status, tariff code, canton and fund civil status wrong, and engineering cannot design editing or recalculation without this.",
-      "evidence": "dev_refinement (major): post-submission edits; AC-02.1.4, AC-02.2.4",
-      "action": "Add a decision to decisions.yaml: which answers stay editable after submission and by whom (employee or HR), and whether derived results are recalculated the way AC-02.2.4 does for the insurance start date."
+      "title": "Row 22 of the child result table contradicts its evidence (H vs A)",
+      "why": "Row 22 is not marked inferred, yet it counts a minor child outside the household with H. The cited evidence says H applies only to a child in the employee's household. Wrong tariff letter means wrong source tax deduction.",
+      "evidence": "dev_refinement (major) on feature.md; F-zh_source_tax_calculator-96658b; rule.child_tariff_result; AC-06.2.5 / AC-06.3.3",
+      "action": "Decide in decisions.yaml whether the H tariff needs the child in the household. Correct row 22 or mark it inferred, and add the path to the expert check in OQ-calculator-coverage."
     },
     {
-      "title": "A certificate handed in later leaves the recorded tariff wrong",
-      "why": "Answering 'not yet' records C1Y. Nobody updates it to N1Y when the certificate arrives, because the HR side is out of scope.",
-      "evidence": "dev_refinement (major); US-07.2, AC-07.2.4 'Certificate not yet provided'",
-      "action": "Decide who updates the answer later and whether the tariff code is recalculated, or accept the risk explicitly and add it to the exclusions."
+      "title": "Liechtenstein flow is inconsistent: tariff questions are required but the examples skip them",
+      "why": "US-05.3 and US-06.1 make the denomination and children questions mandatory for everyone subject to source tax. AC-05.7.3 shows them as '–' when a Liechtenstein resident gets 'in principle no source tax liability'. Developers cannot build both, and what gets recorded as liability is unclear.",
+      "evidence": "dev_refinement (major) US-05.7; dev_refinement (info) US-04.3; AC-05.7.3",
+      "action": "Decide whether a Liechtenstein resident with daily return or ≤45 non-return days skips the tariff questions. Decide what 'Subject to source tax' records for them (yes / no / a third status). Ask the Liechtenstein cross-border questions before the tariff questions."
     },
     {
-      "title": "Non-return day limits are unclear for mid-year starters",
-      "why": "The 60-day (Germany) and 45-day (Liechtenstein) limits are 'per calendar year'. Whether the year is full, remaining or pro-rated changes the tariff and the Liechtenstein result.",
-      "evidence": "dev_refinement (major); US-07.2, US-07.3; calculator questions C-Q26/C-Q28",
-      "action": "Ask a domain expert or the Zurich tax office, then record the counting rule in decisions.yaml."
+      "title": "Fixed step numbers in feature.md (technical leak)",
+      "why": "The Notes rows fix the screen order (steps 1–6). This is UI sequencing, and it blocks the reordering the Liechtenstein decision needs.",
+      "evidence": "tech_leak feature.md 'Flow step 1 (personal details)'; trace_judge story.US-01.2 (address-after-personal ordering not backed)",
+      "action": "Remove the step numbers. Keep only the business dependencies, i.e. which answer must be known before which question is asked."
     },
     {
-      "title": "Permit reminder also goes to Swiss citizens living abroad",
-      "why": "Nationality is not asked of people living abroad, so Swiss commuters like Stefan get a reminder that does not apply to them. This interacts with OQ-nationality-scope.",
-      "evidence": "dev_refinement (major); AC-08.1.1; OQ-nationality-scope; F-hr_transcript-1a20bb",
-      "action": "Decide together with OQ-nationality-scope: either accept the generic reminder or ask everyone 'Swiss citizen yes/no'."
+      "title": "Rule rows cite facts that are not in the rule's cited set",
+      "why": "Some rows are not backed by the cited set, which weakens the audit trail for the computed liability and tariff.",
+      "evidence": "trace_judge rule.source_tax_result (F-hr_transcript-b6d9b3), rule.cross_border_tariff_applies (bc1639, 52b67a), rule.single_parent_h_tariff (c78e0c), rule.source_tax_residence (Germany/Liechtenstein questions), rule.pension_fund_civil_status (D-004 Separated row), item.address_country (D-002); stories US-04.3, US-05.4, US-06.1, US-08.1 (Tomás/d7431e)",
+      "action": "Add the missing facts and decisions to each rule's, item's or story's citations. Fix the Separated row in rule.pension_fund_civil_status: D-003 says 'without a spouse's date of birth' (it also conflicts with OQ-civil-status-partnership option 1)."
     },
     {
-      "title": "Technical and UI choices in the spec text",
-      "why": "Internal ids and UI patterns tie engineering to choices no source requires. 'English country names' has no source at all.",
-      "evidence": "tech_leak x6: 'Kept id permit_type for stability', rule ids pension_fund_civil_status / source_tax_civil_status / source_tax_residence in the text, date entry as DD.MM.YYYY, 'add and remove children', 'country given by its English name'; trace_judge on US-04.1, US-04.2, spouse_nationality, spouse_residence_country",
-      "action": "Replace rule ids with rule names and delete the permit_type note. State the business need instead of the UI: every child is described, and the fund receives the start date as DD.MM.YYYY. Drop 'English name' or move it into a decision with an owner (see the country-list question)."
+      "title": "Which address counts when the employee moves around the start date?",
+      "why": "Liability, canton, cross-border questions and tariff all depend on the home country. Someone moving from Germany to Zurich gets a different result depending on which address they enter. Weekly residents (Swiss address, main residence abroad) are not covered.",
+      "evidence": "dev_refinement (major) US-01.3",
+      "action": "Decide in decisions.yaml whether the employee enters the current address or the address that applies from the first working day, and how weekly residents are handled. Check with HR (Anna) or a domain expert."
     },
     {
-      "title": "Acceptance criteria say more than their sources",
-      "why": "Testers will check behaviour that no source supports.",
-      "evidence": "trace_judge: US-07.2 (AC-07.2.1 'Germany always makes them subject', liability fact not cited); US-08.1 (AC-08.1.2 'handed in person, nothing uploaded' beyond D-010); item.address_country (D-010 not cited)",
-      "action": "Cite F-hr_transcript-b6d9b3 and D-010 where they apply, or reduce AC-08.1.2 to what the sources say. If upload is out of scope, record that in decisions.yaml."
+      "title": "Does the employee type the first working day or confirm one HR pre-filled? Which dates are valid?",
+      "why": "A pre-filled date needs HR input before the questionnaire starts. The date drives the insurance start date.",
+      "evidence": "dev_refinement (major + info) US-02.1",
+      "action": "Decide who supplies the date (employee or HR). Set the valid range: past dates, how far ahead, weekdays only."
     },
     {
-      "title": "Rule rows rely on fact ids missing from their own citations",
-      "why": "Traceability is broken for the Germany/Liechtenstein, 'not subject' and H-tariff branches. The core residence rule also adds the assumption that 'home address country' is the test for living abroad.",
-      "evidence": "trace_judge: source_tax_residence (31d762, e22d17), single_parent_h_tariff (c78e0c), cross_border_tariff_applies (52b67a), liechtenstein_no_source_tax_in_principle (e22d17), source_tax_result (b6d9b3); H-tariff purposes on has_children, child_parental_custody, child_main_financial_contributor; fact_judge F-hr_transcript-b6d9b3",
-      "action": "Add the missing facts to each rule's citations and back the H-tariff purposes with a calculator fact. Confirm with HR that 'home address country' is the test for living abroad and record it as a decision."
+      "title": "Does the employee see the derived results?",
+      "why": "Showing or hiding the insurance start date, the liability and the tariff code changes the closing and summary screens.",
+      "evidence": "dev_refinement (major) US-05.7",
+      "action": "Decide in decisions.yaml whether the employee sees the results (insurance start date, liability, tariff) or only HR does."
     },
     {
-      "title": "Inferred tariff paths still need checking against the calculator",
-      "why": "Lonio now produces the tariff code itself (D-001). The inferred child rows, more than 3 children, H3N/P3N and the residence block for A/B/H are unverified. The single child digit also has no rule for 10 or more children.",
-      "evidence": "OQ-calculator-coverage; inferred rows in AC-06.2.3–AC-06.5.3; dev_refinement on child count; fact_judge partial on 3058a4 (garbled statement), 38dd4a, c2faa7, 56e79b, 50f74a",
-      "action": "Keep the go-live condition: a domain expert compares the computed codes with the calculator. Fix the garbled F-zh_source_tax_calculator-3058a4 and decide on a maximum or display rule for the child digit."
+      "title": "Many child-result paths are inferred, and the H-tariff purpose of child items has no backing",
+      "why": "Lonio now owns the tariff result. The unobserved paths and the H-tariff purpose rest on inference, not on a source.",
+      "evidence": "inferred_items US-06.2/06.3/06.5/06.6, rule.child_tariff_result; trace_judge item.has_children, child_* items (H-tariff purpose); trace_judge story.US-06.4 (divorced/widowed grouping); OQ-calculator-coverage",
+      "action": "Keep D-009 as a go-live condition. Cite an H-tariff fact (e.g. 96658b) on the child items. Have a domain expert run the inferred rows and the divorced/widowed grouping through the calculator."
     },
     {
-      "title": "Example tables contradict their own criteria",
-      "why": "The examples pass the simulation, but engineering cannot use them as reliable test cases.",
-      "evidence": "dev_refinement: AC-01.1.1 (names shown as 'asked' instead of 'required'), AC-05.7.2 (M0N/P1Y rows show '–'), AC-01.3.2 (Italy canton '–'), AC-02.2.4 (Julia example has no change)",
-      "action": "Correct the tables. Add a second row to the Julia example that shows the start date being moved."
+      "title": "UI leaks in the stories",
+      "why": "The stories fix the date format and the add/remove-child pattern. Those are UI decisions, not business rules.",
+      "evidence": "tech_leak US-02.1 (DD.MM.YYYY), US-06.1 (add/remove child, repeat per child)",
+      "action": "Rewrite as business needs, e.g. 'the first working day is captured as a calendar date' and 'every relevant child can be described'."
     },
     {
-      "title": "Fund-side registration questions are still open",
-      "why": "These do not block the build, but cross-border employees, registered partners and separated, divorced or widowed employees may be registered wrongly. Dissolved partnerships are also missing from the civil-status list.",
-      "evidence": "OQ-canton-abroad, OQ-civil-status-partnership, OQ-spouse-dob-other-status; dev_refinement on civil statuses; fact_judge F-pension_portal-6d3630",
-      "action": "Ask Pensionskasse Muster to confirm the canton for employees abroad and the civil-status mapping, and to send screenshots for Divorced and Widowed. Decide how dissolved partnerships and a deceased partner are mapped."
+      "title": "Insurance start date mapping and the effective date for child status are not fully grounded",
+      "why": "The fund's '1st of month' rule is not explicitly tied to the first working day; that fact is unused. Child status (minor / first education) has no effective date.",
+      "evidence": "coverage F-pension_portal-3a97ab unused; dev_refinement (info) US-06.1 child-status date",
+      "action": "Cite 3a97ab against the decision behind AC-02.2.x and confirm it with the fund. Decide the reference date for child status: first working day, submission date or start of the tax year."
     }
   ]
 }
