@@ -16,7 +16,9 @@ flowchart LR
     S5["<b>5 Feature specs</b><br/>stories, Given/When/Then,<br/>examples (business only)"]
     S6["<b>6 Decide</b><br/>product owner's<br/>decisions, applied by code"]
     S7["<b>7 Check, render & review</b><br/>examples executed · coverage<br/>dev refinement → review.md"]
+    S8["<b>8 Linear (optional)</b><br/>agent sends specs<br/>via Linear MCP"]
     S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7
+    S7 -. "only when asked" .-> S8
     S7 -. "answers to open questions" .-> S6
 ```
 
@@ -64,7 +66,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m pipeline status                           # which sources changed since the last run
 .venv/bin/python -m pipeline run --fast                       # skip LLM checks while iterating on decisions
 .venv/bin/python -m pipeline explore zh_source_tax_calculator # crawl a live calculator (Playwright MCP)
-.venv/bin/python -m pipeline publish --dry-run                # Linear sync plan, nothing sent
+LINEAR_API_KEY=… .venv/bin/python -m pipeline publish --team ONB [--dry-run]   # optional step 8
 ```
 
 The Agent SDK runs on the local Claude Code login; no API key is needed.
@@ -78,7 +80,7 @@ pipeline/                    GENERIC - never changed for a new problem
   agents/                    knowledge modeler, feature planner, story writer, judges, dev refinement, reviewer
   checks/mechanical.py       checklist lint, example execution, coverage, tech-leak scan, gold eval
   render/templates/          feature spec, information catalogue, open questions, out of scope, traceability
-  publish/linear_plan.py     Linear sync plan + payload previews (dry run): feature → parent issue, story → sub-issue
+  publish/linear.py          optional step 8: Linear publisher agent (instructions: agents/linear_publisher.md)
 problems/<name>/             EVERYTHING SPECIFIC to one investigation
   profile.yaml               sources (+ authority, precedence), stakeholders, item checklist, models
   guidance.md                product-owner guidance; [G-nn] items are citable
@@ -90,7 +92,7 @@ build/<problem>/             every intermediate result (units, facts, verdicts, 
 requirements/<problem>/      the deliverable: feature specs
 ```
 
-## The seven steps
+## The steps
 
 Each step below answers three questions: **what it does and why**, **what
 goes in and what comes out**, and **how it keeps the result complete and
@@ -250,6 +252,27 @@ Anything that fails surfaces in `review.md`. The product owner then fixes
 it at the right level: a decision (step 6), guidance, or a source, and
 reruns. Only the affected steps run again.
 
+### 8. Linear (optional) – send the specs to the team's tracker
+
+**What and why.** Only when the product owner asks for it
+(`pipeline publish --team <key>`). A Linear publisher agent
+(`pipeline/agents/linear_publisher.md`) reads the rendered feature specs and
+sends them to Linear through the Linear MCP server:
+- each feature becomes a parent issue
+- each story becomes a sub-issue, with its acceptance criteria and examples, and its sources in a collapsed section
+- each open question becomes a `needs-decision` issue
+
+The Markdown files remain the source of truth.
+
+**In → out.** `requirements/<problem>/` + team/project → issues in Linear and
+a report (`build/<problem>/linear_publish.*.json`).
+
+**Complete and correct.**
+- **No duplicates:** the agent searches existing issues by id prefix (`[US-2.1]`) before creating; existing ones are updated with a comment, never duplicated.
+- **Never deletes:** it doesn't delete issues or touch status, assignee or estimate.
+- **Ambiguous matches skipped:** anything ambiguous is skipped and reported.
+- **Safe preview:** `--dry-run` uses Linear's read-only endpoint, so you can see what would happen without any writes.
+
 ## Human in the loop
 
 | When | Where | What |
@@ -268,30 +291,6 @@ reruns. Only the affected steps run again.
    (flagged for re-confirmation), and coverage of the new content.
 4. `git diff requirements/` shows exactly which stories and criteria changed;
    the Linear dry run shows which issues would be updated.
-
-## Publishing to Linear
-
-The Markdown feature specs are the deliverable and stay the source of truth.
-Linear receives a projection that engineering works from. The full design is
-in [docs/linear-publishing.md](docs/linear-publishing.md); in short:
-
-- **Mapping:**
-  - the problem becomes a Linear project, with the overview and information catalogue as project documents
-  - each feature becomes a parent issue (plus a milestone)
-  - each user story becomes a sub-issue, with its acceptance criteria and example tables in the description and the evidence in a collapsed section
-  - each open question becomes an issue labelled `spec:needs-decision`, assigned to the product owner
-- **Plan in code, execute via MCP, verify in code:**
-  - `pipeline publish --dry-run` computes create / update / cancel deterministically and writes the exact payloads to `build/<p>/linear/`
-  - a narrow agent with the Linear MCP server (`https://mcp.linear.app/mcp`) only executes that plan
-  - code reads every issue back
-- **Idempotent re-publish:**
-  - `problems/<p>/linear_map.yaml` maps spec ids to Linear issues and to the hash of what was last published
-  - unchanged items: nothing happens
-  - changed stories are updated, with a comment explaining which source change caused it
-  - issues edited by hand in Linear are flagged instead of overwritten
-  - removed stories are cancelled if not started, otherwise flagged; nothing is ever deleted
-- **Ownership:** the pipeline owns issue content and its `spec:` labels; engineering owns status, assignee, estimate and cycle.
-- **Status:** only the dry run is implemented. A real publish (`--apply`) needs a Linear workspace and the product owner's go.
 
 New source type → new adapter folder (`/new-adapter`) + one entry in
 `profile.yaml`. New process → new `problems/<name>/` folder (`/new-problem`),

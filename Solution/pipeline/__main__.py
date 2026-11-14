@@ -3,7 +3,7 @@
     python -m pipeline run [--problem employee-onboarding] [--force STAGE ...] [--fast]
     python -m pipeline explore <source_id>      # crawl an interactive source (expensive, network)
     python -m pipeline status                   # what changed since the last run
-    python -m pipeline publish --dry-run        # Linear sync plan, nothing is sent
+    python -m pipeline publish --team KEY [--dry-run]   # optional step 8: send feature specs to Linear
 """
 from __future__ import annotations
 
@@ -27,9 +27,10 @@ def main(argv=None):
     e = sub.add_parser("explore", help="explore an interactive source (e.g. the tax calculator)")
     e.add_argument("source_id")
     sub.add_parser("status", help="show which stages are stale")
-    pub = sub.add_parser("publish", help="publish to Linear")
-    pub.add_argument("--dry-run", action="store_true", required=True,
-                     help="only dry runs are supported in this version")
+    pub = sub.add_parser("publish", help="optional step 8: send the feature specs to Linear (Linear MCP)")
+    pub.add_argument("--team", required=True, help="Linear team key or name")
+    pub.add_argument("--project", help="Linear project name (default: the problem title)")
+    pub.add_argument("--dry-run", action="store_true", help="read-only: report what would be created/updated")
     a = p.parse_args(argv)
 
     if a.cmd == "run":
@@ -56,8 +57,8 @@ def main(argv=None):
             state = "unchanged" if ctx.manifest.get(name, {}).get("fingerprint") == fp else "CHANGED -> will rerun"
             print(f"{s['id']:<28} {state}")
     elif a.cmd == "publish":
-        from .publish.linear_plan import plan
-        print(plan(a.problem))
+        from .publish.linear import publish
+        print(json.dumps(asyncio.run(publish(a.problem, a.team, a.project, a.dry_run)), indent=2, ensure_ascii=False))
 
 
 def _summary(rep, problem):
