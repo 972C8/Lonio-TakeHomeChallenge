@@ -32,3 +32,20 @@
    rule tables and expressions): a change that only rewords a description or
    adds citations is deliberately ignored for sections that merely use the
    element and for decision flags.
+
+4. **Adding or changing a source still uses more tokens than it needs to.**
+   Incremental reruns keep untouched sections, but several steps still work on
+   everything:
+   - a changed source is normalised and extracted again in full, not only its
+     changed parts;
+   - the knowledge delta sends the whole previous model to the agent, even
+     when a handful of facts changed;
+   - the trace judge, dev refinement and reviewer re-read the whole spec
+     although most of it is unchanged;
+   - any change to guidance, a directive or a prompt rebuilds the model and
+     every section from scratch.
+   In practice a small new source costs about $6, half of a full rebuild.
+   Possible optimisations: extract only changed units, send the delta agent
+   only the elements related to the new facts, judge only changed elements and
+   reuse earlier verdicts, and treat a changed directive as a delta of the
+   elements that cite it.
