@@ -7,12 +7,19 @@ concrete examples, every line traceable to a source quote. The specs say
 **what** is needed and **why**. They contain no technical decisions; how to
 build it is up to engineering.
 
+```mermaid
+flowchart LR
+    S["<b>Sources</b><br/>transcripts · screenshots ·<br/>live calculator (explorer)"]
+    E["<b>1–3 Read & extract</b><br/>normalize into quotable units<br/>atomic facts with verbatim quotes<br/>quotes checked by code, facts by a judge"]
+    K["<b>4 Knowledge model</b><br/>information items, business rules<br/>conflicts & gaps → open questions"]
+    F["<b>5 Feature specs</b><br/>plan features, then one writer per feature:<br/>stories, Given/When/Then, examples<br/>(business language only)"]
+    D["<b>6 Decide</b><br/>product owner's decisions.yaml<br/>applied by code"]
+    C["<b>7–10 Check, render & review</b><br/>examples executed · coverage · tech-leak scan<br/>Markdown from templates · dev refinement<br/>→ review.md verdict"]
+    S --> E --> K --> F --> D --> C
+    C -. "answers to open questions" .-> D
 ```
-sources ─► normalize ─► extract ─► verify ─► knowledge ─► features ─► decide ─► check ─► render ─► dev refinement ─► review
-           (adapter)    (agent)    (code +   model        plan + write (code,   (code +  (code,    (agent per         (agent)
-                                    judge)   (agent)      per feature   human)   judge)   templates) feature)
-                                                          (agents)
-```
+
+Every stage is cached; a changed source or decision reruns only what depends on it.
 
 Deliverables of this run:
 - Onboarding feature specs: [`requirements/employee-onboarding/`](requirements/employee-onboarding/README.md)
