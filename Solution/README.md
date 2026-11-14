@@ -284,6 +284,7 @@ type the name in Claude Code opened in this folder.
 |---|---|
 | `/new-feature` | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions) |
 | `/new-adapter` | scaffolds an adapter (reader + extraction prompt) for a new kind of source |
+| `/update-source` | guides you when a source changed or a new one arrived: updates `profile.yaml`, hands off to `/run-pipeline`, then flags decisions whose evidence changed |
 | `/run-pipeline` | checks which sources changed, runs the pipeline in the background, summarises the result |
 | `/review` | guided walk through `review.md`; records your answers as decisions |
 | `/decide` | turns a sentence into a `decisions.yaml` entry |
@@ -298,11 +299,7 @@ type the name in Claude Code opened in this folder.
    and the `item_checklist`.
 2. **`features/<f>/guidance.md`** – scope and what is out of scope, id and value
    conventions, product-owner statements tagged `[G-nn]`. No source facts.
-3. *Optional:* `pipeline explore <source>` for a live source (Zurich
-   calculator: 20–60 minutes, a few dollars). Skipped, it is reported as an
-   open question. `/run-pipeline` always asks first: explore if never done,
-   re-run if already done (default no).
-4. **Run** – `pipeline run` (about 15–20 minutes, roughly $5–7 the first time).
+3. **Run** – `pipeline run` (about 15–20 minutes, roughly $5–7 the first time).
    Output is generated, not committed.
 
 ### 2. After every run – `/review`, `/decide`, `/trace`, `/run-pipeline`
@@ -325,7 +322,7 @@ Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`, `story.<id>`
 `feature.<attribute>`, `open.<id>`, `exclusion.<id>`, `fact.<id>`. Actions:
 `override`, `add`, `exclude`, `resolve`, `accept`, `reject`.
 
-### 3. After a source changes or a new one arrives – `/run-pipeline`, `/review`, `/decide`, `/new-adapter`
+### 3. After a source changes or a new one arrives – `/update-source`, `/run-pipeline`, `/review`, `/decide`, `/new-adapter`
 
 Replace the file (or add the source to `profile.yaml`), run `pipeline status`,
 then `pipeline run`. In `review.md`, re-confirm the decisions flagged because
