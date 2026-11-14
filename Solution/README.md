@@ -283,10 +283,10 @@ inputs (profile, guidance, decisions, sources) and rerun.
 **Skills you can use.** They are Claude Code skills in `.claude/skills/`;
 type the name in Claude Code opened in this folder.
 
-| Skill | What it does there |
+| Skill | What it does |
 |---|---|
 | `/new-feature` | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions, examples, gold) |
-| `/new-adapter` | scaffolds an adapter (reader + extraction prompt) for it |
+| `/new-adapter` | scaffolds an adapter (reader + extraction prompt) for a new kind of source |
 | `/run-pipeline` | checks which sources changed, runs the pipeline in the background, summarises the result |
 | `/review` | guided walk through `review.md`; records your answers as decisions |
 | `/decide` | turns a sentence into a `decisions.yaml` entry |
