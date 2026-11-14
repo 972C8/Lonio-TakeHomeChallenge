@@ -300,7 +300,8 @@ type the name in Claude Code opened in this folder.
    conventions, product-owner statements tagged `[G-nn]`. No source facts.
 3. *Optional:* `pipeline explore <source>` for a live source (Zurich
    calculator: 20–60 minutes, a few dollars). Skipped, it is reported as an
-   open question.
+   open question. `/run-pipeline` always asks first: explore if never done,
+   re-run if already done (default no).
 4. **Run** – `pipeline run` (about 15–20 minutes, roughly $5–7 the first time).
    Output is generated, not committed.
 
