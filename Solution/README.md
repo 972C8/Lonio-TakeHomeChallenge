@@ -276,22 +276,93 @@ a report (`build/<problem>/linear_publish.*.json`).
 
 ## Human in the loop
 
-| When | Where | What |
-|---|---|---|
-| before a run | `profile.yaml`, `guidance.md` | scope, stakeholders, source authority, vocabulary, optional section hints |
-| after a run | `build/<p>/review.md` | the one file to read |
-| deciding | `decisions.yaml` (or `/decide`) | override / add / exclude / resolve / accept / reject, by stable id |
-| over time | `/learn` | turn repeated overrides into examples, gold entries, guidance or checks |
+The pipeline never decides what a product owner must decide. Your judgment
+enters at four moments. Nothing generated is edited by hand: you change the
+inputs (profile, guidance, decisions, sources) and rerun.
+
+### 1. Before the first run (once per problem)
+
+1. **`problems/<p>/profile.yaml`** – check the `goal` (the feature planner and
+   the story writer both read it, so its wording shapes the sections and
+   stories), the `stakeholders`, each source's `authority` and `precedence`,
+   and the `item_checklist`. Optionally add `section_hints`.
+2. **`problems/<p>/guidance.md`** – state scope and what is out of scope,
+   value and id conventions, and product-owner statements tagged `[G-nn]` that
+   may be cited as sources. Do not put facts of a source here.
+3. **`examples.yaml`** – confirm the named real cases from the sources and
+   what is expected for each. They are executed on every run, and no agent
+   sees them.
+4. **`gold.yaml`** – confirm the expected items, rules and keywords. It only
+   produces warnings and is a regression alarm, not a quality score. It is
+   most useful when written without looking at the pipeline's output.
+5. **Optional: explore a live source once** – `pipeline explore <source>`
+   (for the Zurich calculator, 20–60 minutes and a few dollars). Skip it and
+   the calculator is reported as an open question.
+6. **Run** – `pipeline run` (about 15–20 minutes, roughly $5–7 for the first
+   run). Output is created, not committed: `build/<p>/` and
+   `requirements/<p>/`.
+
+### 2. After every run (read `build/<p>/review.md`, nothing else)
+
+Go through it from the top:
+1. **Verdict and errors** – ready / ready with caveats / not ready, and what
+   blocks it.
+2. **Failing examples** – decide who is wrong: the source (fix or replace it),
+   the example (`examples.yaml`), or the generated rule (add a decision).
+3. **Open questions** – each has options and a recommendation. Answer them in
+   `decisions.yaml` (`resolve`, or `override` / `add` the resulting change), or
+   with the `/decide` skill in plain words.
+4. **Inferred items** – things no source states outright. `accept` or `reject`
+   each fact, or override the element.
+5. **Uncited source units** – confirm they are irrelevant (small talk, out of
+   scope), or something was missed.
+6. **Dev-refinement questions and technical vocabulary** – answer the
+   questions that matter with a decision; if an agent keeps making a
+   technical choice, add a line to `guidance.md`.
+7. **Rerun** – `pipeline run` (only the steps after your change run again,
+   which is cheap) and repeat until the verdict is acceptable.
+
+Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`,
+`story.<id>` (ids contain a dot, e.g. `story.US-02.1.priority`),
+`section.<id>`, `feature.<attribute>`, `open.<id>`, `exclusion.<id>` and
+`fact.<id>`; actions are `override`, `add`, `exclude`, `resolve`, `accept`,
+`reject`. A decision keeps a fingerprint of its evidence.
+
+### 3. After a source changes or a new one arrives
+
+1. Replace the file (rerun `pipeline explore` for a live site) or add the
+   source to `profile.yaml`; for a new kind of source use `/new-adapter`.
+2. `pipeline status`, then `pipeline run`.
+3. In `review.md`: failing examples, **decisions flagged for re-confirmation**
+   (their evidence changed: re-confirm or update each one), and the coverage
+   of the new content.
+4. `git diff requirements/` shows exactly which stories and criteria moved.
+
+### 4. Before publishing to Linear (optional step 8)
+
+1. Publish only when the verdict is acceptable and you have answered what
+   blocks the build.
+2. Set `LINEAR_API_KEY`, then run the read-only preview
+   `pipeline publish --team <key> --dry-run`, and read what it would create
+   or update.
+3. Publish: `pipeline publish --team <key>`. Change the **spec**, not the
+   text of the Linear issues; the next publish overwrites the description of
+   issues it owns. Status, assignee and estimate stay with engineering.
+
+### Occasionally
+
+- **`/learn`** turns decisions you keep repeating into examples, gold
+  entries, guidance or checks, so the next run gets it right without you.
+- **Delivering:** after the final run, commit `requirements/<p>/` (and
+  `build/<p>/` if you want to show the intermediate results) together with
+  the pipeline.
 
 ## When a source changes, or a new one arrives
 
-1. Replace the file (or rerun `explore` for a live site).
-2. `pipeline status` shows which sources changed; `pipeline run` reruns that
-   source's chain and everything downstream of it.
-3. `review.md` shows failing examples, decisions whose evidence changed
-   (flagged for re-confirmation), and coverage of the new content.
-4. `git diff requirements/` shows exactly which stories and criteria changed;
-   `pipeline publish --dry-run` shows which Linear issues would be updated.
+What you do is listed under "Human in the loop", step 3. What the pipeline
+does: `pipeline status` shows which sources changed, and `pipeline run`
+reruns that source's chain and everything downstream of it; unchanged sources
+come from the cache.
 
 New source type → new adapter folder (`/new-adapter`) + one entry in
 `profile.yaml`. New process → new `problems/<name>/` folder (`/new-problem`),
