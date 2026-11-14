@@ -79,7 +79,7 @@ pipeline/                    GENERIC - never changed for a new feature
   engine/                    schemas, stage cache, Agent SDK wrapper, condition language, decisions
   adapters/<source type>/    adapter.py + agent.md (+ config.yaml): transcript, screenshots, web_calculator
   agents/                    knowledge modeler, feature planner (sections), story writer (per section), judges, dev refinement, reviewer
-  checks/mechanical.py       checklist lint, example execution, coverage, tech-leak scan, gold eval
+  checks/mechanical.py       checklist lint, example execution, coverage, tech-leak scan
   render/templates/          feature.md, information catalogue, open questions, out of scope, traceability
   publish/linear.py          optional step 8: Linear publisher agent (instructions: agents/linear_publisher.md)
 features/<name>/             EVERYTHING SPECIFIC to one feature (one process)
@@ -87,7 +87,6 @@ features/<name>/             EVERYTHING SPECIFIC to one feature (one process)
   guidance.md                product-owner guidance; [G-nn] items are citable
   decisions.yaml             product decisions (the override layer)
   examples.yaml              named real cases from the sources, executed every run
-  gold.yaml                  hand-labelled expectations for the eval
 .claude/skills/              /run-pipeline · /review · /decide · /trace · /new-adapter · /new-feature · /learn
 build/<feature>/             every intermediate result (units, facts, verdicts, knowledge, feature plan, sections, report, review.md)
 requirements/<feature>/      the deliverable: feature.md + shared files
@@ -230,7 +229,6 @@ precedence.
    - **Example execution:** **every example in every acceptance criterion is executed** against the internal formalisation, plus the named cases in `examples.yaml`. Shown as ✅ in the specs.
    - **Coverage, both ways:** every item and rule sits in a story, and uncited source units and unused facts are listed.
    - **Tech-leak scan:** a vocabulary scan flags implementation terms.
-   - **Gold set:** recall and precision against the hand-written gold set.
 2. **Trace judge (agent):** each item, rule and story is compared with the facts it cites.
 3. **Render (code):** Jinja templates write `requirements/<feature>/`. The internal formalisation is never rendered. Files:
    - `feature.md`: the whole feature, with its sections, stories, criteria, examples and evidence
@@ -241,13 +239,13 @@ precedence.
 4. **Dev refinement (one agent):** an engineer agent that reads `feature.md` and the shared files lists every question it would ask in refinement, plus any technical decisions that leaked into the spec. This is the acceptance test of the task: "built without anyone asking a single question".
 5. **Review (agent):** summarises everything into one verdict (ready / ready with caveats / not ready), with prioritised findings and suggested decisions.
 
-**In → out.** `spec.json`, facts, units, `examples.yaml`, `gold.yaml` →
+**In → out.** `spec.json`, facts, units, `examples.yaml` →
 `requirements/<feature>/` (the deliverable), `report.json` and **`review.md`**,
 the one file the product owner reads.
 
 **Complete and correct.** This step *is* the safety net:
 - **Correct:** quotes proven, examples executed, every element traced, nothing technical leaking.
-- **Complete:** checklist enforced, coverage both ways, gold recall, refinement questions.
+- **Complete:** checklist enforced, coverage both ways, refinement questions.
 
 Anything that fails surfaces in `review.md`. The product owner then fixes
 it at the right level: a decision (step 6), guidance, or a source, and
@@ -285,14 +283,14 @@ type the name in Claude Code opened in this folder.
 
 | Skill | What it does |
 |---|---|
-| `/new-feature` | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions, examples, gold) |
+| `/new-feature` | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions, examples) |
 | `/new-adapter` | scaffolds an adapter (reader + extraction prompt) for a new kind of source |
 | `/run-pipeline` | checks which sources changed, runs the pipeline in the background, summarises the result |
 | `/review` | guided walk through `review.md`; records your answers as decisions |
 | `/decide` | turns a sentence into a `decisions.yaml` entry |
 | `/trace` | shows why a story, rule or fact says what it says, down to the quote |
 | `/publish-linear` | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
-| `/learn` | turns decisions you keep repeating into examples, gold entries, guidance or checks |
+| `/learn` | turns decisions you keep repeating into examples, guidance or checks |
 
 ### 1. Before the first run (once per feature, use `/new-feature`)
 
@@ -300,7 +298,7 @@ type the name in Claude Code opened in this folder.
    the story writer both read it, so its wording shapes the sections and
    stories), the `stakeholders`, each source's `authority` and `precedence`,
    and the `item_checklist`. Optionally add `section_hints`. For a **new
-   feature**, `/new-feature` interviews you and drafts steps 1–4; for a new
+   feature**, `/new-feature` interviews you and drafts steps 1–3; for a new
    *kind* of source (emails, regulation PDFs, …), `/new-adapter`.
 2. **`features/<f>/guidance.md`** – state scope and what is out of scope,
    value and id conventions, and product-owner statements tagged `[G-nn]` that
@@ -308,14 +306,10 @@ type the name in Claude Code opened in this folder.
 3. **`examples.yaml`** – confirm the named real cases from the sources and
    what is expected for each (`/new-feature` drafts them for a new feature). They are executed on every run, and no agent
    sees them.
-4. **`gold.yaml`** – confirm the expected items, rules and keywords (drafted by
-   `/new-feature`, but yours to confirm). It only
-   produces warnings and is a regression alarm, not a quality score. It is
-   most useful when written without looking at the pipeline's output.
-5. **Optional: explore a live source once** – `pipeline explore <source>`
+4. **Optional: explore a live source once** – `pipeline explore <source>`
    (for the Zurich calculator, 20–60 minutes and a few dollars). Skip it and
    the calculator is reported as an open question.
-6. **Run** – `pipeline run`, or `/run-pipeline`, which also summarises the
+5. **Run** – `pipeline run`, or `/run-pipeline`, which also summarises the
    result (about 15–20 minutes, roughly $5–7 for the first run). Output is
    created, not committed: `build/<f>/` and `requirements/<f>/`.
 
@@ -380,8 +374,8 @@ Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`,
 
 ### Occasionally
 
-- **`/learn`** turns decisions you keep repeating into examples, gold
-  entries, guidance or checks, so the next run gets it right without you.
+- **`/learn`** turns decisions you keep repeating into examples,
+  guidance or checks, so the next run gets it right without you.
   Use it after a few review rounds, when the same kind of decision shows up
   again and again.
 - **Delivering:** after the final run, commit `requirements/<f>/` (and

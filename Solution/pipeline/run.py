@@ -8,7 +8,7 @@
                     per section (parallel)       -> build/<f>/feature.plan.json, sections/<id>.json
      6 decide       decisions.yaml (code)        -> build/<f>/spec.json
      7 check        checklist lint, examples executed against the knowledge model,
-                    coverage, tech-leak scan, gold eval (code); trace judge (agent)
+                    coverage, tech-leak scan (code); trace judge (agent)
      8 render       templates (code)             -> requirements/<f>/
      9 refinement   a dev-refinement agent reads the rendered feature (feature.md)
     10 review       reviewer agent               -> build/<f>/review.md (verdict)
@@ -335,9 +335,6 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
     profile_examples = (yaml.safe_load(ex_path.read_text()) or {}).get("examples", []) if ex_path.exists() else []
     examples, ef = M.run_examples(spec, profile_examples)
     findings += ef
-    gold_path = ctx.feature_dir / "gold.yaml"
-    metrics, gf = M.evaluate_gold(spec, yaml.safe_load(gold_path.read_text())) if gold_path.exists() else ({}, [])
-    findings += gf
     judge = {}
     if not skip_llm_checks:
         judge, jf = await stage_trace_judge(ctx, spec, facts)
@@ -361,7 +358,7 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
                    "acceptance_criteria": sum(len(s.acceptance_criteria) for s in stories),
                    "open_questions": len(km.open_questions), "exclusions": len(km.exclusions)},
         "findings": {sev: [f.model_dump() for f in findings if f.severity == sev] for sev in ("error", "warning", "info")},
-        "coverage": cov, "examples": examples, "eval": metrics,
+        "coverage": cov, "examples": examples,
         "open_questions": [q.model_dump() for q in km.open_questions],
         "inferred_items": [f"item.{i.id}" for i in km.items if i.status == "inferred"] +
                           [f"rule.{r.id}" for r in km.rules if r.status == "inferred"] +
@@ -418,8 +415,6 @@ def write_review_md(ctx: Context, r: dict, facts: list[Fact]) -> None:
     leaks = [f for f in r["findings"]["warning"] if f["check"] == "tech_leak"]
     L += [f"## Technical vocabulary found in the spec ({len(leaks)})", ""] + \
          [f"- `{f['target']}` {f['message']}" for f in leaks] + [""]
-    if r["eval"]:
-        L += ["## Eval against gold set", "", "```", yaml.safe_dump(r["eval"], sort_keys=False).strip(), "```", ""]
     cov = r["coverage"]
     L += ["## Coverage", "", f"{cov['units_cited']}/{cov['units_total']} source units cited; "
           f"{cov['facts_used']}/{cov['facts_total']} facts used.", "", "Uncited units (confirm they are irrelevant):", ""] + \

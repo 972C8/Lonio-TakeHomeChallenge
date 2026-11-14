@@ -64,7 +64,7 @@ If the user says "skip", move on and keep a list of skipped items.
   condition and its internal expression together, as two decisions.
 - Collect the decisions as you go. After each part (not each item), show the
   YAML you are about to add and **ask for confirmation before writing** to
-  `decisions.yaml`. Changes to `examples.yaml`, `gold.yaml` or `guidance.md`
+  `decisions.yaml`. Changes to `examples.yaml` or `guidance.md`
   also need confirmation and belong to the user: propose, never silently edit.
 - Never edit anything under `requirements/` or `build/`.
 

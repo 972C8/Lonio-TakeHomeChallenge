@@ -12,7 +12,7 @@ wrong. Make the pipeline stronger instead of correcting it forever.
    broad – asked of people who don't need it", "missing stakeholder", "used
    outside knowledge").
 2. For each pattern propose exactly one of:
-   - an entry in `examples.yaml` or `gold.yaml` that would have caught it (preferred –
+   - an entry in `examples.yaml` that would have caught it (preferred –
      checks are cheaper than prompts),
    - a line in `guidance.md` (feature-specific) or an adapter/synthesizer
      prompt (general),
