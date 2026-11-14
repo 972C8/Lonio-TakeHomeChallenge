@@ -1,45 +1,46 @@
 # Linear sync plan (DRY RUN) – Employee onboarding questionnaire
 
-Project: **Employee onboarding questionnaire**  
-Milestones: About you, Your address, Nationality and permit, Your start, Civil status, Your spouse
+Project: **Employee onboarding questionnaire** · mapping file: `problems/employee-onboarding/linear_map.yaml` (none yet: first publish)
 
 | Action | Count |
 |---|---|
-| create | 29 |
-| update | 0 |
-| cancel | 0 |
+| create | 27 |
+| update (+ change comment) | 0 |
+| cancel or flag (removed from spec) | 0 |
 | unchanged | 0 |
+
+Payload previews (exact titles and descriptions): `build/employee-onboarding/linear/`
 
 ## Create
 
-- `field.first_name` → "[first_name] First name" · milestone: About you · labels: requirement, inferred, pension_fund, employer_hr
-- `field.last_name` → "[last_name] Last name" · milestone: About you · labels: requirement, inferred, pension_fund, employer_hr
-- `field.date_of_birth` → "[date_of_birth] Date of birth" · milestone: About you · labels: requirement, confirmed, pension_fund
-- `field.address_street` → "[address_street] Street" · milestone: Your address · labels: requirement, confirmed, employer_hr
-- `field.address_house_number` → "[address_house_number] House number" · milestone: Your address · labels: requirement, confirmed, employer_hr
-- `field.address_postcode` → "[address_postcode] Postcode" · milestone: Your address · labels: requirement, confirmed, employer_hr
-- `field.address_town` → "[address_town] Town" · milestone: Your address · labels: requirement, confirmed, employer_hr
-- `field.address_country` → "[address_country] Country" · milestone: Your address · labels: requirement, inferred, employer_hr, source_tax
-- `field.residence_canton` → "[residence_canton] Canton" · milestone: Your address · labels: requirement, inferred, pension_fund
-- `field.nationality` → "[nationality] Nationality" · milestone: Nationality and permit · labels: requirement, inferred, source_tax
-- `field.permit_type` → "[permit_type] Residence permit" · milestone: Nationality and permit · labels: requirement, inferred, source_tax
-- `field.first_working_day` → "[first_working_day] First working day" · milestone: Your start · labels: requirement, inferred, pension_fund
-- `field.civil_status` → "[civil_status] Civil status" · milestone: Civil status · labels: requirement, confirmed, pension_fund, source_tax
-- `field.spouse_date_of_birth` → "[spouse_date_of_birth] Spouse's date of birth" · milestone: Your spouse · labels: requirement, inferred, pension_fund
-- `field.spouse_nationality` → "[spouse_nationality] Spouse's nationality" · milestone: Your spouse · labels: requirement, inferred, source_tax
-- `field.spouse_permit_type` → "[spouse_permit_type] Spouse's residence permit" · milestone: Your spouse · labels: requirement, inferred, source_tax
-- `field.spouse_residence_country` → "[spouse_residence_country] Spouse's country of residence" · milestone: Your spouse · labels: requirement, inferred, source_tax
-- `field.spouse_employed` → "[spouse_employed] Spouse employed" · milestone: Your spouse · labels: requirement, inferred, source_tax
-- `rule.subject_to_source_tax` → "[subject_to_source_tax] Derived rule" · labels: requirement, derived-rule, inferred
-- `rule.insurance_start_date` → "[insurance_start_date] Derived rule" · labels: requirement, derived-rule, confirmed
-- `open.OQ-01` → "[OQ-01] Decision needed: What should go in the pension fund's required 'Canton' field for employees who live abroad? And does the field mean the canton of residence or the canton of work?" · labels: needs-decision, blocking
-- `open.OQ-02` → "[OQ-02] Decision needed: How should a registered partnership (and legal separation) be recorded? Does it count as 'married' for the pension fund and for the source tax spouse exemption, and does the fund want the partner's date of birth?" · labels: needs-decision, blocking
-- `open.OQ-03` → "[OQ-03] Decision needed: What is the full list of permit types to offer (for the employee and the spouse)?" · labels: needs-decision, blocking
-- `open.OQ-04` → "[OQ-04] Decision needed: Which questions does the Zurich source tax calculator ask to determine the tariff code, including the extra questions and German-specific forms for residents abroad?" · labels: needs-decision, blocking
-- `open.OQ-05` → "[OQ-05] Decision needed: Is the source tax liability rule complete? HR said 'I think that's it'." · labels: needs-decision
-- `open.OQ-06` → "[OQ-06] Decision needed: Is the postal address always the home address, so that its country can be used as the country of residence for source tax?" · labels: needs-decision
-- `open.OQ-07` → "[OQ-07] Decision needed: What exact wording should the permit reminder use, and who should see it?" · labels: needs-decision
-- `open.OQ-08` → "[OQ-08] Decision needed: Should HR pre-fill the first working day so the employee only confirms it, or does the employee enter it? And how are later changes captured?" · labels: needs-decision
-- `open.OQ-09` → "[OQ-09] Decision needed: Does the pension portal also ask for a spouse's date of birth when civil status is Divorced or Widowed?" · labels: needs-decision
+- project document `document.README` → "Overview"
+- project document `document.information` → "Information catalogue"
+- project document `document.out-of-scope` → "Out of scope"
+- parent issue + milestone `feature.FEAT-01-first-working-day-insurance-start` → "[FEAT-01] Confirmed first working day and derived pension insurance start date" · labels: spec:feature
+- sub-issue `story.US-01.1` → "[US-01.1] Employee confirms their first working day" · parent: `feature.FEAT-01-first-working-day-insurance-start` · priority: Urgent · labels: spec:P1, spec:stakeholder/hr
+- sub-issue `story.US-01.2` → "[US-01.2] Insurance start date is derived from the confirmed first working day" · parent: `feature.FEAT-01-first-working-day-insurance-start` · priority: Urgent · labels: spec:P1, spec:stakeholder/pension_fund
+- parent issue + milestone `feature.FEAT-02-home-address` → "[FEAT-02] Complete home address and country of residence" · labels: spec:feature
+- sub-issue `story.US-02.1` → "[US-02.1] Complete postal address for HR mail" · parent: `feature.FEAT-02-home-address` · priority: Urgent · labels: spec:P1, spec:stakeholder/hr
+- sub-issue `story.US-02.2` → "[US-02.2] Country of home address as country of residence" · parent: `feature.FEAT-02-home-address` · priority: Urgent · labels: spec:P1, spec:stakeholder/source_tax, spec:inferred
+- parent issue + milestone `feature.FEAT-03-pension-fund-registration-data` → "[FEAT-03] Personal and family details for pension fund registration" · labels: spec:feature
+- sub-issue `story.US-03.1` → "[US-03.1] Name and date of birth for the pension fund" · parent: `feature.FEAT-03-pension-fund-registration-data` · priority: Urgent · labels: spec:P1, spec:stakeholder/pension_fund
+- sub-issue `story.US-03.2` → "[US-03.2] Civil status from the pension fund's list" · parent: `feature.FEAT-03-pension-fund-registration-data` · priority: Urgent · labels: spec:P1, spec:stakeholder/pension_fund
+- sub-issue `story.US-03.3` → "[US-03.3] Spouse's date of birth for married employees" · parent: `feature.FEAT-03-pension-fund-registration-data` · priority: Urgent · labels: spec:P1, spec:stakeholder/pension_fund
+- sub-issue `story.US-03.4` → "[US-03.4] Canton for employees living in Switzerland" · parent: `feature.FEAT-03-pension-fund-registration-data` · priority: Urgent · labels: spec:P1, spec:stakeholder/pension_fund, spec:inferred
+- parent issue + milestone `feature.FEAT-04-source-tax-liability` → "[FEAT-04] Decide whether the employee is subject to source tax" · labels: spec:feature
+- sub-issue `story.US-04.1` → "[US-04.1] Ask nationality only of employees living in Switzerland" · parent: `feature.FEAT-04-source-tax-liability` · priority: Urgent · labels: spec:P1, spec:stakeholder/employee, spec:inferred
+- sub-issue `story.US-04.2` → "[US-04.2] Ask the permit type only of non-Swiss employees living in Switzerland" · parent: `feature.FEAT-04-source-tax-liability` · priority: Urgent · labels: spec:P1, spec:stakeholder/employee, spec:inferred
+- sub-issue `story.US-04.3` → "[US-04.3] Ask spouse details only when they can exempt the employee" · parent: `feature.FEAT-04-source-tax-liability` · priority: Urgent · labels: spec:P1, spec:stakeholder/hr, spec:inferred
+- sub-issue `story.US-04.4` → "[US-04.4] Decide whether the employee is subject to source tax" · parent: `feature.FEAT-04-source-tax-liability` · priority: Urgent · labels: spec:P1, spec:stakeholder/hr, spec:inferred
+- issue `open.OQ-01` → "[OQ-01] Decision needed: Which questions does the Zurich source tax calculator ask to set the tariff code, with which options and under which conditions (including the different questions for married employees, such as whether the spouse works, and the extra questions and German forms for employees living abroad)?" · labels: spec:needs-decision, spec:blocking
+- issue `open.OQ-02` → "[OQ-02] Decision needed: Does the pension fund's 'Canton' mean the canton of residence or of work, and what should be entered for employees living abroad, given that only Swiss cantons are offered?" · labels: spec:needs-decision, spec:blocking
+- issue `open.OQ-03` → "[OQ-03] Decision needed: How should an employee in a registered partnership (or other status not in the list, e.g. separated) be registered with the pension fund, does the fund want the partner's details, and does a registered partnership count as married for the source tax spouse rule?" · labels: spec:needs-decision
+- issue `open.OQ-04` → "[OQ-04] Decision needed: Does the pension fund portal show extra fields (e.g. spouse data) when civil status is Divorced or Widowed?" · labels: spec:needs-decision
+- issue `open.OQ-05` → "[OQ-05] Decision needed: Is the source tax rule complete? HR answered 'I think so' / 'I think that's it'." · labels: spec:needs-decision
+- issue `open.OQ-06` → "[OQ-06] Decision needed: Which permit types may the employee and spouse choose from? Sources mention only the B permit and the C permit." · labels: spec:needs-decision
+- issue `open.OQ-07` → "[OQ-07] Decision needed: Should the questionnaire remind employees to bring their permit, and with which wording?" · labels: spec:needs-decision
+- issue `open.OQ-08` → "[OQ-08] Decision needed: The Zurich calculator is used for every employee subject to source tax, though HR knows this is not exactly correct. Should this be revisited?" · labels: spec:needs-decision
 
-Nothing was sent to Linear. Ownership: the pipeline owns issue content; engineering owns status, assignee, estimate and cycle.
+Before applying, the publisher also compares each issue's current description with the last published hash; issues edited in Linear are not overwritten but flagged in review.md.
+
+Nothing was sent to Linear. The pipeline owns issue content and its `spec:` labels; engineering owns status, assignee, estimate, cycle and all other labels.

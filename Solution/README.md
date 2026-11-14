@@ -78,7 +78,7 @@ pipeline/                    GENERIC - never changed for a new problem
   agents/                    knowledge modeler, feature planner, story writer, judges, dev refinement, reviewer
   checks/mechanical.py       checklist lint, example execution, coverage, tech-leak scan, gold eval
   render/templates/          feature spec, information catalogue, open questions, out of scope, traceability
-  publish/linear_plan.py     Linear sync plan (dry run): feature → milestone, story → issue
+  publish/linear_plan.py     Linear sync plan + payload previews (dry run): feature → parent issue, story → sub-issue
 problems/<name>/             EVERYTHING SPECIFIC to one investigation
   profile.yaml               sources (+ authority, precedence), stakeholders, item checklist, models
   guidance.md                product-owner guidance; [G-nn] items are citable
@@ -268,6 +268,30 @@ reruns. Only the affected steps run again.
    (flagged for re-confirmation), and coverage of the new content.
 4. `git diff requirements/` shows exactly which stories and criteria changed;
    the Linear dry run shows which issues would be updated.
+
+## Publishing to Linear
+
+The Markdown feature specs are the deliverable and stay the source of truth.
+Linear receives a projection that engineering works from. The full design is
+in [docs/linear-publishing.md](docs/linear-publishing.md); in short:
+
+- **Mapping:**
+  - the problem becomes a Linear project, with the overview and information catalogue as project documents
+  - each feature becomes a parent issue (plus a milestone)
+  - each user story becomes a sub-issue, with its acceptance criteria and example tables in the description and the evidence in a collapsed section
+  - each open question becomes an issue labelled `spec:needs-decision`, assigned to the product owner
+- **Plan in code, execute via MCP, verify in code:**
+  - `pipeline publish --dry-run` computes create / update / cancel deterministically and writes the exact payloads to `build/<p>/linear/`
+  - a narrow agent with the Linear MCP server (`https://mcp.linear.app/mcp`) only executes that plan
+  - code reads every issue back
+- **Idempotent re-publish:**
+  - `problems/<p>/linear_map.yaml` maps spec ids to Linear issues and to the hash of what was last published
+  - unchanged items: nothing happens
+  - changed stories are updated, with a comment explaining which source change caused it
+  - issues edited by hand in Linear are flagged instead of overwritten
+  - removed stories are cancelled if not started, otherwise flagged; nothing is ever deleted
+- **Ownership:** the pipeline owns issue content and its `spec:` labels; engineering owns status, assignee, estimate and cycle.
+- **Status:** only the dry run is implemented. A real publish (`--apply`) needs a Linear workspace and the product owner's go.
 
 New source type → new adapter folder (`/new-adapter`) + one entry in
 `profile.yaml`. New process → new `problems/<name>/` folder (`/new-problem`),
