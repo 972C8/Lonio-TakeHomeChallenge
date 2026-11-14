@@ -389,7 +389,6 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dic
 
     planned = FeaturePlan.model_validate(await ctx.stage("feature.plan", [kmj, plan_fingerprint_system], plan))
     ctx.write("feature.input", {"plan": plan_fp, "write": write_fp, "directives": dir_digest})
-    full_km = km.model_dump(exclude={"items": {"__all__": {"depends_on"}}, "rules": {"__all__": {"depends_on"}}})
     head = {"title": ctx.profile["title"], "goal": planned.goal, "context": planned.context,
             "stakeholders": planned.stakeholders}
 
@@ -413,8 +412,7 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dic
         write_system = load_prompt(AGENTS / "story_writer.md", **pc, existing_ids=_existing(prev_stories))
         prompt = ("Feature (JSON; you write the stories of ONE section of it):\n" + json.dumps(head, ensure_ascii=False, indent=1) +
                   "\n\nSection to write (JSON):\n" + sec.model_dump_json(indent=1) +
-                  "\n\nFull knowledge model (JSON; *_expr/expression are the internal formalisation your examples are "
-                  "checked against):\n" + json.dumps(full_km, ensure_ascii=False, indent=1) +
+                  "\n\n" + knowledge_slice(km, rel) +
                   "\n\nCited facts (JSON):\n" + json.dumps(cited, ensure_ascii=False, indent=1) +
                   "\n\nReturn this Section with its stories written.")
 
@@ -451,6 +449,22 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dic
     sections = list(await asyncio.gather(*[write(sec) for sec in sorted(planned.sections, key=lambda x: x.order)]))
     return Feature(id=ctx.feature_id, title=ctx.profile["title"], goal=planned.goal, context=planned.context,
                    stakeholders=planned.stakeholders, sections=sections)
+
+
+def knowledge_slice(km: KnowledgeModel, rel: set[str]) -> str:
+    """The part of the knowledge model a section writer needs: every element the section owns or uses (in full,
+    with the formalisation its examples are checked against) and the exclusions; the rest as a one-line index."""
+    used = {"items": [i.model_dump(exclude={"depends_on"}) for i in km.items if i.id in rel],
+            "rules": [r.model_dump(exclude={"depends_on"}) for r in km.rules if r.id in rel],
+            "open_questions": [q.model_dump() for q in km.open_questions if q.id in rel],
+            "exclusions": [x.model_dump() for x in km.exclusions]}
+    others = [f"- item `{i.id}`: {i.name} (asked: {i.asked_when})" for i in km.items if i.id not in rel]
+    others += [f"- rule `{r.id}`: {r.name}" for r in km.rules if r.id not in rel]
+    others += [f"- open question `{q.id}`: {q.question}" for q in km.open_questions if q.id not in rel]
+    return ("Knowledge model, the elements this section owns or uses (JSON; *_expr/expression are the internal "
+            "formalisation your examples are checked against):\n" + json.dumps(used, ensure_ascii=False, indent=1)
+            + "\n\nThe other elements of the knowledge model (owned by other sections; reference them by id only "
+              "where a story of this section needs them):\n" + ("\n".join(others) or "(none)"))
 
 
 async def stage_flow(ctx, km: KnowledgeModel, feature: Feature) -> tuple[Flow | None, list[Finding]]:
