@@ -29,7 +29,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 }
               ],
               "then": [
@@ -76,7 +76,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 }
               ],
               "then": [
@@ -236,7 +236,7 @@
               "illustrative": true
             },
             {
-              "name": "Employee living in Switzerland changed Swiss citizenship from no to yes - C permit and source tax answers are discarded",
+              "name": "Employee living in Switzerland changed Swiss citizenship from Not Swiss to Swiss - C permit and source tax answers are discarded",
               "given": [
                 {
                   "item": "address_country",
@@ -244,7 +244,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 },
                 {
                   "item": "civil_status",
@@ -348,16 +348,185 @@
         "F-hr_transcript-1d5c07"
       ],
       "status": "decision"
+    },
+    {
+      "id": "US-08.4",
+      "title": "Employee can get an emailed copy of their submitted answers",
+      "as_a": "employee",
+      "i_want": "to choose, when I submit the questionnaire, to receive an email with a copy of my submitted answers at an email address I type in",
+      "so_that": "I can look up what I entered myself instead of calling HR to ask",
+      "priority": "P2",
+      "priority_reason": "HR reports that new employees keep calling to ask what they entered - a recurring burden for HR - but the copy is optional and blocks no registration.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-08.4.1",
+          "title": "The copy is offered at submission and is optional",
+          "given": "an employee has reached the end of the questionnaire",
+          "when": "the employee submits the questionnaire",
+          "then": "the employee is asked whether they want an email with a copy of their submitted answers (yes or no); every employee is asked, and the question may be left empty, in which case no copy is sent",
+          "examples": [
+            {
+              "name": "Any employee at submission",
+              "given": [],
+              "then": [
+                {
+                  "target": "copy_email_requested",
+                  "expect": "asked"
+                },
+                {
+                  "target": "copy_email_requested",
+                  "expect": "optional"
+                }
+              ],
+              "source_refs": [
+                "F-hr_email_copy-37cede",
+                "F-hr_email_copy-f75a41"
+              ],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_email_copy-37cede",
+            "F-hr_email_copy-f75a41",
+            "F-hr_email_copy-6d2b5a"
+          ]
+        },
+        {
+          "id": "AC-08.4.2",
+          "title": "Email address asked only when a copy is wanted",
+          "given": "an employee is submitting the questionnaire",
+          "when": "the employee answers whether they want a copy",
+          "then": "only if they answer yes are they asked for the email address the copy should go to, and then it must be given; if they answer no or leave the question empty, no email address is asked and no copy is sent",
+          "examples": [
+            {
+              "name": "Employee wants a copy",
+              "given": [
+                {
+                  "item": "copy_email_requested",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "copy_email_address",
+                  "expect": "asked"
+                },
+                {
+                  "target": "copy_email_address",
+                  "expect": "required"
+                },
+                {
+                  "target": "employee_copy_content",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [
+                "F-hr_email_copy-029105",
+                "F-hr_email_copy-b67d2f"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Employee does not want a copy",
+              "given": [
+                {
+                  "item": "copy_email_requested",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "copy_email_address",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "employee_copy_content",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [
+                "F-hr_email_copy-f75a41",
+                "F-hr_email_copy-b67d2f"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Employee leaves the copy question empty",
+              "given": [],
+              "then": [
+                {
+                  "target": "copy_email_address",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "employee_copy_content",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [
+                "F-hr_email_copy-f75a41"
+              ],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_email_copy-029105",
+            "F-hr_email_copy-b67d2f",
+            "F-hr_email_copy-f75a41"
+          ]
+        },
+        {
+          "id": "AC-08.4.3",
+          "title": "The copy shows the submitted answers exactly, nothing more",
+          "given": "an employee has asked for a copy and typed in an email address",
+          "when": "the questionnaire is submitted",
+          "then": "a copy is sent to the email address the employee typed in; it shows the answers exactly as they were submitted and nothing more - no derived values such as the insurance start date, the civil status for the fund or for source tax, whether the employee is subject to source tax or the tariff code; answers discarded on submission because their questions no longer apply are not part of the submitted answers and so do not appear",
+          "examples": [],
+          "source_refs": [
+            "F-hr_email_copy-37cede",
+            "F-hr_email_copy-9e81ef",
+            "F-hr_email_copy-daa6b1",
+            "F-hr_email_copy-029105",
+            "D-036"
+          ]
+        }
+      ],
+      "items": [
+        "copy_email_requested",
+        "copy_email_address"
+      ],
+      "rules": [
+        "employee_copy_content"
+      ],
+      "source_refs": [
+        "F-hr_email_copy-37cede",
+        "F-hr_email_copy-f75a41",
+        "F-hr_email_copy-6d2b5a",
+        "F-hr_email_copy-029105",
+        "F-hr_email_copy-b67d2f",
+        "F-hr_email_copy-9e81ef",
+        "F-hr_email_copy-daa6b1",
+        "F-hr_email_copy-607694",
+        "D-036"
+      ],
+      "status": "inferred"
     }
   ],
-  "items": [],
+  "items": [
+    "copy_email_address",
+    "copy_email_requested"
+  ],
   "rules": [
     "permit_reminder",
-    "discard_inapplicable_answers"
+    "discard_inapplicable_answers",
+    "employee_copy_content"
   ],
   "open_questions": [],
   "source_refs": [
     "F-hr_transcript-c53552",
+    "F-hr_email_copy-37cede",
+    "F-hr_email_copy-f75a41",
+    "F-hr_email_copy-9e81ef",
     "G-01",
     "D-010",
     "D-036",

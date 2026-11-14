@@ -20,11 +20,9 @@ is its own file in [stories/](stories/); the stories are grouped into sections:
 | 3 | [Civil status and spouse for the pension fund](feature.md#SEC-03-civil-status-spouse) | Ask the civil status once. Map it to the fund's list and to married/single for source tax. Ask the spouse's or partner's date of birth only where the fund requires it. | 4 | 2 |
 | 4 | [Source tax liability check](feature.md#SEC-04-source-tax-liability) | Decide from residence, Swiss citizenship, C permit and the spouse exemption whether the employee is subject to source tax. Ask these facts only as far as they are needed, so that only employees subject to source tax get the source tax questions. | 3 | 0 |
 | 5 | [Source tax tariff basics and computed result](feature.md#SEC-05-tariff-basics) | Ask the denomination and whether the spouse works. Combine these with the child digit and the cross-border outcome into the full Zurich tariff code (or the Liechtenstein result), which Lonio records for HR instead of HR using the calculator. | 4 | 1 |
-| 6 | [Children for the source tax tariff](feature.md#SEC-06-children) | Ask employees subject to source tax about each child, following the calculator's per-child logic, to decide which children count for the tariff digit and whether a single employee gets the H tariff. | 6 | 0 |
+| 6 | [Children for the source tax tariff](feature.md#SEC-06-children) | Ask employees subject to source tax about each child, following the calculator's per-child logic, to decide which children count for the tariff digit and whether a single employee gets the H tariff. | 6 | 1 |
 | 7 | [Employees living abroad (Germany, Liechtenstein)](feature.md#SEC-07-living-abroad) | Derive the calculator's residence answers from the home address country. Ask employees living in Germany or Liechtenstein the cross-border questions about their expected year, which decide the cross-border tariff or the Liechtenstein result. | 3 | 0 |
-| 8 | [Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission) | Close the questionnaire. Remind non-Swiss employees and employees living abroad to bring their permit, and on submission record only the answers to questions that still apply. | 3 | 0 |
-
-The order in which the employee is asked is in [Questionnaire flow](feature.md#questionnaire-flow).
+| 8 | [Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission) | Close the questionnaire. Remind non-Swiss employees and employees living abroad to bring their permit, and on submission record only the answers to questions that still apply. | 4 | 0 |
 
 ## How to read the feature spec
 - **User stories** (`US-x.y`): who wants what and why, with priority.

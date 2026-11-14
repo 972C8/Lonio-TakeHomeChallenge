@@ -3,7 +3,7 @@
     {
       "id": "first_name",
       "name": "First name",
-      "description": "The employee's first name, as needed to register the employee with the pension fund.",
+      "description": "The new employee's first name, as needed to register them with the pension fund. Questionnaire step 1 (personal details).",
       "form": "",
       "allowed_values": [],
       "asked_when": "Always",
@@ -19,16 +19,17 @@
       "source_refs": [
         "F-pension_portal-b5c835",
         "F-pension_portal-44a27b",
-        "F-pension_portal-3cfe89"
+        "F-pension_portal-3cfe89",
+        "G-01"
       ],
       "status": "confirmed",
-      "notes": "Flow step 1 (personal details).",
+      "notes": "Step 1 - Personal details.",
       "depends_on": []
     },
     {
       "id": "last_name",
       "name": "Last name",
-      "description": "The employee's last name, as needed to register the employee with the pension fund.",
+      "description": "The new employee's last name, as needed to register them with the pension fund.",
       "form": "",
       "allowed_values": [],
       "asked_when": "Always",
@@ -47,13 +48,13 @@
         "F-pension_portal-3cfe89"
       ],
       "status": "confirmed",
-      "notes": "Flow step 1 (personal details).",
+      "notes": "Step 1 - Personal details.",
       "depends_on": []
     },
     {
       "id": "date_of_birth",
       "name": "Date of birth",
-      "description": "The employee's date of birth.",
+      "description": "The new employee's date of birth.",
       "form": "Date in the format DD.MM.YYYY",
       "allowed_values": [],
       "asked_when": "Always",
@@ -72,14 +73,14 @@
         "F-pension_portal-44a27b"
       ],
       "status": "confirmed",
-      "notes": "Flow step 1 (personal details).",
+      "notes": "Step 1 - Personal details.",
       "depends_on": []
     },
     {
       "id": "address_street",
       "name": "Street",
-      "description": "Street of the employee's home address.",
-      "form": "Part of a complete postal address as written on an envelope: street, house number, postcode, town and country",
+      "description": "Street of the employee's home address (part of the full postal address, as written on an envelope).",
+      "form": "Part of a complete postal address: street, number, postcode, town and country",
       "allowed_values": [],
       "asked_when": "Always",
       "required_when": "Always",
@@ -88,7 +89,7 @@
       "needed_by": [
         {
           "stakeholder": "hr",
-          "purpose": "Posting documents to the employee; the address must be complete"
+          "purpose": "HR posts many documents to employees, so the address must be complete"
         }
       ],
       "source_refs": [
@@ -97,14 +98,14 @@
         "F-hr_transcript-66fe15"
       ],
       "status": "confirmed",
-      "notes": "Flow step 2 (home address).",
+      "notes": "Step 2 - Home address.",
       "depends_on": []
     },
     {
       "id": "address_house_number",
       "name": "House number",
       "description": "House number of the employee's home address.",
-      "form": "Part of a complete postal address: street, house number, postcode, town and country",
+      "form": "Part of a complete postal address: street, number, postcode, town and country",
       "allowed_values": [],
       "asked_when": "Always",
       "required_when": "Always",
@@ -113,7 +114,7 @@
       "needed_by": [
         {
           "stakeholder": "hr",
-          "purpose": "Posting documents to the employee; the address must be complete"
+          "purpose": "Complete postal address for posting documents"
         }
       ],
       "source_refs": [
@@ -121,14 +122,14 @@
         "F-hr_transcript-66fe15"
       ],
       "status": "confirmed",
-      "notes": "Flow step 2.",
+      "notes": "Step 2 - Home address.",
       "depends_on": []
     },
     {
       "id": "address_postcode",
       "name": "Postcode",
       "description": "Postcode of the employee's home address.",
-      "form": "Part of a complete postal address: street, house number, postcode, town and country",
+      "form": "Part of a complete postal address: street, number, postcode, town and country",
       "allowed_values": [],
       "asked_when": "Always",
       "required_when": "Always",
@@ -137,7 +138,7 @@
       "needed_by": [
         {
           "stakeholder": "hr",
-          "purpose": "Posting documents to the employee; the address must be complete"
+          "purpose": "Complete postal address for posting documents"
         }
       ],
       "source_refs": [
@@ -145,14 +146,14 @@
         "F-hr_transcript-66fe15"
       ],
       "status": "confirmed",
-      "notes": "Flow step 2.",
+      "notes": "Step 2 - Home address.",
       "depends_on": []
     },
     {
       "id": "address_town",
       "name": "Town",
       "description": "Town of the employee's home address.",
-      "form": "Part of a complete postal address: street, house number, postcode, town and country",
+      "form": "Part of a complete postal address: street, number, postcode, town and country",
       "allowed_values": [],
       "asked_when": "Always",
       "required_when": "Always",
@@ -161,7 +162,7 @@
       "needed_by": [
         {
           "stakeholder": "hr",
-          "purpose": "Posting documents to the employee; the address must be complete"
+          "purpose": "Complete postal address for posting documents"
         }
       ],
       "source_refs": [
@@ -169,14 +170,14 @@
         "F-hr_transcript-66fe15"
       ],
       "status": "confirmed",
-      "notes": "Flow step 2.",
+      "notes": "Step 2 - Home address.",
       "depends_on": []
     },
     {
       "id": "address_country",
-      "name": "Country of home address (country of residence)",
-      "description": "Country of the employee's home address. It is also the employee's country of residence: it decides whether the employee lives abroad (always subject to source tax), whether the canton and the citizenship questions are asked, and which cross-border questions apply (Germany, Liechtenstein, other country).",
-      "form": "Country by English name (e.g. Switzerland, Germany, Liechtenstein); part of a complete postal address",
+      "name": "Country of the home address (country of residence)",
+      "description": "Country of the employee's home address. It is also the employee's country of residence: it decides whether the employee lives abroad (always subject to source tax), whether the canton is asked, and which cross-border questions apply (Germany, Liechtenstein or another country).",
+      "form": "Country by its English name (e.g. \"Switzerland\", \"Germany\", \"Liechtenstein\"); part of the complete postal address",
       "allowed_values": [],
       "asked_when": "Always",
       "required_when": "Always",
@@ -185,11 +186,15 @@
       "needed_by": [
         {
           "stakeholder": "hr",
-          "purpose": "Posting documents to the employee; the address must be complete"
+          "purpose": "Complete postal address for posting documents"
         },
         {
           "stakeholder": "source_tax",
-          "purpose": "Living abroad makes the employee subject to source tax; state of residence (Germany, Liechtenstein, other country) drives the cross-border part of the tariff"
+          "purpose": "Living abroad makes the employee subject to source tax; the country of residence (Germany, Liechtenstein, other) drives the cross-border part of the tariff"
+        },
+        {
+          "stakeholder": "pension_fund",
+          "purpose": "Decides whether the canton is asked (only for residents of Switzerland)"
         }
       ],
       "source_refs": [
@@ -198,19 +203,18 @@
         "F-hr_transcript-b6d9b3",
         "F-zh_source_tax_calculator-f29009",
         "F-zh_source_tax_calculator-d62dd4",
-        "G-08",
+        "G-09",
         "G-10",
-        "D-001",
-        "D-007"
+        "D-002"
       ],
-      "status": "decision",
-      "notes": "Flow step 2. Replaces the calculator's 'Main residence in Switzerland?' and 'State of residence' questions, which are derived from it (G-08).",
+      "status": "confirmed",
+      "notes": "Step 2 - Home address.",
       "depends_on": []
     },
     {
       "id": "residence_canton",
       "name": "Canton",
-      "description": "The Swiss canton the employee lives in, for the pension fund's 'Canton' field. Provisionally interpreted as canton of residence and asked only from employees living in Switzerland.",
+      "description": "The Swiss canton for the pension fund's required 'Canton' field, provisionally understood as the canton of residence. Asked only from employees living in Switzerland (provisional, see OQ-canton-abroad).",
       "form": "",
       "allowed_values": [
         "Aargau",
@@ -253,18 +257,18 @@
       "source_refs": [
         "F-pension_portal-587d3f",
         "F-pension_portal-3432a9",
-        "F-pension_portal-44a27b",
         "F-pension_portal-b359c3",
+        "F-pension_portal-44a27b",
         "D-002"
       ],
       "status": "decision",
-      "notes": "Flow step 2, after the country. What to enter for employees living abroad is open (OQ-canton-abroad).",
+      "notes": "Step 2 - Home address. Provisional per D-002; what to enter for employees living abroad, and whether 'Canton' means residence or work, stays open (OQ-canton-abroad).",
       "depends_on": []
     },
     {
       "id": "first_working_day",
       "name": "First working day",
-      "description": "The employee's first working day at Muster AG, entered and confirmed by the employee. The insurance start date is derived from it. After submission only HR can change it; the latest date always counts and no history is kept.",
+      "description": "The employee's first working day at Muster AG, entered and confirmed by the employee (it often moves, e.g. after negotiating an earlier exit with the old employer). The pension fund insurance start date is derived from it. After submission only HR can change it; the latest date always counts and no history is kept.",
       "form": "Date (DD.MM.YYYY)",
       "allowed_values": [],
       "asked_when": "Always",
@@ -274,11 +278,11 @@
       "needed_by": [
         {
           "stakeholder": "pension_fund",
-          "purpose": "Basis for the insurance start date"
+          "purpose": "Derive the insurance start date (the most important item for the registration)"
         },
         {
           "stakeholder": "hr",
-          "purpose": "Start of employment; HR changes it if it moves after submission"
+          "purpose": "Knows when the employee starts; keeps the date current after submission (later HR-side spec)"
         }
       ],
       "source_refs": [
@@ -290,18 +294,18 @@
         "D-033",
         "D-037"
       ],
-      "status": "decision",
-      "notes": "Flow step 3 (employment). HR-side change is for the later HR spec (D-034).",
+      "status": "confirmed",
+      "notes": "Step 3 - Employment start.",
       "depends_on": []
     },
     {
       "id": "nationality",
       "name": "Swiss citizenship",
-      "description": "Whether the employee holds Swiss citizenship. Anyone with Swiss citizenship counts as Swiss, even with another nationality. Only 'Swiss or not' drives a rule, so the actual nationality is not collected. Not asked of employees living abroad, who are subject to source tax regardless of nationality.",
+      "description": "Whether the employee is Swiss. Anyone holding Swiss citizenship counts as Swiss, even with another nationality. Only 'Swiss or not' drives a rule, so no other nationality is collected. Asked only from employees living in Switzerland (employees abroad are subject to source tax whatever their nationality).",
       "form": "",
       "allowed_values": [
-        "yes",
-        "no"
+        "Swiss",
+        "Not Swiss"
       ],
       "asked_when": "Only if the employee lives in Switzerland",
       "required_when": "Whenever asked",
@@ -310,11 +314,11 @@
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Swiss citizens living in Switzerland are not subject to source tax"
+          "purpose": "Non-Swiss residents may be subject to source tax"
         },
         {
           "stakeholder": "hr",
-          "purpose": "Decides whether the permit reminder is shown"
+          "purpose": "Non-Swiss employees are reminded to bring their permit on the first working day"
         }
       ],
       "source_refs": [
@@ -327,26 +331,26 @@
         "D-010"
       ],
       "status": "decision",
-      "notes": "Flow step 4 (residence status).",
+      "notes": "Step 4 - Nationality and permit.",
       "depends_on": []
     },
     {
       "id": "permit_type",
-      "name": "C permit held",
-      "description": "Whether a non-Swiss employee living in Switzerland holds a C permit (permanent residence). No other permit type is needed by any party.",
+      "name": "Holds a C permit",
+      "description": "For a non-Swiss employee living in Switzerland: whether they hold a C permit (permanent residence). C permit holders are treated like Swiss people for source tax. No other permit type is asked.",
       "form": "",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "Only if the employee lives in Switzerland and is not a Swiss citizen",
+      "asked_when": "Only if the employee lives in Switzerland and is not Swiss",
       "required_when": "Whenever asked",
-      "asked_when_expr": "address_country == \"Switzerland\" and nationality == \"no\"",
-      "required_when_expr": "address_country == \"Switzerland\" and nationality == \"no\"",
+      "asked_when_expr": "address_country == \"Switzerland\" and nationality == \"Not Swiss\"",
+      "required_when_expr": "address_country == \"Switzerland\" and nationality == \"Not Swiss\"",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Non-Swiss employees with a C permit are treated like Swiss and are not subject to source tax"
+          "purpose": "A C permit exempts a resident non-Swiss employee from source tax"
         }
       ],
       "source_refs": [
@@ -357,13 +361,13 @@
         "D-005"
       ],
       "status": "decision",
-      "notes": "Flow step 4.",
+      "notes": "Step 4 - Nationality and permit.",
       "depends_on": []
     },
     {
       "id": "civil_status",
       "name": "Civil status",
-      "description": "The employee's civil status. Mapped to the pension fund's list and to the calculator's two civil-status groups.",
+      "description": "The employee's civil status. Used for the pension fund (mapped to the fund's list) and for source tax (married/registered partnership vs. single/divorced/separated/widowed).",
       "form": "",
       "allowed_values": [
         "Single",
@@ -380,31 +384,30 @@
       "needed_by": [
         {
           "stakeholder": "pension_fund",
-          "purpose": "Required field 'Civil status'; decides whether the spouse's date of birth is required"
+          "purpose": "Required field 'Civil status' (Single, Married, Divorced, Widowed)"
         },
         {
           "stakeholder": "source_tax",
-          "purpose": "Decides married or single tariff, the spouse exemption and the follow-up questions (only for employees subject to source tax)"
+          "purpose": "Civil status decides the tariff letter and the spouse exemption"
         }
       ],
       "source_refs": [
         "F-hr_transcript-ce8ca4",
         "F-pension_portal-ec4512",
         "F-pension_portal-3d1ae4",
+        "F-hr_transcript-3907fe",
         "F-zh_source_tax_calculator-9007c3",
         "F-zh_source_tax_calculator-051bb9",
-        "F-hr_transcript-3907fe",
-        "G-10",
         "D-003"
       ],
       "status": "decision",
-      "notes": "Flow step 5 (family).",
+      "notes": "Step 5 - Civil status and spouse. Registered partnership and separated are not on the fund's list; provisional mapping per D-003 (OQ-civil-status-partnership).",
       "depends_on": []
     },
     {
       "id": "spouse_date_of_birth",
-      "name": "Spouse's or registered partner's date of birth",
-      "description": "Date of birth of the employee's husband, wife or registered partner (for separated employees: of the spouse they are separated from).",
+      "name": "Spouse's / registered partner's date of birth",
+      "description": "Date of birth of the husband, wife or registered partner. Required by the pension fund whenever the employee is registered as Married there (married, registered partnership, separated).",
       "form": "Date in the format DD.MM.YYYY",
       "allowed_values": [],
       "asked_when": "Only if the employee is married, in a registered partnership or separated",
@@ -414,7 +417,7 @@
       "needed_by": [
         {
           "stakeholder": "pension_fund",
-          "purpose": "Required 'Spouse's date of birth' when civil status is entered as Married"
+          "purpose": "Required 'Spouse's date of birth' when civil status is Married; registration is rejected without it"
         }
       ],
       "source_refs": [
@@ -427,26 +430,26 @@
         "D-004"
       ],
       "status": "decision",
-      "notes": "Flow step 5. Divorced/widowed: OQ-spouse-dob-other-status.",
+      "notes": "Step 5. Not asked from divorced or widowed employees; to be verified (OQ-spouse-dob-other-status).",
       "depends_on": []
     },
     {
       "id": "spouse_nationality",
       "name": "Spouse's Swiss citizenship",
-      "description": "Whether the employee's spouse or registered partner holds Swiss citizenship (dual citizens count as Swiss).",
+      "description": "Whether the husband, wife or registered partner is Swiss (Swiss citizenship counts, even with another nationality). Needed only where it can lift source tax liability.",
       "form": "",
       "allowed_values": [
-        "yes",
-        "no"
+        "Swiss",
+        "Not Swiss"
       ],
-      "asked_when": "Only if the employee lives in Switzerland, is not Swiss, holds no C permit and is married or in a registered partnership",
+      "asked_when": "Only if the employee lives in Switzerland, is not Swiss, has no C permit and is married or in a registered partnership",
       "required_when": "Whenever asked",
-      "asked_when_expr": "address_country == \"Switzerland\" and nationality == \"no\" and permit_type == \"no\" and civil_status in [\"Married\", \"Registered partnership\"]",
-      "required_when_expr": "address_country == \"Switzerland\" and nationality == \"no\" and permit_type == \"no\" and civil_status in [\"Married\", \"Registered partnership\"]",
+      "asked_when_expr": "address_country == \"Switzerland\" and nationality == \"Not Swiss\" and permit_type == \"no\" and civil_status in [\"Married\", \"Registered partnership\"]",
+      "required_when_expr": "address_country == \"Switzerland\" and nationality == \"Not Swiss\" and permit_type == \"no\" and civil_status in [\"Married\", \"Registered partnership\"]",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "A Swiss spouse living in Switzerland exempts the employee from source tax"
+          "purpose": "Married to a Swiss spouse living in Switzerland means no source tax"
         }
       ],
       "source_refs": [
@@ -459,26 +462,26 @@
         "D-008"
       ],
       "status": "decision",
-      "notes": "Flow step 5. Separated employees count as single for source tax, so no spouse exemption applies.",
+      "notes": "Step 5 - Civil status and spouse.",
       "depends_on": []
     },
     {
       "id": "spouse_permit_type",
       "name": "Spouse holds a C permit",
-      "description": "Whether the non-Swiss spouse or registered partner holds a C permit (permanent residence).",
+      "description": "For a non-Swiss husband, wife or registered partner: whether they hold a C permit (permanent residence). No other permit type is asked.",
       "form": "",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "Only if the spouse question was asked and the spouse is not a Swiss citizen",
+      "asked_when": "Only if the spouse question applies and the spouse is not Swiss",
       "required_when": "Whenever asked",
-      "asked_when_expr": "spouse_nationality == \"no\"",
-      "required_when_expr": "spouse_nationality == \"no\"",
+      "asked_when_expr": "address_country == \"Switzerland\" and nationality == \"Not Swiss\" and permit_type == \"no\" and civil_status in [\"Married\", \"Registered partnership\"] and spouse_nationality == \"Not Swiss\"",
+      "required_when_expr": "address_country == \"Switzerland\" and nationality == \"Not Swiss\" and permit_type == \"no\" and civil_status in [\"Married\", \"Registered partnership\"] and spouse_nationality == \"Not Swiss\"",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "A spouse with a C permit living in Switzerland exempts the employee from source tax"
+          "purpose": "Married to a C permit holder living in Switzerland means no source tax"
         }
       ],
       "source_refs": [
@@ -488,26 +491,26 @@
         "D-005"
       ],
       "status": "decision",
-      "notes": "Flow step 5.",
+      "notes": "Step 5 - Civil status and spouse.",
       "depends_on": []
     },
     {
       "id": "spouse_residence_country",
       "name": "Spouse lives in Switzerland",
-      "description": "Whether the spouse or registered partner lives in Switzerland. Only needed when the spouse is Swiss or holds a C permit.",
+      "description": "Whether the Swiss or C-permit-holding husband, wife or registered partner lives in Switzerland. Only then is the employee exempt from source tax.",
       "form": "",
       "allowed_values": [
-        "Switzerland",
-        "Another country"
+        "yes",
+        "no"
       ],
-      "asked_when": "Only if the spouse is a Swiss citizen or holds a C permit",
+      "asked_when": "Only if the spouse is Swiss or holds a C permit (within the spouse questions above)",
       "required_when": "Whenever asked",
-      "asked_when_expr": "spouse_nationality == \"yes\" or spouse_permit_type == \"yes\"",
-      "required_when_expr": "spouse_nationality == \"yes\" or spouse_permit_type == \"yes\"",
+      "asked_when_expr": "address_country == \"Switzerland\" and nationality == \"Not Swiss\" and permit_type == \"no\" and civil_status in [\"Married\", \"Registered partnership\"] and (spouse_nationality == \"Swiss\" or spouse_permit_type == \"yes\")",
+      "required_when_expr": "address_country == \"Switzerland\" and nationality == \"Not Swiss\" and permit_type == \"no\" and civil_status in [\"Married\", \"Registered partnership\"] and (spouse_nationality == \"Swiss\" or spouse_permit_type == \"yes\")",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "The spouse exemption applies only if the Swiss / C-permit spouse lives in Switzerland"
+          "purpose": "The spouse exemption applies only if that spouse lives in Switzerland"
         }
       ],
       "source_refs": [
@@ -517,13 +520,13 @@
         "G-01"
       ],
       "status": "inferred",
-      "notes": "Flow step 5. Two values instead of a full country, because only 'in Switzerland or not' drives the rule (data minimisation).",
+      "notes": "Step 5. Asked only when the answer can change the outcome (data minimisation).",
       "depends_on": []
     },
     {
       "id": "confession",
       "name": "Denomination",
-      "description": "Whether the employee belongs to the Roman Catholic, Christian Catholic or Evangelical Reformed church, or to none or another denomination. Sets the church-tax suffix of the tariff code.",
+      "description": "The employee's denomination, which sets the church-tax suffix of the source tax tariff code.",
       "form": "",
       "allowed_values": [
         "Roman Catholic, Christian Catholic or Evangelical Reformed",
@@ -536,7 +539,7 @@
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Church-tax suffix Y / N of the tariff code"
+          "purpose": "Church-tax suffix Y or N of the tariff code"
         }
       ],
       "source_refs": [
@@ -544,17 +547,17 @@
         "F-zh_source_tax_calculator-b7fea8",
         "F-zh_source_tax_calculator-2eab9a",
         "F-hr_transcript-b84498",
-        "G-09",
-        "D-001"
+        "D-001",
+        "D-006"
       ],
-      "status": "decision",
-      "notes": "Flow step 6 (source tax details).",
+      "status": "confirmed",
+      "notes": "Step 6 - Source tax details (only for employees subject to source tax).",
       "depends_on": []
     },
     {
       "id": "spouse_employed",
-      "name": "Spouse employed or receiving replacement income",
-      "description": "Whether the spouse or registered partner is gainfully employed or receives replacement income.",
+      "name": "Spouse / partner works or receives replacement income",
+      "description": "Whether the husband, wife or registered partner is gainfully employed or receives replacement income.",
       "form": "",
       "allowed_values": [
         "yes",
@@ -567,7 +570,7 @@
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Tariff letter C (yes) or B (no)"
+          "purpose": "Decides tariff letter C (yes) or B (no)"
         }
       ],
       "source_refs": [
@@ -576,17 +579,17 @@
         "F-zh_source_tax_calculator-0137bf",
         "F-zh_source_tax_calculator-97139a",
         "F-hr_transcript-09b3fe",
-        "D-001",
-        "D-003"
+        "D-003",
+        "D-001"
       ],
-      "status": "decision",
-      "notes": "Flow step 6.",
+      "status": "confirmed",
+      "notes": "Step 6 - Source tax details.",
       "depends_on": []
     },
     {
       "id": "has_children",
-      "name": "Children",
-      "description": "Whether the employee has biological or adopted children. For married employees and registered partners this includes the children of the spouse / partner.",
+      "name": "Has children",
+      "description": "Whether there are biological or adopted children - for married employees and registered partners: children of the employee or of the spouses/partners; otherwise: children of the employee.",
       "form": "",
       "allowed_values": [
         "yes",
@@ -599,7 +602,7 @@
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Opens the child questions that determine the child digit and the H tariff"
+          "purpose": "Children can change the tariff digit and letter (H)"
         }
       ],
       "source_refs": [
@@ -611,28 +614,28 @@
         "F-zh_source_tax_calculator-75cd87",
         "D-001"
       ],
-      "status": "decision",
-      "notes": "Flow step 6. The wording differs for married/partnered vs single employees.",
+      "status": "confirmed",
+      "notes": "Step 6 - Source tax details. Wording depends on civil status, as in the calculator.",
       "depends_on": []
     },
     {
       "id": "child_age_status",
       "name": "Child: minor or of age in first education",
-      "description": "For each child: whether the child is a minor, of age and in first education, or neither. 'Neither' ends the questions for this child (child does not count).",
-      "form": "",
+      "description": "For each child: whether the child is a minor, of age and in first education, or neither. 'Neither' ends the questions for that child; the child does not count.",
+      "form": "Asked once per child; the employee can add further children",
       "allowed_values": [
         "Minor",
         "Of age and in first education",
         "Neither"
       ],
-      "asked_when": "For each child, if the employee has children",
+      "asked_when": "For each child, if the employee is subject to source tax and has children",
       "required_when": "Whenever asked",
       "asked_when_expr": "has_children == \"yes\"",
       "required_when_expr": "has_children == \"yes\"",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Decides whether and how the child counts for the tariff"
+          "purpose": "Whether and how the child counts for the tariff"
         }
       ],
       "source_refs": [
@@ -640,47 +643,45 @@
         "F-zh_source_tax_calculator-09b06d",
         "F-zh_source_tax_calculator-42d590",
         "F-zh_source_tax_calculator-987091",
-        "F-zh_source_tax_calculator-fd9a15",
-        "D-001"
+        "F-zh_source_tax_calculator-fd9a15"
       ],
-      "status": "decision",
-      "notes": "Flow step 6, child block repeated per child (employee can add further children). Expressions describe one child.",
+      "status": "confirmed",
+      "notes": "Step 6a - Children (repeats per child).",
       "depends_on": []
     },
     {
       "id": "child_same_household",
       "name": "Child lives in the same household",
-      "description": "For each child that is a minor or of age in first education: whether the child lives in the employee's household.",
-      "form": "",
+      "description": "For each minor child or child of age in first education: whether the child lives in the employee's household.",
+      "form": "Asked once per child",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "For each child that is a minor or of age and in first education",
+      "asked_when": "For each child who is a minor or of age and in first education",
       "required_when": "Whenever asked",
       "asked_when_expr": "child_age_status in [\"Minor\", \"Of age and in first education\"]",
       "required_when_expr": "child_age_status in [\"Minor\", \"Of age and in first education\"]",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Child counting and H tariff"
+          "purpose": "Child counting for the tariff"
         }
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-5725a8",
         "F-zh_source_tax_calculator-3a75cc",
-        "F-zh_source_tax_calculator-7c667f",
-        "D-001"
+        "F-zh_source_tax_calculator-7c667f"
       ],
-      "status": "decision",
-      "notes": "Per child.",
+      "status": "confirmed",
+      "notes": "Step 6a - Children.",
       "depends_on": []
     },
     {
       "id": "child_parental_custody",
-      "name": "Parental custody (child in household)",
-      "description": "For a minor child in the employee's household: whether custody is shared or sole.",
-      "form": "",
+      "name": "Child: parental custody",
+      "description": "For a minor child living in the household: whether custody is shared or sole.",
+      "form": "Asked once per child",
       "allowed_values": [
         "Shared custody",
         "Sole custody"
@@ -698,193 +699,186 @@
       "source_refs": [
         "F-zh_source_tax_calculator-f7f3ea",
         "F-zh_source_tax_calculator-c09dc1",
-        "F-zh_source_tax_calculator-509a7d",
-        "D-001"
+        "F-zh_source_tax_calculator-509a7d"
       ],
-      "status": "decision",
-      "notes": "Per child.",
+      "status": "confirmed",
+      "notes": "Step 6a - Children.",
       "depends_on": []
     },
     {
       "id": "child_common_household_other_parent",
-      "name": "Common household with the other parent",
-      "description": "Whether the employee lives in a common household with the child's other parent.",
-      "form": "",
+      "name": "Child: common household with the other parent",
+      "description": "Whether the employee shares a household with the child's other parent.",
+      "form": "Asked once per child",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "For each child in the same household that is either a minor with shared custody or of age and in first education",
+      "asked_when": "For a minor child in the household with shared custody, or a child of age in first education living in the household",
       "required_when": "Whenever asked",
-      "asked_when_expr": "child_same_household == \"yes\" and (child_parental_custody == \"Shared custody\" or child_age_status == \"Of age and in first education\")",
-      "required_when_expr": "child_same_household == \"yes\" and (child_parental_custody == \"Shared custody\" or child_age_status == \"Of age and in first education\")",
+      "asked_when_expr": "(child_age_status == \"Minor\" and child_same_household == \"yes\" and child_parental_custody == \"Shared custody\") or (child_age_status == \"Of age and in first education\" and child_same_household == \"yes\")",
+      "required_when_expr": "(child_age_status == \"Minor\" and child_same_household == \"yes\" and child_parental_custody == \"Shared custody\") or (child_age_status == \"Of age and in first education\" and child_same_household == \"yes\")",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Child counting and H tariff"
+          "purpose": "Child counting for the tariff"
         }
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-d79949",
         "F-zh_source_tax_calculator-e72e42",
-        "F-zh_source_tax_calculator-6dcf5c",
-        "D-001"
+        "F-zh_source_tax_calculator-6dcf5c"
       ],
-      "status": "decision",
-      "notes": "Per child.",
+      "status": "confirmed",
+      "notes": "Step 6a - Children.",
       "depends_on": []
     },
     {
       "id": "child_shared_custody_not_in_household",
-      "name": "Shared custody (child not in household, married)",
-      "description": "For married / partnered employees with a minor child outside the household: whether there is shared custody.",
-      "form": "",
+      "name": "Child not in household: shared custody (married)",
+      "description": "For a married employee or registered partner with a minor child not living in the household: whether custody is shared.",
+      "form": "Asked once per child",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "For each minor child not in the household, if the employee is married or in a registered partnership",
+      "asked_when": "For a minor child not in the household, if the employee is married or in a registered partnership",
       "required_when": "Whenever asked",
-      "asked_when_expr": "civil_status in [\"Married\", \"Registered partnership\"] and child_age_status == \"Minor\" and child_same_household == \"no\"",
-      "required_when_expr": "civil_status in [\"Married\", \"Registered partnership\"] and child_age_status == \"Minor\" and child_same_household == \"no\"",
+      "asked_when_expr": "source_tax_civil_status == \"Married or registered partnership\" and child_age_status == \"Minor\" and child_same_household == \"no\"",
+      "required_when_expr": "source_tax_civil_status == \"Married or registered partnership\" and child_age_status == \"Minor\" and child_same_household == \"no\"",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Child counting"
+          "purpose": "Child counting for the tariff"
         }
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-fe0305",
         "F-zh_source_tax_calculator-d2e516",
         "F-zh_source_tax_calculator-7dcce6",
-        "D-001",
         "D-003"
       ],
-      "status": "decision",
-      "notes": "Per child.",
+      "status": "confirmed",
+      "notes": "Step 6a - Children.",
       "depends_on": []
     },
     {
       "id": "child_parental_care_not_in_household",
-      "name": "Parental custody (child not in household, single)",
-      "description": "For single, divorced, widowed or separated employees with a minor child outside the household: whether the employee has parental custody.",
-      "form": "",
+      "name": "Child not in household: parental custody (single)",
+      "description": "For a single, divorced, separated or widowed employee with a minor child not living in the household: whether the employee has parental custody.",
+      "form": "Asked once per child",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "For each minor child not in the household, if the employee is single, divorced, widowed or separated",
+      "asked_when": "For a minor child not in the household, if the employee is single, divorced, separated or widowed",
       "required_when": "Whenever asked",
-      "asked_when_expr": "civil_status in [\"Single\", \"Divorced\", \"Widowed\", \"Separated\"] and child_age_status == \"Minor\" and child_same_household == \"no\"",
-      "required_when_expr": "civil_status in [\"Single\", \"Divorced\", \"Widowed\", \"Separated\"] and child_age_status == \"Minor\" and child_same_household == \"no\"",
+      "asked_when_expr": "source_tax_civil_status == \"Single, divorced, separated or widowed\" and child_age_status == \"Minor\" and child_same_household == \"no\"",
+      "required_when_expr": "source_tax_civil_status == \"Single, divorced, separated or widowed\" and child_age_status == \"Minor\" and child_same_household == \"no\"",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Child counting and H tariff"
+          "purpose": "Child counting for the tariff"
         }
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-956f07",
         "F-zh_source_tax_calculator-32fec9",
         "F-zh_source_tax_calculator-fb4a56",
-        "D-001",
         "D-003"
       ],
-      "status": "decision",
-      "notes": "Per child.",
+      "status": "confirmed",
+      "notes": "Step 6a - Children.",
       "depends_on": []
     },
     {
       "id": "child_alternating_custody",
-      "name": "Alternating care",
+      "name": "Child: alternating care",
       "description": "Whether the child is in alternating care between the parents.",
-      "form": "",
+      "form": "Asked once per child",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "For a minor child in the household with shared custody and no common household with the other parent; or a minor child outside the household with shared custody (married) or parental custody (single)",
+      "asked_when": "For a minor child in the household with shared custody and no common household with the other parent; or a minor child not in the household with shared custody (married) or with parental custody (single)",
       "required_when": "Whenever asked",
-      "asked_when_expr": "(child_age_status == \"Minor\" and child_same_household == \"yes\" and child_parental_custody == \"Shared custody\" and child_common_household_other_parent == \"no\") or (child_age_status == \"Minor\" and child_same_household == \"no\" and (child_shared_custody_not_in_household == \"yes\" or child_parental_care_not_in_household == \"yes\"))",
-      "required_when_expr": "(child_age_status == \"Minor\" and child_same_household == \"yes\" and child_parental_custody == \"Shared custody\" and child_common_household_other_parent == \"no\") or (child_age_status == \"Minor\" and child_same_household == \"no\" and (child_shared_custody_not_in_household == \"yes\" or child_parental_care_not_in_household == \"yes\"))",
+      "asked_when_expr": "(child_age_status == \"Minor\" and child_same_household == \"yes\" and child_parental_custody == \"Shared custody\" and child_common_household_other_parent == \"no\") or (source_tax_civil_status == \"Married or registered partnership\" and child_age_status == \"Minor\" and child_same_household == \"no\" and child_shared_custody_not_in_household == \"yes\") or (source_tax_civil_status == \"Single, divorced, separated or widowed\" and child_age_status == \"Minor\" and child_same_household == \"no\" and child_parental_care_not_in_household == \"yes\")",
+      "required_when_expr": "(child_age_status == \"Minor\" and child_same_household == \"yes\" and child_parental_custody == \"Shared custody\" and child_common_household_other_parent == \"no\") or (source_tax_civil_status == \"Married or registered partnership\" and child_age_status == \"Minor\" and child_same_household == \"no\" and child_shared_custody_not_in_household == \"yes\") or (source_tax_civil_status == \"Single, divorced, separated or widowed\" and child_age_status == \"Minor\" and child_same_household == \"no\" and child_parental_care_not_in_household == \"yes\")",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Child counting and H tariff"
+          "purpose": "Child counting for the tariff"
         }
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-da19df",
         "F-zh_source_tax_calculator-ebd7b3",
-        "F-zh_source_tax_calculator-64ac33",
-        "D-001"
+        "F-zh_source_tax_calculator-64ac33"
       ],
-      "status": "decision",
-      "notes": "Per child.",
+      "status": "confirmed",
+      "notes": "Step 6a - Children.",
       "depends_on": []
     },
     {
       "id": "child_main_financial_contributor",
-      "name": "Larger financial contributor to the child's maintenance",
+      "name": "Child: larger financial contributor",
       "description": "Who makes the larger financial contribution to the child's maintenance: the employee or the other parent.",
-      "form": "",
+      "form": "Asked once per child",
       "allowed_values": [
         "The employee",
         "The other parent"
       ],
-      "asked_when": "If the child is in alternating care; or, for single, divorced, widowed or separated employees, if the child lives in the household and there is a common household with the other parent",
+      "asked_when": "If the child is in alternating care, or - for single, divorced, separated or widowed employees - if the child lives in the household and the employee shares a household with the other parent",
       "required_when": "Whenever asked",
-      "asked_when_expr": "child_alternating_custody == \"yes\" or (civil_status in [\"Single\", \"Divorced\", \"Widowed\", \"Separated\"] and child_same_household == \"yes\" and child_common_household_other_parent == \"yes\")",
-      "required_when_expr": "child_alternating_custody == \"yes\" or (civil_status in [\"Single\", \"Divorced\", \"Widowed\", \"Separated\"] and child_same_household == \"yes\" and child_common_household_other_parent == \"yes\")",
+      "asked_when_expr": "child_alternating_custody == \"yes\" or (source_tax_civil_status == \"Single, divorced, separated or widowed\" and child_same_household == \"yes\" and child_common_household_other_parent == \"yes\")",
+      "required_when_expr": "child_alternating_custody == \"yes\" or (source_tax_civil_status == \"Single, divorced, separated or widowed\" and child_same_household == \"yes\" and child_common_household_other_parent == \"yes\")",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Child counting and H tariff"
+          "purpose": "Child counting for the tariff (H when the employee is the main contributor)"
         }
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-cdd0b6",
         "F-zh_source_tax_calculator-939b3b",
-        "F-zh_source_tax_calculator-ad867a",
-        "D-001"
+        "F-zh_source_tax_calculator-ad867a"
       ],
-      "status": "decision",
-      "notes": "Per child.",
+      "status": "confirmed",
+      "notes": "Step 6a - Children.",
       "depends_on": []
     },
     {
       "id": "child_main_maintenance",
-      "name": "Employee pays more than 50% of the child's maintenance",
+      "name": "Child: more than 50% of maintenance provided",
       "description": "For a child of age in first education: whether the employee mainly (more than 50%) pays for the child's maintenance.",
-      "form": "",
+      "form": "Asked once per child",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "For a child of age in first education that lives outside the household, or in the household without a common household with the other parent",
+      "asked_when": "For a child of age in first education who does not live in the household, or lives in the household without a common household with the other parent",
       "required_when": "Whenever asked",
-      "asked_when_expr": "child_age_status == \"Of age and in first education\" and (child_same_household == \"no\" or child_common_household_other_parent == \"no\")",
-      "required_when_expr": "child_age_status == \"Of age and in first education\" and (child_same_household == \"no\" or child_common_household_other_parent == \"no\")",
+      "asked_when_expr": "child_age_status == \"Of age and in first education\" and (child_same_household == \"no\" or (child_same_household == \"yes\" and child_common_household_other_parent == \"no\"))",
+      "required_when_expr": "child_age_status == \"Of age and in first education\" and (child_same_household == \"no\" or (child_same_household == \"yes\" and child_common_household_other_parent == \"no\"))",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Child counting and H tariff"
+          "purpose": "Child counting for the tariff"
         }
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-b008fe",
         "F-zh_source_tax_calculator-cb54d9",
-        "F-zh_source_tax_calculator-cd1015",
-        "D-001"
+        "F-zh_source_tax_calculator-cd1015"
       ],
-      "status": "decision",
-      "notes": "Per child.",
+      "status": "confirmed",
+      "notes": "Step 6a - Children.",
       "depends_on": []
     },
     {
       "id": "daily_return_germany",
-      "name": "Daily return to home in Germany",
-      "description": "For employees living in Germany: whether they expect to return daily to their main residence in Germany.",
+      "name": "Daily return to the home in Germany",
+      "description": "For an employee living in Germany: whether they return daily to their main residence in Germany (as expected for the year).",
       "form": "",
       "allowed_values": [
         "yes",
@@ -904,28 +898,29 @@
         "F-zh_source_tax_calculator-69edd5",
         "F-zh_source_tax_calculator-64ac42",
         "F-zh_source_tax_calculator-31d762",
-        "D-001",
+        "F-zh_source_tax_calculator-80bf97",
+        "F-hr_transcript-ab8886",
         "D-006",
         "D-035"
       ],
-      "status": "decision",
-      "notes": "Flow step 6 (cross-border).",
+      "status": "confirmed",
+      "notes": "Step 7 - Cross-border (Germany).",
       "depends_on": []
     },
     {
       "id": "residence_certificate",
       "name": "Certificate of residence",
-      "description": "Whether the employee has provided a German certificate of residence. 'Not yet' is valid and counts as 'no' for the tariff code. The document goes to HR outside Lonio.",
+      "description": "For an employee returning daily to Germany: whether they have a certificate of residence (Ansässigkeitsbescheinigung). 'Not yet' is a valid answer and counts as 'no' for the tariff. The document itself goes to HR outside Lonio.",
       "form": "",
       "allowed_values": [
         "yes",
         "no",
         "not yet"
       ],
-      "asked_when": "Only if the employee lives in Germany and returns home daily",
+      "asked_when": "Only if the employee lives in Germany and returns daily",
       "required_when": "Whenever asked",
-      "asked_when_expr": "daily_return_germany == \"yes\"",
-      "required_when_expr": "daily_return_germany == \"yes\"",
+      "asked_when_expr": "subject_to_source_tax and address_country == \"Germany\" and daily_return_germany == \"yes\"",
+      "required_when_expr": "subject_to_source_tax and address_country == \"Germany\" and daily_return_germany == \"yes\"",
       "needed_by": [
         {
           "stakeholder": "source_tax",
@@ -941,56 +936,55 @@
         "D-037"
       ],
       "status": "decision",
-      "notes": "A certificate handed in later is updated by HR (D-037).",
+      "notes": "Step 7 - Cross-border (Germany).",
       "depends_on": []
     },
     {
       "id": "daily_return_reasonable",
-      "name": "Daily return reasonable (under 100 km)",
-      "description": "For employees living in Germany who do not return daily: whether a daily return would in principle be reasonable (less than 100 km driving distance).",
+      "name": "Daily return reasonable (less than 100 km)",
+      "description": "For an employee in Germany who does not return daily: whether a daily return would in principle be reasonable (less than 100 km driving distance).",
       "form": "",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "Only if the employee lives in Germany and does not return home daily",
+      "asked_when": "Only if the employee lives in Germany and does not return daily",
       "required_when": "Whenever asked",
-      "asked_when_expr": "address_country == \"Germany\" and daily_return_germany == \"no\"",
-      "required_when_expr": "address_country == \"Germany\" and daily_return_germany == \"no\"",
+      "asked_when_expr": "subject_to_source_tax and address_country == \"Germany\" and daily_return_germany == \"no\"",
+      "required_when_expr": "subject_to_source_tax and address_country == \"Germany\" and daily_return_germany == \"no\"",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Decides whether the cross-border tariff applies"
+          "purpose": "Not reasonable means normal tariff"
         }
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-d2b3cf",
         "F-zh_source_tax_calculator-087ae5",
         "F-zh_source_tax_calculator-aaece6",
-        "F-zh_source_tax_calculator-bc1639",
-        "D-001"
+        "F-zh_source_tax_calculator-bc1639"
       ],
-      "status": "decision",
-      "notes": "",
+      "status": "confirmed",
+      "notes": "Step 7 - Cross-border (Germany).",
       "depends_on": []
     },
     {
       "id": "non_return_days_60",
       "name": "More than 60 work-related non-return days expected",
-      "description": "Whether the employee expects more than 60 work-related non-return days in the calendar year (a declaration, no proof uploaded).",
+      "description": "For an employee in Germany for whom daily return is reasonable: whether they expect more than 60 work-related non-return days in the calendar year. The employee states their expectation; proof goes to HR outside Lonio.",
       "form": "",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "Only if a daily return to Germany is reasonable but the employee does not return daily",
+      "asked_when": "Only if the employee lives in Germany, does not return daily and a daily return is reasonable",
       "required_when": "Whenever asked",
-      "asked_when_expr": "daily_return_reasonable == \"yes\"",
-      "required_when_expr": "daily_return_reasonable == \"yes\"",
+      "asked_when_expr": "subject_to_source_tax and address_country == \"Germany\" and daily_return_germany == \"no\" and daily_return_reasonable == \"yes\"",
+      "required_when_expr": "subject_to_source_tax and address_country == \"Germany\" and daily_return_germany == \"no\" and daily_return_reasonable == \"yes\"",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "More than 60 days: normal tariff; otherwise cross-border tariff"
+          "purpose": "More than 60 days means normal tariff, otherwise cross-border tariff"
         }
       ],
       "source_refs": [
@@ -1001,13 +995,13 @@
         "D-035"
       ],
       "status": "decision",
-      "notes": "",
+      "notes": "Step 7 - Cross-border (Germany).",
       "depends_on": []
     },
     {
       "id": "daily_return_liechtenstein",
-      "name": "Daily return to home in Liechtenstein",
-      "description": "For employees living in Liechtenstein: whether they expect to return daily to their main residence in Liechtenstein.",
+      "name": "Daily return to the home in Liechtenstein",
+      "description": "For an employee living in Liechtenstein: whether they return daily to their main residence in Liechtenstein (as expected for the year).",
       "form": "",
       "allowed_values": [
         "yes",
@@ -1020,7 +1014,7 @@
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "Daily return: in principle no source tax liability"
+          "purpose": "Daily return means in principle no source tax liability (subject to the tax treaty)"
         }
       ],
       "source_refs": [
@@ -1031,27 +1025,27 @@
         "D-007",
         "D-035"
       ],
-      "status": "decision",
-      "notes": "",
+      "status": "confirmed",
+      "notes": "Step 7 - Cross-border (Liechtenstein).",
       "depends_on": []
     },
     {
       "id": "non_return_days_45",
       "name": "More than 45 work-related non-return days expected",
-      "description": "For employees living in Liechtenstein who do not return daily: whether they expect more than 45 work-related non-return days in the calendar year.",
+      "description": "For an employee in Liechtenstein who does not return daily: whether they expect more than 45 work-related non-return days in the calendar year.",
       "form": "",
       "allowed_values": [
         "yes",
         "no"
       ],
-      "asked_when": "Only if the employee lives in Liechtenstein and does not return home daily",
+      "asked_when": "Only if the employee lives in Liechtenstein and does not return daily",
       "required_when": "Whenever asked",
-      "asked_when_expr": "daily_return_liechtenstein == \"no\"",
-      "required_when_expr": "daily_return_liechtenstein == \"no\"",
+      "asked_when_expr": "subject_to_source_tax and address_country == \"Liechtenstein\" and daily_return_liechtenstein == \"no\"",
+      "required_when_expr": "subject_to_source_tax and address_country == \"Liechtenstein\" and daily_return_liechtenstein == \"no\"",
       "needed_by": [
         {
           "stakeholder": "source_tax",
-          "purpose": "More than 45 days: normal tariff subject to the double taxation agreement; otherwise in principle no source tax liability"
+          "purpose": "More than 45 days means normal tariff code; otherwise in principle no source tax liability"
         }
       ],
       "source_refs": [
@@ -1063,7 +1057,60 @@
         "D-035"
       ],
       "status": "decision",
-      "notes": "",
+      "notes": "Step 7 - Cross-border (Liechtenstein).",
+      "depends_on": []
+    },
+    {
+      "id": "copy_email_requested",
+      "name": "Send me a copy of my answers",
+      "description": "At the end, when submitting, whether the employee wants an email with a copy of their submitted answers. Optional.",
+      "form": "",
+      "allowed_values": [
+        "yes",
+        "no"
+      ],
+      "asked_when": "Always, at submission",
+      "required_when": "May be left empty",
+      "asked_when_expr": "true",
+      "required_when_expr": "false",
+      "needed_by": [
+        {
+          "stakeholder": "employee",
+          "purpose": "Keep a record of what they entered instead of calling HR"
+        }
+      ],
+      "source_refs": [
+        "F-hr_email_copy-37cede",
+        "F-hr_email_copy-f75a41",
+        "F-hr_email_copy-6d2b5a",
+        "F-hr_email_copy-607694"
+      ],
+      "status": "confirmed",
+      "notes": "Step 8 - Closing (after the permit reminder).",
+      "depends_on": []
+    },
+    {
+      "id": "copy_email_address",
+      "name": "Email address for the copy",
+      "description": "The email address the copy of the submitted answers is sent to, typed in by the employee.",
+      "form": "",
+      "allowed_values": [],
+      "asked_when": "Only if the employee wants a copy",
+      "required_when": "Whenever asked",
+      "asked_when_expr": "copy_email_requested == \"yes\"",
+      "required_when_expr": "copy_email_requested == \"yes\"",
+      "needed_by": [
+        {
+          "stakeholder": "employee",
+          "purpose": "Receive the copy of the submitted answers"
+        }
+      ],
+      "source_refs": [
+        "F-hr_email_copy-029105",
+        "F-hr_email_copy-b67d2f"
+      ],
+      "status": "inferred",
+      "notes": "Step 8 - Closing.",
       "depends_on": []
     }
   ],
@@ -1071,14 +1118,14 @@
     {
       "id": "insurance_start_date",
       "name": "Insurance start date",
-      "statement": "The pension fund insurance starts on the first working day if that is the 1st of a month; otherwise on the 1st of the following month. Always derived from the latest first working day.",
+      "statement": "The pension fund insurance start date is derived from the latest first working day: if the first working day is the 1st of a month, insurance starts that day; otherwise on the 1st of the following month (e.g. 15.03.2026 → 01.04.2026). It is always the 1st of a month and is derived again whenever the first working day changes.",
       "inputs": [
         "First working day"
       ],
       "table": [
         {
           "when": [
-            "is the 1st of a month"
+            "1st of a month"
           ],
           "then": "Insurance starts on the first working day",
           "source_refs": [
@@ -1088,9 +1135,9 @@
         },
         {
           "when": [
-            "any other day"
+            "Any other day"
           ],
-          "then": "Insurance starts on the 1st of the following month (e.g. 15.03. → 01.04.)",
+          "then": "Insurance starts on the 1st of the following month",
           "source_refs": [
             "F-hr_transcript-30d25c",
             "F-hr_transcript-1d5c07",
@@ -1101,14 +1148,17 @@
       "expression": "if_else(day(first_working_day) == 1, first_working_day, first_day_of_month(add_months(first_working_day, 1)))",
       "source_refs": [
         "F-hr_transcript-1d5c07",
+        "F-hr_transcript-30d25c",
+        "F-hr_transcript-fdf50a",
         "F-hr_transcript-d7a23b",
         "F-pension_portal-509cbe",
         "F-pension_portal-dd8126",
+        "F-pension_portal-3a97ab",
         "G-08",
         "D-033",
         "D-037"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
         "first_working_day"
       ]
@@ -1116,7 +1166,7 @@
     {
       "id": "pension_fund_civil_status",
       "name": "Civil status for the pension fund",
-      "statement": "The civil status is entered at the pension fund from its list. Provisionally, registered partnership and separated are entered as Married.",
+      "statement": "The civil status entered at the pension fund is taken from the employee's civil status; registered partnership and separated are provisionally entered as Married (with the spouse's/partner's date of birth).",
       "inputs": [
         "Civil status"
       ],
@@ -1161,7 +1211,7 @@
           "when": [
             "Registered partnership"
           ],
-          "then": "Married (with the partner's date of birth), provisional",
+          "then": "Married (provisional)",
           "source_refs": [
             "D-003"
           ]
@@ -1170,10 +1220,9 @@
           "when": [
             "Separated"
           ],
-          "then": "Married (with the spouse's date of birth), provisional",
+          "then": "Married (provisional)",
           "source_refs": [
-            "D-003",
-            "D-004"
+            "D-003"
           ]
         }
       ],
@@ -1182,7 +1231,8 @@
         "F-pension_portal-3d1ae4",
         "F-pension_portal-9b24c5",
         "F-hr_transcript-f197d6",
-        "D-003"
+        "D-003",
+        "D-004"
       ],
       "status": "decision",
       "depends_on": [
@@ -1192,7 +1242,7 @@
     {
       "id": "source_tax_civil_status",
       "name": "Civil status for source tax",
-      "statement": "For source tax, married and registered partnership count as 'married or registered partnership'; single, divorced, separated and widowed count as 'single'.",
+      "statement": "For source tax, married and registered partnership count as 'married or registered partnership'; single, divorced, separated and widowed count as 'single, divorced, separated or widowed', as in the calculator.",
       "inputs": [
         "Civil status"
       ],
@@ -1218,12 +1268,12 @@
           ]
         }
       ],
-      "expression": "if_else(civil_status in [\"Married\", \"Registered partnership\"], \"Married or registered partnership\", if_else(civil_status in [\"Single\", \"Divorced\", \"Widowed\", \"Separated\"], \"Single, divorced, separated or widowed\", null))",
+      "expression": "if_else(civil_status in [\"Married\", \"Registered partnership\"], \"Married or registered partnership\", if_else(is_set(civil_status), \"Single, divorced, separated or widowed\", null))",
       "source_refs": [
         "F-zh_source_tax_calculator-051bb9",
         "D-003"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
         "civil_status"
       ]
@@ -1231,12 +1281,12 @@
     {
       "id": "spouse_exempts_source_tax",
       "name": "Spouse exemption from source tax",
-      "statement": "A married or registered-partner employee is exempt from source tax if the spouse/partner is Swiss or holds a C permit and lives in Switzerland. Separated employees count as single and get no exemption.",
+      "statement": "An employee who is married or in a registered partnership with a spouse/partner who is Swiss or holds a C permit and lives in Switzerland is exempt from source tax.",
       "inputs": [
         "Civil status",
-        "Spouse Swiss citizen",
-        "Spouse holds C permit",
-        "Spouse lives in"
+        "Spouse's Swiss citizenship",
+        "Spouse holds a C permit",
+        "Spouse lives in Switzerland"
       ],
       "table": [
         {
@@ -1248,41 +1298,30 @@
           ],
           "then": "No exemption",
           "source_refs": [
+            "F-hr_transcript-b6d9b3",
             "D-003"
           ]
         },
         {
           "when": [
             "Married or Registered partnership",
-            "yes",
+            "Swiss",
             "-",
-            "Switzerland"
+            "yes"
           ],
           "then": "Exempt",
           "source_refs": [
             "F-hr_transcript-d7431e",
-            "F-hr_transcript-b6d9b3"
+            "F-hr_transcript-b6d9b3",
+            "D-003"
           ]
         },
         {
           "when": [
             "Married or Registered partnership",
-            "no",
-            "yes",
-            "Switzerland"
-          ],
-          "then": "Exempt",
-          "source_refs": [
-            "F-hr_transcript-d7431e",
-            "F-hr_transcript-b6d9b3"
-          ]
-        },
-        {
-          "when": [
-            "Married or Registered partnership",
-            "yes",
+            "Swiss",
             "-",
-            "Another country"
+            "no"
           ],
           "then": "No exemption",
           "source_refs": [
@@ -1292,9 +1331,22 @@
         {
           "when": [
             "Married or Registered partnership",
-            "no",
+            "Not Swiss",
             "yes",
-            "Another country"
+            "yes"
+          ],
+          "then": "Exempt",
+          "source_refs": [
+            "F-hr_transcript-d7431e",
+            "D-005"
+          ]
+        },
+        {
+          "when": [
+            "Married or Registered partnership",
+            "Not Swiss",
+            "yes",
+            "no"
           ],
           "then": "No exemption",
           "source_refs": [
@@ -1304,26 +1356,26 @@
         {
           "when": [
             "Married or Registered partnership",
-            "no",
+            "Not Swiss",
             "no",
             "-"
           ],
           "then": "No exemption",
           "source_refs": [
+            "F-hr_transcript-d7431e",
             "F-hr_transcript-b6d9b3"
           ]
         }
       ],
-      "expression": "civil_status in [\"Married\", \"Registered partnership\"] and (spouse_nationality == \"yes\" or spouse_permit_type == \"yes\") and spouse_residence_country == \"Switzerland\"",
+      "expression": "civil_status in [\"Married\", \"Registered partnership\"] and (spouse_nationality == \"Swiss\" or spouse_permit_type == \"yes\") and spouse_residence_country == \"yes\"",
       "source_refs": [
         "F-hr_transcript-d7431e",
-        "F-hr_transcript-b6d9b3",
         "F-hr_transcript-f3ce84",
+        "F-hr_transcript-b6d9b3",
         "D-003",
-        "D-005",
-        "D-008"
+        "D-005"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
         "civil_status",
         "spouse_nationality",
@@ -1334,17 +1386,17 @@
     {
       "id": "subject_to_source_tax",
       "name": "Subject to source tax",
-      "statement": "An employee living abroad is always subject to source tax, whatever the nationality. An employee living in Switzerland is subject only if not a Swiss citizen, holding no C permit and not exempted by a Swiss / C-permit spouse living in Switzerland. Only employees subject to source tax are asked the source tax questions.",
+      "statement": "An employee living abroad is always subject to source tax, whatever their nationality (also Swiss citizens). An employee living in Switzerland is subject only if not Swiss, without a C permit and without the spouse exemption. Only employees subject to source tax get the source tax questions.",
       "inputs": [
         "Country of home address",
-        "Swiss citizen",
-        "Holds C permit",
+        "Swiss citizenship",
+        "Holds a C permit",
         "Spouse exemption"
       ],
       "table": [
         {
           "when": [
-            "not Switzerland",
+            "Not Switzerland",
             "-",
             "-",
             "-"
@@ -1359,7 +1411,7 @@
         {
           "when": [
             "Switzerland",
-            "yes",
+            "Swiss",
             "-",
             "-"
           ],
@@ -1372,32 +1424,34 @@
         {
           "when": [
             "Switzerland",
-            "no",
+            "Not Swiss",
             "yes",
             "-"
           ],
           "then": "Not subject",
           "source_refs": [
             "F-hr_transcript-845204",
+            "F-hr_transcript-b6d9b3",
             "D-005"
           ]
         },
         {
           "when": [
             "Switzerland",
-            "no",
+            "Not Swiss",
             "no",
             "Exempt"
           ],
           "then": "Not subject",
           "source_refs": [
-            "F-hr_transcript-d7431e"
+            "F-hr_transcript-d7431e",
+            "F-hr_transcript-b6d9b3"
           ]
         },
         {
           "when": [
             "Switzerland",
-            "no",
+            "Not Swiss",
             "no",
             "No exemption"
           ],
@@ -1407,18 +1461,21 @@
           ]
         }
       ],
-      "expression": "(address_country != null and address_country != \"Switzerland\") or (address_country == \"Switzerland\" and nationality == \"no\" and permit_type == \"no\" and not spouse_exempts_source_tax)",
+      "expression": "address_country != \"Switzerland\" or (address_country == \"Switzerland\" and nationality == \"Not Swiss\" and permit_type == \"no\" and not spouse_exempts_source_tax)",
       "source_refs": [
         "F-hr_transcript-b6d9b3",
-        "F-hr_transcript-b84498",
         "F-hr_transcript-1a20bb",
         "F-hr_transcript-845204",
         "F-hr_transcript-d7431e",
+        "F-hr_transcript-b84498",
+        "F-hr_transcript-51c17d",
+        "G-01",
         "D-005",
         "D-007",
-        "D-008"
+        "D-008",
+        "D-037"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
         "address_country",
         "nationality",
@@ -1428,8 +1485,8 @@
     },
     {
       "id": "source_tax_residence",
-      "name": "Source tax state of residence",
-      "statement": "The calculator's residence answers are derived from the home address country: Switzerland, Germany, Liechtenstein, or another country. Switzerland and another country leave the base tariff unchanged.",
+      "name": "Residence for source tax",
+      "statement": "The calculator's residence answers are derived from the country of the home address: Switzerland (main residence in Switzerland), Germany, Liechtenstein, or any other country ('other country', which leaves the base tariff unchanged).",
       "inputs": [
         "Country of home address"
       ],
@@ -1438,16 +1495,17 @@
           "when": [
             "Switzerland"
           ],
-          "then": "Main residence in Switzerland",
+          "then": "Switzerland",
           "source_refs": [
-            "F-zh_source_tax_calculator-52b67a"
+            "F-zh_source_tax_calculator-f29009",
+            "F-hr_transcript-e505f8"
           ]
         },
         {
           "when": [
             "Germany"
           ],
-          "then": "Germany (cross-border questions for Germany)",
+          "then": "Germany",
           "source_refs": [
             "F-zh_source_tax_calculator-d62dd4"
           ]
@@ -1456,31 +1514,34 @@
           "when": [
             "Liechtenstein"
           ],
-          "then": "Liechtenstein (cross-border questions for Liechtenstein)",
+          "then": "Liechtenstein",
           "source_refs": [
             "F-zh_source_tax_calculator-d62dd4"
           ]
         },
         {
           "when": [
-            "any other country"
+            "Any other country"
           ],
-          "then": "Other country (base tariff)",
+          "then": "Other country",
           "source_refs": [
+            "F-zh_source_tax_calculator-d62dd4",
             "F-zh_source_tax_calculator-52b67a"
           ]
         }
       ],
-      "expression": "if_else(address_country == \"Switzerland\", \"Switzerland\", if_else(address_country == \"Germany\", \"Germany\", if_else(address_country == \"Liechtenstein\", \"Liechtenstein\", if_else(address_country != null, \"Other country\", null))))",
+      "expression": "if_else(address_country == \"Switzerland\", \"Switzerland\", if_else(address_country in [\"Germany\", \"Liechtenstein\"], address_country, if_else(is_set(address_country), \"Other country\", null)))",
       "source_refs": [
         "F-zh_source_tax_calculator-f29009",
         "F-zh_source_tax_calculator-4c65ae",
         "F-zh_source_tax_calculator-d62dd4",
-        "F-zh_source_tax_calculator-52b67a",
-        "G-08",
+        "F-zh_source_tax_calculator-80bf97",
+        "F-hr_transcript-e505f8",
+        "F-hr_transcript-4e180e",
+        "G-01",
         "D-001"
       ],
-      "status": "decision",
+      "status": "inferred",
       "depends_on": [
         "address_country"
       ]
@@ -1488,7 +1549,7 @@
     {
       "id": "church_tax_suffix",
       "name": "Church-tax suffix",
-      "statement": "Y for Roman Catholic, Christian Catholic or Evangelical Reformed; N for none or other.",
+      "statement": "The tariff code ends in Y for Roman Catholic, Christian Catholic or Evangelical Reformed, and in N for none or other.",
       "inputs": [
         "Denomination"
       ],
@@ -1517,17 +1578,17 @@
         "F-zh_source_tax_calculator-2eab9a",
         "D-001"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
         "confession"
       ]
     },
     {
       "id": "married_tariff_letter",
-      "name": "Married tariff letter",
-      "statement": "For married / registered-partner employees: C if the spouse is employed or receives replacement income, otherwise B.",
+      "name": "Base tariff letter for married employees",
+      "statement": "For married employees and registered partners subject to source tax: tariff letter C if the spouse/partner works or receives replacement income, otherwise B.",
       "inputs": [
-        "Spouse employed or receiving replacement income"
+        "Spouse / partner works or receives replacement income"
       ],
       "table": [
         {
@@ -1552,22 +1613,23 @@
       "expression": "if_else(spouse_employed == \"yes\", \"C\", if_else(spouse_employed == \"no\", \"B\", null))",
       "source_refs": [
         "F-zh_source_tax_calculator-97139a",
-        "D-001"
+        "D-001",
+        "D-003"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
         "spouse_employed"
       ]
     },
     {
       "id": "child_tariff_result",
-      "name": "Child result (per child)",
-      "statement": "For each child the answers decide whether the child counts for the tariff, and for single (incl. divorced, separated, widowed) employees whether it counts with H. Rows marked inferred were not observed in the calculator and must be checked (OQ-calculator-coverage). Expression describes one child.",
+      "name": "How a child counts for the tariff",
+      "statement": "For each child, the answers decide whether the child counts for the tariff digit, and - for single, divorced, separated or widowed employees - whether it counts as an H child (lives in the household and the employee has sole custody or is the main contributor). Cases the calculator exploration did not cover are 'not determined' until verified (OQ-child-paths-undetermined). The expression evaluates one child; the rule applies to each child.",
       "inputs": [
         "Civil status for source tax",
         "Child age status",
         "Same household",
-        "Custody (in household)",
+        "Parental custody",
         "Common household with other parent",
         "Shared custody (not in household, married)",
         "Parental custody (not in household, single)",
@@ -1589,7 +1651,7 @@
             "-",
             "-"
           ],
-          "then": "does not count",
+          "then": "Does not count",
           "source_refs": [
             "F-zh_source_tax_calculator-987091"
           ]
@@ -1607,7 +1669,7 @@
             "-",
             "-"
           ],
-          "then": "counts",
+          "then": "Counts",
           "source_refs": [
             "F-zh_source_tax_calculator-c53a22"
           ]
@@ -1625,9 +1687,10 @@
             "-",
             "-"
           ],
-          "then": "counts",
+          "then": "Counts",
           "source_refs": [
-            "F-zh_source_tax_calculator-3058a4"
+            "F-zh_source_tax_calculator-3058a4",
+            "F-zh_source_tax_calculator-ad867a"
           ]
         },
         {
@@ -1643,7 +1706,7 @@
             "-",
             "-"
           ],
-          "then": "does not count",
+          "then": "Does not count",
           "source_refs": [
             "F-zh_source_tax_calculator-3058a4"
           ]
@@ -1661,7 +1724,7 @@
             "The other parent",
             "-"
           ],
-          "then": "does not count",
+          "then": "Does not count",
           "source_refs": [
             "F-zh_source_tax_calculator-3058a4"
           ]
@@ -1679,9 +1742,9 @@
             "The employee",
             "-"
           ],
-          "then": "counts (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-56e79b",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         },
@@ -1698,7 +1761,7 @@
             "-",
             "-"
           ],
-          "then": "does not count",
+          "then": "Does not count",
           "source_refs": [
             "F-zh_source_tax_calculator-56e79b"
           ]
@@ -1716,7 +1779,7 @@
             "The employee",
             "-"
           ],
-          "then": "counts",
+          "then": "Counts",
           "source_refs": [
             "F-zh_source_tax_calculator-56e79b"
           ]
@@ -1734,9 +1797,9 @@
             "The other parent",
             "-"
           ],
-          "then": "does not count (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-3058a4",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         },
@@ -1753,9 +1816,9 @@
             "-",
             "-"
           ],
-          "then": "does not count (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-3058a4",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         },
@@ -1772,7 +1835,7 @@
             "-",
             "-"
           ],
-          "then": "counts",
+          "then": "Counts",
           "source_refs": [
             "F-zh_source_tax_calculator-50f74a"
           ]
@@ -1788,49 +1851,11 @@
             "-",
             "-",
             "-",
-            "yes"
+            "any"
           ],
-          "then": "counts (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-562299",
-            "D-009"
-          ]
-        },
-        {
-          "when": [
-            "Married or registered partnership",
-            "Of age and in first education",
-            "yes",
-            "-",
-            "no",
-            "-",
-            "-",
-            "-",
-            "-",
-            "no"
-          ],
-          "then": "does not count (inferred)",
-          "source_refs": [
-            "F-zh_source_tax_calculator-50f74a",
-            "D-009"
-          ]
-        },
-        {
-          "when": [
-            "Married or registered partnership",
-            "Of age and in first education",
-            "no",
-            "-",
-            "-",
-            "-",
-            "-",
-            "-",
-            "-",
-            "yes"
-          ],
-          "then": "counts (inferred)",
-          "source_refs": [
-            "F-zh_source_tax_calculator-562299",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         },
@@ -1847,9 +1872,28 @@
             "-",
             "no"
           ],
-          "then": "does not count",
+          "then": "Does not count",
           "source_refs": [
             "F-zh_source_tax_calculator-50f74a"
+          ]
+        },
+        {
+          "when": [
+            "Married or registered partnership",
+            "Of age and in first education",
+            "no",
+            "-",
+            "-",
+            "-",
+            "-",
+            "-",
+            "-",
+            "yes"
+          ],
+          "then": "Not determined",
+          "source_refs": [
+            "F-zh_source_tax_calculator-332e2a",
+            "D-009"
           ]
         },
         {
@@ -1865,7 +1909,7 @@
             "-",
             "-"
           ],
-          "then": "counts with H",
+          "then": "Counts as H child",
           "source_refs": [
             "F-zh_source_tax_calculator-c53a22",
             "F-zh_source_tax_calculator-96658b"
@@ -1881,28 +1925,10 @@
             "-",
             "-",
             "-",
-            "The employee",
-            "-"
-          ],
-          "then": "counts with H",
-          "source_refs": [
-            "F-zh_source_tax_calculator-96658b"
-          ]
-        },
-        {
-          "when": [
-            "Single, divorced, separated or widowed",
-            "Minor",
-            "yes",
-            "Shared custody",
-            "yes",
-            "-",
-            "-",
-            "-",
             "The other parent",
             "-"
           ],
-          "then": "does not count",
+          "then": "Does not count",
           "source_refs": [
             "F-zh_source_tax_calculator-38dd4a"
           ]
@@ -1913,32 +1939,14 @@
             "Minor",
             "yes",
             "Shared custody",
-            "no",
-            "-",
-            "-",
-            "no",
-            "-",
-            "-"
-          ],
-          "then": "counts with H",
-          "source_refs": [
-            "F-zh_source_tax_calculator-38dd4a"
-          ]
-        },
-        {
-          "when": [
-            "Single, divorced, separated or widowed",
-            "Minor",
             "yes",
-            "Shared custody",
-            "no",
             "-",
             "-",
-            "yes",
+            "-",
             "The employee",
             "-"
           ],
-          "then": "counts with H",
+          "then": "Counts as H child",
           "source_refs": [
             "F-zh_source_tax_calculator-96658b"
           ]
@@ -1952,13 +1960,49 @@
             "no",
             "-",
             "-",
+            "no",
+            "-",
+            "-"
+          ],
+          "then": "Counts as H child",
+          "source_refs": [
+            "F-zh_source_tax_calculator-38dd4a"
+          ]
+        },
+        {
+          "when": [
+            "Single, divorced, separated or widowed",
+            "Minor",
+            "yes",
+            "Shared custody",
+            "no",
+            "-",
+            "-",
+            "yes",
+            "The employee",
+            "-"
+          ],
+          "then": "Counts as H child",
+          "source_refs": [
+            "F-zh_source_tax_calculator-96658b"
+          ]
+        },
+        {
+          "when": [
+            "Single, divorced, separated or widowed",
+            "Minor",
+            "yes",
+            "Shared custody",
+            "no",
+            "-",
+            "-",
             "yes",
             "The other parent",
             "-"
           ],
-          "then": "does not count (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-38dd4a",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         },
@@ -1975,7 +2019,7 @@
             "The employee",
             "-"
           ],
-          "then": "counts with H",
+          "then": "Counts as H child",
           "source_refs": [
             "F-zh_source_tax_calculator-c2faa7"
           ]
@@ -1993,9 +2037,9 @@
             "The other parent",
             "-"
           ],
-          "then": "does not count (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-c2faa7",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         },
@@ -2012,9 +2056,9 @@
             "-",
             "-"
           ],
-          "then": "does not count (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-c2faa7",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         },
@@ -2031,7 +2075,7 @@
             "-",
             "-"
           ],
-          "then": "does not count",
+          "then": "Does not count",
           "source_refs": [
             "F-zh_source_tax_calculator-c2faa7"
           ]
@@ -2049,10 +2093,9 @@
             "The employee",
             "-"
           ],
-          "then": "counts with H (inferred)",
+          "then": "Counts as H child",
           "source_refs": [
-            "F-zh_source_tax_calculator-96658b",
-            "D-009"
+            "F-zh_source_tax_calculator-96658b"
           ]
         },
         {
@@ -2068,9 +2111,9 @@
             "The other parent",
             "-"
           ],
-          "then": "does not count (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-38dd4a",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         },
@@ -2087,7 +2130,7 @@
             "-",
             "yes"
           ],
-          "then": "counts with H",
+          "then": "Counts as H child",
           "source_refs": [
             "F-zh_source_tax_calculator-562299"
           ]
@@ -2105,9 +2148,9 @@
             "-",
             "no"
           ],
-          "then": "does not count (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-562299",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         },
@@ -2124,7 +2167,7 @@
             "-",
             "yes"
           ],
-          "then": "counts",
+          "then": "Counts",
           "source_refs": [
             "F-zh_source_tax_calculator-562299"
           ]
@@ -2142,17 +2185,16 @@
             "-",
             "no"
           ],
-          "then": "does not count (inferred)",
+          "then": "Not determined",
           "source_refs": [
-            "F-zh_source_tax_calculator-50f74a",
+            "F-zh_source_tax_calculator-332e2a",
             "D-009"
           ]
         }
       ],
-      "expression": "if_else(civil_status in [\"Single\", \"Divorced\", \"Widowed\", \"Separated\"] and ((child_age_status == \"Minor\" and child_same_household == \"yes\" and (child_parental_custody == \"Sole custody\" or (child_parental_custody == \"Shared custody\" and ((child_common_household_other_parent == \"yes\" and child_main_financial_contributor == \"The employee\") or (child_common_household_other_parent == \"no\" and (child_alternating_custody == \"no\" or (child_alternating_custody == \"yes\" and child_main_financial_contributor == \"The employee\"))))))) or (child_age_status == \"Minor\" and child_same_household == \"no\" and child_parental_care_not_in_household == \"yes\" and child_alternating_custody == \"yes\" and child_main_financial_contributor == \"The employee\") or (child_age_status == \"Of age and in first education\" and child_same_household == \"yes\" and ((child_common_household_other_parent == \"no\" and child_main_maintenance == \"yes\") or (child_common_household_other_parent == \"yes\" and child_main_financial_contributor == \"The employee\")))), \"counts with H\", if_else((civil_status in [\"Married\", \"Registered partnership\"] and ((child_age_status == \"Minor\" and child_same_household == \"yes\" and (child_parental_custody == \"Sole custody\" or (child_parental_custody == \"Shared custody\" and (child_common_household_other_parent == \"yes\" or (child_common_household_other_parent == \"no\" and child_alternating_custody == \"yes\" and child_main_financial_contributor == \"The employee\"))))) or (child_age_status == \"Minor\" and child_same_household == \"no\" and child_shared_custody_not_in_household == \"yes\" and child_alternating_custody == \"yes\" and child_main_financial_contributor == \"The employee\") or (child_age_status == \"Of age and in first education\" and ((child_same_household == \"yes\" and child_common_household_other_parent == \"yes\") or child_main_maintenance == \"yes\")))) or (civil_status in [\"Single\", \"Divorced\", \"Widowed\", \"Separated\"] and child_age_status == \"Of age and in first education\" and child_same_household == \"no\" and child_main_maintenance == \"yes\"), \"counts\", if_else(is_set(child_age_status), \"does not count\", null)))",
+      "expression": "if_else(child_age_status == null, null, if_else(child_age_status == \"Neither\", \"does not count\", if_else(source_tax_civil_status == \"Married or registered partnership\", if_else(child_age_status == \"Minor\", if_else(child_same_household == \"yes\", if_else(child_parental_custody == \"Sole custody\" or child_common_household_other_parent == \"yes\", \"counts\", if_else(child_alternating_custody == \"yes\" and child_main_financial_contributor == \"The employee\", \"not determined\", \"does not count\")), if_else(child_shared_custody_not_in_household == \"no\", \"does not count\", if_else(child_alternating_custody == \"yes\" and child_main_financial_contributor == \"The employee\", \"counts\", \"not determined\"))), if_else(child_same_household == \"yes\", if_else(child_common_household_other_parent == \"yes\", \"counts\", \"not determined\"), if_else(child_main_maintenance == \"no\", \"does not count\", \"not determined\"))), if_else(source_tax_civil_status == \"Single, divorced, separated or widowed\", if_else(child_age_status == \"Minor\", if_else(child_same_household == \"yes\", if_else(child_parental_custody == \"Sole custody\", \"counts as H child\", if_else(child_common_household_other_parent == \"yes\", if_else(child_main_financial_contributor == \"The employee\", \"counts as H child\", \"does not count\"), if_else(child_alternating_custody == \"no\" or child_main_financial_contributor == \"The employee\", \"counts as H child\", \"not determined\"))), if_else(child_parental_care_not_in_household == \"no\", \"does not count\", if_else(child_alternating_custody == \"yes\" and child_main_financial_contributor == \"The employee\", \"counts as H child\", \"not determined\"))), if_else(child_same_household == \"yes\", if_else(child_common_household_other_parent == \"yes\", if_else(child_main_financial_contributor == \"The employee\", \"counts as H child\", \"not determined\"), if_else(child_main_maintenance == \"yes\", \"counts as H child\", \"not determined\")), if_else(child_main_maintenance == \"yes\", \"counts\", \"not determined\"))), null))))",
       "source_refs": [
         "F-zh_source_tax_calculator-987091",
-        "F-zh_source_tax_calculator-96658b",
         "F-zh_source_tax_calculator-c53a22",
         "F-zh_source_tax_calculator-3058a4",
         "F-zh_source_tax_calculator-56e79b",
@@ -2160,13 +2202,14 @@
         "F-zh_source_tax_calculator-38dd4a",
         "F-zh_source_tax_calculator-c2faa7",
         "F-zh_source_tax_calculator-562299",
+        "F-zh_source_tax_calculator-96658b",
+        "F-zh_source_tax_calculator-332e2a",
         "D-001",
-        "D-003",
         "D-009"
       ],
       "status": "inferred",
       "depends_on": [
-        "civil_status",
+        "source_tax_civil_status",
         "child_age_status",
         "child_same_household",
         "child_parental_custody",
@@ -2180,48 +2223,66 @@
     },
     {
       "id": "source_tax_child_digit",
-      "name": "Child digit of the tariff code",
-      "statement": "The digit equals the number of children that count (with or without H). No children or none counting gives 0.",
+      "name": "Tariff child digit",
+      "statement": "The tariff digit is the number of children who count (including H children); 0 without children. The expression covers a single child; with several children the counts are added up.",
       "inputs": [
-        "Number of children that count"
+        "Has children",
+        "How each child counts"
       ],
       "table": [
         {
           "when": [
-            "0"
+            "no",
+            "-"
           ],
           "then": "0",
+          "source_refs": [
+            "F-zh_source_tax_calculator-c78e0c"
+          ]
+        },
+        {
+          "when": [
+            "yes",
+            "Counts or counts as H child"
+          ],
+          "then": "Number of such children",
           "source_refs": [
             "F-zh_source_tax_calculator-ecef37"
           ]
         },
         {
           "when": [
-            "n (1 or more)"
+            "yes",
+            "No child counts"
           ],
-          "then": "n",
+          "then": "0",
           "source_refs": [
+            "F-zh_source_tax_calculator-987091",
             "F-zh_source_tax_calculator-ecef37"
           ]
         }
       ],
-      "expression": "if_else(child_tariff_result in [\"counts\", \"counts with H\"], 1, 0)",
+      "expression": "if_else(has_children == \"yes\" and child_tariff_result in [\"counts\", \"counts as H child\"], 1, 0)",
       "source_refs": [
         "F-zh_source_tax_calculator-ecef37",
-        "D-001"
+        "F-zh_source_tax_calculator-fd9a15",
+        "F-zh_source_tax_calculator-4957f6",
+        "D-001",
+        "D-009"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
+        "has_children",
         "child_tariff_result"
       ]
     },
     {
       "id": "single_parent_h_tariff",
-      "name": "Single-parent H tariff",
-      "statement": "A single, divorced, separated or widowed employee with at least one child counting with H gets the H tariff.",
+      "name": "Single-parent tariff H",
+      "statement": "For a single, divorced, separated or widowed employee, any child counted as H child gives the H tariff overall (e.g. one A-counting and one H child → H2N).",
       "inputs": [
         "Civil status for source tax",
-        "At least one child counts with H"
+        "Any child counts as H child"
       ],
       "table": [
         {
@@ -2241,7 +2302,8 @@
           ],
           "then": "No H tariff (A)",
           "source_refs": [
-            "F-zh_source_tax_calculator-c78e0c"
+            "F-zh_source_tax_calculator-c78e0c",
+            "F-zh_source_tax_calculator-562299"
           ]
         },
         {
@@ -2249,30 +2311,30 @@
             "Married or registered partnership",
             "-"
           ],
-          "then": "No H tariff",
+          "then": "Not applicable",
           "source_refs": [
             "F-zh_source_tax_calculator-97139a"
           ]
         }
       ],
-      "expression": "civil_status in [\"Single\", \"Divorced\", \"Widowed\", \"Separated\"] and child_tariff_result == \"counts with H\"",
+      "expression": "source_tax_civil_status == \"Single, divorced, separated or widowed\" and child_tariff_result == \"counts as H child\"",
       "source_refs": [
         "F-zh_source_tax_calculator-96658b",
-        "D-001",
-        "D-003"
+        "F-zh_source_tax_calculator-ecef37",
+        "D-001"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
-        "civil_status",
+        "source_tax_civil_status",
         "child_tariff_result"
       ]
     },
     {
       "id": "cross_border_tariff_applies",
       "name": "Cross-border tariff applies",
-      "statement": "For employees living in Germany the cross-border tariff applies with daily return and a certificate of residence ('not yet' counts as no), or without daily return when a return is reasonable and not more than 60 non-return days are expected. All other cases use the normal tariff.",
+      "statement": "For employees living in Germany, the cross-border tariff applies with daily return and a certificate of residence ('not yet' counts as no), or without daily return when a daily return is reasonable and no more than 60 non-return days are expected. Every other case, and every other country, keeps the normal tariff.",
       "inputs": [
-        "Country of home address",
+        "Residence for source tax",
         "Daily return to Germany",
         "Certificate of residence",
         "Daily return reasonable",
@@ -2281,13 +2343,27 @@
       "table": [
         {
           "when": [
+            "Switzerland, Liechtenstein or Other country",
+            "-",
+            "-",
+            "-",
+            "-"
+          ],
+          "then": "No",
+          "source_refs": [
+            "F-zh_source_tax_calculator-52b67a",
+            "F-zh_source_tax_calculator-ab4e1e"
+          ]
+        },
+        {
+          "when": [
             "Germany",
             "yes",
             "yes",
             "-",
             "-"
           ],
-          "then": "Cross-border tariff",
+          "then": "Yes",
           "source_refs": [
             "F-zh_source_tax_calculator-4d3ac0",
             "F-zh_source_tax_calculator-89a9f1"
@@ -2301,7 +2377,7 @@
             "-",
             "-"
           ],
-          "then": "Normal tariff",
+          "then": "No",
           "source_refs": [
             "F-zh_source_tax_calculator-4d3ac0",
             "D-035"
@@ -2315,9 +2391,10 @@
             "yes",
             "no"
           ],
-          "then": "Cross-border tariff",
+          "then": "Yes",
           "source_refs": [
-            "F-zh_source_tax_calculator-b948fd"
+            "F-zh_source_tax_calculator-b948fd",
+            "F-zh_source_tax_calculator-89a9f1"
           ]
         },
         {
@@ -2328,7 +2405,7 @@
             "yes",
             "yes"
           ],
-          "then": "Normal tariff",
+          "then": "No",
           "source_refs": [
             "F-zh_source_tax_calculator-b948fd"
           ]
@@ -2341,38 +2418,26 @@
             "no",
             "-"
           ],
-          "then": "Normal tariff",
+          "then": "No",
           "source_refs": [
             "F-zh_source_tax_calculator-bc1639"
           ]
-        },
-        {
-          "when": [
-            "not Germany",
-            "-",
-            "-",
-            "-",
-            "-"
-          ],
-          "then": "Normal tariff",
-          "source_refs": [
-            "F-zh_source_tax_calculator-52b67a",
-            "F-zh_source_tax_calculator-89a9f1"
-          ]
         }
       ],
-      "expression": "subject_to_source_tax and address_country == \"Germany\" and ((daily_return_germany == \"yes\" and residence_certificate == \"yes\") or (daily_return_germany == \"no\" and daily_return_reasonable == \"yes\" and non_return_days_60 == \"no\"))",
+      "expression": "source_tax_residence == \"Germany\" and ((daily_return_germany == \"yes\" and residence_certificate == \"yes\") or (daily_return_germany == \"no\" and daily_return_reasonable == \"yes\" and non_return_days_60 == \"no\"))",
       "source_refs": [
         "F-zh_source_tax_calculator-89a9f1",
         "F-zh_source_tax_calculator-4d3ac0",
         "F-zh_source_tax_calculator-b948fd",
+        "F-zh_source_tax_calculator-bc1639",
+        "F-zh_source_tax_calculator-35dd3d",
         "D-001",
-        "D-035"
+        "D-035",
+        "D-009"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
-        "subject_to_source_tax",
-        "address_country",
+        "source_tax_residence",
         "daily_return_germany",
         "residence_certificate",
         "daily_return_reasonable",
@@ -2381,21 +2446,32 @@
     },
     {
       "id": "liechtenstein_no_source_tax_in_principle",
-      "name": "Liechtenstein: in principle no source tax",
-      "statement": "For employees living in Liechtenstein, daily return or not more than 45 non-return days gives 'in principle no source tax liability, subject to the double taxation agreement' instead of a tariff code, flagged for HR. More than 45 non-return days gives the normal tariff code subject to the double taxation agreement.",
+      "name": "Liechtenstein: in principle no source tax liability",
+      "statement": "An employee living in Liechtenstein who returns daily, or expects no more than 45 work-related non-return days, is in principle not liable to source tax, subject to the double taxation agreement. With more than 45 days the normal tariff code applies.",
       "inputs": [
-        "Country of home address",
+        "Residence for source tax",
         "Daily return to Liechtenstein",
         "More than 45 non-return days"
       ],
       "table": [
         {
           "when": [
+            "Switzerland, Germany or Other country",
+            "-",
+            "-"
+          ],
+          "then": "No",
+          "source_refs": [
+            "F-zh_source_tax_calculator-52b67a"
+          ]
+        },
+        {
+          "when": [
             "Liechtenstein",
             "yes",
             "-"
           ],
-          "then": "In principle no source tax liability (flag for HR)",
+          "then": "Yes",
           "source_refs": [
             "F-zh_source_tax_calculator-e80d8f",
             "D-007"
@@ -2407,7 +2483,7 @@
             "no",
             "no"
           ],
-          "then": "In principle no source tax liability (flag for HR)",
+          "then": "Yes",
           "source_refs": [
             "F-zh_source_tax_calculator-ab4e1e",
             "D-007"
@@ -2419,46 +2495,34 @@
             "no",
             "yes"
           ],
-          "then": "Normal tariff code, subject to the double taxation agreement",
+          "then": "No - normal tariff code",
           "source_refs": [
             "F-zh_source_tax_calculator-ab4e1e",
             "D-007"
           ]
-        },
-        {
-          "when": [
-            "not Liechtenstein",
-            "-",
-            "-"
-          ],
-          "then": "Does not apply",
-          "source_refs": [
-            "D-007"
-          ]
         }
       ],
-      "expression": "address_country == \"Liechtenstein\" and (daily_return_liechtenstein == \"yes\" or non_return_days_45 == \"no\")",
+      "expression": "source_tax_residence == \"Liechtenstein\" and (daily_return_liechtenstein == \"yes\" or non_return_days_45 == \"no\")",
       "source_refs": [
         "F-zh_source_tax_calculator-e80d8f",
         "F-zh_source_tax_calculator-ab4e1e",
-        "D-007",
-        "D-034"
+        "D-007"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
-        "address_country",
+        "source_tax_residence",
         "daily_return_liechtenstein",
         "non_return_days_45"
       ]
     },
     {
       "id": "source_tax_tariff_letter",
-      "name": "Tariff letter",
-      "statement": "Married/registered partnership: C (spouse employed) or B; single etc.: H (single-parent) or A. With the cross-border tariff the letter becomes A→L, B→M, C→N, H→P.",
+      "name": "Source tax tariff letter",
+      "statement": "Married/registered partners: C if the spouse works, else B. Single, divorced, separated or widowed: H with an H child, else A. If the cross-border tariff applies the letter becomes A→L, B→M, C→N, H→P.",
       "inputs": [
         "Civil status for source tax",
-        "Spouse employed",
-        "Single-parent H tariff",
+        "Spouse works",
+        "Any H child",
         "Cross-border tariff applies"
       ],
       "table": [
@@ -2483,7 +2547,8 @@
           ],
           "then": "N",
           "source_refs": [
-            "F-zh_source_tax_calculator-4d3ac0"
+            "F-zh_source_tax_calculator-4d3ac0",
+            "F-zh_source_tax_calculator-b7154e"
           ]
         },
         {
@@ -2515,30 +2580,6 @@
           "when": [
             "Single, divorced, separated or widowed",
             "-",
-            "no",
-            "no"
-          ],
-          "then": "A",
-          "source_refs": [
-            "F-zh_source_tax_calculator-c78e0c"
-          ]
-        },
-        {
-          "when": [
-            "Single, divorced, separated or widowed",
-            "-",
-            "no",
-            "yes"
-          ],
-          "then": "L",
-          "source_refs": [
-            "F-zh_source_tax_calculator-b7154e"
-          ]
-        },
-        {
-          "when": [
-            "Single, divorced, separated or widowed",
-            "-",
             "yes",
             "no"
           ],
@@ -2556,25 +2597,51 @@
           ],
           "then": "P",
           "source_refs": [
+            "F-zh_source_tax_calculator-4d3ac0",
+            "F-zh_source_tax_calculator-b7154e"
+          ]
+        },
+        {
+          "when": [
+            "Single, divorced, separated or widowed",
+            "-",
+            "no",
+            "no"
+          ],
+          "then": "A",
+          "source_refs": [
+            "F-zh_source_tax_calculator-c78e0c"
+          ]
+        },
+        {
+          "when": [
+            "Single, divorced, separated or widowed",
+            "-",
+            "no",
+            "yes"
+          ],
+          "then": "L",
+          "source_refs": [
+            "F-zh_source_tax_calculator-4d3ac0",
             "F-zh_source_tax_calculator-b7154e"
           ]
         }
       ],
-      "expression": "if_else(not subject_to_source_tax, null, if_else(civil_status in [\"Married\", \"Registered partnership\"], if_else(spouse_employed == \"yes\", if_else(cross_border_tariff_applies, \"N\", \"C\"), if_else(cross_border_tariff_applies, \"M\", \"B\")), if_else(single_parent_h_tariff, if_else(cross_border_tariff_applies, \"P\", \"H\"), if_else(cross_border_tariff_applies, \"L\", \"A\"))))",
+      "expression": "if_else(source_tax_civil_status == \"Married or registered partnership\", if_else(spouse_employed == \"yes\", if_else(cross_border_tariff_applies, \"N\", \"C\"), if_else(spouse_employed == \"no\", if_else(cross_border_tariff_applies, \"M\", \"B\"), null)), if_else(source_tax_civil_status == \"Single, divorced, separated or widowed\", if_else(single_parent_h_tariff, if_else(cross_border_tariff_applies, \"P\", \"H\"), if_else(cross_border_tariff_applies, \"L\", \"A\")), null))",
       "source_refs": [
         "F-zh_source_tax_calculator-97139a",
         "F-zh_source_tax_calculator-c78e0c",
         "F-zh_source_tax_calculator-96658b",
         "F-zh_source_tax_calculator-4d3ac0",
         "F-zh_source_tax_calculator-b7154e",
+        "F-zh_source_tax_calculator-35dd3d",
         "D-001",
-        "D-003",
-        "D-006"
+        "D-006",
+        "D-009"
       ],
-      "status": "decision",
+      "status": "confirmed",
       "depends_on": [
-        "subject_to_source_tax",
-        "civil_status",
+        "source_tax_civil_status",
         "married_tariff_letter",
         "single_parent_h_tariff",
         "cross_border_tariff_applies"
@@ -2583,11 +2650,11 @@
     {
       "id": "source_tax_result",
       "name": "Source tax result",
-      "statement": "For every employee subject to source tax Lonio computes the tariff code = tariff letter + child digit + church-tax suffix (e.g. C1Y, L0Y) and records it for HR. Liechtenstein residents with daily return or at most 45 non-return days get 'in principle no source tax liability, subject to the double taxation agreement' instead, flagged for HR. Always recomputed from the latest answers.",
+      "statement": "For every employee subject to source tax Lonio computes the Zurich tariff code = tariff letter + child digit + church-tax suffix (e.g. C1Y, L0Y), replacing HR's manual calculator step; the result is recorded for HR. Liechtenstein residents with daily return or at most 45 non-return days get 'in principle no source tax liability, subject to the double taxation agreement' instead, flagged for HR. Liechtenstein residents with more than 45 days get the normal code (the calculator adds 'subject to the double taxation agreement'). It is derived again from the latest answers whenever they change.",
       "inputs": [
         "Subject to source tax",
-        "Liechtenstein: in principle no source tax",
-        "Country of home address"
+        "Liechtenstein: in principle no liability",
+        "Any child not determined"
       ],
       "table": [
         {
@@ -2596,7 +2663,7 @@
             "-",
             "-"
           ],
-          "then": "No tariff code (not subject to source tax)",
+          "then": "No source tax result",
           "source_refs": [
             "F-hr_transcript-b6d9b3"
           ]
@@ -2605,22 +2672,11 @@
           "when": [
             "yes",
             "yes",
-            "Liechtenstein"
+            "-"
           ],
-          "then": "'In principle no source tax liability, subject to the double taxation agreement', flagged for HR",
+          "then": "In principle no source tax liability, subject to the double taxation agreement (flagged for HR)",
           "source_refs": [
             "F-zh_source_tax_calculator-e80d8f",
-            "D-007"
-          ]
-        },
-        {
-          "when": [
-            "yes",
-            "no",
-            "Liechtenstein"
-          ],
-          "then": "Tariff code, subject to the double taxation agreement",
-          "source_refs": [
             "F-zh_source_tax_calculator-ab4e1e",
             "D-007"
           ]
@@ -2628,25 +2684,41 @@
         {
           "when": [
             "yes",
-            "-",
-            "not Liechtenstein"
+            "no",
+            "yes"
           ],
-          "then": "Tariff code (letter + child digit + church-tax suffix)",
+          "then": "Tariff code cannot be computed yet (OQ-child-paths-undetermined)",
+          "source_refs": [
+            "F-zh_source_tax_calculator-332e2a",
+            "D-009"
+          ]
+        },
+        {
+          "when": [
+            "yes",
+            "no",
+            "no"
+          ],
+          "then": "Tariff code: tariff letter + child digit + church-tax suffix",
           "source_refs": [
             "F-zh_source_tax_calculator-ecef37",
             "F-zh_source_tax_calculator-2eab9a",
+            "F-zh_source_tax_calculator-b7154e",
             "D-001"
           ]
         }
       ],
-      "expression": "if_else(not subject_to_source_tax, \"Not subject to source tax\", if_else(liechtenstein_no_source_tax_in_principle, \"In principle no source tax liability, subject to the double taxation agreement\", if_else(address_country == \"Liechtenstein\", \"Tariff code, subject to the double taxation agreement\", \"Tariff code\")))",
+      "expression": "if_else(not subject_to_source_tax, \"not subject to source tax\", if_else(liechtenstein_no_source_tax_in_principle, \"in principle no source tax liability, subject to the double taxation agreement\", if_else(child_tariff_result == \"not determined\", \"not determined\", \"tariff code\")))",
       "source_refs": [
+        "F-hr_transcript-563a9f",
+        "F-hr_transcript-4e180e",
         "F-zh_source_tax_calculator-ecef37",
         "F-zh_source_tax_calculator-e80d8f",
         "F-zh_source_tax_calculator-ab4e1e",
-        "F-hr_transcript-4e180e",
+        "F-zh_source_tax_calculator-86d588",
         "D-001",
         "D-007",
+        "D-009",
         "D-034",
         "D-037"
       ],
@@ -2656,22 +2728,23 @@
         "liechtenstein_no_source_tax_in_principle",
         "source_tax_tariff_letter",
         "source_tax_child_digit",
-        "church_tax_suffix"
+        "church_tax_suffix",
+        "child_tariff_result"
       ]
     },
     {
       "id": "permit_reminder",
       "name": "Permit reminder",
-      "statement": "At the end of the questionnaire, every non-Swiss employee and every employee living abroad is reminded to bring their permit on the first working day. HR words it so a Swiss citizen living abroad sees it does not apply to them. It collects no data.",
+      "statement": "At the end of the questionnaire every non-Swiss employee and every employee living abroad (whatever their nationality, since it is not asked of them) is reminded to bring their permit on the first working day. HR words the reminder so that a Swiss citizen living abroad sees it does not apply to them. No data is collected.",
       "inputs": [
         "Country of home address",
-        "Swiss citizen"
+        "Swiss citizenship"
       ],
       "table": [
         {
           "when": [
             "Switzerland",
-            "yes"
+            "Swiss"
           ],
           "then": "No reminder",
           "source_refs": [
@@ -2681,7 +2754,7 @@
         {
           "when": [
             "Switzerland",
-            "no"
+            "Not Swiss"
           ],
           "then": "Show reminder",
           "source_refs": [
@@ -2691,7 +2764,7 @@
         },
         {
           "when": [
-            "not Switzerland",
+            "Not Switzerland",
             "-"
           ],
           "then": "Show reminder",
@@ -2701,11 +2774,12 @@
           ]
         }
       ],
-      "expression": "(address_country != null and address_country != \"Switzerland\") or nationality == \"no\"",
+      "expression": "nationality == \"Not Swiss\" or (is_set(address_country) and address_country != \"Switzerland\")",
       "source_refs": [
         "F-hr_transcript-c53552",
         "D-010",
-        "D-038"
+        "D-038",
+        "G-01"
       ],
       "status": "decision",
       "depends_on": [
@@ -2716,30 +2790,73 @@
     {
       "id": "discard_inapplicable_answers",
       "name": "Discard answers that no longer apply",
-      "statement": "If the employee changes an earlier answer so that later questions no longer apply, those answers are kept while the employee goes back and forth but discarded on submission. After submission the questionnaire is read-only for the employee; changes are made by HR and all derived results are derived again from the latest answers.",
+      "statement": "If the employee changes an earlier answer so that later questions no longer apply, those answers are discarded on submission (data minimisation); until submission they may be kept so that going back and forth loses no input. After submission the questionnaire is read-only for the employee; later changes are made by HR.",
       "inputs": [],
       "table": [],
       "expression": "true",
       "source_refs": [
-        "G-01",
         "D-036",
-        "D-037"
+        "D-037",
+        "G-01"
       ],
       "status": "decision",
       "depends_on": []
+    },
+    {
+      "id": "employee_copy_content",
+      "name": "Content of the employee's copy",
+      "statement": "If the employee asks for a copy, it is sent to the email address they typed in and shows the answers exactly as submitted, nothing more - no derived values such as the insurance start date or tariff code.",
+      "inputs": [
+        "Send me a copy"
+      ],
+      "table": [
+        {
+          "when": [
+            "yes"
+          ],
+          "then": "Send copy of submitted answers only",
+          "source_refs": [
+            "F-hr_email_copy-37cede",
+            "F-hr_email_copy-9e81ef",
+            "F-hr_email_copy-daa6b1"
+          ]
+        },
+        {
+          "when": [
+            "no or empty"
+          ],
+          "then": "No copy",
+          "source_refs": [
+            "F-hr_email_copy-f75a41"
+          ]
+        }
+      ],
+      "expression": "copy_email_requested == \"yes\"",
+      "source_refs": [
+        "F-hr_email_copy-37cede",
+        "F-hr_email_copy-9e81ef",
+        "F-hr_email_copy-daa6b1",
+        "F-hr_email_copy-f75a41",
+        "D-036"
+      ],
+      "status": "confirmed",
+      "depends_on": [
+        "copy_email_requested",
+        "copy_email_address"
+      ]
     }
   ],
   "open_questions": [
     {
       "id": "OQ-canton-abroad",
-      "question": "What does Pensionskasse Muster expect in 'Canton' for employees living abroad, and does 'Canton' mean canton of residence or of work?",
-      "why_it_matters": "The field is required and lists only Swiss cantons; employees abroad cannot be registered without an answer.",
+      "question": "What should be entered in the pension fund's required 'Canton' field for employees living abroad, and does 'Canton' mean canton of residence or of work?",
+      "why_it_matters": "The field is required and offers only the 26 Swiss cantons; cross-border employees (Germany, Liechtenstein) cannot be registered without a value. Provisionally only residents of Switzerland are asked (D-002).",
       "options": [
         "Canton of work (Zurich) for employees abroad",
         "Canton of residence; the fund gives a rule for employees abroad",
-        "Canton means work canton for everyone"
+        "HR enters a value agreed with the fund"
       ],
-      "recommendation": "Provisionally ask only residents of Switzerland (D-002); verify with a domain expert and the fund.",
+      "recommendation": "Domain expert and Pensionskasse Muster to confirm; keep the provisional rule until then.",
       "affects": [
         "residence_canton"
       ],
@@ -2752,20 +2869,22 @@
     },
     {
       "id": "OQ-civil-status-partnership",
-      "question": "How does the pension fund want registered partnerships and separated employees registered (the list has only Single, Married, Divorced, Widowed), and does it want partner details?",
-      "why_it_matters": "A wrong civil status or a missing partner date of birth makes the registration wrong.",
+      "question": "How does Pensionskasse Muster want registered partnerships and separated employees registered, and does it want the partner's details?",
+      "why_it_matters": "The fund's list has only Single, Married, Divorced, Widowed. Provisionally registered partnership and separated are entered as Married with the partner's/spouse's date of birth (D-003).",
       "options": [
-        "Keep provisional mapping (both as Married with spouse/partner date of birth)",
-        "Fund gives another mapping"
+        "Keep the provisional mapping (both as Married)",
+        "Fund specifies another mapping"
       ],
-      "recommendation": "Use the provisional mapping (D-003) until a domain expert verifies it.",
+      "recommendation": "Domain expert to verify with the fund.",
       "affects": [
+        "civil_status",
         "pension_fund_civil_status",
         "spouse_date_of_birth"
       ],
       "source_refs": [
-        "F-pension_portal-9b24c5",
         "F-hr_transcript-f197d6",
+        "F-hr_transcript-3907fe",
+        "F-pension_portal-9b24c5",
         "D-003",
         "D-004"
       ],
@@ -2773,34 +2892,34 @@
     },
     {
       "id": "OQ-spouse-dob-other-status",
-      "question": "Does the fund's screen ask for a spouse's date of birth (or other data) for Divorced or Widowed?",
-      "why_it_matters": "The screenshots show only Single and Married; a hidden required field would block registration.",
+      "question": "Does the fund's form ask for a spouse's date of birth (or other fields) for Divorced or Widowed?",
+      "why_it_matters": "The screenshots show only Single (no) and Married (yes); if the fund needs it for divorced or widowed employees, the registration would be blocked.",
       "options": [
-        "No extra field (current assumption)",
-        "Extra field shown - add a question"
+        "Not needed (current assumption)",
+        "Needed - ask also divorced/widowed employees"
       ],
-      "recommendation": "Do not ask divorced/widowed employees (D-004); verify with a screenshot of the fund's screen.",
+      "recommendation": "Domain expert to provide a screenshot of the fund screen for these statuses.",
       "affects": [
         "spouse_date_of_birth"
       ],
       "source_refs": [
         "F-pension_portal-6d3630",
+        "F-pension_portal-39bab1",
         "D-004"
       ],
       "blocking": false
     },
     {
       "id": "OQ-calculator-coverage",
-      "question": "Does Lonio's computed tariff code match the calculator on paths not explored: residence block for A/B/H tariffs, more than 3 children, H3N/P3N, and the child paths marked 'inferred' in the child result table?",
-      "why_it_matters": "Lonio now owns the tariff result; an unverified path could produce a wrong tariff code.",
+      "question": "Does Lonio's computed tariff code match the calculator for the paths not explored: the residence block for A/B/H tariffs, more than 3 children, H3N/P3N and the full cross-product of paths?",
+      "why_it_matters": "Lonio now owns the tariff result (D-001); unexplored paths may produce wrong codes. Go-live condition (D-009).",
       "options": [
         "Domain expert compares computed codes with the calculator before go-live"
       ],
-      "recommendation": "Go-live condition: domain expert verification (D-009).",
+      "recommendation": "Run the comparison before release.",
       "affects": [
-        "child_tariff_result",
-        "source_tax_child_digit",
         "source_tax_tariff_letter",
+        "source_tax_child_digit",
         "cross_border_tariff_applies",
         "source_tax_result"
       ],
@@ -2812,13 +2931,36 @@
         "D-009"
       ],
       "blocking": false
+    },
+    {
+      "id": "OQ-child-paths-undetermined",
+      "question": "How does a child count in the child-answer combinations that the calculator exploration did not show (rows marked 'Not determined', e.g. married with alternating care where the employee is main contributor; single with an adult child in first education not mainly maintained)?",
+      "why_it_matters": "Without these outcomes Lonio cannot compute the tariff code for such employees and the result stays 'cannot be computed yet'.",
+      "options": [
+        "Domain expert runs the missing paths in the calculator and fills the table",
+        "Until then, HR determines the code for these cases"
+      ],
+      "recommendation": "Include these paths in the pre-go-live comparison of D-009.",
+      "affects": [
+        "child_tariff_result",
+        "source_tax_child_digit",
+        "single_parent_h_tariff",
+        "source_tax_result"
+      ],
+      "source_refs": [
+        "F-zh_source_tax_calculator-332e2a",
+        "F-zh_source_tax_calculator-96658b",
+        "D-001",
+        "D-009"
+      ],
+      "blocking": false
     }
   ],
   "exclusions": [
     {
       "id": "EX-photo",
       "item": "Employee photo for badges",
-      "reason": "Postponed to next year; the badge system is changing.",
+      "reason": "Postponed to next year; security is changing the badge system.",
       "source_refs": [
         "F-hr_transcript-7668e6"
       ]
@@ -2835,14 +2977,33 @@
     {
       "id": "EX-ahv",
       "item": "Social insurance (AHV) data",
-      "reason": "Not needed by any party in scope.",
+      "reason": "Not needed by the receiving parties in scope.",
       "source_refs": [
         "G-03"
       ]
     },
     {
+      "id": "EX-permit-type",
+      "item": "Permit type other than 'C permit yes/no' (employee and spouse)",
+      "reason": "No party needs any other permit type (data minimisation).",
+      "source_refs": [
+        "D-005",
+        "G-01"
+      ]
+    },
+    {
+      "id": "EX-nationality-detail",
+      "item": "Nationality of employees living abroad and nationalities beyond 'Swiss or not'",
+      "reason": "No rule uses it; employees abroad are subject to source tax whatever their nationality.",
+      "source_refs": [
+        "D-038",
+        "D-008",
+        "G-01"
+      ]
+    },
+    {
       "id": "EX-income-type",
-      "item": "Income type and replacement-income questions (tariffs G and Q)",
+      "item": "Income type and replacement income questions; tariffs G and Q",
       "reason": "A new employee always has earned income.",
       "source_refs": [
         "D-006",
@@ -2853,49 +3014,56 @@
       ]
     },
     {
-      "id": "EX-permit-type",
-      "item": "Permit types other than 'C permit yes/no', and the full nationality",
-      "reason": "Only Swiss citizenship and C permit drive a rule (data minimisation).",
-      "source_refs": [
-        "D-005",
-        "D-008",
-        "G-01"
-      ]
-    },
-    {
-      "id": "EX-nationality-abroad",
-      "item": "Citizenship of employees living abroad",
-      "reason": "Employees abroad are subject to source tax whatever their nationality; the permit reminder is shown to them anyway.",
-      "source_refs": [
-        "D-038",
-        "F-hr_transcript-1a20bb"
-      ]
-    },
-    {
       "id": "EX-special-tariffs",
-      "item": "Special tariffs such as D (second job) and calculator out-of-scope cases (artists, athletes, board fees, hardship, pensions)",
-      "reason": "Not part of onboarding.",
+      "item": "Special tariffs such as D (second job) and cases the calculator does not cover (artists, athletes, speakers, board fees abroad, hardship cases, pensions)",
+      "reason": "Out of scope for onboarding.",
       "source_refs": [
         "D-009",
         "F-zh_source_tax_calculator-74fb68"
       ]
     },
     {
+      "id": "EX-transmission",
+      "item": "How data is transmitted to the receiving parties (exports, portal entry, change notifications)",
+      "reason": "Separate topic.",
+      "source_refs": [
+        "G-04"
+      ]
+    },
+    {
+      "id": "EX-hr-side",
+      "item": "Who starts the onboarding, HR screens, HR changes after submission (first working day, moves, marriages, late certificates), handling of the Liechtenstein flag",
+      "reason": "Only the employee side is in scope; HR side is a later spec.",
+      "source_refs": [
+        "D-034",
+        "D-037",
+        "D-033",
+        "D-007"
+      ]
+    },
+    {
       "id": "EX-documents",
-      "item": "Uploading documents (certificate of residence, permit)",
+      "item": "Upload of documents (certificate of residence, proof of non-return days, permit)",
       "reason": "Documents go to HR outside Lonio.",
       "source_refs": [
         "D-035"
       ]
     },
     {
-      "id": "EX-hr-side",
-      "item": "HR-side screens, who starts the onboarding, HR changes after submission, transmission to receiving parties",
-      "reason": "Separate later spec; this spec covers only the employee questionnaire.",
+      "id": "EX-date-history",
+      "item": "History of earlier first working days",
+      "reason": "The latest date always counts; no history is kept.",
       "source_refs": [
-        "D-034",
-        "D-037",
-        "G-04"
+        "D-033"
+      ]
+    },
+    {
+      "id": "EX-copy-derived",
+      "item": "Derived values or any other information in the employee's emailed copy",
+      "reason": "The copy shows the submitted answers only, nothing more.",
+      "source_refs": [
+        "F-hr_email_copy-9e81ef",
+        "F-hr_email_copy-daa6b1"
       ]
     }
   ]

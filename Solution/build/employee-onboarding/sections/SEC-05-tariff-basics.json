@@ -29,7 +29,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -41,11 +41,11 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 },
                 {
                   "item": "spouse_residence_country",
-                  "value": "Switzerland"
+                  "value": "yes"
                 }
               ],
               "then": [
@@ -91,7 +91,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 },
                 {
                   "item": "civil_status",
@@ -116,7 +116,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -145,7 +145,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -299,7 +299,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -311,11 +311,11 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 },
                 {
                   "item": "spouse_residence_country",
-                  "value": "Switzerland"
+                  "value": "yes"
                 }
               ],
               "then": [
@@ -424,7 +424,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -436,7 +436,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -584,7 +584,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -596,7 +596,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -625,7 +625,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -637,7 +637,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -714,7 +714,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -747,7 +747,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -784,7 +784,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1106,7 +1106,7 @@
           "title": "No tariff letter for employees not subject to source tax; unverified paths",
           "given": "an employee is not subject to source tax, or the employee's answers follow a calculator path that was not explored",
           "when": "Lonio determines the tariff letter",
-          "then": "employees not subject to source tax get no tariff letter; special tariffs such as D (second job) and the replacement-income tariffs G and Q are never produced (D-006, D-009); the paths not explored in the calculator (residence block for A/B/H, more than 3 children, H3N/P3N, child paths marked inferred) are compared with the calculator by a domain expert before go-live (see OQ-calculator-coverage)",
+          "then": "employees not subject to source tax get no tariff letter; special tariffs such as D (second job) and the replacement-income tariffs G and Q are never produced (D-006, D-009); the paths not explored in the calculator (residence block for A/B/H, more than 3 children, H3N/P3N, the full combination of paths) are compared with the calculator by a domain expert before go-live (see OQ-calculator-coverage); child answer combinations whose outcome is not yet known stay undetermined until verified (see OQ-child-paths-undetermined)",
           "examples": [
             {
               "name": "Swiss citizen living in Switzerland",
@@ -1117,7 +1117,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 },
                 {
                   "item": "civil_status",
@@ -1140,6 +1140,7 @@
           ],
           "source_refs": [
             "F-hr_transcript-b6d9b3",
+            "F-zh_source_tax_calculator-332e2a",
             "D-006",
             "D-009"
           ]
@@ -1225,7 +1226,7 @@
                 },
                 {
                   "target": "source_tax_result",
-                  "expect": "Tariff code"
+                  "expect": "tariff code"
                 }
               ],
               "source_refs": [],
@@ -1278,7 +1279,7 @@
                 },
                 {
                   "target": "source_tax_result",
-                  "expect": "Tariff code"
+                  "expect": "tariff code"
                 }
               ],
               "source_refs": [],
@@ -1343,7 +1344,7 @@
                 },
                 {
                   "target": "source_tax_result",
-                  "expect": "Tariff code"
+                  "expect": "tariff code"
                 }
               ],
               "source_refs": [],
@@ -1358,7 +1359,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1392,7 +1393,7 @@
                 },
                 {
                   "target": "source_tax_result",
-                  "expect": "Tariff code"
+                  "expect": "tariff code"
                 }
               ],
               "source_refs": [],
@@ -1423,7 +1424,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1435,17 +1436,17 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 },
                 {
                   "item": "spouse_residence_country",
-                  "value": "Switzerland"
+                  "value": "yes"
                 }
               ],
               "then": [
                 {
                   "target": "source_tax_result",
-                  "expect": "Not subject to source tax"
+                  "expect": "not subject to source tax"
                 }
               ],
               "source_refs": [],
@@ -1460,7 +1461,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 },
                 {
                   "item": "civil_status",
@@ -1470,7 +1471,7 @@
               "then": [
                 {
                   "target": "source_tax_result",
-                  "expect": "Not subject to source tax"
+                  "expect": "not subject to source tax"
                 }
               ],
               "source_refs": [],
@@ -1488,7 +1489,7 @@
           "title": "Liechtenstein result follows the calculator",
           "given": "an employee lives in Liechtenstein (and is therefore asked the source tax questions)",
           "when": "the employee submits the questionnaire",
-          "then": "with daily return to Liechtenstein, or with not more than 45 expected non-return days, Lonio records 'In principle no source tax liability, subject to the double taxation agreement' instead of a tariff code and flags the case for HR; with more than 45 non-return days it records the normal tariff code, marked 'subject to the double taxation agreement'. How HR sees the flag belongs to the later HR-side spec (D-034)",
+          "then": "with daily return to Liechtenstein, or with not more than 45 expected non-return days, Lonio records 'In principle no source tax liability, subject to the double taxation agreement' instead of a tariff code and flags the case for HR; with more than 45 non-return days it records the normal tariff code, marked 'subject to the double taxation agreement' as the calculator does. How HR sees the flag belongs to the later HR-side spec (D-034)",
           "examples": [
             {
               "name": "Liechtenstein, daily return",
@@ -1509,7 +1510,7 @@
               "then": [
                 {
                   "target": "source_tax_result",
-                  "expect": "In principle no source tax liability, subject to the double taxation agreement"
+                  "expect": "in principle no source tax liability, subject to the double taxation agreement"
                 }
               ],
               "source_refs": [],
@@ -1538,7 +1539,7 @@
               "then": [
                 {
                   "target": "source_tax_result",
-                  "expect": "In principle no source tax liability, subject to the double taxation agreement"
+                  "expect": "in principle no source tax liability, subject to the double taxation agreement"
                 }
               ],
               "source_refs": [],
@@ -1603,7 +1604,7 @@
                 },
                 {
                   "target": "source_tax_result",
-                  "expect": "Tariff code, subject to the double taxation agreement"
+                  "expect": "tariff code"
                 }
               ],
               "source_refs": [],
@@ -1629,6 +1630,85 @@
             "D-009",
             "D-037"
           ]
+        },
+        {
+          "id": "AC-05.7.5",
+          "title": "Tariff code cannot be computed yet for undetermined child situations",
+          "given": "an employee is subject to source tax, does not fall under the Liechtenstein 'in principle no source tax liability' case, and at least one child's answers form a combination whose outcome the calculator exploration did not show",
+          "when": "the employee submits the questionnaire",
+          "then": "Lonio records that the tariff code cannot be computed yet instead of a possibly wrong code, so the case stays visible for HR; the outcome of these combinations is to be verified by a domain expert (see OQ-child-paths-undetermined and OQ-calculator-coverage)",
+          "examples": [
+            {
+              "name": "Married, minor child in the household, shared custody, alternating care, employee is the larger contributor",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_employed",
+                  "value": "yes"
+                },
+                {
+                  "item": "confession",
+                  "value": "None or other"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_parental_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "The employee"
+                },
+                {
+                  "item": "daily_return_germany",
+                  "value": "yes"
+                },
+                {
+                  "item": "residence_certificate",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_result",
+                  "expect": "not determined"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-332e2a",
+            "D-001",
+            "D-009"
+          ]
         }
       ],
       "items": [],
@@ -1642,6 +1722,7 @@
         "F-zh_source_tax_calculator-ab4e1e",
         "F-zh_source_tax_calculator-b7154e",
         "F-zh_source_tax_calculator-c78e0c",
+        "F-zh_source_tax_calculator-332e2a",
         "F-hr_transcript-4e180e",
         "F-hr_transcript-563a9f",
         "F-hr_transcript-b6d9b3",

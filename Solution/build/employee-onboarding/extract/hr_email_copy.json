@@ -1,0 +1,199 @@
+[
+  {
+    "id": "F-hr_email_copy-6d2b5a",
+    "source_id": "hr_email_copy",
+    "kind": "context",
+    "subject": "employee_copy_motivation",
+    "statement": "New employees currently keep calling HR (Muster AG) to ask what they entered in the onboarding questionnaire.",
+    "anchors": [
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "New employees keep calling us to ask what they entered"
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "current_state",
+    "supersedes": [],
+    "local_id": "f1",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-hr_email_copy-37cede",
+    "source_id": "hr_email_copy",
+    "kind": "decision",
+    "subject": "employee_copy_email",
+    "statement": "At the end of the questionnaire, when submitting, the employee should be able to send themselves an email with a copy of their form data.",
+    "anchors": [
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "at the end of the questionnaire, when they submit, the employee should be able to send themselves an email with a copy of their form data"
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f2",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-hr_email_copy-f75a41",
+    "source_id": "hr_email_copy",
+    "kind": "condition",
+    "subject": "employee_copy_email",
+    "statement": "Sending the copy of the form data by email is optional for the employee; not everyone wants it.",
+    "anchors": [
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "It is optional, not everyone wants it."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f3",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-hr_email_copy-029105",
+    "source_id": "hr_email_copy",
+    "kind": "field",
+    "subject": "copy_email_address",
+    "statement": "If the employee wants a copy, they type in the email address the copy should be sent to.",
+    "anchors": [
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "They just type in the email address the copy should go to."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f4",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-hr_email_copy-b67d2f",
+    "source_id": "hr_email_copy",
+    "kind": "condition",
+    "subject": "copy_email_address",
+    "statement": "The copy email address is only needed when the employee chooses to receive a copy (asked only then, not required otherwise).",
+    "anchors": [
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "It is optional, not everyone wants it."
+      },
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "They just type in the email address the copy should go to."
+      }
+    ],
+    "basis": "inferred",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f5",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-hr_email_copy-9e81ef",
+    "source_id": "hr_email_copy",
+    "kind": "rule",
+    "subject": "employee_copy_content",
+    "statement": "The emailed copy must show the answers exactly as they were submitted, nothing more.",
+    "anchors": [
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "The copy should show the answers exactly as they were submitted, nothing more."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f6",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-hr_email_copy-daa6b1",
+    "source_id": "hr_email_copy",
+    "kind": "exclusion",
+    "subject": "employee_copy_content",
+    "statement": "The emailed copy must not contain derived values or any other information beyond the submitted answers.",
+    "anchors": [
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "nothing more"
+      }
+    ],
+    "basis": "inferred",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f7",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-hr_email_copy-607694",
+    "source_id": "hr_email_copy",
+    "kind": "decision",
+    "subject": "scope_unchanged",
+    "statement": "Apart from the email copy feature, everything else stays as discussed in the earlier HR meeting.",
+    "anchors": [
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "Everything else stays as we discussed."
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f8",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-hr_email_copy-06cafb",
+    "source_id": "hr_email_copy",
+    "kind": "context",
+    "subject": "employee_copy_email",
+    "statement": "The email copy feature was forgotten in the HR meeting and added afterwards by Anna (HR, Muster AG) via email on 14 November 2026.",
+    "anchors": [
+      {
+        "unit_id": "hr_email_copy/T-001",
+        "quote": "one more thing we forgot in our meeting"
+      },
+      {
+        "unit_id": "hr_email_copy/T-000",
+        "quote": "Date: 14 November 2026"
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "current_state",
+    "supersedes": [],
+    "local_id": "f9",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  }
+]

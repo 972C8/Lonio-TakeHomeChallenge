@@ -29,7 +29,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -62,7 +62,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -74,11 +74,11 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 },
                 {
                   "item": "spouse_residence_country",
-                  "value": "Switzerland"
+                  "value": "yes"
                 }
               ],
               "then": [
@@ -91,7 +91,9 @@
                   "expect": "not asked"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-hr_transcript-d7431e"
+              ],
               "illustrative": false
             },
             {
@@ -103,7 +105,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "yes"
+                  "value": "Swiss"
                 },
                 {
                   "item": "civil_status",
@@ -170,7 +172,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -207,7 +209,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -260,7 +262,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -272,7 +274,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -305,7 +307,9 @@
                   "expect": "0"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-987091"
+              ],
               "illustrative": false
             }
           ],
@@ -330,7 +334,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -371,7 +375,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -442,6 +446,7 @@
         "F-zh_source_tax_calculator-3a75cc",
         "F-zh_source_tax_calculator-7c667f",
         "F-hr_transcript-b84498",
+        "F-hr_transcript-d7431e",
         "G-01",
         "D-001",
         "D-003",
@@ -454,7 +459,7 @@
       "title": "Ask custody and common household for a minor child living with the employee",
       "as_a": "source_tax",
       "i_want": "for each minor child living in the employee's household, to know whether custody is sole or shared, and for shared custody whether the employee lives with the other parent and whether there is alternating care",
-      "so_that": "Lonio decides, as the calculator does, whether the child counts for the tariff code and whether it counts with H for a single employee",
+      "so_that": "Lonio decides, as the calculator does, whether the child counts for the tariff code and whether it counts as an H child for a single employee",
       "priority": "P1",
       "priority_reason": "A minor child in the household is the main child case; a wrong answer path gives a wrong tariff code, which Lonio now owns instead of HR (D-001).",
       "acceptance_criteria": [
@@ -474,7 +479,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -519,7 +524,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -564,7 +569,7 @@
           "title": "Sole custody counts the child",
           "given": "an employee subject to source tax with a minor child in the household",
           "when": "the employee answers 'Sole custody'",
-          "then": "no further question is asked for the child; the child counts for a married employee or registered partner and counts with H for a single, divorced, widowed or separated employee",
+          "then": "no further question is asked for the child; the child counts for a married employee or registered partner and counts as an H child for a single, divorced, widowed or separated employee",
           "examples": [
             {
               "name": "Calculator run C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c53a22)",
@@ -575,7 +580,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -587,7 +592,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -620,7 +625,9 @@
                   "expect": "counts"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c53a22"
+              ],
               "illustrative": false
             },
             {
@@ -632,7 +639,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -662,10 +669,12 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts with H"
+                  "expect": "counts as H child"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c53a22"
+              ],
               "illustrative": false
             },
             {
@@ -677,7 +686,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -707,10 +716,12 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts with H"
+                  "expect": "counts as H child"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "D-003"
+              ],
               "illustrative": true
             }
           ],
@@ -736,7 +747,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -785,7 +796,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -838,7 +849,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -894,7 +905,7 @@
           "title": "Shared custody result for a married employee or registered partner",
           "given": "a married employee or registered partner subject to source tax with a minor child in the household under shared custody",
           "when": "the employee has answered the shared-custody questions",
-          "then": "a common household with the other parent counts the child without further questions; without a common household the child does not count, unless there is alternating care and the employee makes the larger financial contribution, in which case it counts. The last case was not observed in the calculator and is verified before go-live (see OQ-calculator-coverage).",
+          "then": "a common household with the other parent counts the child without further questions; without a common household the child does not count if there is no alternating care, or if there is alternating care and the other parent makes the larger financial contribution. With alternating care and the employee as larger contributor the result is not determined: the calculator exploration did not show this case, so Lonio cannot compute the tariff code for this employee until it is verified (see OQ-child-paths-undetermined).",
           "examples": [
             {
               "name": "Calculator run C1Y, common household (zh_source_tax_calculator/F-zh_source_tax_calculator-3058a4)",
@@ -905,7 +916,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -917,7 +928,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -954,7 +965,9 @@
                   "expect": "counts"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-3058a4"
+              ],
               "illustrative": false
             },
             {
@@ -966,7 +979,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -978,7 +991,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -1015,7 +1028,9 @@
                   "expect": "does not count"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-3058a4"
+              ],
               "illustrative": false
             },
             {
@@ -1027,7 +1042,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1039,7 +1054,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -1080,11 +1095,13 @@
                   "expect": "does not count"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-3058a4"
+              ],
               "illustrative": false
             },
             {
-              "name": "Alternating care, employee main contributor (inferred, to verify)",
+              "name": "Alternating care, employee main contributor (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -1092,7 +1109,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1104,7 +1121,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -1142,16 +1159,18 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-3058a4",
-            "F-zh_source_tax_calculator-56e79b",
+            "F-zh_source_tax_calculator-332e2a",
             "D-003",
             "D-009"
           ]
@@ -1161,7 +1180,7 @@
           "title": "Shared custody result for a single, divorced, widowed or separated employee",
           "given": "a single, divorced, widowed or separated employee subject to source tax with a minor child in the household under shared custody",
           "when": "the employee has answered the shared-custody questions",
-          "then": "with a common household with the other parent, the child counts with H if the employee makes the larger financial contribution and does not count otherwise; without a common household, the child counts with H if there is no alternating care, or if there is alternating care and the employee makes the larger contribution; with alternating care and the other parent as larger contributor it does not count (not observed in the calculator, verified before go-live, see OQ-calculator-coverage)",
+          "then": "with a common household with the other parent, the child counts as an H child if the employee makes the larger financial contribution and does not count otherwise; without a common household, the child counts as an H child if there is no alternating care, or if there is alternating care and the employee makes the larger contribution. With alternating care and the other parent as larger contributor the result is not determined: the calculator exploration did not show this case, so Lonio cannot compute the tariff code for this employee until it is verified (see OQ-child-paths-undetermined).",
           "examples": [
             {
               "name": "Common household, employee main contributor (zh_source_tax_calculator/F-zh_source_tax_calculator-96658b)",
@@ -1172,7 +1191,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1210,10 +1229,12 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts with H"
+                  "expect": "counts as H child"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-96658b"
+              ],
               "illustrative": false
             },
             {
@@ -1225,7 +1246,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1266,7 +1287,9 @@
                   "expect": "does not count"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-38dd4a"
+              ],
               "illustrative": false
             },
             {
@@ -1278,7 +1301,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1320,10 +1343,12 @@
                 },
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts with H"
+                  "expect": "counts as H child"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-38dd4a"
+              ],
               "illustrative": false
             },
             {
@@ -1335,7 +1360,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1377,14 +1402,16 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts with H"
+                  "expect": "counts as H child"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-96658b"
+              ],
               "illustrative": false
             },
             {
-              "name": "Alternating care, other parent main contributor (inferred, to verify)",
+              "name": "Alternating care, other parent main contributor (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -1392,7 +1419,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1434,16 +1461,19 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "does not count"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-38dd4a",
             "F-zh_source_tax_calculator-96658b",
+            "F-zh_source_tax_calculator-332e2a",
             "D-003",
             "D-009"
           ]
@@ -1471,6 +1501,7 @@
         "F-zh_source_tax_calculator-3058a4",
         "F-zh_source_tax_calculator-38dd4a",
         "F-zh_source_tax_calculator-96658b",
+        "F-zh_source_tax_calculator-332e2a",
         "D-001",
         "D-003",
         "D-009"
@@ -1482,7 +1513,7 @@
       "title": "Ask custody and alternating care for a minor child not living with the employee",
       "as_a": "source_tax",
       "i_want": "for each minor child outside the employee's household, to know whether the employee shares custody (married or registered partner) or has parental custody (single, divorced, widowed, separated), and whether there is alternating care",
-      "so_that": "Lonio decides, as the calculator does, whether such a child counts for the tariff code, and counts with H for a single employee",
+      "so_that": "Lonio decides, as the calculator does, whether such a child counts for the tariff code, and counts as an H child for a single employee",
       "priority": "P1",
       "priority_reason": "Without these answers Lonio cannot compute the tariff code for employees whose minor children live elsewhere; Lonio owns the tariff result instead of HR (D-001).",
       "acceptance_criteria": [
@@ -1502,7 +1533,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1514,7 +1545,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -1559,7 +1590,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1596,7 +1627,9 @@
                   "expect": "not asked"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "D-003"
+              ],
               "illustrative": true
             }
           ],
@@ -1626,7 +1659,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1638,7 +1671,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -1671,7 +1704,9 @@
                   "expect": "does not count"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-56e79b"
+              ],
               "illustrative": false
             },
             {
@@ -1683,7 +1718,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1720,7 +1755,9 @@
                   "expect": "does not count"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c2faa7"
+              ],
               "illustrative": false
             },
             {
@@ -1732,7 +1769,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1786,7 +1823,7 @@
           "title": "Result for a minor child outside the household",
           "given": "an employee subject to source tax with a minor child outside the household and (shared) custody",
           "when": "the employee has answered alternating care and, where asked, who contributes more",
-          "then": "the child counts only with alternating care and the employee as larger financial contributor: it counts for a married employee or registered partner and counts with H for a single, divorced, widowed or separated employee. Without alternating care, or with the other parent as larger contributor, it does not count; these cases were not observed in the calculator and are verified before go-live (see OQ-calculator-coverage).",
+          "then": "with alternating care and the employee as larger financial contributor the child counts for a married employee or registered partner and counts as an H child for a single, divorced, widowed or separated employee. Without alternating care, or with the other parent as larger contributor, the result is not determined: the calculator exploration did not show these cases, so Lonio cannot compute the tariff code for this employee until they are verified (see OQ-child-paths-undetermined).",
           "examples": [
             {
               "name": "Calculator run B1N (zh_source_tax_calculator/F-zh_source_tax_calculator-56e79b)",
@@ -1797,7 +1834,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1809,7 +1846,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -1846,7 +1883,9 @@
                   "expect": "counts"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-56e79b"
+              ],
               "illustrative": false
             },
             {
@@ -1858,7 +1897,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1896,14 +1935,16 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts with H"
+                  "expect": "counts as H child"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c2faa7"
+              ],
               "illustrative": false
             },
             {
-              "name": "Married, other parent contributes more (inferred, to verify)",
+              "name": "Married, other parent contributes more (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -1911,7 +1952,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1923,7 +1964,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -1957,14 +1998,16 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "does not count"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             },
             {
-              "name": "Married, no alternating care (inferred, to verify)",
+              "name": "Married, no alternating care (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -1972,7 +2015,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -1984,7 +2027,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2018,14 +2061,16 @@
                 },
                 {
                   "target": "child_tariff_result",
-                  "expect": "does not count"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             },
             {
-              "name": "Single, other parent contributes more (inferred, to verify)",
+              "name": "Single, other parent contributes more (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -2033,7 +2078,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2071,14 +2116,16 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "does not count"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             },
             {
-              "name": "Single, no alternating care (inferred, to verify)",
+              "name": "Single, no alternating care (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -2086,7 +2133,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2120,17 +2167,19 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "does not count"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-56e79b",
             "F-zh_source_tax_calculator-c2faa7",
-            "F-zh_source_tax_calculator-3058a4",
+            "F-zh_source_tax_calculator-332e2a",
             "D-003",
             "D-009"
           ]
@@ -2156,7 +2205,7 @@
         "F-zh_source_tax_calculator-64ac33",
         "F-zh_source_tax_calculator-56e79b",
         "F-zh_source_tax_calculator-c2faa7",
-        "F-zh_source_tax_calculator-3058a4",
+        "F-zh_source_tax_calculator-332e2a",
         "D-001",
         "D-003",
         "D-009"
@@ -2188,7 +2237,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2200,7 +2249,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2253,7 +2302,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2302,7 +2351,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2314,7 +2363,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2377,7 +2426,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2430,7 +2479,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2475,7 +2524,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2487,7 +2536,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2548,7 +2597,7 @@
       "title": "Ask household and maintenance for a child of age in first education",
       "as_a": "source_tax",
       "i_want": "for each child of age in first education, to know whether the employee lives with the other parent and, where needed, whether the employee pays more than 50% of the child's maintenance",
-      "so_that": "Lonio decides, as the calculator does, whether an adult child in first education counts for the tariff code and whether it counts with H for a single employee",
+      "so_that": "Lonio decides, as the calculator does, whether an adult child in first education counts for the tariff code and whether it counts as an H child for a single employee",
       "priority": "P1",
       "priority_reason": "Without these answers Lonio cannot compute the tariff code for employees with children in first education; Lonio owns the tariff result instead of HR (D-001).",
       "acceptance_criteria": [
@@ -2568,7 +2617,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2617,7 +2666,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2666,7 +2715,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2678,7 +2727,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2725,7 +2774,7 @@
           "title": "Result for a married employee or registered partner",
           "given": "a married employee or registered partner subject to source tax with a child of age in first education",
           "when": "the employee has answered the child questions",
-          "then": "the child counts if it lives in the household with a common household with the other parent, or if the employee pays more than 50% of its maintenance; otherwise it does not count. Cases not observed in the calculator are verified before go-live (see OQ-calculator-coverage).",
+          "then": "the child counts if it lives in the household with a common household with the other parent; it does not count if it lives outside the household and the employee does not pay more than 50% of its maintenance. In the other cases (outside the household and mainly maintained, or in the household without a common household with the other parent) the result is not determined: the calculator exploration did not show them, so Lonio cannot compute the tariff code for this employee until they are verified (see OQ-child-paths-undetermined).",
           "examples": [
             {
               "name": "Calculator run B1N, common household (zh_source_tax_calculator/F-zh_source_tax_calculator-50f74a)",
@@ -2736,7 +2785,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2748,7 +2797,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2781,7 +2830,9 @@
                   "expect": "counts"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-50f74a"
+              ],
               "illustrative": false
             },
             {
@@ -2793,7 +2844,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2805,7 +2856,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2834,11 +2885,13 @@
                   "expect": "does not count"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-50f74a"
+              ],
               "illustrative": false
             },
             {
-              "name": "Outside household, mainly maintained (inferred, to verify)",
+              "name": "Outside household, mainly maintained (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -2846,7 +2899,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2858,7 +2911,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2884,14 +2937,16 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             },
             {
-              "name": "In household, no common household, mainly maintained (inferred, to verify)",
+              "name": "In household, no common household, mainly maintained (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -2899,7 +2954,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2911,7 +2966,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2941,14 +2996,16 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             },
             {
-              "name": "In household, no common household, not mainly maintained (inferred, to verify)",
+              "name": "In household, no common household, not mainly maintained (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -2956,7 +3013,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -2968,7 +3025,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -2998,16 +3055,18 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "does not count"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-50f74a",
-            "F-zh_source_tax_calculator-562299",
+            "F-zh_source_tax_calculator-332e2a",
             "D-003",
             "D-009"
           ]
@@ -3017,7 +3076,7 @@
           "title": "Result for a single, divorced, widowed or separated employee",
           "given": "a single, divorced, widowed or separated employee subject to source tax with a child of age in first education",
           "when": "the employee has answered the child questions",
-          "then": "a child in the household counts with H if the employee pays more than 50% of its maintenance (no common household with the other parent) or makes the larger financial contribution (common household); a child outside the household that the employee mainly maintains counts without H; in all other cases the child does not count. Cases not observed in the calculator are verified before go-live (see OQ-calculator-coverage).",
+          "then": "a child in the household counts as an H child if the employee pays more than 50% of its maintenance (no common household with the other parent) or makes the larger financial contribution (common household); a child outside the household that the employee mainly maintains counts without H. In the other cases (common household with the other parent as larger contributor, or a child not mainly maintained by the employee) the result is not determined: the calculator exploration did not show them, so Lonio cannot compute the tariff code for this employee until they are verified (see OQ-child-paths-undetermined).",
           "examples": [
             {
               "name": "Calculator run H1N, in household, mainly maintained (zh_source_tax_calculator/F-zh_source_tax_calculator-562299)",
@@ -3028,7 +3087,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3062,10 +3121,12 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts with H"
+                  "expect": "counts as H child"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-562299"
+              ],
               "illustrative": false
             },
             {
@@ -3077,7 +3138,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3110,11 +3171,13 @@
                   "expect": "counts"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-562299"
+              ],
               "illustrative": false
             },
             {
-              "name": "Common household, employee contributes more (inferred, to verify)",
+              "name": "Common household, employee contributes more (zh_source_tax_calculator/F-zh_source_tax_calculator-96658b)",
               "given": [
                 {
                   "item": "address_country",
@@ -3122,7 +3185,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3160,14 +3223,16 @@
                 },
                 {
                   "target": "child_tariff_result",
-                  "expect": "counts with H"
+                  "expect": "counts as H child"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-zh_source_tax_calculator-96658b"
+              ],
+              "illustrative": false
             },
             {
-              "name": "Common household, other parent contributes more (inferred, to verify)",
+              "name": "Common household, other parent contributes more (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -3175,7 +3240,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3209,14 +3274,16 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "does not count"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             },
             {
-              "name": "In household, not mainly maintained (inferred, to verify)",
+              "name": "In household, not mainly maintained (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -3224,7 +3291,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3258,14 +3325,16 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "does not count"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             },
             {
-              "name": "Outside household, not mainly maintained (inferred, to verify)",
+              "name": "Outside household, not mainly maintained (not shown by the calculator)",
               "given": [
                 {
                   "item": "address_country",
@@ -3273,7 +3342,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3303,18 +3372,19 @@
               "then": [
                 {
                   "target": "child_tariff_result",
-                  "expect": "does not count"
+                  "expect": "not determined"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
               "illustrative": true
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-562299",
             "F-zh_source_tax_calculator-96658b",
-            "F-zh_source_tax_calculator-38dd4a",
-            "F-zh_source_tax_calculator-50f74a",
+            "F-zh_source_tax_calculator-332e2a",
             "D-003",
             "D-009"
           ]
@@ -3338,7 +3408,7 @@
         "F-zh_source_tax_calculator-50f74a",
         "F-zh_source_tax_calculator-562299",
         "F-zh_source_tax_calculator-96658b",
-        "F-zh_source_tax_calculator-38dd4a",
+        "F-zh_source_tax_calculator-332e2a",
         "D-001",
         "D-003",
         "D-009"
@@ -3359,7 +3429,7 @@
           "title": "Child digit equals the number of children that count",
           "given": "an employee subject to source tax",
           "when": "Lonio computes the tariff code",
-          "then": "the child digit is the number of children that count, with or without H (for example three counting children of a married employee with an employed spouse give C3Y, and one counting and one non-counting child give digit 1); with no children or none counting the digit is 0. Results with more than 3 children are verified against the calculator before go-live (see OQ-calculator-coverage). The digit is always derived again from the latest answers.",
+          "then": "the child digit is the number of children that count, including H children (for example three counting children of a married employee with an employed spouse give C3Y, and one counting and one non-counting child give digit 1); with no children or none counting the digit is 0. Results with more than 3 children are verified against the calculator before go-live (see OQ-calculator-coverage). The digit is always derived again from the latest answers.",
           "examples": [
             {
               "name": "One child counting (zh_source_tax_calculator/F-zh_source_tax_calculator-c53a22)",
@@ -3370,7 +3440,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3382,7 +3452,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -3411,11 +3481,13 @@
                   "expect": "1"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c53a22"
+              ],
               "illustrative": false
             },
             {
-              "name": "One child counting with H (zh_source_tax_calculator/F-zh_source_tax_calculator-38dd4a)",
+              "name": "One H child (zh_source_tax_calculator/F-zh_source_tax_calculator-38dd4a)",
               "given": [
                 {
                   "item": "address_country",
@@ -3423,7 +3495,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3464,7 +3536,9 @@
                   "expect": "1"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-38dd4a"
+              ],
               "illustrative": false
             },
             {
@@ -3476,7 +3550,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3488,7 +3562,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -3517,7 +3591,9 @@
                   "expect": "0"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-56e79b"
+              ],
               "illustrative": false
             },
             {
@@ -3529,7 +3605,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3563,10 +3639,10 @@
         },
         {
           "id": "AC-06.6.2",
-          "title": "H tariff for single parents with a child counting with H",
+          "title": "H tariff for single parents with an H child",
           "given": "an employee subject to source tax",
           "when": "Lonio decides the tariff letter",
-          "then": "a single, divorced, widowed or separated employee gets the H tariff if at least one child counts with H (for example one child counting and one counting with H give H2); a single employee without such a child keeps tariff A; a married employee or registered partner never gets the H tariff",
+          "then": "a single, divorced, widowed or separated employee gets the H tariff if at least one child counts as an H child (for example one counting child and one H child give H2); a single employee without such a child keeps tariff A; a married employee or registered partner never gets the H tariff",
           "examples": [
             {
               "name": "Calculator run H1Y, sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-c53a22)",
@@ -3577,7 +3653,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3610,7 +3686,9 @@
                   "expect": "yes"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c53a22"
+              ],
               "illustrative": false
             },
             {
@@ -3622,7 +3700,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3659,7 +3737,9 @@
                   "expect": "1"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-562299"
+              ],
               "illustrative": false
             },
             {
@@ -3671,7 +3751,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3683,7 +3763,7 @@
                 },
                 {
                   "item": "spouse_nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "spouse_permit_type",
@@ -3716,7 +3796,9 @@
                   "expect": "no"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c53a22"
+              ],
               "illustrative": false
             },
             {
@@ -3728,7 +3810,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Not Swiss"
                 },
                 {
                   "item": "permit_type",
@@ -3759,6 +3841,71 @@
             "F-zh_source_tax_calculator-97139a",
             "D-003"
           ]
+        },
+        {
+          "id": "AC-06.6.3",
+          "title": "No tariff code while a child's result is not determined",
+          "given": "an employee subject to source tax with at least one child whose answers lead to a combination the calculator exploration did not show",
+          "when": "Lonio computes the source tax result",
+          "then": "the child's result is 'not determined' and Lonio records that the tariff code cannot be computed yet instead of a possibly wrong code; the missing outcomes are filled in after a domain expert runs these paths in the calculator before go-live (see OQ-child-paths-undetermined)",
+          "examples": [
+            {
+              "name": "Single, adult child in first education outside household, not mainly maintained (not shown by the calculator)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Not Swiss"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Of age and in first education"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_main_maintenance",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_tariff_result",
+                  "expect": "not determined"
+                },
+                {
+                  "target": "source_tax_result",
+                  "expect": "not determined"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-332e2a"
+              ],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-332e2a",
+            "D-001",
+            "D-009"
+          ]
         }
       ],
       "items": [],
@@ -3772,6 +3919,8 @@
         "F-zh_source_tax_calculator-96658b",
         "F-zh_source_tax_calculator-c78e0c",
         "F-zh_source_tax_calculator-97139a",
+        "F-zh_source_tax_calculator-332e2a",
+        "F-hr_transcript-4e180e",
         "D-001",
         "D-003",
         "D-009",
@@ -3797,7 +3946,9 @@
     "source_tax_child_digit",
     "single_parent_h_tariff"
   ],
-  "open_questions": [],
+  "open_questions": [
+    "OQ-child-paths-undetermined"
+  ],
   "source_refs": [
     "F-zh_source_tax_calculator-103b19",
     "F-zh_source_tax_calculator-987091",
