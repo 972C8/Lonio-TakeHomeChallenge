@@ -1,0 +1,348 @@
+{
+  "id": "SEC-02-start-date-insurance",
+  "order": 2,
+  "title": "First working day and insurance start date",
+  "purpose": "Ask the employee for the first working day and derive the pension fund insurance start date from it, so that the start date always falls on the 1st of a month and follows the latest first working day.",
+  "stories": [
+    {
+      "id": "US-02.1",
+      "title": "Employee enters the first working day",
+      "as_a": "hr",
+      "i_want": "every new employee to state their first working day in the questionnaire, with the latest date always being the one that counts",
+      "so_that": "the pension fund registration has its most important input and a moved start date no longer goes unnoticed, as it did in Julia's case",
+      "priority": "P1",
+      "priority_reason": "HR calls the first working day 'the number one thing' for the pension fund; a start date that was not updated caused a wrong insurance start, an unfriendly letter from the fund and weeks of fixing (Julia incident).",
+      "acceptance_criteria": [
+        {
+          "id": "AC-02.1.1",
+          "title": "First working day is always asked and required",
+          "given": "a new employee is filling in the questionnaire",
+          "when": "they reach the employment step",
+          "then": "they are asked for their first working day as a date (DD.MM.YYYY); they cannot submit the questionnaire without it, whatever their other answers",
+          "examples": [
+            {
+              "name": "Any employee - first working day asked and required",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "first_working_day",
+                  "expect": "asked"
+                },
+                {
+                  "target": "first_working_day",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee living abroad - first working day still asked and required",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "first_working_day",
+                  "expect": "asked"
+                },
+                {
+                  "target": "first_working_day",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-872bd7",
+            "G-08",
+            "G-10"
+          ]
+        },
+        {
+          "id": "AC-02.1.2",
+          "title": "First working day is recorded for the pension fund and HR",
+          "given": "the employee has entered their first working day",
+          "when": "they submit the questionnaire",
+          "then": "the first working day is recorded for HR, which tracks the start date, and serves as the basis of the pension fund insurance start date (see US-02.2)",
+          "examples": [],
+          "source_refs": [
+            "F-hr_transcript-872bd7",
+            "D-034"
+          ]
+        },
+        {
+          "id": "AC-02.1.3",
+          "title": "The latest entered date counts while the employee is filling in the questionnaire",
+          "given": "the employee has entered a first working day and then changes it before submitting, for example because they negotiated an earlier exit with their old employer",
+          "when": "they submit the questionnaire",
+          "then": "only the latest first working day is recorded; no earlier date is kept",
+          "examples": [],
+          "source_refs": [
+            "F-hr_transcript-e3721e",
+            "D-033"
+          ]
+        },
+        {
+          "id": "AC-02.1.4",
+          "title": "After submission only HR changes the first working day",
+          "given": "the employee has submitted the questionnaire",
+          "when": "the first working day moves afterwards",
+          "then": "the employee cannot change it in the questionnaire any more; only HR can change it, the latest date replaces the earlier one without keeping a history, and the insurance start date follows the new date (see US-02.2). How HR makes the change is left to the later HR-side spec.",
+          "examples": [],
+          "source_refs": [
+            "D-033",
+            "D-034",
+            "F-hr_transcript-d7a23b"
+          ]
+        }
+      ],
+      "items": [
+        "first_working_day"
+      ],
+      "rules": [],
+      "source_refs": [
+        "F-hr_transcript-872bd7",
+        "F-hr_transcript-e3721e",
+        "F-hr_transcript-d7a23b",
+        "G-08",
+        "D-033",
+        "D-034"
+      ],
+      "status": "decision"
+    },
+    {
+      "id": "US-02.2",
+      "title": "Insurance start date derived from the first working day",
+      "as_a": "pension_fund",
+      "i_want": "the insurance start date to be derived from the latest first working day and always to fall on the 1st of a month",
+      "so_that": "the employee is insured from the correct date and the fund is not given a wrong start date after the first working day has moved",
+      "priority": "P1",
+      "priority_reason": "The fund requires an insurance start date on the 1st of a month; a start date that did not follow a moved first working day (Julia) led to a wrong registration and weeks of fixing.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-02.2.1",
+          "title": "Employee is not asked for the insurance start date",
+          "given": "a new employee is filling in the questionnaire",
+          "when": "they go through all steps",
+          "then": "they are never asked for an insurance start date; Lonio derives it from the first working day",
+          "examples": [],
+          "source_refs": [
+            "G-08",
+            "F-hr_transcript-1d5c07"
+          ]
+        },
+        {
+          "id": "AC-02.2.2",
+          "title": "First working day on the 1st of a month",
+          "given": "the first working day is the 1st of a month",
+          "when": "Lonio derives the insurance start date",
+          "then": "insurance starts on the first working day itself",
+          "examples": [
+            {
+              "name": "Start on the 1st of a month",
+              "given": [
+                {
+                  "item": "first_working_day",
+                  "value": "01.05.2026"
+                }
+              ],
+              "then": [
+                {
+                  "target": "insurance_start_date",
+                  "expect": "01.05.2026"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Start on 1 January",
+              "given": [
+                {
+                  "item": "first_working_day",
+                  "value": "01.01.2027"
+                }
+              ],
+              "then": [
+                {
+                  "target": "insurance_start_date",
+                  "expect": "01.01.2027"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-fdf50a",
+            "F-hr_transcript-1d5c07"
+          ]
+        },
+        {
+          "id": "AC-02.2.3",
+          "title": "First working day on any other day",
+          "given": "the first working day is any day other than the 1st of a month",
+          "when": "Lonio derives the insurance start date",
+          "then": "insurance starts on the 1st of the following month, also across a year end",
+          "examples": [
+            {
+              "name": "Julia (hr_transcript/F-hr_transcript-30d25c) - 15 March gives 1 April",
+              "given": [
+                {
+                  "item": "first_working_day",
+                  "value": "15.03.2026"
+                }
+              ],
+              "then": [
+                {
+                  "target": "insurance_start_date",
+                  "expect": "01.04.2026"
+                }
+              ],
+              "source_refs": [
+                "F-hr_transcript-30d25c",
+                "F-hr_transcript-d7a23b"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Start on the 2nd of a month",
+              "given": [
+                {
+                  "item": "first_working_day",
+                  "value": "02.06.2026"
+                }
+              ],
+              "then": [
+                {
+                  "target": "insurance_start_date",
+                  "expect": "01.07.2026"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Start at the end of the year",
+              "given": [
+                {
+                  "item": "first_working_day",
+                  "value": "31.12.2026"
+                }
+              ],
+              "then": [
+                {
+                  "target": "insurance_start_date",
+                  "expect": "01.01.2027"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-30d25c",
+            "F-hr_transcript-1d5c07"
+          ]
+        },
+        {
+          "id": "AC-02.2.4",
+          "title": "Insurance start date follows every change of the first working day",
+          "given": "an insurance start date has been derived from a first working day",
+          "when": "the first working day changes, whether by the employee before submission or by HR after submission",
+          "then": "the insurance start date is derived again from the latest first working day; a start date based on an earlier first working day never remains",
+          "examples": [
+            {
+              "name": "Julia (hr_transcript/F-hr_transcript-d7a23b) - start moved to 15 March",
+              "given": [
+                {
+                  "item": "first_working_day",
+                  "value": "15.03.2026"
+                }
+              ],
+              "then": [
+                {
+                  "target": "insurance_start_date",
+                  "expect": "01.04.2026"
+                }
+              ],
+              "source_refs": [
+                "F-hr_transcript-d7a23b"
+              ],
+              "illustrative": false
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-d7a23b",
+            "F-hr_transcript-1d5c07",
+            "D-033"
+          ]
+        },
+        {
+          "id": "AC-02.2.5",
+          "title": "Insurance start date is recorded for the pension fund",
+          "given": "the questionnaire has been submitted",
+          "when": "the insurance start date has been derived",
+          "then": "it is recorded for the pension fund's required 'Insurance start date' as DD.MM.YYYY and always falls on the 1st of a month",
+          "examples": [],
+          "source_refs": [
+            "F-pension_portal-509cbe",
+            "F-pension_portal-dd8126",
+            "D-034"
+          ]
+        }
+      ],
+      "items": [
+        "first_working_day"
+      ],
+      "rules": [
+        "insurance_start_date"
+      ],
+      "source_refs": [
+        "F-hr_transcript-1d5c07",
+        "F-hr_transcript-30d25c",
+        "F-hr_transcript-fdf50a",
+        "F-hr_transcript-d7a23b",
+        "F-pension_portal-509cbe",
+        "F-pension_portal-dd8126",
+        "F-pension_portal-3a97ab",
+        "G-08",
+        "D-033"
+      ],
+      "status": "confirmed"
+    }
+  ],
+  "items": [
+    "first_working_day"
+  ],
+  "rules": [
+    "insurance_start_date"
+  ],
+  "open_questions": [],
+  "source_refs": [
+    "F-hr_transcript-872bd7",
+    "F-hr_transcript-1d5c07",
+    "F-hr_transcript-30d25c",
+    "F-hr_transcript-fdf50a",
+    "F-hr_transcript-d7a23b",
+    "F-pension_portal-509cbe",
+    "G-08",
+    "D-033",
+    "D-034"
+  ]
+}

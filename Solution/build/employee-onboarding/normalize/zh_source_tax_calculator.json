@@ -1,0 +1,762 @@
+[
+  {
+    "id": "zh_source_tax_calculator/C-Q01",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Für welche Einkünfte möchten Sie den Quellensteuertarif ermitteln? Options: Erwerbseinkommen | Ersatzeinkünfte Help: Calculator heading: 'Quellensteuertarif bestimmen'. Result box 'Ergebnis' shows 'Es fehlen noch Angaben um die Tarifbestimmung abzuschliessen.' until complete; reset button 'Neue Tarifbestimmung ermitteln'. Ersatzeinkünfte skips all personal/child questions and goes straight to Q16.",
+    "meta": {
+      "control": "radio",
+      "shown_when": "always",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q02",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Zivilstand Options: Verheiratet oder eingetragene Partnerschaft | Ledig, Geschieden, Getrennt, Verwitwet Help: Section heading: 'Angaben zur quellensteuerpflichtigen Person'",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q01 = Erwerbseinkommen",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q03",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Konfession Options: röm.-kath., christ.-kath., evang.-ref. | Keine oder andere Help: Sets the church-tax suffix: Y = röm.-kath., christ.-kath., evang.-ref.; N = Keine oder andere",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q01 = Erwerbseinkommen AND Q02 answered",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q04",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Ist der Ehegatte / eingetragene Partner erwerbstätig oder bezieht er/sie Ersatzeinkünfte? Options: Ja | Nein Help: Ja -> C tariff; Nein -> B tariff",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q02 = Verheiratet oder eingetragene Partnerschaft",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q05",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Leibliche oder adoptierte Kinder der Person oder der Ehegatten bzw. Partner? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q02 = Verheiratet oder eingetragene Partnerschaft AND Q04 answered",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q06",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Leibliche oder adoptierte Kinder der Person? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q02 = Ledig, Geschieden, Getrennt, Verwitwet AND Q03 answered",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q07",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Kind minderjährig oder volljährig und in Erstausbildung? Options: Minderjährig | Volljährig und in Erstausbildung | weder noch Help: Section heading: 'Angaben zu den Kindern'. Once a child is fully answered, the block shows 'Kind Ergebnis: <code>' (e.g. H1, A0, C1, B0, A1). A link button 'Ein weiteres Kind erfassen' adds another child block, and each block has a 'Kind löschen' button. 'weder noch' ends the child block right away (child does not count).",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q05 = Ja OR Q06 = Ja (one block per child, headed 'Kind 1', 'Kind 2', …)",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q08",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Wohnsitz des Kindes im selben Haushalt? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q07 = Minderjährig OR Q07 = Volljährig und in Erstausbildung",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q09",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Elterliche Sorge Options: Geteiltes Sorgerecht | Alleiniges Sorgerecht",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q07 = Minderjährig AND Q08 = Ja (both civil statuses)",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q10",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Gemeinsamer Haushalt mit dem anderen Elternteil? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "(Q07 = Minderjährig AND Q08 = Ja AND Q09 = Geteiltes Sorgerecht) OR (Q07 = Volljährig und in Erstausbildung AND Q08 = Ja)",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q11",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Alternierende Obhut? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "(Q07 = Minderjährig AND Q08 = Ja AND Q09 = Geteiltes Sorgerecht AND Q10 = Nein) OR (Q02 = Verheiratet oder eingetragene Partnerschaft AND Q07 = Minderjährig AND Q08 = Nein AND Q13 = Ja) OR (Q02 = Ledig, Geschieden, Getrennt, Verwitwet AND Q07 = Minderjährig AND Q08 = Nein AND Q14 = Ja)",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q12",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Wer leistet den grösseren finanziellen Beitrag an den Unterhalt des Kindes? Options: Quellensteuerpflichtige Person | Anderer Elternteil",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q11 = Ja OR (Q02 = Ledig, Geschieden, Getrennt, Verwitwet AND Q08 = Ja AND Q10 = Ja) [for married people, Q10 = Ja ends the child block without this question]",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q13",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Geteiltes Sorgerecht Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q02 = Verheiratet oder eingetragene Partnerschaft AND Q07 = Minderjährig AND Q08 = Nein",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q14",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Elterliche Sorge Options: Ja | Nein Help: Same title as Q09, but with Ja/Nein options (internal name child-n__parentalCare)",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q02 = Ledig, Geschieden, Getrennt, Verwitwet AND Q07 = Minderjährig AND Q08 = Nein",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q15",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Wird zur Hauptsache (mehr als 50%) für den Kindsunterhalt aufgekommen? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q07 = Volljährig und in Erstausbildung AND (Q08 = Nein OR (Q08 = Ja AND Q10 = Nein))",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q16",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Hauptwohnsitz in der Schweiz? Options: Ja | Nein Help: Section heading: 'Angaben zum Lebensmittelpunkt'",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q01 = Ersatzeinkünfte, OR all personal and child questions answered (adding an unanswered child hides it again)",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q17",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Wohnsitzstaat Options: Deutschland | Liechtenstein | Anderes Land",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q16 = Nein",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q18",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Tägliche Rückkehr an den Hauptwohnsitz in Deutschland? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q01 = Erwerbseinkommen AND Q17 = Deutschland",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q19",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Ansässigkeitsbescheinigung beigebracht? Options: Ja | Nein Help: Ja -> cross-border (Grenzgänger) tariff: A->L, B->M, C->N, H->P, G->Q; Nein -> normal tariff",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q18 = Ja OR Q24 = Ja",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q20",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Tägliche Rückkehr grundsätzlich zumutbar (weniger als 100km Fahrdistanz)? Options: Ja | Nein Help: Nein -> normal tariff",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q01 = Erwerbseinkommen AND Q17 = Deutschland AND Q18 = Nein",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q21",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Nachweis von mehr als 60 beruflich bedingten Nichtrückkehrtagen im Kalenderjahr beigebracht? Options: Ja | Nein Help: Ja -> normal tariff; Nein -> cross-border tariff (L/M/N/P)",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q20 = Ja",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q22",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Tägliche Rückkehr an den Hauptwohnsitz in Liechtenstein? Options: Ja | Nein Help: Ja -> 'Grundsätzlich keine Quellensteuerpflicht'",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q01 = Erwerbseinkommen AND Q17 = Liechtenstein",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q23",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Mehr als 45 beruflich bedingte Nichtrückkehrtage im Kalenderjahr? Options: Ja | Nein Help: Ja -> normal tariff + 'Unter Vorbehalt des Doppelbesteuerungsabkommens'; Nein -> 'Grundsätzlich keine Quellensteuerpflicht'",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q22 = Nein",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q24",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Tägliche Rückkehr an den Hauptwohnsitz in Deutschland während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q01 = Ersatzeinkünfte AND Q17 = Deutschland",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q25",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Tägliche Rückkehr grundsätzlich zumutbar während oder vor Bezug der Ersatzeinkünfte (weniger als 100km Fahrdistanz)? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q01 = Ersatzeinkünfte AND Q17 = Deutschland AND Q24 = Nein",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q26",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Nachweis von mehr als 60 beruflich bedingten Nichtrückkehrtagen im Kalenderjahr beigebracht während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q25 = Ja",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q27",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Tägliche Rückkehr an den Hauptwohnsitz in Liechtenstein während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q01 = Ersatzeinkünfte AND Q17 = Liechtenstein",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-Q28",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Mehr als 45 beruflich bedingte Nichtrückkehrtage im Kalenderjahr während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein",
+    "meta": {
+      "control": "radio",
+      "shown_when": "Q27 = Nein",
+      "required": "yes"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V01",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q06\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: A0Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V02",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: A0N",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V03",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Nein\", \"Q05\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: B0Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V04",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Nein\", \"Q05\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: B0N",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V05",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: C0Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V06",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Ja\", \"Q05\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: C0N",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V07",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Ja\"} -> result Tarif: C1Y (Kind Ergebnis: C1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V08",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Nein\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Ja\"} -> result Tarif: B1N (Kind Ergebnis: B1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V09",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Geteiltes Sorgerecht\", \"Q10\": \"Ja\", \"Q16\": \"Ja\"} -> result Tarif: C1Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V10",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Geteiltes Sorgerecht\", \"Q10\": \"Nein\", \"Q11\": \"Ja\", \"Q12\": \"Anderer Elternteil\", \"Q16\": \"Ja\"} -> result Tarif: C0Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V11",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Geteiltes Sorgerecht\", \"Q10\": \"Nein\", \"Q11\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: C0Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V12",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Nein\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Nein\", \"Q13\": \"Ja\", \"Q11\": \"Ja\", \"Q12\": \"Quellensteuerpflichtige Person\", \"Q16\": \"Ja\"} -> result Tarif: B1N (Kind Ergebnis: B1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V13",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Nein\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Nein\", \"Q13\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: B0N (Kind Ergebnis: B0)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V14",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Nein\", \"Q05\": \"Ja\", \"Q07\": \"Volljährig und in Erstausbildung\", \"Q08\": \"Ja\", \"Q10\": \"Ja\", \"Q16\": \"Ja\"} -> result Tarif: B1N (Kind Ergebnis: B1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V15",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Nein\", \"Q05\": \"Ja\", \"Q07\": \"Volljährig und in Erstausbildung\", \"Q08\": \"Nein\", \"Q15\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: B0N (Kind Ergebnis: B0)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V16",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Nein\", \"Q05\": \"Ja\", \"Q07\": \"weder noch\", \"Q16\": \"Ja\"} -> result Tarif: B0N (Kind Ergebnis: B0)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V17",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q06\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Ja\"} -> result Tarif: H1Y (Kind Ergebnis: H1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V18",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Geteiltes Sorgerecht\", \"Q10\": \"Ja\", \"Q12\": \"Anderer Elternteil\", \"Q16\": \"Ja\"} -> result Tarif: A0N (Kind Ergebnis: A0)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V19",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Geteiltes Sorgerecht\", \"Q10\": \"Nein\", \"Q11\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: H1N (Kind Ergebnis: H1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V20",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Nein\", \"Q14\": \"Ja\", \"Q11\": \"Ja\", \"Q12\": \"Quellensteuerpflichtige Person\", \"Q16\": \"Ja\"} -> result Tarif: H1N (Kind Ergebnis: H1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V21",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Nein\", \"Q14\": \"Nein\", \"Q16\": \"Ja\"} -> result Tarif: A0N (Kind Ergebnis: A0)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V22",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Volljährig und in Erstausbildung\", \"Q08\": \"Nein\", \"Q15\": \"Ja\", \"Q16\": \"Ja\"} -> result Tarif: A1N (Kind Ergebnis: A1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V23",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Volljährig und in Erstausbildung\", \"Q08\": \"Ja\", \"Q10\": \"Nein\", \"Q15\": \"Ja\", \"Q16\": \"Ja\"} -> result Tarif: H1N (Kind Ergebnis: H1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V24",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"weder noch\", \"Q16\": \"Ja\"} -> result Tarif: A0N (Kind Ergebnis: A0)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V25",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Minderjährig (Kind 1) + Minderjährig (Kind 2, via 'Ein weiteres Kind erfassen')\", \"Q08\": \"Ja (both)\", \"Q09\": \"Alleiniges Sorgerecht (both)\", \"Q16\": \"Ja\"} -> result Tarif: H2N (Kind Ergebnis: H1; Kind Ergebnis: H1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V26",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Kind 1: Minderjährig; Kind 2: weder noch\", \"Q08\": \"Kind 1: Ja\", \"Q09\": \"Kind 1: Alleiniges Sorgerecht\", \"Q16\": \"Ja\"} -> result Tarif: H1N (Kind Ergebnis: H1; Kind Ergebnis: A0)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V27",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Kind 1: Volljährig und in Erstausbildung; Kind 2: Minderjährig\", \"Q08\": \"Kind 1: Nein; Kind 2: Ja\", \"Q15\": \"Kind 1: Ja\", \"Q09\": \"Kind 2: Alleiniges Sorgerecht\", \"Q16\": \"Ja\"} -> result Tarif: H2N (Kind Ergebnis: A1; Kind Ergebnis: H1)",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V28",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig (Kind 1-3)\", \"Q08\": \"Ja (all)\", \"Q09\": \"Alleiniges Sorgerecht (all)\", \"Q16\": \"Ja\"} -> result Tarif: C3Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V29",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Minderjährig (Kind 1-3)\", \"Q08\": \"Ja (all)\", \"Q09\": \"Alleiniges Sorgerecht (all)\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Ja\", \"Q19\": \"Ja\"} -> result Tarif: P3N",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V30",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q06\": \"Nein\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Ja\", \"Q19\": \"Ja\"} -> result Tarif: L0Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V31",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Ja\", \"Q07\": \"Volljährig und in Erstausbildung\", \"Q08\": \"Nein\", \"Q15\": \"Ja\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Ja\", \"Q19\": \"Ja\"} -> result Tarif: L1N",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V32",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Nein\", \"Q05\": \"Nein\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Ja\", \"Q19\": \"Ja\"} -> result Tarif: M0N",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V33",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q06\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Ja\", \"Q19\": \"Ja\"} -> result Tarif: P1Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V34",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Ja\", \"Q19\": \"Ja\"} -> result Tarif: N1Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V35",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Ja\", \"Q19\": \"Nein\"} -> result Tarif: C1Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V36",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Nein\", \"Q20\": \"Ja\", \"Q21\": \"Nein\"} -> result Tarif: N1Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V37",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Nein\", \"Q20\": \"Ja\", \"Q21\": \"Ja\"} -> result Tarif: C1Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V38",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q18\": \"Nein\", \"Q20\": \"Nein\"} -> result Tarif: C1Y",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V39",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Nein\", \"Q17\": \"Liechtenstein\", \"Q22\": \"Ja\"} -> result Grundsätzlich keine Quellensteuerpflicht / Unter Vorbehalt des Doppelbesteuerungsabkommens",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V40",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Nein\", \"Q17\": \"Liechtenstein\", \"Q22\": \"Nein\", \"Q23\": \"Ja\"} -> result Tarif: C1Y / Unter Vorbehalt des Doppelbesteuerungsabkommens",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V41",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q04\": \"Ja\", \"Q05\": \"Ja\", \"Q07\": \"Minderjährig\", \"Q08\": \"Ja\", \"Q09\": \"Alleiniges Sorgerecht\", \"Q16\": \"Nein\", \"Q17\": \"Liechtenstein\", \"Q22\": \"Nein\", \"Q23\": \"Nein\"} -> result Grundsätzlich keine Quellensteuerpflicht / Unter Vorbehalt des Doppelbesteuerungsabkommens",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V42",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"Keine oder andere\", \"Q06\": \"Nein\", \"Q16\": \"Nein\", \"Q17\": \"Anderes Land\"} -> result Tarif: A0N",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V43",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Ja\"} -> result Tarif: G",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V44",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q24\": \"Ja\", \"Q19\": \"Ja\"} -> result Tarif: Q",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V45",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q24\": \"Ja\", \"Q19\": \"Nein\"} -> result Tarif: G",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V46",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q24\": \"Nein\", \"Q25\": \"Ja\", \"Q26\": \"Nein\"} -> result Tarif: Q",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V47",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q24\": \"Nein\", \"Q25\": \"Ja\", \"Q26\": \"Ja\"} -> result Tarif: G",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V48",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q24\": \"Nein\", \"Q25\": \"Nein\"} -> result Tarif: G",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V49",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Liechtenstein\", \"Q27\": \"Ja\"} -> result Grundsätzlich keine Quellensteuerpflicht / Unter Vorbehalt des Doppelbesteuerungsabkommens",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V50",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Liechtenstein\", \"Q27\": \"Nein\", \"Q28\": \"Ja\"} -> result Tarif: G / Unter Vorbehalt des Doppelbesteuerungsabkommens",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V51",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Liechtenstein\", \"Q27\": \"Nein\", \"Q28\": \"Nein\"} -> result Grundsätzlich keine Quellensteuerpflicht / Unter Vorbehalt des Doppelbesteuerungsabkommens",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-V52",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Anderes Land\"} -> result Tarif: G",
+    "meta": {
+      "kind": "test_vector"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-N01",
+    "source_id": "zh_source_tax_calculator",
+    "text": "The calculator is an Angular app (app-root, ng 11, assets from www.services.zh.ch/app/quest/tarifbestimmung/prod/) rendered inline in the section 'Tarifrechner Quellensteuer'. It is not in an iframe. No cookie banner appeared, so there was nothing to decline. Every control is a radio button. There are no dropdowns, free-text fields or date fields, so no dummy data was entered.",
+    "meta": {
+      "kind": "explorer_note"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-N02",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Page intro text (verbatim): 'Der Tarifrechner dient der Ermittlung des Quellensteuertarifs.' / 'Füllen Sie die Arbeitnehmendendaten wahrheitsgetreu aus und im Ergebnis erhalten Sie den Tarif für den Quellensteuerabzug.' / 'Die ausgewiesenen Tarife sind nicht rechtsverbindlich. …'. The accordion 'Nicht abgedeckte Fälle' lists: 'Gagen an Künstler, Sportler und Referenten', 'Verwaltungsratshonorare, welche an Personen mit Wohnsitz im Ausland bezahlt werden', 'Härtefälle', 'Renten und Kapitalleistungen aus Vorsorge'.",
+    "meta": {
+      "kind": "explorer_note"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-N03",
+    "source_id": "zh_source_tax_calculator",
+    "text": "A visually hidden 'Beispiele' area shows the tags H3N and P3N. These were not clicked as inputs.",
+    "meta": {
+      "kind": "explorer_note"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-N04",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Child questions repeat for each child (input names child-1__…, child-2__…). The button 'Ein weiteres Kind erfassen' adds a child, and 'Kind löschen' removes one. The final tariff's digit equals the number of children whose 'Kind Ergebnis' digit is 1. For a single person, any child counted with H gives an H tariff (e.g. A1 + H1 -> H2N). A child is counted with H when it lives in the household and the person has sole custody or is the main financial contributor. While a child block is unanswered, the residence question Q16 is hidden.",
+    "meta": {
+      "kind": "explorer_note"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-N05",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Mapping seen for the residence/cross-border block: CH or 'Anderes Land' -> base tariff. DE with daily return and an Ansässigkeitsbescheinigung, or DE without daily return, return reasonable and no proof of more than 60 non-return days -> cross-border code (A->L, B->M, C->N, H->P, G->Q). Every other DE combination -> base tariff. LI -> 'Grundsätzlich keine Quellensteuerpflicht', except no daily return with more than 45 non-return days -> base tariff plus 'Unter Vorbehalt des Doppelbesteuerungsabkommens'. This block was explored exhaustively under the married + Y + 1 child (C1Y / C0Y) path and for Ersatzeinkünfte. For A/B/H it was spot-checked only via DE daily return + certificate (L0Y, L1N, M0N, M0Y, P1Y, P3N) and LI more than 45 days / Anderes Land (A0N).",
+    "meta": {
+      "kind": "explorer_note"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-N06",
+    "source_id": "zh_source_tax_calculator",
+    "text": "The full cross-product of child paths × residence paths × confession × civil status was not enumerated (combinatorial). Child subtrees were enumerated fully with residence = Ja (Schweiz) for: married + partner employed + Y; married + partner not employed + N (Volljährig and not-in-household branches); single + N. The married + 'Minderjährig' + same household branch was fully crossed with all residence paths.",
+    "meta": {
+      "kind": "explorer_note"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-N07",
+    "source_id": "zh_source_tax_calculator",
+    "text": "Not tested: more than 3 children (the upper limit of 'Ein weiteres Kind erfassen' is unknown); whether 'Kind löschen' recomputes correctly; tariff D or other special tariffs (none appeared in any path).",
+    "meta": {
+      "kind": "explorer_note"
+    }
+  },
+  {
+    "id": "zh_source_tax_calculator/C-N08",
+    "source_id": "zh_source_tax_calculator",
+    "text": "The answer value in V25–V29 summarises repeated per-child answers (Kind 1/2/3) because the schema allows one value per question id.",
+    "meta": {
+      "kind": "explorer_note"
+    }
+  }
+]

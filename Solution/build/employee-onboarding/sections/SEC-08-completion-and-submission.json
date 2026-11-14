@@ -1,0 +1,276 @@
+{
+  "id": "SEC-08-completion-and-submission",
+  "order": 8,
+  "title": "Completing and submitting the questionnaire",
+  "purpose": "Close the questionnaire. Remind non-Swiss employees and employees living abroad to bring their permit, and on submission record only the answers to questions that still apply.",
+  "stories": [
+    {
+      "id": "US-08.1",
+      "title": "Remind employees to bring their permit on the first working day",
+      "as_a": "hr",
+      "i_want": "every non-Swiss employee and every employee living abroad to be reminded at the end of the questionnaire to bring their permit on the first working day",
+      "so_that": "fewer new employees forget their permit on day one (today about half of them do), without Lonio collecting any extra data",
+      "priority": "P2",
+      "priority_reason": "HR states a recurring pain (\"Half of them forget\") but it does not block any registration; the reminder collects no data and is a convenience for HR.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-08.1.1",
+          "title": "Who gets the permit reminder",
+          "given": "an employee has reached the end of the questionnaire",
+          "when": "the employee lives abroad (home address country is not Switzerland), or lives in Switzerland and is not Swiss",
+          "then": "the employee is reminded to bring their permit on the first working day; an employee living in Switzerland who holds Swiss citizenship (even with another nationality) gets no reminder",
+          "examples": [
+            {
+              "name": "Swiss citizen living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "permit_reminder",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Non-Swiss employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "permit_reminder",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee living in Germany (nationality not asked)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "permit_reminder",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee living in Liechtenstein",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                }
+              ],
+              "then": [
+                {
+                  "target": "permit_reminder",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-010",
+            "F-hr_transcript-c53552",
+            "D-008"
+          ]
+        },
+        {
+          "id": "AC-08.1.2",
+          "title": "The reminder collects no data",
+          "given": "the permit reminder is shown to an employee",
+          "when": "the employee completes the questionnaire",
+          "then": "the employee does not have to answer, confirm or upload anything in response to the reminder; the permit is brought to HR in person on the first working day, outside Lonio",
+          "examples": [],
+          "source_refs": [
+            "D-010",
+            "G-01"
+          ]
+        },
+        {
+          "id": "AC-08.1.3",
+          "title": "HR provides the wording",
+          "given": "the permit reminder is shown",
+          "when": "its text is defined",
+          "then": "the reminder uses the wording HR provides; the purpose stays the same: to remind the employee to bring their permit on the first working day",
+          "examples": [],
+          "source_refs": [
+            "D-010",
+            "F-hr_transcript-c53552"
+          ]
+        }
+      ],
+      "items": [],
+      "rules": [
+        "permit_reminder"
+      ],
+      "source_refs": [
+        "F-hr_transcript-c53552",
+        "D-010",
+        "G-01"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "US-08.2",
+      "title": "Discard answers that no longer apply on submission",
+      "as_a": "employee",
+      "i_want": "to go back and change earlier answers without losing input, while only the answers to questions that still apply to me are recorded when I submit",
+      "so_that": "no party ends up holding personal data about me that it does not need (data minimisation), and I don't have to retype answers while correcting myself",
+      "priority": "P1",
+      "priority_reason": "Data minimisation is a core requirement of the feature (G-01): keeping answers no party needs means holding personal data Lonio must not have.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-08.2.1",
+          "title": "Answers are kept while the employee moves back and forth",
+          "given": "an employee has answered later questions and then changes an earlier answer so that those questions no longer apply",
+          "when": "the employee is still filling in the questionnaire and changes the earlier answer back",
+          "then": "the earlier answers to the later questions can still be there, so the employee does not lose input",
+          "examples": [],
+          "source_refs": [
+            "D-036"
+          ]
+        },
+        {
+          "id": "AC-08.2.2",
+          "title": "Only applicable answers are recorded on submission",
+          "given": "an employee has answered questions that no longer apply after changing an earlier answer",
+          "when": "the employee submits the questionnaire",
+          "then": "the answers to questions that no longer apply are discarded and not recorded for HR or any receiving party; only answers to questions that apply to the final answers are recorded",
+          "examples": [
+            {
+              "name": "Employee first said Married, then changed to Single",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee first entered a Swiss address, then changed to Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "residence_canton",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "permit_type",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee first entered another nationality, then changed to Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "permit_type",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "confession",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-036",
+            "G-01",
+            "D-034"
+          ]
+        }
+      ],
+      "items": [],
+      "rules": [
+        "discard_inapplicable_answers"
+      ],
+      "source_refs": [
+        "D-036",
+        "G-01"
+      ],
+      "status": "decision"
+    }
+  ],
+  "items": [],
+  "rules": [
+    "permit_reminder",
+    "discard_inapplicable_answers"
+  ],
+  "open_questions": [],
+  "source_refs": [
+    "F-hr_transcript-c53552",
+    "G-01",
+    "D-010",
+    "D-036",
+    "D-034"
+  ]
+}

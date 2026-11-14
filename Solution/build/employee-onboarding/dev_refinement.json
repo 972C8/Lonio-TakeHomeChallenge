@@ -1,0 +1,103 @@
+{
+  "questions": [
+    {
+      "file": "feature.md",
+      "question": "Apart from the first working day (AC-02.1.4), what happens to all other answers after submission? Can the employee reopen or correct the questionnaire, for example after a move, a marriage, a new child or a corrected nationality? Or are the answers frozen and only HR can change them, and if so, which answers? Should the derived results (subject to source tax, tariff code, canton, civil status for the fund) be recalculated after a change, as AC-02.2.4 requires for the insurance start date?",
+      "severity": "major"
+    },
+    {
+      "file": "feature.md",
+      "question": "Certificate of residence (US-07.2): 'not yet' is a valid answer and produces the normal tariff instead of the cross-border tariff. When the employee hands in the certificate later, who updates the answer, and does the recorded tariff code then change (C1Y → N1Y)? The employee cannot edit after submission, and the HR side is out of scope, so the recorded code could stay wrong. Is that acceptable?",
+      "severity": "major"
+    },
+    {
+      "file": "feature.md",
+      "question": "Non-return days for Germany (more than 60) and Liechtenstein (more than 45) are asked 'in the calendar year'. Most new employees start mid-year. Is the threshold for the remaining part of the year, the full calendar year, or pro-rated (for start date and/or part-time work)? The answer changes whether the cross-border tariff or the Liechtenstein result applies.",
+      "severity": "major"
+    },
+    {
+      "file": "feature.md",
+      "question": "Permit reminder (AC-08.1.1): every employee living abroad gets the reminder. That includes Swiss citizens living in Germany or Liechtenstein, such as Stefan, who have no Swiss permit. Nationality is not asked of people living abroad, so we cannot exclude them. Is a reminder that does not apply to Swiss cross-border commuters acceptable, or should nationality (or 'Swiss citizen yes/no') also be asked of employees living abroad?",
+      "severity": "major"
+    },
+    {
+      "file": "feature.md",
+      "question": "Does the employee see any computed result: the insurance start date, the tariff code, the Liechtenstein result, or 'not subject to source tax'? Or is everything only recorded for HR? Is there a review or summary of all answers before submission, and a confirmation after it?",
+      "severity": "minor"
+    },
+    {
+      "file": "feature.md",
+      "question": "Children (US-06.1): if the employee answers 'yes' to having children, must they add at least one child? Is there a maximum number of children? The tariff code has a single child digit, and more than 3 children was never tested in the calculator. What should the code look like with 10 or more counting children?",
+      "severity": "minor"
+    },
+    {
+      "file": "feature.md",
+      "question": "Are there plausibility rules for dates? For example: date of birth not in the future and a minimum age (apprentices or minors), spouse's date of birth plausible, first working day not in the past or not more than X months ahead. If the first working day is already in the past at submission, which insurance start date applies?",
+      "severity": "minor"
+    },
+    {
+      "file": "feature.md",
+      "question": "House number is always required (AC-01.2.1). What should employees enter whose address has no house number (rural addresses abroad, named houses, PO-box-only addresses)? Are extra address lines needed for 'c/o' or apartment names, given that HR posts documents to these addresses?",
+      "severity": "minor"
+    },
+    {
+      "file": "feature.md",
+      "question": "The civil status list (AC-03.1.2) has no 'dissolved registered partnership' and no 'partner deceased', which are official Swiss civil statuses. How should employees in those situations answer, and how are they mapped for the fund and for source tax?",
+      "severity": "minor"
+    },
+    {
+      "file": "feature.md",
+      "question": "The example table in AC-01.1.1 shows first and last name as 'asked' (not 'required') for an employee living abroad, but the criterion says all three fields are always required. Which is correct?",
+      "severity": "minor"
+    },
+    {
+      "file": "feature.md",
+      "question": "Several example tables contradict their own criteria or each other. In AC-05.7.2, the M0N and P1Y rows show the source tax result as '–' while the other rows show 'tariff code'. In AC-01.3.2, the Italy row shows Canton '–' instead of 'not asked'. In AC-02.2.4, the Julia example has a single row that does not actually show a change of the first working day. Can these be corrected so they can be used as test cases?",
+      "severity": "minor"
+    },
+    {
+      "file": "feature.md",
+      "question": "The country list must cover everyone (countries by English name). Which official list should we use, for example the one the fund or HR uses? Should the list also cover nationalities such as stateless persons or refugees, whose nationality is not a country?",
+      "severity": "minor"
+    }
+  ],
+  "already_flagged": [
+    "OQ-canton-abroad: what to enter in the fund's 'Canton' field for employees living abroad, and whether it means canton of residence or of work",
+    "OQ-civil-status-partnership: how the fund registers registered partnerships and separated employees, and whether it wants the partner's details",
+    "OQ-spouse-dob-other-status: whether the fund requires a spouse's date of birth or other fields for Divorced/Widowed",
+    "OQ-calculator-coverage: unexplored calculator paths (residence block for A/B/H, more than 3 children, H3N/P3N, inferred child rows) to be verified before go-live",
+    "OQ-nationality-scope: whether the full nationality and the spouse's nationality/country are needed, or only yes/no facts"
+  ],
+  "tech_leaks": [
+    {
+      "file": "feature.md",
+      "quote": "Kept id permit_type for stability; content reduced to 'C permit yes/no' (D-005).",
+      "why": "Names an internal field id and a stability concern about it in the spec text; field ids and their stability are engineering concerns."
+    },
+    {
+      "file": "feature.md",
+      "quote": "Required field 'Civil status' (mapped to the fund's list, see rule pension_fund_civil_status)<br>source tax office: Decides married vs single tariff and the spouse exemption (see rule source_tax_civil_status)",
+      "why": "Refers to internal rule identifiers (snake_case ids) in the business text instead of the rule names."
+    },
+    {
+      "file": "feature.md",
+      "quote": "The calculator's questions 'main residence in Switzerland?' and 'state of residence' are derived from this answer, not asked again (see rule source_tax_residence).",
+      "why": "Another internal snake_case rule id in the prose."
+    },
+    {
+      "file": "feature.md",
+      "quote": "they are asked for their first working day as a date (DD.MM.YYYY)",
+      "why": "Prescribes the format in which the employee enters the first working day. The fund's DD.MM.YYYY requirement applies to the insurance start date it receives, not to how the employee enters a date; the input format is a UI choice."
+    },
+    {
+      "file": "feature.md",
+      "quote": "the employee can add and remove children, and for each child is asked",
+      "why": "Prescribes the interaction pattern (add/remove child blocks, copied from the calculator's buttons). The business need is only that every child is described; how the UI collects them is up to engineering."
+    },
+    {
+      "file": "feature.md",
+      "quote": "with the country given by its English name (e.g. \"Switzerland\", \"Germany\")",
+      "why": "Prescribes how country values are represented, and the trace check notes no source backs it. It reads as a representation choice rather than a stakeholder requirement."
+    }
+  ]
+}

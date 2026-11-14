@@ -1,0 +1,661 @@
+{
+  "id": "SEC-03-civil-status-spouse",
+  "order": 3,
+  "title": "Civil status and spouse for the pension fund",
+  "purpose": "Ask the civil status once. Map it to the fund's list and to married/single for source tax. Ask the spouse's or partner's date of birth only where the fund requires it.",
+  "stories": [
+    {
+      "id": "US-03.1",
+      "title": "Ask the civil status once, using the pension fund's list",
+      "as_a": "employee",
+      "i_want": "to state my civil status once, choosing from a list that also covers registered partnership and separation",
+      "so_that": "both the pension fund and source tax get my civil status without being asked twice, and my real situation can be recorded",
+      "priority": "P1",
+      "priority_reason": "Civil status is a required field of the pension fund registration; without it the registration is blocked. It also decides the source tax tariff.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-03.1.1",
+          "title": "Civil status is asked of every employee and is required",
+          "given": "a new employee filling in the questionnaire",
+          "when": "they reach the family step",
+          "then": "they are asked their civil status, whatever their residence or nationality, and cannot submit the questionnaire without answering it",
+          "examples": [
+            {
+              "name": "Employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "civil_status",
+                  "expect": "asked"
+                },
+                {
+                  "target": "civil_status",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee living abroad",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "civil_status",
+                  "expect": "asked"
+                },
+                {
+                  "target": "civil_status",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-ce8ca4",
+            "F-pension_portal-ec4512",
+            "F-zh_source_tax_calculator-9007c3"
+          ]
+        },
+        {
+          "id": "AC-03.1.2",
+          "title": "Allowed civil status values",
+          "given": "the employee is asked their civil status",
+          "when": "they choose an answer",
+          "then": "they can choose exactly one of: Single, Married, Divorced, Widowed, Registered partnership, Separated",
+          "examples": [],
+          "source_refs": [
+            "F-pension_portal-3d1ae4",
+            "F-zh_source_tax_calculator-051bb9",
+            "F-hr_transcript-3907fe",
+            "D-003"
+          ]
+        },
+        {
+          "id": "AC-03.1.3",
+          "title": "One answer serves both receiving parties",
+          "given": "the employee has answered their civil status",
+          "when": "the questionnaire is submitted",
+          "then": "the answer is recorded once and is used both for the pension fund registration (see US-03.3) and for source tax (see US-03.4); the employee is not asked their civil status a second time",
+          "examples": [],
+          "source_refs": [
+            "F-hr_transcript-ce8ca4",
+            "F-zh_source_tax_calculator-9007c3",
+            "G-01",
+            "D-003"
+          ]
+        }
+      ],
+      "items": [
+        "civil_status"
+      ],
+      "rules": [],
+      "source_refs": [
+        "F-hr_transcript-ce8ca4",
+        "F-pension_portal-ec4512",
+        "F-pension_portal-3d1ae4",
+        "F-zh_source_tax_calculator-9007c3",
+        "F-zh_source_tax_calculator-051bb9",
+        "F-hr_transcript-3907fe",
+        "G-01",
+        "D-003"
+      ],
+      "status": "decision"
+    },
+    {
+      "id": "US-03.2",
+      "title": "Ask the spouse's date of birth from married employees",
+      "as_a": "pension_fund",
+      "i_want": "the date of birth of the husband, wife or registered partner for every employee registered with me as Married",
+      "so_that": "the registration is not rejected for a missing spouse's date of birth",
+      "priority": "P1",
+      "priority_reason": "The fund rejects a Married registration without the spouse's date of birth ('Spouse's date of birth is required.'), which blocks the registration.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-03.2.1",
+          "title": "Asked and required for Married, Registered partnership and Separated",
+          "given": "the employee's civil status is Married, Registered partnership or Separated",
+          "when": "they fill in the family step",
+          "then": "they are asked the date of birth of their husband, wife or registered partner, and must answer it",
+          "examples": [
+            {
+              "name": "Married employee",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Daniel (hr_transcript/F-hr_transcript-3907fe)",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Registered partnership"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
+            {
+              "name": "Separated employee",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Separated"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-2334d8",
+            "F-pension_portal-0eed50",
+            "D-003",
+            "D-004"
+          ]
+        },
+        {
+          "id": "AC-03.2.2",
+          "title": "Not asked for Single, Divorced or Widowed",
+          "given": "the employee's civil status is Single, Divorced or Widowed",
+          "when": "they fill in the family step",
+          "then": "they are not asked a spouse's or partner's date of birth (whether the fund needs it for Divorced or Widowed is still open, see OQ-spouse-dob-other-status)",
+          "examples": [
+            {
+              "name": "Single employee",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Divorced employee",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Divorced"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Widowed employee",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Widowed"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-pension_portal-39bab1",
+            "G-01",
+            "D-004"
+          ]
+        },
+        {
+          "id": "AC-03.2.3",
+          "title": "Form of the answer and receiving party",
+          "given": "the employee is asked the spouse's or partner's date of birth",
+          "when": "they answer",
+          "then": "the date is given as DD.MM.YYYY and is recorded for the pension fund registration, together with the civil status entered at the fund as Married",
+          "examples": [],
+          "source_refs": [
+            "F-pension_portal-ef28c3",
+            "F-pension_portal-a0065b",
+            "D-003",
+            "D-004"
+          ]
+        },
+        {
+          "id": "AC-03.2.4",
+          "title": "Spouse's date of birth discarded when no longer applicable",
+          "given": "the employee entered a spouse's date of birth and then changed the civil status to Single, Divorced or Widowed",
+          "when": "the questionnaire is submitted",
+          "then": "the spouse's date of birth is not recorded",
+          "examples": [
+            {
+              "name": "Changed from Married to Divorced",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Divorced"
+                },
+                {
+                  "item": "spouse_date_of_birth",
+                  "value": "12.05.1988"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-036",
+            "G-01"
+          ]
+        }
+      ],
+      "items": [
+        "spouse_date_of_birth"
+      ],
+      "rules": [],
+      "source_refs": [
+        "F-hr_transcript-2334d8",
+        "F-pension_portal-a0065b",
+        "F-pension_portal-39bab1",
+        "F-pension_portal-0eed50",
+        "F-pension_portal-ef28c3",
+        "G-01",
+        "D-003",
+        "D-004"
+      ],
+      "status": "inferred"
+    },
+    {
+      "id": "US-03.3",
+      "title": "Enter the civil status in the pension fund's terms",
+      "as_a": "pension_fund",
+      "i_want": "every employee's civil status expressed as one of my options (Single, Married, Divorced, Widowed)",
+      "so_that": "every new employee can be registered, including registered partners and separated employees, for whom my list has no option",
+      "priority": "P1",
+      "priority_reason": "The fund's list lacks Registered partnership and Separated; without a mapping such employees (e.g. Daniel) cannot be registered.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-03.3.1",
+          "title": "Civil statuses on the fund's list are taken over as they are",
+          "given": "the employee answered Single, Married, Divorced or Widowed",
+          "when": "the civil status for the pension fund is determined",
+          "then": "it is the same value as the employee's answer",
+          "examples": [
+            {
+              "name": "Single",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "pension_fund_civil_status",
+                  "expect": "Single"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Married",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "pension_fund_civil_status",
+                  "expect": "Married"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Divorced",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Divorced"
+                }
+              ],
+              "then": [
+                {
+                  "target": "pension_fund_civil_status",
+                  "expect": "Divorced"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Widowed",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Widowed"
+                }
+              ],
+              "then": [
+                {
+                  "target": "pension_fund_civil_status",
+                  "expect": "Widowed"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-pension_portal-3d1ae4"
+          ]
+        },
+        {
+          "id": "AC-03.3.2",
+          "title": "Registered partnership and Separated are provisionally entered as Married",
+          "given": "the employee answered Registered partnership or Separated",
+          "when": "the civil status for the pension fund is determined",
+          "then": "it is Married, provisionally until a domain expert and Pensionskasse Muster confirm how these employees are registered and whether the partner's details are wanted (see OQ-civil-status-partnership)",
+          "examples": [
+            {
+              "name": "Daniel (hr_transcript/F-hr_transcript-3907fe)",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Registered partnership"
+                }
+              ],
+              "then": [
+                {
+                  "target": "pension_fund_civil_status",
+                  "expect": "Married"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
+            {
+              "name": "Separated employee",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Separated"
+                }
+              ],
+              "then": [
+                {
+                  "target": "pension_fund_civil_status",
+                  "expect": "Married"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-pension_portal-9b24c5",
+            "F-hr_transcript-f197d6",
+            "D-003"
+          ]
+        }
+      ],
+      "items": [
+        "civil_status"
+      ],
+      "rules": [
+        "pension_fund_civil_status"
+      ],
+      "source_refs": [
+        "F-pension_portal-3d1ae4",
+        "F-pension_portal-9b24c5",
+        "F-hr_transcript-f197d6",
+        "F-hr_transcript-3907fe",
+        "D-003"
+      ],
+      "status": "decision"
+    },
+    {
+      "id": "US-03.4",
+      "title": "Group the civil status for source tax",
+      "as_a": "source_tax",
+      "i_want": "the employee's civil status grouped into married (married or registered partnership) or single (single, divorced, separated, widowed), as the calculator does",
+      "so_that": "the spouse exemption and the tariff code are determined from the same civil status answer, without asking again",
+      "priority": "P1",
+      "priority_reason": "Lonio now computes the tariff code itself (D-001); married vs single decides the tariff letter and whether the spouse exemption can apply.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-03.4.1",
+          "title": "Married and registered partnership count as married",
+          "given": "the employee answered Married or Registered partnership",
+          "when": "the civil status for source tax is determined",
+          "then": "the employee counts as married for source tax, including for the spouse exemption",
+          "examples": [
+            {
+              "name": "Married employee",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_civil_status",
+                  "expect": "married"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Daniel (hr_transcript/F-hr_transcript-3907fe)",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Registered partnership"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_civil_status",
+                  "expect": "married"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-051bb9",
+            "D-003"
+          ]
+        },
+        {
+          "id": "AC-03.4.2",
+          "title": "Single, divorced, separated and widowed count as single",
+          "given": "the employee answered Single, Divorced, Separated or Widowed",
+          "when": "the civil status for source tax is determined",
+          "then": "the employee counts as single for source tax; a separated employee therefore gets no spouse exemption, even though the fund registers them as Married",
+          "examples": [
+            {
+              "name": "Single",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_civil_status",
+                  "expect": "single"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Divorced",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Divorced"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_civil_status",
+                  "expect": "single"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Separated",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Separated"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_civil_status",
+                  "expect": "single"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Widowed",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Widowed"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_civil_status",
+                  "expect": "single"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-051bb9",
+            "D-003"
+          ]
+        }
+      ],
+      "items": [
+        "civil_status"
+      ],
+      "rules": [
+        "source_tax_civil_status"
+      ],
+      "source_refs": [
+        "F-zh_source_tax_calculator-051bb9",
+        "F-zh_source_tax_calculator-9007c3",
+        "D-001",
+        "D-003"
+      ],
+      "status": "confirmed"
+    }
+  ],
+  "items": [
+    "civil_status",
+    "spouse_date_of_birth"
+  ],
+  "rules": [
+    "pension_fund_civil_status",
+    "source_tax_civil_status"
+  ],
+  "open_questions": [
+    "OQ-civil-status-partnership",
+    "OQ-spouse-dob-other-status"
+  ],
+  "source_refs": [
+    "F-hr_transcript-ce8ca4",
+    "F-hr_transcript-2334d8",
+    "F-pension_portal-3d1ae4",
+    "F-pension_portal-a0065b",
+    "F-zh_source_tax_calculator-051bb9",
+    "D-003",
+    "D-004"
+  ]
+}

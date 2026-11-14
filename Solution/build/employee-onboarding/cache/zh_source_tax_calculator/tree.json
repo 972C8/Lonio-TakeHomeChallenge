@@ -1,0 +1,1084 @@
+{
+  "url": "https://www.zh.ch/de/steuern-finanzen/steuern/quellensteuer/quellensteuer-tarife.html",
+  "explored_at": "2026-11-14",
+  "questions": [
+    {
+      "id": "Q01",
+      "page_text": "Für welche Einkünfte möchten Sie den Quellensteuertarif ermitteln?",
+      "control": "radio",
+      "options": [
+        "Erwerbseinkommen",
+        "Ersatzeinkünfte"
+      ],
+      "required": "yes",
+      "shown_when": "always",
+      "help_text": "Calculator heading: 'Quellensteuertarif bestimmen'. Result box 'Ergebnis' shows 'Es fehlen noch Angaben um die Tarifbestimmung abzuschliessen.' until complete; reset button 'Neue Tarifbestimmung ermitteln'. Ersatzeinkünfte skips all personal/child questions and goes straight to Q16."
+    },
+    {
+      "id": "Q02",
+      "page_text": "Zivilstand",
+      "control": "radio",
+      "options": [
+        "Verheiratet oder eingetragene Partnerschaft",
+        "Ledig, Geschieden, Getrennt, Verwitwet"
+      ],
+      "required": "yes",
+      "shown_when": "Q01 = Erwerbseinkommen",
+      "help_text": "Section heading: 'Angaben zur quellensteuerpflichtigen Person'"
+    },
+    {
+      "id": "Q03",
+      "page_text": "Konfession",
+      "control": "radio",
+      "options": [
+        "röm.-kath., christ.-kath., evang.-ref.",
+        "Keine oder andere"
+      ],
+      "required": "yes",
+      "shown_when": "Q01 = Erwerbseinkommen AND Q02 answered",
+      "help_text": "Sets the church-tax suffix: Y = röm.-kath., christ.-kath., evang.-ref.; N = Keine oder andere"
+    },
+    {
+      "id": "Q04",
+      "page_text": "Ist der Ehegatte / eingetragene Partner erwerbstätig oder bezieht er/sie Ersatzeinkünfte?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q02 = Verheiratet oder eingetragene Partnerschaft",
+      "help_text": "Ja -> C tariff; Nein -> B tariff"
+    },
+    {
+      "id": "Q05",
+      "page_text": "Leibliche oder adoptierte Kinder der Person oder der Ehegatten bzw. Partner?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q02 = Verheiratet oder eingetragene Partnerschaft AND Q04 answered"
+    },
+    {
+      "id": "Q06",
+      "page_text": "Leibliche oder adoptierte Kinder der Person?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q02 = Ledig, Geschieden, Getrennt, Verwitwet AND Q03 answered"
+    },
+    {
+      "id": "Q07",
+      "page_text": "Kind minderjährig oder volljährig und in Erstausbildung?",
+      "control": "radio",
+      "options": [
+        "Minderjährig",
+        "Volljährig und in Erstausbildung",
+        "weder noch"
+      ],
+      "required": "yes",
+      "shown_when": "Q05 = Ja OR Q06 = Ja (one block per child, headed 'Kind 1', 'Kind 2', …)",
+      "help_text": "Section heading: 'Angaben zu den Kindern'. Once a child is fully answered, the block shows 'Kind Ergebnis: <code>' (e.g. H1, A0, C1, B0, A1). A link button 'Ein weiteres Kind erfassen' adds another child block, and each block has a 'Kind löschen' button. 'weder noch' ends the child block right away (child does not count)."
+    },
+    {
+      "id": "Q08",
+      "page_text": "Wohnsitz des Kindes im selben Haushalt?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q07 = Minderjährig OR Q07 = Volljährig und in Erstausbildung"
+    },
+    {
+      "id": "Q09",
+      "page_text": "Elterliche Sorge",
+      "control": "radio",
+      "options": [
+        "Geteiltes Sorgerecht",
+        "Alleiniges Sorgerecht"
+      ],
+      "required": "yes",
+      "shown_when": "Q07 = Minderjährig AND Q08 = Ja (both civil statuses)"
+    },
+    {
+      "id": "Q10",
+      "page_text": "Gemeinsamer Haushalt mit dem anderen Elternteil?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "(Q07 = Minderjährig AND Q08 = Ja AND Q09 = Geteiltes Sorgerecht) OR (Q07 = Volljährig und in Erstausbildung AND Q08 = Ja)"
+    },
+    {
+      "id": "Q11",
+      "page_text": "Alternierende Obhut?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "(Q07 = Minderjährig AND Q08 = Ja AND Q09 = Geteiltes Sorgerecht AND Q10 = Nein) OR (Q02 = Verheiratet oder eingetragene Partnerschaft AND Q07 = Minderjährig AND Q08 = Nein AND Q13 = Ja) OR (Q02 = Ledig, Geschieden, Getrennt, Verwitwet AND Q07 = Minderjährig AND Q08 = Nein AND Q14 = Ja)"
+    },
+    {
+      "id": "Q12",
+      "page_text": "Wer leistet den grösseren finanziellen Beitrag an den Unterhalt des Kindes?",
+      "control": "radio",
+      "options": [
+        "Quellensteuerpflichtige Person",
+        "Anderer Elternteil"
+      ],
+      "required": "yes",
+      "shown_when": "Q11 = Ja OR (Q02 = Ledig, Geschieden, Getrennt, Verwitwet AND Q08 = Ja AND Q10 = Ja) [for married people, Q10 = Ja ends the child block without this question]"
+    },
+    {
+      "id": "Q13",
+      "page_text": "Geteiltes Sorgerecht",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q02 = Verheiratet oder eingetragene Partnerschaft AND Q07 = Minderjährig AND Q08 = Nein"
+    },
+    {
+      "id": "Q14",
+      "page_text": "Elterliche Sorge",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q02 = Ledig, Geschieden, Getrennt, Verwitwet AND Q07 = Minderjährig AND Q08 = Nein",
+      "help_text": "Same title as Q09, but with Ja/Nein options (internal name child-n__parentalCare)"
+    },
+    {
+      "id": "Q15",
+      "page_text": "Wird zur Hauptsache (mehr als 50%) für den Kindsunterhalt aufgekommen?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q07 = Volljährig und in Erstausbildung AND (Q08 = Nein OR (Q08 = Ja AND Q10 = Nein))"
+    },
+    {
+      "id": "Q16",
+      "page_text": "Hauptwohnsitz in der Schweiz?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q01 = Ersatzeinkünfte, OR all personal and child questions answered (adding an unanswered child hides it again)",
+      "help_text": "Section heading: 'Angaben zum Lebensmittelpunkt'"
+    },
+    {
+      "id": "Q17",
+      "page_text": "Wohnsitzstaat",
+      "control": "radio",
+      "options": [
+        "Deutschland",
+        "Liechtenstein",
+        "Anderes Land"
+      ],
+      "required": "yes",
+      "shown_when": "Q16 = Nein"
+    },
+    {
+      "id": "Q18",
+      "page_text": "Tägliche Rückkehr an den Hauptwohnsitz in Deutschland?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q01 = Erwerbseinkommen AND Q17 = Deutschland"
+    },
+    {
+      "id": "Q19",
+      "page_text": "Ansässigkeitsbescheinigung beigebracht?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q18 = Ja OR Q24 = Ja",
+      "help_text": "Ja -> cross-border (Grenzgänger) tariff: A->L, B->M, C->N, H->P, G->Q; Nein -> normal tariff"
+    },
+    {
+      "id": "Q20",
+      "page_text": "Tägliche Rückkehr grundsätzlich zumutbar (weniger als 100km Fahrdistanz)?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q01 = Erwerbseinkommen AND Q17 = Deutschland AND Q18 = Nein",
+      "help_text": "Nein -> normal tariff"
+    },
+    {
+      "id": "Q21",
+      "page_text": "Nachweis von mehr als 60 beruflich bedingten Nichtrückkehrtagen im Kalenderjahr beigebracht?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q20 = Ja",
+      "help_text": "Ja -> normal tariff; Nein -> cross-border tariff (L/M/N/P)"
+    },
+    {
+      "id": "Q22",
+      "page_text": "Tägliche Rückkehr an den Hauptwohnsitz in Liechtenstein?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q01 = Erwerbseinkommen AND Q17 = Liechtenstein",
+      "help_text": "Ja -> 'Grundsätzlich keine Quellensteuerpflicht'"
+    },
+    {
+      "id": "Q23",
+      "page_text": "Mehr als 45 beruflich bedingte Nichtrückkehrtage im Kalenderjahr?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q22 = Nein",
+      "help_text": "Ja -> normal tariff + 'Unter Vorbehalt des Doppelbesteuerungsabkommens'; Nein -> 'Grundsätzlich keine Quellensteuerpflicht'"
+    },
+    {
+      "id": "Q24",
+      "page_text": "Tägliche Rückkehr an den Hauptwohnsitz in Deutschland während oder vor Bezug der Ersatzeinkünfte?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q01 = Ersatzeinkünfte AND Q17 = Deutschland"
+    },
+    {
+      "id": "Q25",
+      "page_text": "Tägliche Rückkehr grundsätzlich zumutbar während oder vor Bezug der Ersatzeinkünfte (weniger als 100km Fahrdistanz)?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q01 = Ersatzeinkünfte AND Q17 = Deutschland AND Q24 = Nein"
+    },
+    {
+      "id": "Q26",
+      "page_text": "Nachweis von mehr als 60 beruflich bedingten Nichtrückkehrtagen im Kalenderjahr beigebracht während oder vor Bezug der Ersatzeinkünfte?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q25 = Ja"
+    },
+    {
+      "id": "Q27",
+      "page_text": "Tägliche Rückkehr an den Hauptwohnsitz in Liechtenstein während oder vor Bezug der Ersatzeinkünfte?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q01 = Ersatzeinkünfte AND Q17 = Liechtenstein"
+    },
+    {
+      "id": "Q28",
+      "page_text": "Mehr als 45 beruflich bedingte Nichtrückkehrtage im Kalenderjahr während oder vor Bezug der Ersatzeinkünfte?",
+      "control": "radio",
+      "options": [
+        "Ja",
+        "Nein"
+      ],
+      "required": "yes",
+      "shown_when": "Q27 = Nein"
+    }
+  ],
+  "vectors": [
+    {
+      "id": "V01",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q06": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: A0Y"
+    },
+    {
+      "id": "V02",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: A0N"
+    },
+    {
+      "id": "V03",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Nein",
+        "Q05": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: B0Y"
+    },
+    {
+      "id": "V04",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "Keine oder andere",
+        "Q04": "Nein",
+        "Q05": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: B0N"
+    },
+    {
+      "id": "V05",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: C0Y"
+    },
+    {
+      "id": "V06",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "Keine oder andere",
+        "Q04": "Ja",
+        "Q05": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: C0N"
+    },
+    {
+      "id": "V07",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: C1Y (Kind Ergebnis: C1)"
+    },
+    {
+      "id": "V08",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "Keine oder andere",
+        "Q04": "Nein",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: B1N (Kind Ergebnis: B1)"
+    },
+    {
+      "id": "V09",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Geteiltes Sorgerecht",
+        "Q10": "Ja",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: C1Y"
+    },
+    {
+      "id": "V10",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Geteiltes Sorgerecht",
+        "Q10": "Nein",
+        "Q11": "Ja",
+        "Q12": "Anderer Elternteil",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: C0Y"
+    },
+    {
+      "id": "V11",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Geteiltes Sorgerecht",
+        "Q10": "Nein",
+        "Q11": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: C0Y"
+    },
+    {
+      "id": "V12",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "Keine oder andere",
+        "Q04": "Nein",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Nein",
+        "Q13": "Ja",
+        "Q11": "Ja",
+        "Q12": "Quellensteuerpflichtige Person",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: B1N (Kind Ergebnis: B1)"
+    },
+    {
+      "id": "V13",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "Keine oder andere",
+        "Q04": "Nein",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Nein",
+        "Q13": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: B0N (Kind Ergebnis: B0)"
+    },
+    {
+      "id": "V14",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "Keine oder andere",
+        "Q04": "Nein",
+        "Q05": "Ja",
+        "Q07": "Volljährig und in Erstausbildung",
+        "Q08": "Ja",
+        "Q10": "Ja",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: B1N (Kind Ergebnis: B1)"
+    },
+    {
+      "id": "V15",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "Keine oder andere",
+        "Q04": "Nein",
+        "Q05": "Ja",
+        "Q07": "Volljährig und in Erstausbildung",
+        "Q08": "Nein",
+        "Q15": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: B0N (Kind Ergebnis: B0)"
+    },
+    {
+      "id": "V16",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "Keine oder andere",
+        "Q04": "Nein",
+        "Q05": "Ja",
+        "Q07": "weder noch",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: B0N (Kind Ergebnis: B0)"
+    },
+    {
+      "id": "V17",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q06": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: H1Y (Kind Ergebnis: H1)"
+    },
+    {
+      "id": "V18",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Geteiltes Sorgerecht",
+        "Q10": "Ja",
+        "Q12": "Anderer Elternteil",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: A0N (Kind Ergebnis: A0)"
+    },
+    {
+      "id": "V19",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Geteiltes Sorgerecht",
+        "Q10": "Nein",
+        "Q11": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: H1N (Kind Ergebnis: H1)"
+    },
+    {
+      "id": "V20",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Nein",
+        "Q14": "Ja",
+        "Q11": "Ja",
+        "Q12": "Quellensteuerpflichtige Person",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: H1N (Kind Ergebnis: H1)"
+    },
+    {
+      "id": "V21",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Nein",
+        "Q14": "Nein",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: A0N (Kind Ergebnis: A0)"
+    },
+    {
+      "id": "V22",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Volljährig und in Erstausbildung",
+        "Q08": "Nein",
+        "Q15": "Ja",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: A1N (Kind Ergebnis: A1)"
+    },
+    {
+      "id": "V23",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Volljährig und in Erstausbildung",
+        "Q08": "Ja",
+        "Q10": "Nein",
+        "Q15": "Ja",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: H1N (Kind Ergebnis: H1)"
+    },
+    {
+      "id": "V24",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "weder noch",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: A0N (Kind Ergebnis: A0)"
+    },
+    {
+      "id": "V25",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Minderjährig (Kind 1) + Minderjährig (Kind 2, via 'Ein weiteres Kind erfassen')",
+        "Q08": "Ja (both)",
+        "Q09": "Alleiniges Sorgerecht (both)",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: H2N (Kind Ergebnis: H1; Kind Ergebnis: H1)"
+    },
+    {
+      "id": "V26",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Kind 1: Minderjährig; Kind 2: weder noch",
+        "Q08": "Kind 1: Ja",
+        "Q09": "Kind 1: Alleiniges Sorgerecht",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: H1N (Kind Ergebnis: H1; Kind Ergebnis: A0)"
+    },
+    {
+      "id": "V27",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Kind 1: Volljährig und in Erstausbildung; Kind 2: Minderjährig",
+        "Q08": "Kind 1: Nein; Kind 2: Ja",
+        "Q15": "Kind 1: Ja",
+        "Q09": "Kind 2: Alleiniges Sorgerecht",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: H2N (Kind Ergebnis: A1; Kind Ergebnis: H1)"
+    },
+    {
+      "id": "V28",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig (Kind 1-3)",
+        "Q08": "Ja (all)",
+        "Q09": "Alleiniges Sorgerecht (all)",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: C3Y"
+    },
+    {
+      "id": "V29",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Minderjährig (Kind 1-3)",
+        "Q08": "Ja (all)",
+        "Q09": "Alleiniges Sorgerecht (all)",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Ja",
+        "Q19": "Ja"
+      },
+      "result": "Tarif: P3N"
+    },
+    {
+      "id": "V30",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q06": "Nein",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Ja",
+        "Q19": "Ja"
+      },
+      "result": "Tarif: L0Y"
+    },
+    {
+      "id": "V31",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Ja",
+        "Q07": "Volljährig und in Erstausbildung",
+        "Q08": "Nein",
+        "Q15": "Ja",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Ja",
+        "Q19": "Ja"
+      },
+      "result": "Tarif: L1N"
+    },
+    {
+      "id": "V32",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "Keine oder andere",
+        "Q04": "Nein",
+        "Q05": "Nein",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Ja",
+        "Q19": "Ja"
+      },
+      "result": "Tarif: M0N"
+    },
+    {
+      "id": "V33",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q06": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Ja",
+        "Q19": "Ja"
+      },
+      "result": "Tarif: P1Y"
+    },
+    {
+      "id": "V34",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Ja",
+        "Q19": "Ja"
+      },
+      "result": "Tarif: N1Y"
+    },
+    {
+      "id": "V35",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Ja",
+        "Q19": "Nein"
+      },
+      "result": "Tarif: C1Y"
+    },
+    {
+      "id": "V36",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Nein",
+        "Q20": "Ja",
+        "Q21": "Nein"
+      },
+      "result": "Tarif: N1Y"
+    },
+    {
+      "id": "V37",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Nein",
+        "Q20": "Ja",
+        "Q21": "Ja"
+      },
+      "result": "Tarif: C1Y"
+    },
+    {
+      "id": "V38",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q18": "Nein",
+        "Q20": "Nein"
+      },
+      "result": "Tarif: C1Y"
+    },
+    {
+      "id": "V39",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Nein",
+        "Q17": "Liechtenstein",
+        "Q22": "Ja"
+      },
+      "result": "Grundsätzlich keine Quellensteuerpflicht / Unter Vorbehalt des Doppelbesteuerungsabkommens"
+    },
+    {
+      "id": "V40",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Nein",
+        "Q17": "Liechtenstein",
+        "Q22": "Nein",
+        "Q23": "Ja"
+      },
+      "result": "Tarif: C1Y / Unter Vorbehalt des Doppelbesteuerungsabkommens"
+    },
+    {
+      "id": "V41",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Verheiratet oder eingetragene Partnerschaft",
+        "Q03": "röm.-kath., christ.-kath., evang.-ref.",
+        "Q04": "Ja",
+        "Q05": "Ja",
+        "Q07": "Minderjährig",
+        "Q08": "Ja",
+        "Q09": "Alleiniges Sorgerecht",
+        "Q16": "Nein",
+        "Q17": "Liechtenstein",
+        "Q22": "Nein",
+        "Q23": "Nein"
+      },
+      "result": "Grundsätzlich keine Quellensteuerpflicht / Unter Vorbehalt des Doppelbesteuerungsabkommens"
+    },
+    {
+      "id": "V42",
+      "answers": {
+        "Q01": "Erwerbseinkommen",
+        "Q02": "Ledig, Geschieden, Getrennt, Verwitwet",
+        "Q03": "Keine oder andere",
+        "Q06": "Nein",
+        "Q16": "Nein",
+        "Q17": "Anderes Land"
+      },
+      "result": "Tarif: A0N"
+    },
+    {
+      "id": "V43",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Ja"
+      },
+      "result": "Tarif: G"
+    },
+    {
+      "id": "V44",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q24": "Ja",
+        "Q19": "Ja"
+      },
+      "result": "Tarif: Q"
+    },
+    {
+      "id": "V45",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q24": "Ja",
+        "Q19": "Nein"
+      },
+      "result": "Tarif: G"
+    },
+    {
+      "id": "V46",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q24": "Nein",
+        "Q25": "Ja",
+        "Q26": "Nein"
+      },
+      "result": "Tarif: Q"
+    },
+    {
+      "id": "V47",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q24": "Nein",
+        "Q25": "Ja",
+        "Q26": "Ja"
+      },
+      "result": "Tarif: G"
+    },
+    {
+      "id": "V48",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Nein",
+        "Q17": "Deutschland",
+        "Q24": "Nein",
+        "Q25": "Nein"
+      },
+      "result": "Tarif: G"
+    },
+    {
+      "id": "V49",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Nein",
+        "Q17": "Liechtenstein",
+        "Q27": "Ja"
+      },
+      "result": "Grundsätzlich keine Quellensteuerpflicht / Unter Vorbehalt des Doppelbesteuerungsabkommens"
+    },
+    {
+      "id": "V50",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Nein",
+        "Q17": "Liechtenstein",
+        "Q27": "Nein",
+        "Q28": "Ja"
+      },
+      "result": "Tarif: G / Unter Vorbehalt des Doppelbesteuerungsabkommens"
+    },
+    {
+      "id": "V51",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Nein",
+        "Q17": "Liechtenstein",
+        "Q27": "Nein",
+        "Q28": "Nein"
+      },
+      "result": "Grundsätzlich keine Quellensteuerpflicht / Unter Vorbehalt des Doppelbesteuerungsabkommens"
+    },
+    {
+      "id": "V52",
+      "answers": {
+        "Q01": "Ersatzeinkünfte",
+        "Q16": "Nein",
+        "Q17": "Anderes Land"
+      },
+      "result": "Tarif: G"
+    }
+  ],
+  "notes": [
+    "The calculator is an Angular app (app-root, ng 11, assets from www.services.zh.ch/app/quest/tarifbestimmung/prod/) rendered inline in the section 'Tarifrechner Quellensteuer'. It is not in an iframe. No cookie banner appeared, so there was nothing to decline. Every control is a radio button. There are no dropdowns, free-text fields or date fields, so no dummy data was entered.",
+    "Page intro text (verbatim): 'Der Tarifrechner dient der Ermittlung des Quellensteuertarifs.' / 'Füllen Sie die Arbeitnehmendendaten wahrheitsgetreu aus und im Ergebnis erhalten Sie den Tarif für den Quellensteuerabzug.' / 'Die ausgewiesenen Tarife sind nicht rechtsverbindlich. …'. The accordion 'Nicht abgedeckte Fälle' lists: 'Gagen an Künstler, Sportler und Referenten', 'Verwaltungsratshonorare, welche an Personen mit Wohnsitz im Ausland bezahlt werden', 'Härtefälle', 'Renten und Kapitalleistungen aus Vorsorge'.",
+    "A visually hidden 'Beispiele' area shows the tags H3N and P3N. These were not clicked as inputs.",
+    "Child questions repeat for each child (input names child-1__…, child-2__…). The button 'Ein weiteres Kind erfassen' adds a child, and 'Kind löschen' removes one. The final tariff's digit equals the number of children whose 'Kind Ergebnis' digit is 1. For a single person, any child counted with H gives an H tariff (e.g. A1 + H1 -> H2N). A child is counted with H when it lives in the household and the person has sole custody or is the main financial contributor. While a child block is unanswered, the residence question Q16 is hidden.",
+    "Mapping seen for the residence/cross-border block: CH or 'Anderes Land' -> base tariff. DE with daily return and an Ansässigkeitsbescheinigung, or DE without daily return, return reasonable and no proof of more than 60 non-return days -> cross-border code (A->L, B->M, C->N, H->P, G->Q). Every other DE combination -> base tariff. LI -> 'Grundsätzlich keine Quellensteuerpflicht', except no daily return with more than 45 non-return days -> base tariff plus 'Unter Vorbehalt des Doppelbesteuerungsabkommens'. This block was explored exhaustively under the married + Y + 1 child (C1Y / C0Y) path and for Ersatzeinkünfte. For A/B/H it was spot-checked only via DE daily return + certificate (L0Y, L1N, M0N, M0Y, P1Y, P3N) and LI more than 45 days / Anderes Land (A0N).",
+    "The full cross-product of child paths × residence paths × confession × civil status was not enumerated (combinatorial). Child subtrees were enumerated fully with residence = Ja (Schweiz) for: married + partner employed + Y; married + partner not employed + N (Volljährig and not-in-household branches); single + N. The married + 'Minderjährig' + same household branch was fully crossed with all residence paths.",
+    "Not tested: more than 3 children (the upper limit of 'Ein weiteres Kind erfassen' is unknown); whether 'Kind löschen' recomputes correctly; tariff D or other special tariffs (none appeared in any path).",
+    "The answer value in V25–V29 summarises repeated per-child answers (Kind 1/2/3) because the schema allows one value per question id."
+  ]
+}
