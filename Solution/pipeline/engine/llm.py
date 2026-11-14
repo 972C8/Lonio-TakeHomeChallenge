@@ -3,13 +3,15 @@
 Every agent call in the pipeline goes through `run_agent`, which
 - runs an isolated agent (no user settings, only the tools we allow),
 - forces a JSON-schema structured output (fails closed if the agent cannot comply),
-- logs prompt, result, cost and duration to build/logs/ for auditability.
+- logs prompt, result, cost, tokens and duration to build/logs/ for auditability,
+- records the token usage of every call in USAGE, summed per stage by `usage_summary`.
 """
 from __future__ import annotations
 
 import asyncio
 import copy
 import json
+import os
 import time
 from pathlib import Path
 from typing import Any
@@ -21,6 +23,7 @@ from .paths import LOG_DIR, ROOT
 
 _SEM = asyncio.Semaphore(6)
 COSTS: list[dict] = []
+TOKEN_KEYS = ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens")
 
 
 class AgentError(RuntimeError):
@@ -63,6 +66,8 @@ async def run_agent(
     max_turns: int = 20,
     retries: int = 1,
 ) -> dict[str, Any]:
+    if os.environ.get("PIPELINE_NO_AGENTS"):    # benchmark B0: a no-op rerun must not call any agent
+        raise AgentError(f"agent call blocked by PIPELINE_NO_AGENTS: {name}")
     opts = ClaudeAgentOptions(
         system_prompt=system_prompt,
         model=model,
@@ -100,13 +105,46 @@ async def run_agent(
     raise AgentError(f"agent {name} failed after {retries + 1} attempts: {last_err}")
 
 
+def tokens(result) -> dict[str, int]:
+    """Token counts of one agent call (summed over all its turns), from the SDK's ResultMessage.usage."""
+    usage = getattr(result, "usage", None) or {}
+    return {k: int(usage.get(k) or 0) for k in TOKEN_KEYS}
+
+
+def stage_of(agent: str) -> str:
+    """Agent name -> stage for the usage summary: 'write_section/SEC-01' -> 'write_section'."""
+    return agent.split("/")[0]
+
+
+def usage_summary(calls: list[dict]) -> dict:
+    """Calls, turns, tokens and SDK cost estimate per stage and in total (report.json `usage_this_run`)."""
+    def empty():
+        return {"calls": 0, "turns": 0, **{k: 0 for k in TOKEN_KEYS}, "total_tokens": 0, "cost_usd": 0.0, "seconds": 0.0}
+
+    by_stage: dict[str, dict] = {}
+    total = empty()
+    for c in calls:
+        for acc in (by_stage.setdefault(stage_of(c["agent"]), empty()), total):
+            acc["calls"] += 1
+            acc["turns"] += c.get("turns", 0)
+            for k in TOKEN_KEYS:
+                acc[k] += c.get(k, 0)
+            acc["total_tokens"] += sum(c.get(k, 0) for k in TOKEN_KEYS)
+            acc["cost_usd"] = round(acc["cost_usd"] + c.get("cost_usd", 0.0), 4)
+            acc["seconds"] = round(acc["seconds"] + c.get("seconds", 0.0), 1)
+    return {"by_stage": dict(sorted(by_stage.items(), key=lambda kv: -kv[1]["cost_usd"])), "total": total}
+
+
 def _log(name, attempt, prompt, system, model, result, out, texts, secs):
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     cost = getattr(result, "total_cost_usd", None) or 0.0
-    COSTS.append({"agent": name, "cost_usd": cost, "seconds": round(secs, 1)})
+    tok = tokens(result)
+    turns = getattr(result, "num_turns", 0) or 0
+    COSTS.append({"agent": name, "model": model, "cost_usd": cost, "seconds": round(secs, 1), "turns": turns, **tok})
     safe = name.replace("/", "_")
     (LOG_DIR / f"{safe}.attempt{attempt}.json").write_text(json.dumps({
-        "agent": name, "model": model, "seconds": round(secs, 1), "cost_usd": cost,
+        "agent": name, "model": model, "seconds": round(secs, 1), "cost_usd": cost, "turns": turns, "usage": tok,
+        "model_usage": getattr(result, "model_usage", None),
         "subtype": getattr(result, "subtype", None), "system_prompt": system, "prompt": prompt,
         "assistant_text": texts, "output": out,
     }, indent=2, ensure_ascii=False, default=str))

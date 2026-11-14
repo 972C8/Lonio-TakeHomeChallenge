@@ -31,7 +31,7 @@ from .checks import mechanical as M
 from .engine import decisions as D
 from .engine import incremental as I
 from .engine.context import Context, sha
-from .engine.llm import COSTS, load_prompt, run_agent
+from .engine.llm import COSTS, load_prompt, run_agent, usage_summary
 from .engine.paths import PIPELINE, REQUIREMENTS
 from .engine.schemas import (AcceptanceCriterion, BusinessRule, Fact, Feature, FeaturePlan, Finding, Flow, KnowledgeModel,
                              Section, Spec, Unit)
@@ -684,6 +684,7 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
     report["review"] = review
     report["stages"] = {"ran": ctx.ran, "reused": ctx.reused}
     report["cost_usd_this_run"] = round(sum(c["cost_usd"] for c in COSTS), 2)
+    report["usage_this_run"] = usage_summary(COSTS)
     ctx.write("report", report)
     write_review_md(ctx, report, facts)
     return report
@@ -745,4 +746,9 @@ def write_review_md(ctx: Context, r: dict, facts: list[Fact]) -> None:
     L += [f"## Other warnings ({len(warns)})", ""] + [f"- [{f['check']}] `{f['target']}` {f['message']}" for f in warns] + [""]
     L += ["## Run", "", f"Stages run: {', '.join(r['stages']['ran']) or '-'}", "",
           f"Stages reused from cache: {', '.join(r['stages']['reused']) or '-'}", "", f"LLM cost this run: ${r['cost_usd_this_run']}"]
+    u = (r.get("usage_this_run") or {}).get("total")
+    if u:
+        L += ["", f"Tokens this run: {u['total_tokens']:,} in {u['calls']} agent calls ({u['input_tokens']:,} input, "
+              f"{u['cache_read_input_tokens']:,} cache read, {u['cache_creation_input_tokens']:,} cache write, "
+              f"{u['output_tokens']:,} output)"]
     (ctx.build / "review.md").write_text("\n".join(L) + "\n")
