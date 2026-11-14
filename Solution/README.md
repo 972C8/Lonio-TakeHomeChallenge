@@ -280,12 +280,27 @@ The pipeline never decides what a product owner must decide. Your judgment
 enters at four moments. Nothing generated is edited by hand: you change the
 inputs (profile, guidance, decisions, sources) and rerun.
 
+**Skills you can use** (Claude Code skills in `.claude/skills/`; type the
+name in Claude Code opened in this folder):
+
+| Skill | Use it | What it does there |
+|---|---|---|
+| `/new-problem` | before the first run of a new problem | interviews you, then scaffolds `problems/<name>/` (profile, guidance, decisions, examples, gold) |
+| `/new-adapter` | when a new *kind* of source appears | scaffolds an adapter (reader + extraction prompt) for it |
+| `/run-pipeline` | to run or refresh | checks which sources changed, runs the pipeline in the background, summarises the result |
+| `/review` | after every run | guided walk through `review.md`; records your answers as decisions |
+| `/decide` | whenever you want to record one decision | turns a sentence into a `decisions.yaml` entry |
+| `/trace` | whenever you doubt something | shows why a story, rule or fact says what it says, down to the quote |
+| `/learn` | now and then | turns decisions you keep repeating into examples, gold entries, guidance or checks |
+
 ### 1. Before the first run (once per problem)
 
 1. **`problems/<p>/profile.yaml`** – check the `goal` (the feature planner and
    the story writer both read it, so its wording shapes the sections and
    stories), the `stakeholders`, each source's `authority` and `precedence`,
-   and the `item_checklist`. Optionally add `section_hints`.
+   and the `item_checklist`. Optionally add `section_hints`. For a **new
+   problem**, `/new-problem` interviews you and drafts steps 1–4; for a new
+   *kind* of source (emails, regulation PDFs, …), `/new-adapter`.
 2. **`problems/<p>/guidance.md`** – state scope and what is out of scope,
    value and id conventions, and product-owner statements tagged `[G-nn]` that
    may be cited as sources. Do not put facts of a source here.
@@ -298,9 +313,9 @@ inputs (profile, guidance, decisions, sources) and rerun.
 5. **Optional: explore a live source once** – `pipeline explore <source>`
    (for the Zurich calculator, 20–60 minutes and a few dollars). Skip it and
    the calculator is reported as an open question.
-6. **Run** – `pipeline run` (about 15–20 minutes, roughly $5–7 for the first
-   run). Output is created, not committed: `build/<p>/` and
-   `requirements/<p>/`.
+6. **Run** – `pipeline run`, or `/run-pipeline`, which also summarises the
+   result (about 15–20 minutes, roughly $5–7 for the first run). Output is
+   created, not committed: `build/<p>/` and `requirements/<p>/`.
 
 ### 2. After every run (`/review`, or read `build/<p>/review.md` yourself)
 
@@ -308,7 +323,9 @@ The **`/review` skill** does this for you. It reads `review.md`, gives the
 verdict in one line, then walks you through the items below one at a time,
 each with context, the source quote and a recommendation. It records your
 answers in `decisions.yaml` (after you confirm) and offers to rerun at the end.
-By hand, go through `review.md` from the top:
+By hand, go through `review.md` from the top (`/decide` records a single
+decision from a sentence; `/trace <id>` shows the evidence behind any story,
+rule, fact or open question):
 1. **Verdict and errors** – ready / ready with caveats / not ready, and what
    blocks it.
 2. **Failing examples** – decide who is wrong: the source (fix or replace it),
@@ -323,8 +340,9 @@ By hand, go through `review.md` from the top:
 6. **Dev-refinement questions and technical vocabulary** – answer the
    questions that matter with a decision; if an agent keeps making a
    technical choice, add a line to `guidance.md`.
-7. **Rerun** – `pipeline run` (only the steps after your change run again,
-   which is cheap) and repeat until the verdict is acceptable.
+7. **Rerun** – `pipeline run` or `/run-pipeline` (only the steps after your
+   change run again, which is cheap) and repeat until the verdict is
+   acceptable.
 
 Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`,
 `story.<id>` (ids contain a dot, e.g. `story.US-02.1.priority`),
@@ -336,16 +354,19 @@ Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`,
 
 1. Replace the file (rerun `pipeline explore` for a live site) or add the
    source to `profile.yaml`; for a new kind of source use `/new-adapter`.
-2. `pipeline status`, then `pipeline run`.
-3. In `review.md`: failing examples, **decisions flagged for re-confirmation**
-   (their evidence changed: re-confirm or update each one), and the coverage
-   of the new content.
+2. `pipeline status`, then `pipeline run` (`/run-pipeline` does both and
+   summarises).
+3. `/review` (or `review.md`): failing examples, **decisions flagged for re-confirmation**
+   (their evidence changed: re-confirm or update each one, with `/decide`),
+   and the coverage of the new content.
 4. `git diff requirements/` shows exactly which stories and criteria moved.
 
 ### 4. Before publishing to Linear (optional step 8)
 
 1. Publish only when the verdict is acceptable and you have answered what
-   blocks the build.
+   blocks the build. `/trace <story id>` is handy for a last spot-check of a
+   story. There is no skill for publishing itself: step 8 is the command
+   below.
 2. Set `LINEAR_API_KEY`, then run the read-only preview
    `pipeline publish --team <key> --dry-run`, and read what it would create
    or update.
@@ -357,6 +378,8 @@ Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`,
 
 - **`/learn`** turns decisions you keep repeating into examples, gold
   entries, guidance or checks, so the next run gets it right without you.
+  Use it after a few review rounds, when the same kind of decision shows up
+  again and again.
 - **Delivering:** after the final run, commit `requirements/<p>/` (and
   `build/<p>/` if you want to show the intermediate results) together with
   the pipeline.
