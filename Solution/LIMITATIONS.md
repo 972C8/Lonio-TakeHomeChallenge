@@ -40,12 +40,17 @@
      changed parts;
    - the knowledge delta sends the whole previous model to the agent, even
      when a handful of facts changed;
-   - the trace judge, dev refinement and reviewer re-read the whole spec
-     although most of it is unchanged;
+   - dev refinement and the reviewer re-read the whole spec although most of
+     it is unchanged (the trace judge reuses verdicts of unchanged elements);
    - any change to guidance, a directive or a prompt rebuilds the model and
      every section from scratch.
-   In practice a small new source costs about $6, half of a full rebuild.
+   In practice a small new source costs about $4.50 (one new story, 29
+   untouched), against about $10-13 for a full rebuild.
    Possible optimisations: extract only changed units, send the delta agent
-   only the elements related to the new facts, judge only changed elements and
-   reuse earlier verdicts, and treat a changed directive as a delta of the
-   elements that cite it.
+   only the elements related to the new facts, and treat a changed directive
+   as a delta of the elements that cite it.
+   The delta guard is a cause check, not a meaning check: a change that cites
+   a new fact is accepted even if the fact does not really require it, and a
+   new high-precedence source that contradicts much of the model may need
+   changes the guard reverts. The reverted changes are listed in review.md;
+   `--force knowledge.raw` rebuilds in full when they are wanted.

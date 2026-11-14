@@ -185,6 +185,7 @@ and precedence) + `guidance.md` → `knowledge.raw.json`.
 - **No silent choices:** across sources, precedence decides, and a genuine conflict becomes an open question.
 - **Honest status:** items that rest on inference are marked `inferred`.
 - **Incremental reruns:** when only facts changed (same prompts, guidance and directives), the modeler gets the previous model and the new or removed facts and returns a delta; code applies it, so everything the delta does not name stays identical. `--force knowledge.raw` rebuilds in full.
+- **A new or removed source is a fact change, not a rebuild.** Its facts take the delta path; only a changed trust level (type, precedence, authority) of an existing source rebuilds in full. In delta mode the modeler follows `agents/knowledge_delta.md` (change only what the new facts force), and code guards it: an element may change only if it cites a new, changed or removed fact, additions must cite a new fact, and existing items and rules keep their names. Whatever the guard reverts is listed in `review.md` under "Impact of this run", together with the stories added, changed and left untouched, and any story that changed although nothing it uses did. Trace-judge verdicts are cached per element, so unchanged stories keep their trace notes.
 - **Complete decision tables:** every row has one cell per input (`any` / `-` where needed). If the modeler leaves cells out, the rules concerned go back to it once to be fixed, before anything is cached.
 
 ### 5. Feature spec – group into sections and write the stories
