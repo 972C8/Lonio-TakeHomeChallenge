@@ -274,8 +274,8 @@ a report (`build/<feature>/linear_publish.*.json`).
 ## Human in the loop
 
 The pipeline never decides what a product owner must decide. Your judgment
-enters at four moments. Nothing generated is edited by hand: you change the
-inputs (profile, guidance, decisions, sources) and rerun.
+enters at four moments, and nothing generated is edited by hand: you change
+the inputs (profile, guidance, decisions, sources) and rerun.
 
 **Skills you can use.** They are Claude Code skills in `.claude/skills/`;
 type the name in Claude Code opened in this folder.
@@ -291,92 +291,57 @@ type the name in Claude Code opened in this folder.
 | `/publish-linear` | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
 | `/learn` | turns decisions you keep repeating into examples, guidance or checks |
 
-### 1. Before the first run (once per feature, use `/new-feature`)
+### 1. Before the first run – `/new-feature`, `/new-adapter`, `/run-pipeline`
 
-1. **`features/<f>/profile.yaml`** – check the `goal` (the feature planner and
-   the story writer both read it, so its wording shapes the sections and
-   stories), the `stakeholders`, each source's `authority` and `precedence`,
-   and the `item_checklist`. Optionally add `section_hints`. For a **new
-   feature**, `/new-feature` interviews you and drafts steps 1–2; for a new
-   *kind* of source (emails, regulation PDFs, …), `/new-adapter`.
-2. **`features/<f>/guidance.md`** – state scope and what is out of scope,
-   value and id conventions, and product-owner statements tagged `[G-nn]` that
-   may be cited as sources. Do not put facts of a source here.
-3. **Optional: explore a live source once** – `pipeline explore <source>`
-   (for the Zurich calculator, 20–60 minutes and a few dollars). Skip it and
-   the calculator is reported as an open question.
-4. **Run** – `pipeline run`, or `/run-pipeline`, which also summarises the
-   result (about 15–20 minutes, roughly $5–7 for the first run). Output is
-   created, not committed: `build/<f>/` and `requirements/<f>/`.
+1. **`features/<f>/profile.yaml`** – check the `goal` (the planner and the story
+   writer read it), the stakeholders, each source's authority and precedence,
+   and the `item_checklist`.
+2. **`features/<f>/guidance.md`** – scope and what is out of scope, id and value
+   conventions, product-owner statements tagged `[G-nn]`. No source facts.
+3. *Optional:* `pipeline explore <source>` for a live source (Zurich
+   calculator: 20–60 minutes, a few dollars). Skipped, it is reported as an
+   open question.
+4. **Run** – `pipeline run` (about 15–20 minutes, roughly $5–7 the first time).
+   Output is generated, not committed.
 
-### 2. After every run (`/review`, or read `build/<f>/review.md` yourself)
+### 2. After every run – `/review`, `/decide`, `/trace`, `/run-pipeline`
 
-The **`/review` skill** does this for you. It reads `review.md`, gives the
-verdict in one line, then walks you through the items below one at a time,
-each with context, the source quote and a recommendation. It records your
-answers in `decisions.yaml` (after you confirm) and offers to rerun at the end.
-By hand, go through `review.md` from the top (`/decide` records a single
-decision from a sentence; `/trace <id>` shows the evidence behind any story,
-rule, fact or open question):
-1. **Verdict and errors** – ready / ready with caveats / not ready, and what
-   blocks it.
-2. **Failing examples** – decide who is wrong: the source (fix or replace it),
-   the example (written by the story writer: override the story's criterion), or the generated rule (override the rule).
-3. **Open questions** – each has options and a recommendation. Answer them in
-   `decisions.yaml` (`resolve`, or `override` / `add` the resulting change), or
-   with the `/decide` skill in plain words.
-4. **Inferred items** – things no source states outright. `accept` or `reject`
-   each fact, or override the element.
-5. **Uncited source units** – confirm they are irrelevant (small talk, out of
-   scope), or something was missed.
-6. **Dev-refinement questions and technical vocabulary** – answer the
-   questions that matter with a decision; if an agent keeps making a
-   technical choice, add a line to `guidance.md`.
-7. **Rerun** – `pipeline run` or `/run-pipeline` (only the steps after your
-   change run again, which is cheap) and repeat until the verdict is
-   acceptable.
+Read `build/<f>/review.md` (or let `/review` walk you through it) and answer,
+in this order:
+1. **Verdict and errors.**
+2. **Failing examples** – fix the source, or override the story's criterion or
+   the rule.
+3. **Open questions** – `resolve` plus the resulting `override` / `add`.
+4. **Inferred items** – `accept` or `reject`.
+5. **Uncited source units** – confirm they are irrelevant.
+6. **Dev-refinement questions** – answer with a decision, or add a line to
+   `guidance.md`.
 
-Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`,
-`story.<id>` (ids contain a dot, e.g. `story.US-02.1.priority`),
-`section.<id>`, `feature.<attribute>`, `open.<id>`, `exclusion.<id>` and
-`fact.<id>`; actions are `override`, `add`, `exclude`, `resolve`, `accept`,
-`reject`. A decision keeps a fingerprint of its evidence.
+Then rerun (cheap: only the later steps rerun) until the verdict is acceptable.
 
-### 3. After a source changes or a new one arrives
+Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`, `story.<id>`
+(ids contain a dot, e.g. `story.US-02.1.priority`), `section.<id>`,
+`feature.<attribute>`, `open.<id>`, `exclusion.<id>`, `fact.<id>`. Actions:
+`override`, `add`, `exclude`, `resolve`, `accept`, `reject`.
 
-1. Replace the file (rerun `pipeline explore` for a live site) or add the
-   source to `profile.yaml`; for a new kind of source use `/new-adapter`.
-2. `pipeline status`, then `pipeline run` (`/run-pipeline` does both and
-   summarises).
-3. `/review` (or `review.md`): failing examples, **decisions flagged for re-confirmation**
-   (their evidence changed: re-confirm or update each one, with `/decide`),
-   and the coverage of the new content.
-4. `git diff requirements/` shows exactly which stories and criteria moved.
+### 3. After a source changes or a new one arrives – `/run-pipeline`, `/review`, `/decide`, `/new-adapter`
 
-### 4. Before publishing to Linear (optional step 8)
+Replace the file (or add the source to `profile.yaml`), run `pipeline status`,
+then `pipeline run`. In `review.md`, re-confirm the decisions flagged because
+their evidence changed. `git diff requirements/` shows what moved.
 
-1. Publish only when the verdict is acceptable and you have answered what
-   blocks the build. `/trace <story id>` is handy for a last spot-check of a
-   story.
-2. **`/publish-linear`** does this for you: it checks the verdict and
-   `LINEAR_API_KEY`, runs the read-only preview, asks for your go, then
-   publishes. By hand: set `LINEAR_API_KEY`, run
-   `pipeline publish --team <key> --dry-run` and read what it would create or
-   update.
-3. Publish (`/publish-linear` after your go, or by hand
-   `pipeline publish --team <key>`). Change the **spec**, not the
-   text of the Linear issues; the next publish overwrites the description of
-   issues it owns. Status, assignee and estimate stay with engineering.
+### 4. Before publishing to Linear (optional step 8) – `/publish-linear`, `/trace`
 
-### Occasionally
+Publish only when the verdict is acceptable. The skill previews read-only,
+asks for your go, then publishes (by hand: `pipeline publish --team <key>
+[--dry-run]`, with `LINEAR_API_KEY` set). Edit the spec, not the Linear issues:
+the next publish overwrites their descriptions.
 
-- **`/learn`** turns decisions you keep repeating into examples,
-  guidance or checks, so the next run gets it right without you.
-  Use it after a few review rounds, when the same kind of decision shows up
-  again and again.
-- **Delivering:** after the final run, commit `requirements/<f>/` (and
-  `build/<f>/` if you want to show the intermediate results) together with
-  the pipeline.
+### Occasionally – `/learn`
+
+Turns decisions you keep repeating into guidance or checks. After the final
+run, commit `requirements/<f>/` (and `build/<f>/` if you want to show the
+intermediate results).
 
 ## When a source changes, or a new one arrives
 
