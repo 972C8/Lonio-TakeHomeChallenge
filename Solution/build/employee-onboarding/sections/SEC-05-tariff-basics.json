@@ -2,26 +2,26 @@
   "id": "SEC-05-tariff-basics",
   "order": 5,
   "title": "Source tax tariff basics and computed result",
-  "purpose": "Ask the denomination and whether the spouse works. Combine these with the child digit and the cross-border outcome into the full Zurich tariff code (or the Liechtenstein result), which Lonio records for HR instead of HR using the calculator.",
+  "purpose": "For employees subject to source tax, ask the denomination and whether the spouse or partner is employed. Combine these with the child and cross-border results into the full Zurich tariff code (or the Liechtenstein result), so HR no longer uses the calculator.",
   "stories": [
     {
       "id": "US-05.3",
       "title": "State the denomination for the church-tax part of the tariff",
       "as_a": "source_tax",
       "i_want": "every employee who is subject to source tax to state whether they belong to the Roman Catholic, Christian Catholic or Evangelical Reformed church, or to none or another denomination",
-      "so_that": "the church-tax suffix (Y or N) of the Zurich tariff code can be set, and employees who are not subject to source tax are not asked about their religion",
+      "so_that": "the church-tax suffix (Y or N) at the end of the Zurich tariff code is correct, and employees who are not subject to source tax are not asked about their religion",
       "priority": "P1",
-      "priority_reason": "The church-tax suffix is part of every tariff code Lonio computes (D-001); without it no tariff code can be produced, and asking non-subject employees would collect sensitive data no party needs (G-01).",
+      "priority_reason": "Without the denomination the tariff code cannot be completed, so HR would have to fall back to the manual calculator step that Lonio replaces (F-hr_transcript-563a9f, D-001). Asking it only of subject employees is data minimisation (G-01, F-hr_transcript-b84498).",
       "acceptance_criteria": [
         {
           "id": "AC-05.3.1",
-          "title": "Denomination is asked only from employees subject to source tax",
-          "given": "the employee has answered the residence and residence-status questions, and Lonio has determined whether the employee is subject to source tax (rule 'subject to source tax': everyone living abroad; in Switzerland only non-Swiss employees without a C permit who are not exempted by a Swiss or C-permit spouse living in Switzerland)",
-          "when": "the employee reaches the source tax details",
-          "then": "the denomination question is asked, and must be answered, only if the employee is subject to source tax; employees not subject to source tax are never asked it",
+          "title": "Denomination is asked only of employees subject to source tax",
+          "given": "an employee whose earlier answers (home address country, nationality, C permit, civil status and spouse details) decide whether they are subject to source tax",
+          "when": "the employee reaches the source tax questions",
+          "then": "employees subject to source tax are asked their denomination and must answer it. Employees who are not subject to source tax are not asked. The question does not depend on the type of income, because a new employee always has earned income (D-006).",
           "examples": [
             {
-              "name": "Tomás - Brazilian, B permit, Swiss wife, living in Winterthur (hr_transcript/F-hr_transcript-d7431e)",
+              "name": "Tomás (hr_transcript/F-hr_transcript-d7431e) - Brazilian, B permit, Swiss wife living in Switzerland, not subject",
               "given": [
                 {
                   "item": "address_country",
@@ -29,7 +29,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Brazil"
                 },
                 {
                   "item": "permit_type",
@@ -40,25 +40,31 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_nationality",
-                  "value": "yes"
+                  "item": "spouse_residence_country",
+                  "value": "Switzerland"
                 },
                 {
-                  "item": "spouse_residence_country",
+                  "item": "spouse_nationality",
                   "value": "Switzerland"
                 }
               ],
               "then": [
                 {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
                   "target": "confession",
                   "expect": "not asked"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-hr_transcript-d7431e"
+              ],
               "illustrative": false
             },
             {
-              "name": "Employee living in Germany",
+              "name": "Employee living in Germany - subject whatever the nationality",
               "given": [
                 {
                   "item": "address_country",
@@ -71,6 +77,10 @@
               ],
               "then": [
                 {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
                   "target": "confession",
                   "expect": "asked"
                 },
@@ -83,7 +93,7 @@
               "illustrative": true
             },
             {
-              "name": "Swiss citizen living in Switzerland",
+              "name": "Non-Swiss resident of Switzerland without C permit, single - subject",
               "given": [
                 {
                   "item": "address_country",
@@ -91,61 +101,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "yes"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                }
-              ],
-              "then": [
-                {
-                  "target": "confession",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Non-Swiss with C permit living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "no"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "yes"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                }
-              ],
-              "then": [
-                {
-                  "target": "confession",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Non-Swiss without C permit, single, living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "no"
+                  "value": "Italy"
                 },
                 {
                   "item": "permit_type",
@@ -157,6 +113,10 @@
                 }
               ],
               "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
                 {
                   "target": "confession",
                   "expect": "asked"
@@ -164,6 +124,68 @@
                 {
                   "target": "confession",
                   "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Swiss citizen living in Switzerland - not subject",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "confession",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Non-Swiss resident of Switzerland with C permit - not subject",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "yes"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "confession",
+                  "expect": "not asked"
                 }
               ],
               "source_refs": [],
@@ -173,39 +195,46 @@
           "source_refs": [
             "F-hr_transcript-b84498",
             "F-zh_source_tax_calculator-208104",
+            "F-zh_source_tax_calculator-b05b44",
             "G-01",
-            "D-001"
+            "D-001",
+            "D-006"
           ]
         },
         {
           "id": "AC-05.3.2",
-          "title": "Allowed answers for the denomination",
-          "given": "the employee is asked the denomination question",
-          "when": "the employee answers it",
-          "then": "exactly two answers are possible: 'Roman Catholic, Christian Catholic or Evangelical Reformed' or 'None or other'; the question cannot be left empty; no more detailed denomination is collected, and the answer is recorded for HR as an input to the source tax tariff code",
+          "title": "Denomination offers exactly the calculator's two choices",
+          "given": "an employee who is asked their denomination",
+          "when": "the employee answers",
+          "then": "they choose exactly one of \"Roman Catholic, Christian Catholic or Evangelical Reformed\" or \"None or other\". The answer cannot be left empty. It is recorded for the source tax tariff code only.",
           "examples": [],
           "source_refs": [
             "F-zh_source_tax_calculator-b7fea8",
             "F-zh_source_tax_calculator-2eab9a",
-            "G-01",
-            "G-09",
-            "D-001",
-            "D-034"
+            "D-001"
           ]
         },
         {
           "id": "AC-05.3.3",
-          "title": "Denomination sets the church-tax suffix",
-          "given": "an employee subject to source tax has answered the denomination question",
-          "when": "Lonio computes the tariff code",
-          "then": "the church-tax suffix is 'Y' for 'Roman Catholic, Christian Catholic or Evangelical Reformed' and 'N' for 'None or other', as in the Zurich calculator",
+          "title": "Denomination sets the church-tax suffix of the tariff code",
+          "given": "an employee subject to source tax who has answered the denomination question",
+          "when": "Lonio derives the church-tax suffix of the tariff code",
+          "then": "the suffix is Y for \"Roman Catholic, Christian Catholic or Evangelical Reformed\" and N for \"None or other\".",
           "examples": [
             {
-              "name": "Recognised church member living in Germany",
+              "name": "Calculator run A0Y - single, no children, church member (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Germany"
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
                 },
                 {
                   "item": "civil_status",
@@ -214,6 +243,10 @@
                 {
                   "item": "confession",
                   "value": "Roman Catholic, Christian Catholic or Evangelical Reformed"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
                 }
               ],
               "then": [
@@ -222,15 +255,26 @@
                   "expect": "Y"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-zh_source_tax_calculator-c78e0c",
+                "F-zh_source_tax_calculator-2eab9a"
+              ],
+              "illustrative": false
             },
             {
-              "name": "No or other denomination, living in Germany",
+              "name": "Calculator run A0N - single, no children, none or other (zh_source_tax_calculator/F-zh_source_tax_calculator-2eab9a)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Germany"
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
                 },
                 {
                   "item": "civil_status",
@@ -239,6 +283,10 @@
                 {
                   "item": "confession",
                   "value": "None or other"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
                 }
               ],
               "then": [
@@ -247,12 +295,15 @@
                   "expect": "N"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-zh_source_tax_calculator-2eab9a"
+              ],
+              "illustrative": false
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-2eab9a",
+            "F-zh_source_tax_calculator-c78e0c",
             "D-001"
           ]
         }
@@ -266,11 +317,14 @@
       "source_refs": [
         "F-zh_source_tax_calculator-208104",
         "F-zh_source_tax_calculator-b7fea8",
+        "F-zh_source_tax_calculator-b05b44",
         "F-zh_source_tax_calculator-2eab9a",
+        "F-zh_source_tax_calculator-c78e0c",
         "F-hr_transcript-b84498",
+        "F-hr_transcript-563a9f",
         "G-01",
-        "G-09",
-        "D-001"
+        "D-001",
+        "D-006"
       ],
       "status": "decision"
     },
@@ -278,55 +332,18 @@
       "id": "US-05.4",
       "title": "State whether the spouse or registered partner works, for married employees and registered partners",
       "as_a": "source_tax",
-      "i_want": "married employees and employees in a registered partnership who are subject to source tax to state whether their spouse or partner is gainfully employed or receives replacement income",
-      "so_that": "the married tariff letter can be set (C if the spouse works or receives replacement income, B otherwise) without asking single, divorced, widowed or separated employees an irrelevant question",
+      "i_want": "employees who are subject to source tax and married or in a registered partnership to state whether their spouse or partner is gainfully employed or receives replacement income",
+      "so_that": "the base tariff letter is C (spouse or partner works) or B (does not work), and nobody else is asked about a spouse's work",
       "priority": "P1",
-      "priority_reason": "The married tariff letter cannot be determined without this answer, and HR names it as the question the calculator adds for married employees (F-hr_transcript-09b3fe); it blocks the computed tariff code (D-001).",
+      "priority_reason": "The tariff letter for every married subject employee depends on it. HR names it as the extra calculator question for married employees (F-hr_transcript-09b3fe). Without it the computed tariff code (D-001) cannot be produced.",
       "acceptance_criteria": [
         {
           "id": "AC-05.4.1",
-          "title": "Spouse employment is asked only from married employees and registered partners subject to source tax",
-          "given": "the employee has stated their civil status and Lonio has determined whether the employee is subject to source tax",
-          "when": "the employee reaches the source tax details",
-          "then": "the question whether the spouse or registered partner is employed or receives replacement income is asked, and must be answered, only if the employee is subject to source tax and is 'Married' or in a 'Registered partnership'; separated employees count as single for source tax and are not asked, nor are single, divorced or widowed employees",
+          "title": "Asked only of subject employees who are married or in a registered partnership",
+          "given": "an employee who has answered their civil status and whose earlier answers decide whether they are subject to source tax",
+          "when": "the employee reaches the source tax questions",
+          "then": "the question is asked, and must be answered, only if the employee is subject to source tax and is married or in a registered partnership (registered partnership counts as married for source tax). Single, divorced, widowed and separated employees count as not married for source tax and are not asked (D-003). Employees not subject to source tax are not asked.",
           "examples": [
-            {
-              "name": "Tomás - exempt through his Swiss wife living in Switzerland (hr_transcript/F-hr_transcript-d7431e)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "no"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "yes"
-                },
-                {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_employed",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
             {
               "name": "Married employee living in Germany",
               "given": [
@@ -353,7 +370,7 @@
               "illustrative": true
             },
             {
-              "name": "Registered partner living in Germany",
+              "name": "Registered partner living in Germany - counts as married for source tax (like Daniel's civil status, hr_transcript/F-hr_transcript-3907fe)",
               "given": [
                 {
                   "item": "address_country",
@@ -368,13 +385,20 @@
                 {
                   "target": "spouse_employed",
                   "expect": "asked"
+                },
+                {
+                  "target": "spouse_employed",
+                  "expect": "required"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-hr_transcript-3907fe",
+                "D-003"
+              ],
               "illustrative": true
             },
             {
-              "name": "Separated employee living in Germany",
+              "name": "Separated employee living in Germany - counts as single for source tax",
               "given": [
                 {
                   "item": "address_country",
@@ -383,6 +407,29 @@
                 {
                   "item": "civil_status",
                   "value": "Separated"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_employed",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [
+                "D-003"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Single employee living in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
                 }
               ],
               "then": [
@@ -416,7 +463,28 @@
               "illustrative": true
             },
             {
-              "name": "Married non-Swiss without C permit in Switzerland, spouse also non-Swiss without C permit",
+              "name": "Widowed employee living in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Widowed"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_employed",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Tomás (hr_transcript/F-hr_transcript-d7431e) - married but not subject, Swiss wife in Switzerland",
               "given": [
                 {
                   "item": "address_country",
@@ -424,7 +492,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Brazil"
                 },
                 {
                   "item": "permit_type",
@@ -435,63 +503,76 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_nationality",
-                  "value": "no"
+                  "item": "spouse_residence_country",
+                  "value": "Switzerland"
                 },
                 {
-                  "item": "spouse_permit_type",
-                  "value": "no"
+                  "item": "spouse_nationality",
+                  "value": "Switzerland"
                 }
               ],
               "then": [
                 {
                   "target": "spouse_employed",
-                  "expect": "asked"
+                  "expect": "not asked"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-hr_transcript-d7431e"
+              ],
+              "illustrative": false
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-0137bf",
             "F-zh_source_tax_calculator-051bb9",
             "F-hr_transcript-09b3fe",
+            "G-01",
             "D-003"
           ]
         },
         {
           "id": "AC-05.4.2",
-          "title": "Allowed answers for spouse employment",
-          "given": "the employee is asked whether the spouse or registered partner is employed or receives replacement income",
-          "when": "the employee answers it",
-          "then": "the answer is 'yes' or 'no' and cannot be left empty; the question covers the spouse's or partner's employment and replacement income only (the employee's own income is always earned income and is not asked, D-006); the answer is recorded for HR as an input to the source tax tariff code",
+          "title": "Answer is yes or no and covers replacement income",
+          "given": "an employee who is asked whether the spouse or registered partner works",
+          "when": "the employee answers",
+          "then": "the question asks whether the spouse or partner is gainfully employed or receives replacement income. The answer is \"yes\" or \"no\" and cannot be left empty. It is recorded for the source tax tariff code only.",
           "examples": [],
           "source_refs": [
             "F-zh_source_tax_calculator-7b637b",
             "F-zh_source_tax_calculator-e740d1",
-            "G-10",
-            "D-006",
-            "D-034"
+            "D-001"
           ]
         },
         {
           "id": "AC-05.4.3",
-          "title": "Spouse employment sets the married tariff letter",
-          "given": "a married employee or registered partner subject to source tax has answered the spouse employment question",
-          "when": "Lonio determines the married tariff letter",
-          "then": "the letter is C if the spouse or partner is employed or receives replacement income ('yes'), and B if not ('no'), as in the Zurich calculator",
+          "title": "Spouse's work decides the base letter C or B",
+          "given": "an employee subject to source tax who is married or in a registered partnership and has answered whether the spouse or partner works",
+          "when": "Lonio derives the base tariff letter for married employees",
+          "then": "the base letter is C if the spouse or partner works or receives replacement income, and B if not.",
           "examples": [
             {
-              "name": "Married, spouse works, living in Germany",
+              "name": "Calculator run C0Y - spouse employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Germany"
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
                 },
                 {
                   "item": "civil_status",
                   "value": "Married"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Italy"
                 },
                 {
                   "item": "spouse_employed",
@@ -500,23 +581,41 @@
               ],
               "then": [
                 {
+                  "target": "spouse_employed",
+                  "expect": "asked"
+                },
+                {
                   "target": "married_tariff_letter",
                   "expect": "C"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-zh_source_tax_calculator-97139a"
+              ],
+              "illustrative": false
             },
             {
-              "name": "Registered partner, partner does not work, living in Germany",
+              "name": "Calculator run B0Y - spouse not employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Germany"
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
                 },
                 {
                   "item": "civil_status",
-                  "value": "Registered partnership"
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Italy"
                 },
                 {
                   "item": "spouse_employed",
@@ -525,18 +624,23 @@
               ],
               "then": [
                 {
+                  "target": "spouse_employed",
+                  "expect": "asked"
+                },
+                {
                   "target": "married_tariff_letter",
                   "expect": "B"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-zh_source_tax_calculator-97139a"
+              ],
+              "illustrative": false
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-97139a",
-            "D-001",
-            "D-003"
+            "D-001"
           ]
         }
       ],
@@ -553,30 +657,30 @@
         "F-zh_source_tax_calculator-97139a",
         "F-zh_source_tax_calculator-051bb9",
         "F-hr_transcript-09b3fe",
+        "G-01",
         "D-001",
-        "D-003",
-        "D-006"
+        "D-003"
       ],
       "status": "decision"
     },
     {
       "id": "US-05.6",
       "title": "Determine the tariff letter, including the cross-border letters",
-      "as_a": "hr",
-      "i_want": "Lonio to determine the Zurich tariff letter for every employee subject to source tax from the answers already given (civil status, spouse employment, single-parent situation and cross-border situation)",
-      "so_that": "I no longer have to click through the Zurich calculator with the employee's answers to find the tariff letter",
+      "as_a": "source_tax",
+      "i_want": "Lonio to determine the tariff letter of every employee subject to source tax from their answers, following the Zurich calculator. That is C, B, H or A, or the cross-border letter (N, M, P or L) where the cross-border tariff applies.",
+      "so_that": "the letter of the computed tariff code matches what the calculator would give, without HR clicking through it",
       "priority": "P1",
-      "priority_reason": "Replacing HR's manual calculator step is a core product decision (D-001); today HR sits with the answers and clicks through the calculator for every employee (F-hr_transcript-563a9f).",
+      "priority_reason": "The letter is the core of the tariff code that replaces HR's manual calculator step (F-hr_transcript-563a9f, D-001). A wrong letter gives a wrong source tax deduction.",
       "acceptance_criteria": [
         {
           "id": "AC-05.6.1",
-          "title": "Base letter for married employees and registered partners",
-          "given": "an employee subject to source tax is 'Married' or in a 'Registered partnership' and the cross-border tariff does not apply",
+          "title": "Base letter without the cross-border tariff",
+          "given": "an employee subject to source tax for whom the cross-border tariff does not apply. This covers residents of Switzerland, of countries other than Germany and Liechtenstein, and of Germany where the cross-border conditions are not met.",
           "when": "Lonio determines the tariff letter",
-          "then": "the letter is C if the spouse or partner is employed or receives replacement income, and B otherwise",
+          "then": "married employees and registered partners get C if the spouse or partner works and B if not. Non-married employees (single, divorced, widowed, separated) get H if at least one child counts with H, otherwise A. There is no tariff G or Q, because replacement income does not occur for a new employee (D-006).",
           "examples": [
             {
-              "name": "Married non-Swiss without C permit in Switzerland, spouse works",
+              "name": "Calculator run C0Y - married, spouse employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)",
               "given": [
                 {
                   "item": "address_country",
@@ -584,7 +688,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Italy"
                 },
                 {
                   "item": "permit_type",
@@ -595,16 +699,16 @@
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_nationality",
-                  "value": "no"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "no"
+                  "item": "spouse_residence_country",
+                  "value": "Italy"
                 },
                 {
                   "item": "spouse_employed",
                   "value": "yes"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
                 }
               ],
               "then": [
@@ -613,11 +717,13 @@
                   "expect": "C"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-zh_source_tax_calculator-97139a"
+              ],
+              "illustrative": false
             },
             {
-              "name": "Registered partner in Switzerland, partner does not work",
+              "name": "Calculator run B0Y - married, spouse not employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)",
               "given": [
                 {
                   "item": "address_country",
@@ -625,7 +731,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Italy"
                 },
                 {
                   "item": "permit_type",
@@ -633,18 +739,18 @@
                 },
                 {
                   "item": "civil_status",
-                  "value": "Registered partnership"
+                  "value": "Married"
                 },
                 {
-                  "item": "spouse_nationality",
-                  "value": "no"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "no"
+                  "item": "spouse_residence_country",
+                  "value": "Italy"
                 },
                 {
                   "item": "spouse_employed",
+                  "value": "no"
+                },
+                {
+                  "item": "has_children",
                   "value": "no"
                 }
               ],
@@ -654,59 +760,13 @@
                   "expect": "B"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-zh_source_tax_calculator-97139a"
+              ],
+              "illustrative": false
             },
             {
-              "name": "Married, living in Germany, daily return not reasonable (normal tariff)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_employed",
-                  "value": "yes"
-                },
-                {
-                  "item": "daily_return_germany",
-                  "value": "no"
-                },
-                {
-                  "item": "daily_return_reasonable",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "source_tax_tariff_letter",
-                  "expect": "C"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-97139a",
-            "F-zh_source_tax_calculator-051bb9",
-            "D-001",
-            "D-003"
-          ]
-        },
-        {
-          "id": "AC-05.6.2",
-          "title": "Base letter for single, divorced, widowed and separated employees",
-          "given": "an employee subject to source tax is 'Single', 'Divorced', 'Widowed' or 'Separated' (separated counts as single for source tax) and the cross-border tariff does not apply",
-          "when": "Lonio determines the tariff letter",
-          "then": "the letter is H if at least one child counts with H (single-parent tariff), and A otherwise",
-          "examples": [
-            {
-              "name": "Single without children in Switzerland",
+              "name": "Calculator run A0Y - single, no children (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c)",
               "given": [
                 {
                   "item": "address_country",
@@ -714,7 +774,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Italy"
                 },
                 {
                   "item": "permit_type",
@@ -735,11 +795,13 @@
                   "expect": "A"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-zh_source_tax_calculator-c78e0c"
+              ],
+              "illustrative": false
             },
             {
-              "name": "Separated without children in Switzerland",
+              "name": "Calculator run H1Y - single, minor child in household with sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-c53a22)",
               "given": [
                 {
                   "item": "address_country",
@@ -747,7 +809,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
+                  "value": "Italy"
                 },
                 {
                   "item": "permit_type",
@@ -755,44 +817,7 @@
                 },
                 {
                   "item": "civil_status",
-                  "value": "Separated"
-                },
-                {
-                  "item": "spouse_date_of_birth",
-                  "value": "12.05.1985"
-                },
-                {
-                  "item": "has_children",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "source_tax_tariff_letter",
-                  "expect": "A"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Divorced with a minor child in the household under sole custody",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "no"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Divorced"
+                  "value": "Single"
                 },
                 {
                   "item": "has_children",
@@ -817,27 +842,143 @@
                   "expect": "H"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c53a22",
+                "F-zh_source_tax_calculator-96658b"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Separated employee counts as not married - letter A",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Separated"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_employed",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "source_tax_tariff_letter",
+                  "expect": "A"
+                }
+              ],
+              "source_refs": [
+                "D-003"
+              ],
               "illustrative": true
+            },
+            {
+              "name": "Registered partner counts as married - partner employed gives C",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Registered partnership"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Italy"
+                },
+                {
+                  "item": "spouse_employed",
+                  "value": "yes"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_tariff_letter",
+                  "expect": "C"
+                }
+              ],
+              "source_refs": [
+                "D-003"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Calculator run A0N - single living in another country keeps the base letter (zh_source_tax_calculator/F-zh_source_tax_calculator-52b67a)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "France"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_tariff_letter",
+                  "expect": "A"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-52b67a"
+              ],
+              "illustrative": false
             }
           ],
           "source_refs": [
+            "F-zh_source_tax_calculator-97139a",
             "F-zh_source_tax_calculator-c78e0c",
             "F-zh_source_tax_calculator-96658b",
+            "F-zh_source_tax_calculator-c53a22",
+            "F-zh_source_tax_calculator-52b67a",
             "F-zh_source_tax_calculator-051bb9",
             "D-001",
-            "D-003"
+            "D-003",
+            "D-006"
           ]
         },
         {
-          "id": "AC-05.6.3",
+          "id": "AC-05.6.2",
           "title": "Cross-border letters for employees living in Germany",
-          "given": "an employee subject to source tax lives in Germany and the cross-border tariff applies (daily return with a certificate of residence, or no daily return although a return is reasonable and not more than 60 non-return days are expected); a certificate answered 'not yet' counts as 'no'",
+          "given": "an employee subject to source tax who lives in Germany and has answered the cross-border questions",
           "when": "Lonio determines the tariff letter",
-          "then": "the base letter is replaced by its cross-border letter: A becomes L, B becomes M, C becomes N, H becomes P; in every other case the base letter is kept",
+          "then": "if the cross-border tariff applies, the base letter is replaced: A becomes L, B becomes M, C becomes N, H becomes P. The cross-border tariff applies after a daily return with a certificate of residence, or without a daily return when a daily return is reasonable and the employee does not expect more than 60 non-return days. Otherwise the base letter stays. A certificate answered \"not yet\" counts as no (D-035).",
           "examples": [
             {
-              "name": "Calculator example L0Y: single, Germany, daily return, certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
+              "name": "Calculator run L0Y - single, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
               "given": [
                 {
                   "item": "address_country",
@@ -866,11 +1007,13 @@
                   "expect": "L"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-b7154e"
+              ],
               "illustrative": false
             },
             {
-              "name": "Calculator example M0N: married, spouse not employed, Germany, daily return, certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
+              "name": "Calculator run M0N - married, spouse not employed, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
               "given": [
                 {
                   "item": "address_country",
@@ -903,11 +1046,13 @@
                   "expect": "M"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-b7154e"
+              ],
               "illustrative": false
             },
             {
-              "name": "Calculator example N1Y: married, spouse employed, Germany, daily return, certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
+              "name": "Calculator run N1Y - married, spouse employed, no daily return, return reasonable, not more than 60 non-return days (zh_source_tax_calculator/F-zh_source_tax_calculator-b948fd)",
               "given": [
                 {
                   "item": "address_country",
@@ -922,12 +1067,32 @@
                   "value": "yes"
                 },
                 {
-                  "item": "daily_return_germany",
+                  "item": "has_children",
                   "value": "yes"
                 },
                 {
-                  "item": "residence_certificate",
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
                   "value": "yes"
+                },
+                {
+                  "item": "child_parental_custody",
+                  "value": "Sole custody"
+                },
+                {
+                  "item": "daily_return_germany",
+                  "value": "no"
+                },
+                {
+                  "item": "daily_return_reasonable",
+                  "value": "yes"
+                },
+                {
+                  "item": "non_return_days_60",
+                  "value": "no"
                 }
               ],
               "then": [
@@ -936,11 +1101,13 @@
                   "expect": "N"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-b948fd"
+              ],
               "illustrative": false
             },
             {
-              "name": "Calculator example P1Y: single parent, Germany, daily return, certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
+              "name": "Calculator run P1Y - single with an H child, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
               "given": [
                 {
                   "item": "address_country",
@@ -981,48 +1148,14 @@
                   "expect": "P"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-b7154e",
+                "F-zh_source_tax_calculator-96658b"
+              ],
               "illustrative": false
             },
             {
-              "name": "Married, Germany, no daily return, return reasonable, not more than 60 non-return days",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_employed",
-                  "value": "no"
-                },
-                {
-                  "item": "daily_return_germany",
-                  "value": "no"
-                },
-                {
-                  "item": "daily_return_reasonable",
-                  "value": "yes"
-                },
-                {
-                  "item": "non_return_days_60",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "source_tax_tariff_letter",
-                  "expect": "M"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Married, Germany, no daily return, more than 60 non-return days (normal tariff)",
+              "name": "Calculator run C1Y - more than 60 non-return days gives the normal letter (zh_source_tax_calculator/F-zh_source_tax_calculator-b948fd)",
               "given": [
                 {
                   "item": "address_country",
@@ -1035,6 +1168,10 @@
                 {
                   "item": "spouse_employed",
                   "value": "yes"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
                 },
                 {
                   "item": "daily_return_germany",
@@ -1055,11 +1192,52 @@
                   "expect": "C"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-zh_source_tax_calculator-b948fd"
+              ],
+              "illustrative": false
             },
             {
-              "name": "Single, Germany, daily return, certificate not yet handed in (normal tariff)",
+              "name": "Calculator run C1Y - daily return not reasonable gives the normal letter (zh_source_tax_calculator/F-zh_source_tax_calculator-bc1639)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_employed",
+                  "value": "yes"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
+                },
+                {
+                  "item": "daily_return_germany",
+                  "value": "no"
+                },
+                {
+                  "item": "daily_return_reasonable",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_tariff_letter",
+                  "expect": "C"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-bc1639"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Daily return, certificate 'not yet' - normal letter A",
               "given": [
                 {
                   "item": "address_country",
@@ -1088,8 +1266,49 @@
                   "expect": "A"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "D-035"
+              ],
               "illustrative": true
+            },
+            {
+              "name": "Calculator run - daily return without certificate gives the normal letter (zh_source_tax_calculator/F-zh_source_tax_calculator-4d3ac0)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_employed",
+                  "value": "yes"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
+                },
+                {
+                  "item": "daily_return_germany",
+                  "value": "yes"
+                },
+                {
+                  "item": "residence_certificate",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_tariff_letter",
+                  "expect": "C"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-4d3ac0"
+              ],
+              "illustrative": false
             }
           ],
           "source_refs": [
@@ -1097,51 +1316,9 @@
             "F-zh_source_tax_calculator-89a9f1",
             "F-zh_source_tax_calculator-b7154e",
             "F-zh_source_tax_calculator-b948fd",
+            "F-zh_source_tax_calculator-bc1639",
             "D-001",
             "D-035"
-          ]
-        },
-        {
-          "id": "AC-05.6.4",
-          "title": "No tariff letter for employees not subject to source tax; unverified paths",
-          "given": "an employee is not subject to source tax, or the employee's answers follow a calculator path that was not explored",
-          "when": "Lonio determines the tariff letter",
-          "then": "employees not subject to source tax get no tariff letter; special tariffs such as D (second job) and the replacement-income tariffs G and Q are never produced (D-006, D-009); the paths not explored in the calculator (residence block for A/B/H, more than 3 children, H3N/P3N, child paths marked inferred) are compared with the calculator by a domain expert before go-live (see OQ-calculator-coverage)",
-          "examples": [
-            {
-              "name": "Swiss citizen living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "yes"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_employed",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "confession",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-hr_transcript-b6d9b3",
-            "D-006",
-            "D-009"
           ]
         }
       ],
@@ -1153,11 +1330,14 @@
         "F-zh_source_tax_calculator-97139a",
         "F-zh_source_tax_calculator-c78e0c",
         "F-zh_source_tax_calculator-96658b",
+        "F-zh_source_tax_calculator-c53a22",
         "F-zh_source_tax_calculator-4d3ac0",
-        "F-zh_source_tax_calculator-b7154e",
         "F-zh_source_tax_calculator-89a9f1",
+        "F-zh_source_tax_calculator-b7154e",
+        "F-zh_source_tax_calculator-b948fd",
+        "F-zh_source_tax_calculator-bc1639",
+        "F-zh_source_tax_calculator-52b67a",
         "F-zh_source_tax_calculator-051bb9",
-        "F-hr_transcript-563a9f",
         "D-001",
         "D-003",
         "D-006",
@@ -1170,20 +1350,148 @@
       "id": "US-05.7",
       "title": "Compute and record the source tax result for HR",
       "as_a": "hr",
-      "i_want": "Lonio to compute the full Zurich source tax result for every employee subject to source tax - the tariff code made of tariff letter, child digit and church-tax suffix (e.g. C1Y, L0Y), or for Liechtenstein residents the 'in principle no source tax liability' result - and record it for HR",
-      "so_that": "I get the correct tariff code without clicking through the calculator myself, and I am alerted to the Liechtenstein cases that need attention",
+      "i_want": "Lonio to compute the full Zurich source tax result for every employee subject to source tax and record it for me. That is the tariff code (letter, child digit, church-tax suffix), or for Liechtenstein residents who qualify, the statement that there is in principle no source tax liability, flagged for me.",
+      "so_that": "I no longer sit with the employee's answers and click through the calculator, and I always have the result that fits the latest answers",
       "priority": "P1",
-      "priority_reason": "This is the outcome of the product decision to replace HR's manual calculator step (D-001, F-hr_transcript-563a9f); HR uses the Zurich calculator for every employee today (F-hr_transcript-4e180e).",
+      "priority_reason": "This replaces HR's manual calculator step for every employee subject to source tax (F-hr_transcript-563a9f, F-hr_transcript-4e180e), which is the product choice of D-001.",
       "acceptance_criteria": [
         {
           "id": "AC-05.7.1",
-          "title": "Tariff code is composed of letter, child digit and church-tax suffix",
-          "given": "an employee is subject to source tax and does not fall under the Liechtenstein 'in principle no source tax liability' case",
+          "title": "No tariff code for employees not subject to source tax",
+          "given": "an employee who is not subject to source tax",
           "when": "the employee submits the questionnaire",
-          "then": "Lonio records for HR a tariff code made of the tariff letter, followed by the number of children that count for the tariff (0 if none), followed by the church-tax suffix Y or N - the same code the Zurich calculator gives for these answers",
+          "then": "Lonio records that the employee is not subject to source tax. No tariff code is computed and no source tax question has been asked.",
           "examples": [
             {
-              "name": "Calculator example L0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
+              "name": "Tomás (hr_transcript/F-hr_transcript-d7431e) - Swiss wife living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Brazil"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_result",
+                  "expect": "Not subject to source tax"
+                }
+              ],
+              "source_refs": [
+                "F-hr_transcript-d7431e"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Swiss citizen living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_result",
+                  "expect": "Not subject to source tax"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-b6d9b3",
+            "D-001"
+          ]
+        },
+        {
+          "id": "AC-05.7.2",
+          "title": "Full tariff code for employees subject to source tax",
+          "given": "an employee subject to source tax who does not qualify for the Liechtenstein result",
+          "when": "the employee submits the questionnaire",
+          "then": "Lonio records the full tariff code: the tariff letter (including the cross-border letters), then the child digit (the number of children who count, 0 without children), then the church-tax suffix Y or N. Examples are C1Y, L0Y and H2N. HR does not need the calculator for this employee.",
+          "examples": [
+            {
+              "name": "Calculator run A0Y - single, no children, church member (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "confession",
+                  "value": "Roman Catholic, Christian Catholic or Evangelical Reformed"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_result",
+                  "expect": "Tariff code"
+                },
+                {
+                  "target": "source_tax_tariff_letter",
+                  "expect": "A"
+                },
+                {
+                  "target": "source_tax_child_digit",
+                  "expect": "0"
+                },
+                {
+                  "target": "church_tax_suffix",
+                  "expect": "Y"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c78e0c"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Calculator run L0Y - single living in Germany, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
               "given": [
                 {
                   "item": "address_country",
@@ -1212,6 +1520,10 @@
               ],
               "then": [
                 {
+                  "target": "source_tax_result",
+                  "expect": "Tariff code"
+                },
+                {
                   "target": "source_tax_tariff_letter",
                   "expect": "L"
                 },
@@ -1222,17 +1534,15 @@
                 {
                   "target": "church_tax_suffix",
                   "expect": "Y"
-                },
-                {
-                  "target": "source_tax_result",
-                  "expect": "Tariff code"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-b7154e"
+              ],
               "illustrative": false
             },
             {
-              "name": "Calculator example M0N (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
+              "name": "Calculator run M0N - married living in Germany, spouse not employed, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
               "given": [
                 {
                   "item": "address_country",
@@ -1265,6 +1575,10 @@
               ],
               "then": [
                 {
+                  "target": "source_tax_result",
+                  "expect": "Tariff code"
+                },
+                {
                   "target": "source_tax_tariff_letter",
                   "expect": "M"
                 },
@@ -1275,82 +1589,15 @@
                 {
                   "target": "church_tax_suffix",
                   "expect": "N"
-                },
-                {
-                  "target": "source_tax_result",
-                  "expect": "Tariff code"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-b7154e"
+              ],
               "illustrative": false
             },
             {
-              "name": "Calculator example N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_employed",
-                  "value": "yes"
-                },
-                {
-                  "item": "confession",
-                  "value": "Roman Catholic, Christian Catholic or Evangelical Reformed"
-                },
-                {
-                  "item": "has_children",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_age_status",
-                  "value": "Minor"
-                },
-                {
-                  "item": "child_same_household",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_parental_custody",
-                  "value": "Sole custody"
-                },
-                {
-                  "item": "daily_return_germany",
-                  "value": "yes"
-                },
-                {
-                  "item": "residence_certificate",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "source_tax_tariff_letter",
-                  "expect": "N"
-                },
-                {
-                  "target": "source_tax_child_digit",
-                  "expect": "1"
-                },
-                {
-                  "target": "church_tax_suffix",
-                  "expect": "Y"
-                },
-                {
-                  "target": "source_tax_result",
-                  "expect": "Tariff code"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Calculator example A0Y: single, resident in Switzerland, no children (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c)",
+              "name": "Calculator run C1Y - married resident, spouse employed, one minor child with sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-c53a22)",
               "given": [
                 {
                   "item": "address_country",
@@ -1358,72 +1605,7 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "no"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "confession",
-                  "value": "Roman Catholic, Christian Catholic or Evangelical Reformed"
-                },
-                {
-                  "item": "has_children",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "source_tax_tariff_letter",
-                  "expect": "A"
-                },
-                {
-                  "target": "source_tax_child_digit",
-                  "expect": "0"
-                },
-                {
-                  "target": "church_tax_suffix",
-                  "expect": "Y"
-                },
-                {
-                  "target": "source_tax_result",
-                  "expect": "Tariff code"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-ecef37",
-            "F-zh_source_tax_calculator-2eab9a",
-            "F-zh_source_tax_calculator-b7154e",
-            "D-001",
-            "D-034"
-          ]
-        },
-        {
-          "id": "AC-05.7.2",
-          "title": "No tariff code for employees not subject to source tax",
-          "given": "an employee is not subject to source tax (Swiss citizen or C-permit holder living in Switzerland, or exempted by a Swiss or C-permit spouse living in Switzerland)",
-          "when": "the employee submits the questionnaire",
-          "then": "Lonio records that the employee is not subject to source tax and computes no tariff code",
-          "examples": [
-            {
-              "name": "Tomás - Brazilian, B permit, Swiss wife, living in Winterthur (hr_transcript/F-hr_transcript-d7431e)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "no"
+                  "value": "Italy"
                 },
                 {
                   "item": "permit_type",
@@ -1432,128 +1614,10 @@
                 {
                   "item": "civil_status",
                   "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "yes"
                 },
                 {
                   "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "source_tax_result",
-                  "expect": "Not subject to source tax"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Swiss citizen living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "yes"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                }
-              ],
-              "then": [
-                {
-                  "target": "source_tax_result",
-                  "expect": "Not subject to source tax"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-hr_transcript-b6d9b3",
-            "F-hr_transcript-d7431e",
-            "D-001"
-          ]
-        },
-        {
-          "id": "AC-05.7.3",
-          "title": "Liechtenstein result follows the calculator",
-          "given": "an employee lives in Liechtenstein (and is therefore asked the source tax questions)",
-          "when": "the employee submits the questionnaire",
-          "then": "with daily return to Liechtenstein, or with not more than 45 expected non-return days, Lonio records 'In principle no source tax liability, subject to the double taxation agreement' instead of a tariff code and flags the case for HR; with more than 45 non-return days it records the normal tariff code, marked 'subject to the double taxation agreement'. How HR sees the flag belongs to the later HR-side spec (D-034)",
-          "examples": [
-            {
-              "name": "Liechtenstein, daily return",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "daily_return_liechtenstein",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "source_tax_result",
-                  "expect": "In principle no source tax liability, subject to the double taxation agreement"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Liechtenstein, no daily return, not more than 45 non-return days",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "daily_return_liechtenstein",
-                  "value": "no"
-                },
-                {
-                  "item": "non_return_days_45",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "source_tax_result",
-                  "expect": "In principle no source tax liability, subject to the double taxation agreement"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Calculator example C1Y subject to the double taxation agreement: Liechtenstein, more than 45 non-return days (zh_source_tax_calculator/F-zh_source_tax_calculator-ab4e1e)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
+                  "value": "Italy"
                 },
                 {
                   "item": "spouse_employed",
@@ -1578,17 +1642,13 @@
                 {
                   "item": "child_parental_custody",
                   "value": "Sole custody"
-                },
-                {
-                  "item": "daily_return_liechtenstein",
-                  "value": "no"
-                },
-                {
-                  "item": "non_return_days_45",
-                  "value": "yes"
                 }
               ],
               "then": [
+                {
+                  "target": "source_tax_result",
+                  "expect": "Tariff code"
+                },
                 {
                   "target": "source_tax_tariff_letter",
                   "expect": "C"
@@ -1600,13 +1660,169 @@
                 {
                   "target": "church_tax_suffix",
                   "expect": "Y"
-                },
-                {
-                  "target": "source_tax_result",
-                  "expect": "Tariff code, subject to the double taxation agreement"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-c53a22"
+              ],
+              "illustrative": false
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-ecef37",
+            "F-zh_source_tax_calculator-2eab9a",
+            "F-zh_source_tax_calculator-b7154e",
+            "F-zh_source_tax_calculator-c78e0c",
+            "F-hr_transcript-563a9f",
+            "D-001"
+          ]
+        },
+        {
+          "id": "AC-05.7.3",
+          "title": "Liechtenstein residents: in principle no source tax liability, or the normal tariff code",
+          "given": "an employee living in Liechtenstein, who is therefore subject to source tax and answers the source tax and cross-border questions (D-007)",
+          "when": "the employee submits the questionnaire",
+          "then": "if the employee returns daily, or expects at most 45 work-related non-return days, Lonio records 'In principle no source tax liability, subject to the double taxation agreement' instead of a tariff code, and flags it for HR. How HR handles the flag belongs to the later HR-side spec (D-034). If the employee expects more than 45 non-return days, Lonio records the normal tariff code.",
+          "examples": [
+            {
+              "name": "Calculator run - daily return to Liechtenstein (zh_source_tax_calculator/F-zh_source_tax_calculator-e80d8f)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "confession",
+                  "value": "None or other"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
+                },
+                {
+                  "item": "daily_return_liechtenstein",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_result",
+                  "expect": "In principle no source tax liability, subject to the double taxation agreement"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-e80d8f"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Calculator run - no daily return, at most 45 non-return days (zh_source_tax_calculator/F-zh_source_tax_calculator-ab4e1e)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "confession",
+                  "value": "None or other"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
+                },
+                {
+                  "item": "daily_return_liechtenstein",
+                  "value": "no"
+                },
+                {
+                  "item": "non_return_days_45",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_result",
+                  "expect": "In principle no source tax liability, subject to the double taxation agreement"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-ab4e1e"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Calculator run C1Y - more than 45 non-return days gives the normal tariff code (zh_source_tax_calculator/F-zh_source_tax_calculator-ab4e1e)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_employed",
+                  "value": "yes"
+                },
+                {
+                  "item": "confession",
+                  "value": "Roman Catholic, Christian Catholic or Evangelical Reformed"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_parental_custody",
+                  "value": "Sole custody"
+                },
+                {
+                  "item": "daily_return_liechtenstein",
+                  "value": "no"
+                },
+                {
+                  "item": "non_return_days_45",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "source_tax_result",
+                  "expect": "Tariff code"
+                },
+                {
+                  "target": "source_tax_tariff_letter",
+                  "expect": "C"
+                },
+                {
+                  "target": "source_tax_child_digit",
+                  "expect": "1"
+                },
+                {
+                  "target": "church_tax_suffix",
+                  "expect": "Y"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-ab4e1e"
+              ],
               "illustrative": false
             }
           ],
@@ -1619,15 +1835,27 @@
         },
         {
           "id": "AC-05.7.4",
-          "title": "Result is always derived from the latest answers",
-          "given": "a source tax result has been recorded for an employee",
-          "when": "any answer it depends on changes (before submission by the employee, after submission by HR, e.g. a certificate of residence handed in later)",
-          "then": "the result is derived again from the latest answers and only the current result counts; the employee cannot change answers after submission (D-037). Before go-live a domain expert compares the computed codes with the calculator for the paths not explored (see OQ-calculator-coverage)",
+          "title": "The result always follows the latest answers",
+          "given": "an employee whose answers that bear on source tax are changed later. Before submission the employee changes them. After submission HR changes them, for example after a move, a marriage, a new child or a certificate of residence handed in later.",
+          "when": "the source tax result is looked at",
+          "then": "the result (not subject, the Liechtenstein statement, or the tariff code) is derived again from the latest answers. A result that no longer matches the answers is never kept. HR's changes after submission belong to the later HR-side spec.",
           "examples": [],
           "source_refs": [
-            "D-001",
+            "D-037",
+            "D-034",
+            "D-001"
+          ]
+        },
+        {
+          "id": "AC-05.7.5",
+          "title": "Unexplored calculator paths are verified before go-live",
+          "given": "Lonio's computed tariff code for paths that were not explored in the calculator: the residence block for A/B/H, more than 3 children, H3N/P3N, and child results marked inferred",
+          "when": "the feature is prepared for release",
+          "then": "a domain expert compares Lonio's computed codes with the Zurich calculator for these paths, and the release waits until they match (go-live condition, see OQ-calculator-coverage). Special tariffs such as D (second job) are not computed, because they are out of scope for onboarding.",
+          "examples": [],
+          "source_refs": [
             "D-009",
-            "D-037"
+            "F-zh_source_tax_calculator-86d588"
           ]
         }
       ],
@@ -1636,15 +1864,16 @@
         "source_tax_result"
       ],
       "source_refs": [
+        "F-hr_transcript-563a9f",
+        "F-hr_transcript-4e180e",
+        "F-hr_transcript-b6d9b3",
         "F-zh_source_tax_calculator-ecef37",
         "F-zh_source_tax_calculator-2eab9a",
+        "F-zh_source_tax_calculator-c78e0c",
+        "F-zh_source_tax_calculator-b7154e",
         "F-zh_source_tax_calculator-e80d8f",
         "F-zh_source_tax_calculator-ab4e1e",
-        "F-zh_source_tax_calculator-b7154e",
-        "F-zh_source_tax_calculator-c78e0c",
-        "F-hr_transcript-4e180e",
-        "F-hr_transcript-563a9f",
-        "F-hr_transcript-b6d9b3",
+        "F-zh_source_tax_calculator-86d588",
         "D-001",
         "D-007",
         "D-009",
@@ -1670,9 +1899,12 @@
   "source_refs": [
     "F-zh_source_tax_calculator-208104",
     "F-zh_source_tax_calculator-2eab9a",
+    "F-zh_source_tax_calculator-7b637b",
     "F-zh_source_tax_calculator-97139a",
-    "F-zh_source_tax_calculator-ecef37",
+    "F-zh_source_tax_calculator-c78e0c",
     "F-zh_source_tax_calculator-b7154e",
+    "F-zh_source_tax_calculator-ecef37",
+    "F-zh_source_tax_calculator-86d588",
     "F-hr_transcript-4e180e",
     "F-hr_transcript-563a9f",
     "D-001",
@@ -1680,6 +1912,7 @@
     "D-006",
     "D-007",
     "D-009",
-    "D-034"
+    "D-034",
+    "D-037"
   ]
 }

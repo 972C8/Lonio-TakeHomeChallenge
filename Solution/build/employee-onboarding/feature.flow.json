@@ -1,5 +1,5 @@
 {
-  "intro": "The questionnaire has seven steps. Only the questions that apply to the employee are shown, and a step with no applicable question is skipped: employees living abroad skip step 4, and employees not subject to source tax skip step 6. The order follows what each answer depends on. The home address country (step 2) decides who gets the residence questions (step 4). The residence status and the family details (steps 4 and 5) decide whether the employee is subject to source tax. Only then are the source tax details asked (step 6).",
+  "intro": "The questionnaire has nine steps. Only the questions that apply to the employee are shown, and a step with no applicable question is skipped. Employees living abroad skip step 4. Employees not subject to source tax skip steps 6, 7 and 8. Employees without children skip step 7. Everyone except residents of Germany or Liechtenstein skips step 8. The order follows what each answer depends on. The home address country (step 2) decides who gets the nationality and permit questions (step 4). Nationality, permit and the family details (steps 4 and 5) decide whether the employee is subject to source tax. Only then come the source tax questions: general details (step 6), one block per child (step 7) and cross-border commuting (step 8), in the same order as the calculator.",
   "steps": [
     {
       "order": 1,
@@ -16,7 +16,7 @@
     {
       "order": 2,
       "title": "Home address",
-      "asks": "Street, house number, postcode, town and the country of the home address. This country is also the country of residence. The canton is asked only if the country is Switzerland.",
+      "asks": "Street, house number, postcode, town and country of the home address. This country is also the country of residence. The canton is asked only if the country is Switzerland.",
       "shown_to": "Everyone",
       "items": [
         "address_street",
@@ -30,7 +30,7 @@
     },
     {
       "order": 3,
-      "title": "Employment",
+      "title": "Start of employment",
       "asks": "The first working day.",
       "shown_to": "Everyone",
       "items": [
@@ -40,8 +40,8 @@
     },
     {
       "order": 4,
-      "title": "Residence status",
-      "asks": "Whether the employee is a Swiss citizen. Non-Swiss employees are also asked whether they hold a C permit (yes/no).",
+      "title": "Nationality and permit",
+      "asks": "The nationality. Anyone with Swiss citizenship counts as Swiss, even with another nationality. Non-Swiss employees are also asked whether they hold a C permit (yes/no).",
       "shown_to": "Employees living in Switzerland",
       "items": [
         "nationality",
@@ -51,27 +51,36 @@
     },
     {
       "order": 5,
-      "title": "Family",
-      "asks": "The civil status, from the pension fund's list. The spouse's or registered partner's date of birth is asked only if the employee is married, in a registered partnership or separated. Spouse questions are asked only if the employee lives in Switzerland, is not Swiss, holds no C permit and is married or in a registered partnership. These are: whether the spouse is a Swiss citizen, whether a non-Swiss spouse holds a C permit and, if the spouse is Swiss or holds a C permit, whether the spouse lives in Switzerland.",
+      "title": "Civil status and spouse",
+      "asks": "The civil status, from the pension fund's list. The spouse's or registered partner's date of birth is asked only if the employee is married, in a registered partnership or separated. Spouse questions are asked only if the employee lives in Switzerland, is not Swiss, holds no C permit and is married or in a registered partnership. The first is the spouse's or partner's country of residence. If the spouse lives in Switzerland, the spouse's nationality is asked. If the spouse is not Swiss, the employee is asked whether the spouse holds a C permit.",
       "shown_to": "Everyone",
       "items": [
         "civil_status",
         "spouse_date_of_birth",
+        "spouse_residence_country",
         "spouse_nationality",
-        "spouse_permit_type",
-        "spouse_residence_country"
+        "spouse_permit_type"
       ],
       "rules": []
     },
     {
       "order": 6,
-      "title": "Source tax details",
-      "asks": "The denomination. Married or registered-partner employees are asked whether the spouse or partner is employed or receives replacement income. Whether the employee has children. For each child, a block of questions repeated per child: minor or of age in first education, same household, custody, common household with the other parent, alternating care, and who contributes more or pays more than half of the maintenance, each only where the earlier answers make it relevant. Employees living in Germany are asked whether they return home daily. With daily return they are asked about the certificate of residence ('not yet' is allowed). Without daily return they are asked whether a daily return would be reasonable and, if so, whether they expect more than 60 non-return days. Employees living in Liechtenstein are asked whether they return home daily and, if not, whether they expect more than 45 non-return days.",
-      "shown_to": "Employees subject to source tax: everyone living abroad, and employees living in Switzerland who are not Swiss citizens, hold no C permit and are not exempted by a Swiss or C-permit spouse living in Switzerland",
+      "title": "Source tax",
+      "asks": "The denomination. Employees who are married or in a registered partnership are asked whether the spouse or partner is gainfully employed or receives replacement income. Everyone in this step is asked whether they have children.",
+      "shown_to": "Employees subject to source tax: everyone living abroad, and employees living in Switzerland who are not Swiss, hold no C permit and are not exempted by a Swiss or C-permit spouse or partner living in Switzerland",
       "items": [
         "confession",
         "spouse_employed",
-        "has_children",
+        "has_children"
+      ],
+      "rules": []
+    },
+    {
+      "order": 7,
+      "title": "Children",
+      "asks": "One block per child, repeated for each child the employee adds. It asks whether the child is a minor or of age and in first education, and whether the child lives in the same household. Further questions follow only where the earlier answers make them relevant: custody, common household with the other parent, alternating care, who contributes more to the child's maintenance, and whether the employee mainly maintains a child of age (more than 50%).",
+      "shown_to": "Employees subject to source tax who have children",
+      "items": [
         "child_age_status",
         "child_same_household",
         "child_parental_custody",
@@ -80,7 +89,16 @@
         "child_parental_care_not_in_household",
         "child_alternating_custody",
         "child_main_financial_contributor",
-        "child_main_maintenance",
+        "child_main_maintenance"
+      ],
+      "rules": []
+    },
+    {
+      "order": 8,
+      "title": "Cross-border commuting",
+      "asks": "Employees living in Germany are asked whether they return home daily. With daily return, they are asked whether they have a certificate of residence ('not yet' is a valid answer). Without daily return, they are asked whether a daily return would be reasonable (less than 100 km). If it would be, they are asked whether they expect more than 60 work-related non-return days. Employees living in Liechtenstein are asked whether they return home daily. If not, they are asked whether they expect more than 45 work-related non-return days.",
+      "shown_to": "Employees subject to source tax who live in Germany or Liechtenstein",
+      "items": [
         "daily_return_germany",
         "residence_certificate",
         "daily_return_reasonable",
@@ -91,9 +109,9 @@
       "rules": []
     },
     {
-      "order": 7,
-      "title": "Review and submit",
-      "asks": "Nothing new is asked. The employee checks the answers and submits them. Non-Swiss employees and employees living abroad are reminded to bring their permit on the first working day.",
+      "order": 9,
+      "title": "Finish",
+      "asks": "Nothing new is asked. The employee submits the answers. Non-Swiss employees and all employees living abroad are reminded to bring their permit on the first working day.",
       "shown_to": "Everyone",
       "items": [],
       "rules": [
