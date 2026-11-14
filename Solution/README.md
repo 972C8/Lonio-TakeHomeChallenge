@@ -290,7 +290,7 @@ a report (`build/<problem>/linear_publish.*.json`).
 3. `review.md` shows failing examples, decisions whose evidence changed
    (flagged for re-confirmation), and coverage of the new content.
 4. `git diff requirements/` shows exactly which stories and criteria changed;
-   the Linear dry run shows which issues would be updated.
+   `pipeline publish --dry-run` shows which Linear issues would be updated.
 
 New source type → new adapter folder (`/new-adapter`) + one entry in
 `profile.yaml`. New process → new `problems/<name>/` folder (`/new-problem`),
