@@ -914,2125 +914,2114 @@
       }
     ]
   },
-  "features": [
-    {
-      "id": "FEAT-01-first-working-day-insurance-start",
-      "order": 1,
-      "title": "Confirmed first working day and derived pension insurance start date",
-      "goal": "Every new employee confirms their first working day, and Lonio works out the pension insurance start date from it, so the fund never gets a wrong or outdated start date.",
-      "context": "HR calls the first working day the most important item. It often changes, so HR asks the employee to confirm it (F-TR-014, F-TR-015). The pension fund requires an insurance start date that is always the 1st of a month (F-SC-008, F-SC-009). HR works it out by hand: if the first working day is the 1st of a month, insurance starts that day, otherwise on the 1st of the following month (F-TR-016, F-TR-017, F-TR-018). Once, an outdated first working day led to a wrong insurance start date at the fund (F-TR-019). Employees cannot know the insurance start date, so Lonio asks only for the primary fact and derives the date (G-08). The employee is not asked for the insurance start date (EX-05).",
-      "stakeholders": [
-        "employee",
-        "hr",
-        "pension_fund"
-      ],
-      "stories": [
-        {
-          "id": "US-01.1",
-          "title": "Employee confirms their first working day",
-          "as_a": "hr",
-          "i_want": "every new employee to confirm their first working day themselves during onboarding",
-          "so_that": "I always work with the latest agreed start date, even when it moved after the contract was signed, and can register the employee with the pension fund correctly",
-          "priority": "P1",
-          "priority_reason": "HR calls it 'the number one thing'; it changes often, and an outdated date once caused a wrong registration at the pension fund, an unfriendly letter and weeks of fixing (F-TR-014, F-TR-019).",
-          "acceptance_criteria": [
-            {
-              "id": "AC-01.1.1",
-              "title": "First working day is asked of every employee and is required",
-              "given": "a new employee is going through onboarding",
-              "when": "they reach the employment details",
-              "then": "they are asked to confirm their first working day at Muster AG, whatever their other answers, and cannot finish onboarding without giving it",
-              "examples": [
-                {
-                  "name": "Julia (F-TR-019)",
-                  "given": [
-                    {
-                      "item": "first_working_day",
-                      "value": "15.03.2026"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "first_working_day",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "first_working_day",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-019"
-                  ],
-                  "illustrative": false
-                }
-              ],
-              "source_refs": [
-                "F-TR-014"
-              ]
-            },
-            {
-              "id": "AC-01.1.2",
-              "title": "Employee gives the date as actually agreed, as a calendar date",
-              "given": "the employee's start date may have moved since the contract was signed (e.g. they left their old employer a week earlier)",
-              "when": "the employee answers the first working day question",
-              "then": "they give the start date as currently agreed with Muster AG, as a full date in the form DD.MM.YYYY, so it reflects the latest confirmed first working day",
-              "examples": [],
-              "source_refs": [
-                "F-TR-014",
-                "F-TR-015",
-                "G-10"
-              ]
-            },
-            {
-              "id": "AC-01.1.3",
-              "title": "First working day is available to HR and the pension fund",
-              "given": "the employee has confirmed their first working day",
-              "when": "onboarding data is handed on to the receiving parties",
-              "then": "HR receives the confirmed first working day, and it is the basis for the insurance start date the pension fund needs",
-              "examples": [],
-              "source_refs": [
-                "F-TR-014",
-                "F-SC-008",
-                "G-04"
-              ]
-            }
-          ],
-          "items": [
-            "first_working_day"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-TR-014",
-            "F-TR-015",
-            "F-TR-019",
-            "G-01"
-          ],
-          "status": "confirmed"
-        },
-        {
-          "id": "US-01.2",
-          "title": "Insurance start date is derived from the confirmed first working day",
-          "as_a": "pension_fund",
-          "i_want": "to receive an insurance start date that is the 1st of a month and follows from the employee's latest confirmed first working day",
-          "so_that": "the employee is insured from the correct date and registrations do not need weeks of correction",
-          "priority": "P1",
-          "priority_reason": "The insurance start date is required for registration (F-SC-008); a wrong date already caused an incident with an unfriendly letter and weeks of fixing (F-TR-019).",
-          "acceptance_criteria": [
-            {
-              "id": "AC-01.2.1",
-              "title": "Employee is not asked for the insurance start date",
-              "given": "a new employee is going through onboarding",
-              "when": "they answer the questionnaire",
-              "then": "they are never asked for an insurance start date; Lonio works it out from the confirmed first working day",
-              "examples": [],
-              "source_refs": [
-                "F-TR-018",
-                "G-08"
-              ]
-            },
-            {
-              "id": "AC-01.2.2",
-              "title": "First working day on the 1st of a month: insurance starts that day",
-              "given": "the confirmed first working day is the 1st of a month",
-              "when": "Lonio derives the insurance start date",
-              "then": "the insurance start date is the same day as the first working day",
-              "examples": [
-                {
-                  "name": "Starts on the 1st of a month",
-                  "given": [
-                    {
-                      "item": "first_working_day",
-                      "value": "01.04.2026"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "insurance_start_date",
-                      "expect": "01.04.2026"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-017"
-                  ],
-                  "illustrative": true
-                },
-                {
-                  "name": "Starts on 1st January",
-                  "given": [
-                    {
-                      "item": "first_working_day",
-                      "value": "01.01.2027"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "insurance_start_date",
-                      "expect": "01.01.2027"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-017"
-                  ],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-017",
-                "F-TR-018"
-              ]
-            },
-            {
-              "id": "AC-01.2.3",
-              "title": "First working day not on the 1st: insurance starts on the 1st of the following month",
-              "given": "the confirmed first working day is any day other than the 1st of a month",
-              "when": "Lonio derives the insurance start date",
-              "then": "the insurance start date is the 1st of the month after the first working day, also across a year end",
-              "examples": [
-                {
-                  "name": "Julia (F-TR-019)",
-                  "given": [
-                    {
-                      "item": "first_working_day",
-                      "value": "15.03.2026"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "insurance_start_date",
-                      "expect": "01.04.2026"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-016",
-                    "F-TR-019"
-                  ],
-                  "illustrative": false
-                },
-                {
-                  "name": "Starts on the 2nd of a month",
-                  "given": [
-                    {
-                      "item": "first_working_day",
-                      "value": "02.03.2026"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "insurance_start_date",
-                      "expect": "01.04.2026"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-016"
-                  ],
-                  "illustrative": true
-                },
-                {
-                  "name": "Starts on the last day of a month",
-                  "given": [
-                    {
-                      "item": "first_working_day",
-                      "value": "31.01.2026"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "insurance_start_date",
-                      "expect": "01.02.2026"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-016"
-                  ],
-                  "illustrative": true
-                },
-                {
-                  "name": "Starts in December (year end)",
-                  "given": [
-                    {
-                      "item": "first_working_day",
-                      "value": "15.12.2026"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "insurance_start_date",
-                      "expect": "01.01.2027"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-016"
-                  ],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-016",
-                "F-TR-018"
-              ]
-            },
-            {
-              "id": "AC-01.2.4",
-              "title": "Insurance start date follows the latest confirmed first working day",
-              "given": "the employee's first working day has moved and the employee confirmed the new date",
-              "when": "Lonio derives the insurance start date",
-              "then": "the insurance start date is based on the newly confirmed first working day, never on an earlier, outdated one",
-              "examples": [
-                {
-                  "name": "Julia moved her start to 15 March (F-TR-019)",
-                  "given": [
-                    {
-                      "item": "first_working_day",
-                      "value": "15.03.2026"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "insurance_start_date",
-                      "expect": "01.04.2026"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-019"
-                  ],
-                  "illustrative": false
-                }
-              ],
-              "source_refs": [
-                "F-TR-015",
-                "F-TR-019"
-              ]
-            },
-            {
-              "id": "AC-01.2.5",
-              "title": "Insurance start date meets the fund's requirements",
-              "given": "an insurance start date has been derived",
-              "when": "it is made available for the pension fund registration",
-              "then": "it is always the 1st of a month and is given as DD.MM.YYYY, as the fund requires",
-              "examples": [],
-              "source_refs": [
-                "F-SC-008",
-                "F-SC-009"
-              ]
-            }
-          ],
-          "items": [
-            "first_working_day"
-          ],
-          "rules": [
-            "insurance_start_date"
-          ],
-          "source_refs": [
-            "F-TR-016",
-            "F-TR-017",
-            "F-TR-018",
-            "F-TR-019",
-            "F-SC-008",
-            "F-SC-009",
-            "G-08"
-          ],
-          "status": "confirmed"
-        }
-      ],
-      "items": [
-        "first_working_day"
-      ],
-      "rules": [
-        "insurance_start_date"
-      ],
-      "open_questions": [],
-      "source_refs": [
-        "F-TR-014",
-        "F-TR-015",
-        "F-TR-016",
-        "F-TR-017",
-        "F-TR-018",
-        "F-TR-019",
-        "F-SC-008",
-        "F-SC-009",
-        "G-08"
-      ]
-    },
-    {
-      "id": "FEAT-02-home-address",
-      "order": 2,
-      "title": "Complete home address and country of residence",
-      "goal": "Every new employee gives a complete postal address once, so HR can post documents, and its country tells the other steps whether the employee lives in Switzerland.",
-      "context": "HR posts many documents to employees and needs the complete address as written on an envelope: street, number, postcode, town and country, with no extra parts (F-TR-009, F-TR-010). The country of the home address is also the employee's country of residence (F-TR-040, G-09). Several later questions depend on it. Employees living abroad are always subject to source tax (F-TR-034, F-TR-037), and the pension fund canton is asked only of employees living in Switzerland. This feature therefore comes before the pension and source tax features that depend on it.",
-      "stakeholders": [
-        "employee",
-        "hr",
-        "source_tax"
-      ],
-      "stories": [
-        {
-          "id": "US-02.1",
-          "title": "Complete postal address for HR mail",
-          "as_a": "hr",
-          "i_want": "every new employee to give their complete home address (street, house number, postcode, town and country) as it would be written on an envelope",
-          "so_that": "I can post documents to the employee without chasing missing address parts",
-          "priority": "P1",
-          "priority_reason": "HR posts many documents to employees and states the address 'has to be complete'; an incomplete address blocks HR's postal communication (F-TR-010).",
-          "acceptance_criteria": [
-            {
-              "id": "AC-02.1.1",
-              "title": "All address parts are always asked and required",
-              "given": "a new employee is filling in the onboarding questionnaire",
-              "when": "they reach the home address step",
-              "then": "they are asked for street, house number, postcode, town and country of their home address, and cannot complete the step while any of these five parts is empty",
-              "examples": [
-                {
-                  "name": "Employee living in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "address_street",
-                      "expect": "required"
-                    },
-                    {
-                      "target": "address_house_number",
-                      "expect": "required"
-                    },
-                    {
-                      "target": "address_postcode",
-                      "expect": "required"
-                    },
-                    {
-                      "target": "address_town",
-                      "expect": "required"
-                    },
-                    {
-                      "target": "address_country",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Employee living abroad",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Germany"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "address_street",
-                      "expect": "required"
-                    },
-                    {
-                      "target": "address_house_number",
-                      "expect": "required"
-                    },
-                    {
-                      "target": "address_postcode",
-                      "expect": "required"
-                    },
-                    {
-                      "target": "address_town",
-                      "expect": "required"
-                    },
-                    {
-                      "target": "address_country",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-009",
-                "F-TR-010"
-              ]
-            },
-            {
-              "id": "AC-02.1.2",
-              "title": "Normal postal address with no extra parts",
-              "given": "a new employee is at the home address step",
-              "when": "they enter their address",
-              "then": "only the parts of a normal postal address as written on an envelope are asked (street, house number, postcode, town, country); no further address parts are asked",
-              "examples": [],
-              "source_refs": [
-                "F-TR-010"
-              ]
-            },
-            {
-              "id": "AC-02.1.3",
-              "title": "Address is asked once and received by HR",
-              "given": "a new employee has completed the home address step",
-              "when": "the onboarding data is made available to the receiving parties",
-              "then": "HR receives the complete home address, and the employee is not asked for the address again in any later step",
-              "examples": [],
-              "source_refs": [
-                "F-TR-009",
-                "F-TR-010",
-                "G-01"
-              ]
-            }
-          ],
-          "items": [
-            "address_street",
-            "address_house_number",
-            "address_postcode",
-            "address_town",
-            "address_country"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-TR-009",
-            "F-TR-010"
-          ],
-          "status": "confirmed"
-        },
-        {
-          "id": "US-02.2",
-          "title": "Country of home address as country of residence",
-          "as_a": "source_tax",
-          "i_want": "the country of the employee's home address to be used as their country of residence",
-          "so_that": "employees living abroad are recognised as subject to source tax and only the questions relevant to where the employee lives are asked later",
-          "priority": "P1",
-          "priority_reason": "Whether the employee lives in Switzerland decides source tax liability (F-TR-034, F-TR-037) and which later questions are asked; without it later steps cannot be determined.",
-          "acceptance_criteria": [
-            {
-              "id": "AC-02.2.1",
-              "title": "Country of residence is not asked separately",
-              "given": "a new employee has given the country of their home address",
-              "when": "a later step needs to know whether the employee lives in Switzerland",
-              "then": "the country of the home address is used as the country of residence and the employee is not asked a separate question about where they live",
-              "examples": [],
-              "source_refs": [
-                "F-TR-040",
-                "G-09",
-                "G-01"
-              ]
-            },
-            {
-              "id": "AC-02.2.2",
-              "title": "Employees living abroad are subject to source tax whatever their nationality",
-              "given": "a new employee's home address is outside Switzerland",
-              "when": "the questionnaire determines the following steps",
-              "then": "the employee is treated as subject to source tax, is not asked their nationality or the pension fund canton, and source tax and HR receive the country of residence",
-              "examples": [
-                {
-                  "name": "Stefan, Swiss, lives in Konstanz (F-TR-034)",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Germany"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "nationality",
-                      "expect": "not asked"
-                    },
-                    {
-                      "target": "residence_canton",
-                      "expect": "not asked"
-                    },
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "yes"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-034"
-                  ],
-                  "illustrative": false
-                },
-                {
-                  "name": "Employee living in Liechtenstein",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Liechtenstein"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "nationality",
-                      "expect": "not asked"
-                    },
-                    {
-                      "target": "residence_canton",
-                      "expect": "not asked"
-                    },
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "yes"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-034",
-                "F-TR-037",
-                "F-TR-040"
-              ]
-            },
-            {
-              "id": "AC-02.2.3",
-              "title": "Employees living in Switzerland continue to nationality and canton",
-              "given": "a new employee's home address is in Switzerland",
-              "when": "the questionnaire determines the following steps",
-              "then": "the employee is asked their nationality and the pension fund canton, which decide the later source tax and pension steps",
-              "examples": [
-                {
-                  "name": "Employee living in Winterthur",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "nationality",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "residence_canton",
-                      "expect": "asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-037",
-                "F-TR-040"
-              ]
-            },
-            {
-              "id": "AC-02.2.4",
-              "title": "Address comes before dependent steps",
-              "given": "a new employee starts the onboarding questionnaire",
-              "when": "the steps are presented",
-              "then": "the home address step comes before the pension and source tax steps that depend on the country of residence; the additional source tax questions for employees living abroad are defined by the Zurich calculator and remain open (OQ-01)",
-              "examples": [],
-              "source_refs": [
-                "F-TR-036",
-                "F-TR-040"
-              ]
-            }
-          ],
-          "items": [
-            "address_country"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-TR-034",
-            "F-TR-036",
-            "F-TR-037",
-            "F-TR-040",
-            "G-09"
-          ],
-          "status": "inferred"
-        }
-      ],
-      "items": [
-        "address_street",
-        "address_house_number",
-        "address_postcode",
-        "address_town",
-        "address_country"
-      ],
-      "rules": [],
-      "open_questions": [],
-      "source_refs": [
-        "F-TR-009",
-        "F-TR-010",
-        "F-TR-034",
-        "F-TR-036",
-        "F-TR-037",
-        "F-TR-040",
-        "G-09"
-      ]
-    },
-    {
-      "id": "FEAT-03-pension-fund-registration-data",
-      "order": 3,
-      "title": "Personal and family details for pension fund registration",
-      "goal": "Lonio collects every field Pensionskasse Muster requires, including the spouse's date of birth for married employees, so that a registration is never blocked by missing data.",
-      "context": "The pension fund portal requires first name, last name, date of birth, canton and civil status for every employee (F-SC-002 to F-SC-007, F-SC-010, F-SC-015). For married employees it also requires the spouse's date of birth and blocks the registration without it (F-TR-021, F-SC-012 to F-SC-014, F-SC-016). The civil status list shows only Single, Married, Divorced and Widowed (F-SC-011, G-07). HR's recollection of civil status matches the fund's list (F-TR-020, F-TR-022). Civil status is also an input for the source tax rule and the calculator (F-TR-029, F-TR-030). The fund offers only Swiss cantons and does not say whether it means the canton of residence or of work. Until the fund answers (OQ-02), the canton is asked only of employees living in Switzerland. It depends on address_country from FEAT-02. Registered partnerships, and portal behaviour for Divorced or Widowed, are still open.",
-      "stakeholders": [
-        "employee",
-        "hr",
-        "pension_fund"
-      ],
-      "stories": [
-        {
-          "id": "US-03.1",
-          "title": "Name and date of birth for the pension fund",
-          "as_a": "pension_fund",
-          "i_want": "to receive the new employee's first name, last name and date of birth",
-          "so_that": "I can register the employee for occupational pension without the registration being rejected for missing required fields",
-          "priority": "P1",
-          "priority_reason": "These are required fields of the pension fund registration; if any is missing, the portal rejects the registration and highlights the field (F-SC-015), which blocks the registration.",
-          "acceptance_criteria": [
-            {
-              "id": "AC-03.1.1",
-              "title": "First and last name are always asked and required",
-              "given": "a new employee is filling in the onboarding questionnaire",
-              "when": "they reach the personal details",
-              "then": "they are asked for their first name and their last name; neither can be left empty, and both are made available for the pension fund registration.",
-              "examples": [],
-              "source_refs": [
-                "F-SC-002",
-                "F-SC-003",
-                "F-SC-015"
-              ]
-            },
-            {
-              "id": "AC-03.1.2",
-              "title": "Date of birth is always asked and required as a date",
-              "given": "a new employee is filling in the onboarding questionnaire",
-              "when": "they reach the personal details",
-              "then": "they are asked for their date of birth as a day, month and year (shown as DD.MM.YYYY, e.g. 14.02.1990); it cannot be left empty and is made available for the pension fund registration.",
-              "examples": [],
-              "source_refs": [
-                "F-SC-004",
-                "F-SC-005",
-                "F-SC-015"
-              ]
-            },
-            {
-              "id": "AC-03.1.3",
-              "title": "Each detail is asked only once",
-              "given": "the employee has given their name and date of birth",
-              "when": "another part of the onboarding or another receiving party needs the same detail",
-              "then": "the employee is not asked for it again; the earlier answer is reused.",
-              "examples": [],
-              "source_refs": [
-                "G-01"
-              ]
-            }
-          ],
-          "items": [
-            "first_name",
-            "last_name",
-            "date_of_birth"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-SC-002",
-            "F-SC-003",
-            "F-SC-004",
-            "F-SC-005",
-            "F-SC-015",
-            "G-01"
-          ],
-          "status": "confirmed"
-        },
-        {
-          "id": "US-03.2",
-          "title": "Civil status from the pension fund's list",
-          "as_a": "pension_fund",
-          "i_want": "to receive the employee's civil status as one of the values my registration accepts",
-          "so_that": "I can register the employee and know whether spouse details apply",
-          "priority": "P1",
-          "priority_reason": "Civil status is a required pension fund field; without it the registration is blocked (F-SC-010, F-SC-015). It is also an input for source tax (F-TR-029, F-TR-030).",
-          "acceptance_criteria": [
-            {
-              "id": "AC-03.2.1",
-              "title": "Civil status is always asked and required",
-              "given": "a new employee is filling in the onboarding questionnaire",
-              "when": "they reach the family details",
-              "then": "they are asked for their civil status; it cannot be left empty and is made available for the pension fund registration.",
-              "examples": [],
-              "source_refs": [
-                "F-SC-010",
-                "F-SC-015",
-                "F-TR-020"
-              ]
-            },
-            {
-              "id": "AC-03.2.2",
-              "title": "Only the pension fund's civil status values are offered",
-              "given": "the employee is asked for their civil status",
-              "when": "they choose an answer",
-              "then": "they can choose exactly one of: Single, Married, Divorced, Widowed, as the pension fund lists them; no other values are offered. How employees in a registered partnership or another status (e.g. separated) answer is open (OQ-03).",
-              "examples": [],
-              "source_refs": [
-                "F-SC-011",
-                "F-TR-022",
-                "G-07",
-                "F-TR-023",
-                "F-TR-024",
-                "F-SC-018"
-              ]
-            },
-            {
-              "id": "AC-03.2.3",
-              "title": "Civil status is reused for source tax and HR",
-              "given": "the employee has given their civil status",
-              "when": "the source tax decision or the source tax questions need it",
-              "then": "the same answer is reused and the employee is not asked again.",
-              "examples": [],
-              "source_refs": [
-                "F-TR-029",
-                "F-TR-030",
-                "G-01"
-              ]
-            }
-          ],
-          "items": [
-            "civil_status"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-SC-010",
-            "F-SC-011",
-            "F-SC-015",
-            "F-SC-018",
-            "F-TR-020",
-            "F-TR-022",
-            "F-TR-023",
-            "F-TR-024",
-            "F-TR-029",
-            "F-TR-030",
-            "G-07"
-          ],
-          "status": "confirmed"
-        },
-        {
-          "id": "US-03.3",
-          "title": "Spouse's date of birth for married employees",
-          "as_a": "pension_fund",
-          "i_want": "to receive the spouse's date of birth for every married employee, and only for them",
-          "so_that": "the registration of married employees is not blocked and no spouse data is collected without need",
-          "priority": "P1",
-          "priority_reason": "The portal blocks the registration of a married employee without the spouse's date of birth (F-SC-016).",
-          "acceptance_criteria": [
-            {
-              "id": "AC-03.3.1",
-              "title": "Spouse's date of birth is asked and required only for married employees",
-              "given": "the employee has given their civil status",
-              "when": "the civil status is Married",
-              "then": "the employee is asked for their husband's or wife's date of birth (DD.MM.YYYY), cannot leave it empty, and it is made available for the pension fund registration; for any other civil status it is not asked. Whether the fund needs spouse data for Divorced or Widowed is open (OQ-04).",
-              "examples": [
-                {
-                  "name": "Tomás, married, wife lives with him in Winterthur (F-TR-030)",
-                  "given": [
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_date_of_birth",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "spouse_date_of_birth",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-030",
-                    "F-SC-016"
-                  ],
-                  "illustrative": false
-                },
-                {
-                  "name": "Single employee",
-                  "given": [
-                    {
-                      "item": "civil_status",
-                      "value": "Single"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_date_of_birth",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-SC-014"
-                  ],
-                  "illustrative": true
-                },
-                {
-                  "name": "Divorced employee",
-                  "given": [
-                    {
-                      "item": "civil_status",
-                      "value": "Divorced"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_date_of_birth",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-SC-014",
-                    "F-SC-018"
-                  ],
-                  "illustrative": true
-                },
-                {
-                  "name": "Widowed employee",
-                  "given": [
-                    {
-                      "item": "civil_status",
-                      "value": "Widowed"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_date_of_birth",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-SC-014",
-                    "F-SC-018"
-                  ],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-021",
-                "F-SC-012",
-                "F-SC-013",
-                "F-SC-014",
-                "F-SC-016",
-                "F-SC-018",
-                "G-01"
-              ]
-            }
-          ],
-          "items": [
-            "spouse_date_of_birth"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-TR-021",
-            "F-SC-012",
-            "F-SC-013",
-            "F-SC-014",
-            "F-SC-016",
-            "F-SC-018",
-            "G-01"
-          ],
-          "status": "confirmed"
-        },
-        {
-          "id": "US-03.4",
-          "title": "Canton for employees living in Switzerland",
-          "as_a": "pension_fund",
-          "i_want": "to receive a Swiss canton for the employee",
-          "so_that": "I can complete the required canton field of the registration",
-          "priority": "P1",
-          "priority_reason": "Canton is a required pension fund field; without it the registration is blocked (F-SC-006, F-SC-015).",
-          "acceptance_criteria": [
-            {
-              "id": "AC-03.4.1",
-              "title": "Canton is asked and required only of employees living in Switzerland",
-              "given": "the employee has given the country of their home address",
-              "when": "the country is Switzerland",
-              "then": "the employee is asked for their canton, cannot leave it empty, and it is made available for the pension fund registration; employees living outside Switzerland are not asked, until the fund clarifies whether it means the canton of residence or of work and what applies to employees living abroad (OQ-02).",
-              "examples": [
-                {
-                  "name": "Tomás, lives in Winterthur (F-TR-030)",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "residence_canton",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "residence_canton",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-TR-030",
-                    "F-SC-006"
-                  ],
-                  "illustrative": false
-                },
-                {
-                  "name": "Cross-border employee living in Germany",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Germany"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "residence_canton",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-SC-017"
-                  ],
-                  "illustrative": true
-                },
-                {
-                  "name": "Employee living in Liechtenstein",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Liechtenstein"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "residence_canton",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [
-                    "F-SC-017"
-                  ],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-SC-006",
-                "F-SC-015",
-                "F-SC-017",
-                "G-01"
-              ]
-            },
-            {
-              "id": "AC-03.4.2",
-              "title": "Only the fund's Swiss cantons are offered",
-              "given": "the employee is asked for their canton",
-              "when": "they choose an answer",
-              "then": "they can choose exactly one of the 26 cantons the pension fund lists: Aargau, Appenzell Ausserrhoden, Appenzell Innerrhoden, Basel-Landschaft, Basel-Stadt, Bern, Fribourg, Geneva, Glarus, Graubünden, Jura, Lucerne, Neuchâtel, Nidwalden, Obwalden, Schaffhausen, Schwyz, Solothurn, St. Gallen, Thurgau, Ticino, Uri, Valais, Vaud, Zug, Zurich.",
-              "examples": [],
-              "source_refs": [
-                "F-SC-007",
-                "G-07"
-              ]
-            }
-          ],
-          "items": [
-            "residence_canton"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-SC-006",
-            "F-SC-007",
-            "F-SC-015",
-            "F-SC-017",
-            "G-01",
-            "G-07"
-          ],
-          "status": "inferred"
-        }
-      ],
-      "items": [
-        "first_name",
-        "last_name",
-        "date_of_birth",
-        "civil_status",
-        "spouse_date_of_birth",
-        "residence_canton"
-      ],
-      "rules": [],
-      "open_questions": [
-        "OQ-02",
-        "OQ-03",
-        "OQ-04"
-      ],
-      "source_refs": [
-        "F-SC-002",
-        "F-SC-003",
-        "F-SC-004",
-        "F-SC-005",
-        "F-SC-006",
-        "F-SC-007",
-        "F-SC-010",
-        "F-SC-011",
-        "F-SC-012",
-        "F-SC-013",
-        "F-SC-014",
-        "F-SC-015",
-        "F-SC-016",
-        "F-SC-017",
-        "F-SC-018",
-        "F-TR-020",
-        "F-TR-021",
-        "F-TR-022",
-        "F-TR-023",
-        "F-TR-024",
-        "G-07"
-      ]
-    },
-    {
-      "id": "FEAT-04-source-tax-liability",
-      "order": 4,
-      "title": "Decide whether the employee is subject to source tax",
-      "goal": "Lonio asks only the questions needed to decide whether an employee is subject to source tax, so that only those employees get the source tax questions and nobody gives nationality, permit or spouse data that is not needed.",
-      "context": "HR decides by hand whether an employee is subject to source tax. Employees living abroad always are. Swiss nationals and C permit holders living in Switzerland are not. Other foreigners living in Switzerland are not subject if married to a spouse who is Swiss or holds a C permit and lives in Switzerland (F-TR-005, F-TR-006, F-TR-025, F-TR-030, F-TR-034, F-TR-037). Data minimisation means each of these questions is asked only when its answer can change the outcome (G-01). The rule uses address_country (FEAT-02) and civil_status (FEAT-03). The tariff questions of the Zurich calculator have not been analysed yet (OQ-01, blocking). Until they are, this feature delivers the subject or not-subject decision that gates them. HR is not sure the rule is complete (OQ-05). The permit list is undefined (OQ-06). HR wished for a permit reminder because half of new employees forget to bring it (F-TR-028, OQ-07). Using the Zurich calculator for every employee is an agreed simplification (F-TR-008, G-05, OQ-08).",
-      "stakeholders": [
-        "employee",
-        "hr",
-        "source_tax"
-      ],
-      "stories": [
-        {
-          "id": "US-04.1",
-          "title": "Ask nationality only of employees living in Switzerland",
-          "as_a": "employee",
-          "i_want": "to be asked my nationality only when it matters for whether I pay source tax",
-          "so_that": "HR can tell whether I am Swiss without me giving my nationality when it changes nothing",
-          "priority": "P1",
-          "priority_reason": "Without nationality HR cannot tell Swiss employees from other employees living in Switzerland. Today Swiss employees get the source tax questions, get annoyed and call HR (F-TR-005).",
-          "acceptance_criteria": [
-            {
-              "id": "AC-04.1.1",
-              "title": "Nationality is asked and required for employees living in Switzerland",
-              "given": "the country of the employee's home address is Switzerland",
-              "when": "the employee fills in the questionnaire",
-              "then": "Lonio asks for the employee's nationality, the employee must answer it, and HR uses it to decide whether the employee is subject to source tax.",
-              "examples": [
-                {
-                  "name": "Tomás (F-TR-030), lives in Winterthur",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "nationality",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "nationality",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": false
-                }
-              ],
-              "source_refs": [
-                "F-TR-006",
-                "F-TR-037",
-                "F-TR-038",
-                "F-TR-040"
-              ]
-            },
-            {
-              "id": "AC-04.1.2",
-              "title": "Nationality is not asked of employees living abroad",
-              "given": "the country of the employee's home address is not Switzerland",
-              "when": "the employee fills in the questionnaire",
-              "then": "Lonio does not ask for the employee's nationality, because employees living abroad are subject to source tax whatever their nationality. Whether the Zurich calculator needs it after all is open (OQ-01).",
-              "examples": [
-                {
-                  "name": "Stefan (F-TR-034), Swiss, lives in Konstanz",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Germany"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "nationality",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": false
-                },
-                {
-                  "name": "Employee living in Liechtenstein",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Liechtenstein"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "nationality",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-034",
-                "F-TR-037",
-                "G-01"
-              ]
-            }
-          ],
-          "items": [
-            "nationality"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-TR-005",
-            "F-TR-006",
-            "F-TR-034",
-            "F-TR-037",
-            "F-TR-038",
-            "F-TR-040",
-            "G-01"
-          ],
-          "status": "inferred"
-        },
-        {
-          "id": "US-04.2",
-          "title": "Ask the permit type only of non-Swiss employees living in Switzerland",
-          "as_a": "employee",
-          "i_want": "to be asked about my residence permit only if I live in Switzerland and am not Swiss",
-          "so_that": "HR can see whether I hold a C permit and, if I do, treat me like a Swiss national for source tax",
-          "priority": "P1",
-          "priority_reason": "C permit holders are not subject to source tax (F-TR-025). Without the permit type they would be asked the source tax questions for no reason (F-TR-005).",
-          "acceptance_criteria": [
-            {
-              "id": "AC-04.2.1",
-              "title": "Permit type is asked and required for non-Swiss employees living in Switzerland",
-              "given": "the employee lives in Switzerland and their nationality is not Swiss",
-              "when": "the employee fills in the questionnaire",
-              "then": "Lonio asks which Swiss residence permit the employee holds, the employee must answer it, and HR uses it to decide whether the employee is subject to source tax.",
-              "examples": [
-                {
-                  "name": "Tomás (F-TR-030), Brazilian living in Winterthur",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "permit_type",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "permit_type",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": false
-                },
-                {
-                  "name": "Maria (F-TR-025), Portuguese, assumed to live in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Portugal"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "permit_type",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "permit_type",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-025",
-                "F-TR-037",
-                "F-TR-039"
-              ]
-            },
-            {
-              "id": "AC-04.2.2",
-              "title": "Permit type is not asked of Swiss employees or employees living abroad",
-              "given": "the employee is Swiss, or lives outside Switzerland",
-              "when": "the employee fills in the questionnaire",
-              "then": "Lonio does not ask for a permit type, because the answer cannot change the source tax decision.",
-              "examples": [
-                {
-                  "name": "Swiss employee living in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "permit_type",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Stefan (F-TR-034), lives in Konstanz",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Germany"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "permit_type",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": false
-                }
-              ],
-              "source_refs": [
-                "F-TR-034",
-                "F-TR-037",
-                "G-01"
-              ]
-            },
-            {
-              "id": "AC-04.2.3",
-              "title": "Permit choices and permit reminder are still open",
-              "given": "the sources name only the B permit and the C permit",
-              "when": "the permit question is shown to the employee",
-              "then": "the answers include at least \"B permit\" and \"C permit\". The full list of permit types is still open (OQ-06). For the source tax decision, only C permit versus any other answer matters. HR wants the questionnaire to remind employees to bring their permit, but whether to add the reminder and its wording are still open (OQ-07).",
-              "examples": [],
-              "source_refs": [
-                "F-TR-025",
-                "F-TR-028",
-                "F-TR-039"
-              ]
-            }
-          ],
-          "items": [
-            "permit_type"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-TR-025",
-            "F-TR-028",
-            "F-TR-037",
-            "F-TR-039",
-            "G-01"
-          ],
-          "status": "inferred"
-        },
-        {
-          "id": "US-04.3",
-          "title": "Ask spouse details only when they can exempt the employee",
-          "as_a": "hr",
-          "i_want": "Lonio to collect the spouse's nationality, permit and country of residence only from married employees whose own status would otherwise make them subject to source tax",
-          "so_that": "I no longer have to check the spouse case by hand and collect spouse details by email",
-          "priority": "P1",
-          "priority_reason": "Today HR checks this case by hand and collects the details by email, which 'takes forever' (F-TR-033). Without the spouse details, employees like Tomás are wrongly treated as subject to source tax.",
-          "acceptance_criteria": [
-            {
-              "id": "AC-04.3.1",
-              "title": "Spouse's nationality is asked only when the spouse can change the outcome",
-              "given": "the employee is married, lives in Switzerland, is not Swiss and does not hold a C permit",
-              "when": "the employee fills in the questionnaire",
-              "then": "Lonio asks for the spouse's nationality and the employee must answer it. Lonio does not ask it of any other employee, including employees who are married but Swiss, hold a C permit or live abroad. HR uses the answer for the source tax decision.",
-              "examples": [
-                {
-                  "name": "Tomás (F-TR-030), Brazilian, B permit, married",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_nationality",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "spouse_nationality",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": false
-                },
-                {
-                  "name": "Single B permit holder in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Italy"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Single"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_nationality",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Married C permit holder in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Portugal"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "C permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_nationality",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Married Swiss employee in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_nationality",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Married employee living abroad",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Germany"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_nationality",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-030",
-                "F-TR-031",
-                "F-TR-032",
-                "G-01"
-              ]
-            },
-            {
-              "id": "AC-04.3.2",
-              "title": "Spouse's permit type is asked only for a non-Swiss spouse and may be left empty",
-              "given": "the spouse's nationality is needed (AC-04.3.1) and the spouse is not Swiss",
-              "when": "the employee fills in the questionnaire",
-              "then": "Lonio asks for the spouse's Swiss residence permit, if they have one. The employee may leave it empty if the spouse has no permit. Lonio does not ask it if the spouse is Swiss. The list of permit types is open (OQ-06).",
-              "examples": [
-                {
-                  "name": "Tomás (F-TR-030), wife is Swiss",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    },
-                    {
-                      "item": "spouse_nationality",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_permit_type",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": false
-                },
-                {
-                  "name": "B permit holder with an Italian spouse",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    },
-                    {
-                      "item": "spouse_nationality",
-                      "value": "Italy"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_permit_type",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "spouse_permit_type",
-                      "expect": "optional"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-031",
-                "F-TR-032",
-                "G-01"
-              ]
-            },
-            {
-              "id": "AC-04.3.3",
-              "title": "Spouse's country of residence is asked only if the spouse is Swiss or holds a C permit",
-              "given": "the spouse's nationality is needed (AC-04.3.1)",
-              "when": "the spouse is Swiss or holds a C permit",
-              "then": "Lonio asks where the spouse lives and the employee must answer it. Lonio does not ask it if the spouse is neither Swiss nor a C permit holder, because then the spouse cannot exempt the employee.",
-              "examples": [
-                {
-                  "name": "Tomás (F-TR-030), Swiss wife in Winterthur",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    },
-                    {
-                      "item": "spouse_nationality",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_residence_country",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "spouse_residence_country",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": false
-                },
-                {
-                  "name": "Spouse is Italian with a C permit",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    },
-                    {
-                      "item": "spouse_nationality",
-                      "value": "Italy"
-                    },
-                    {
-                      "item": "spouse_permit_type",
-                      "value": "C permit"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_residence_country",
-                      "expect": "asked"
-                    },
-                    {
-                      "target": "spouse_residence_country",
-                      "expect": "required"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Spouse is Italian with a B permit",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    },
-                    {
-                      "item": "spouse_nationality",
-                      "value": "Italy"
-                    },
-                    {
-                      "item": "spouse_permit_type",
-                      "value": "B permit"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "spouse_residence_country",
-                      "expect": "not asked"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-030",
-                "F-TR-031",
-                "F-TR-032",
-                "G-01"
-              ]
-            }
-          ],
-          "items": [
-            "spouse_nationality",
-            "spouse_permit_type",
-            "spouse_residence_country"
-          ],
-          "rules": [],
-          "source_refs": [
-            "F-TR-030",
-            "F-TR-031",
-            "F-TR-032",
-            "F-TR-033",
-            "F-TR-037",
-            "G-01"
-          ],
-          "status": "inferred"
-        },
-        {
-          "id": "US-04.4",
-          "title": "Decide whether the employee is subject to source tax",
-          "as_a": "hr",
-          "i_want": "Lonio to decide from the employee's answers whether they are subject to source tax",
-          "so_that": "I know up front who has to answer the source tax questions, and Swiss employees and other exempt employees are not bothered with them",
-          "priority": "P1",
-          "priority_reason": "HR never knows up front who has to answer the source tax questions, and Swiss employees get annoyed and call HR (F-TR-005). This decision controls whether the whole source tax step is asked.",
-          "acceptance_criteria": [
-            {
-              "id": "AC-04.4.1",
-              "title": "Employees living abroad are always subject",
-              "given": "the country of the employee's home address is not Switzerland",
-              "when": "Lonio decides on source tax",
-              "then": "the employee is subject to source tax, whatever their nationality.",
-              "examples": [
-                {
-                  "name": "Stefan (F-TR-034), Swiss, lives in Konstanz",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Germany"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "yes"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": false
-                }
-              ],
-              "source_refs": [
-                "F-TR-034",
-                "F-TR-037",
-                "F-TR-040"
-              ]
-            },
-            {
-              "id": "AC-04.4.2",
-              "title": "Swiss nationals and C permit holders living in Switzerland are not subject",
-              "given": "the employee lives in Switzerland",
-              "when": "the employee is Swiss or holds a C permit",
-              "then": "the employee is not subject to source tax. C permit holders are treated like Swiss nationals.",
-              "examples": [
-                {
-                  "name": "Swiss employee living in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "no"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Maria (F-TR-025), Portuguese with a C permit, assumed to live in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Portugal"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "C permit"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "no"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-006",
-                "F-TR-025",
-                "F-TR-037"
-              ]
-            },
-            {
-              "id": "AC-04.4.3",
-              "title": "Spouse exemption for other foreigners living in Switzerland",
-              "given": "the employee lives in Switzerland, is not Swiss and does not hold a C permit",
-              "when": "Lonio decides on source tax",
-              "then": "the employee is not subject only if they are married to a spouse who is Swiss or holds a C permit and who lives in Switzerland. In every other case the employee is subject.",
-              "examples": [
-                {
-                  "name": "Tomás (F-TR-030), Brazilian, B permit, Swiss wife in Winterthur",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    },
-                    {
-                      "item": "spouse_nationality",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "spouse_residence_country",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "no"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": false
-                },
-                {
-                  "name": "Spouse is Italian with a C permit and lives in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    },
-                    {
-                      "item": "spouse_nationality",
-                      "value": "Italy"
-                    },
-                    {
-                      "item": "spouse_permit_type",
-                      "value": "C permit"
-                    },
-                    {
-                      "item": "spouse_residence_country",
-                      "value": "Switzerland"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "no"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Swiss spouse lives in Germany",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    },
-                    {
-                      "item": "spouse_nationality",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "spouse_residence_country",
-                      "value": "Germany"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "yes"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Spouse is Italian with a B permit",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Brazil"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Married"
-                    },
-                    {
-                      "item": "spouse_nationality",
-                      "value": "Italy"
-                    },
-                    {
-                      "item": "spouse_permit_type",
-                      "value": "B permit"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "yes"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                },
-                {
-                  "name": "Single B permit holder in Switzerland",
-                  "given": [
-                    {
-                      "item": "address_country",
-                      "value": "Switzerland"
-                    },
-                    {
-                      "item": "nationality",
-                      "value": "Italy"
-                    },
-                    {
-                      "item": "permit_type",
-                      "value": "B permit"
-                    },
-                    {
-                      "item": "civil_status",
-                      "value": "Single"
-                    }
-                  ],
-                  "then": [
-                    {
-                      "target": "subject_to_source_tax",
-                      "expect": "yes"
-                    }
-                  ],
-                  "source_refs": [],
-                  "illustrative": true
-                }
-              ],
-              "source_refs": [
-                "F-TR-025",
-                "F-TR-030",
-                "F-TR-037"
-              ]
-            },
-            {
-              "id": "AC-04.4.4",
-              "title": "Only employees subject to source tax get the source tax questions",
-              "given": "Lonio has decided whether the employee is subject to source tax",
-              "when": "the employee continues the questionnaire",
-              "then": "only employees who are subject are asked the source tax tariff questions; employees who are not subject are not asked them. The tariff questions themselves (including the different questions for married employees and the extra questions for employees living abroad) are not yet defined (OQ-01, blocking). For now, the Zurich calculator applies to every subject employee (OQ-08).",
-              "examples": [],
-              "source_refs": [
-                "F-TR-005",
-                "F-TR-007",
-                "F-TR-008",
-                "F-TR-029",
-                "F-TR-036",
-                "G-05"
-              ]
-            },
-            {
-              "id": "AC-04.4.5",
-              "title": "Rule completeness to be confirmed by HR",
-              "given": "HR hedged on whether the rule is complete ('I think that's it')",
-              "when": "the decision rule is released",
-              "then": "HR has checked the decision rules against real cases (Stefan, Maria, Tomás). Any missing case is handled through OQ-05, not by inventing new rules.",
-              "examples": [],
-              "source_refs": [
-                "F-TR-025",
-                "F-TR-037"
-              ]
-            }
-          ],
-          "items": [],
-          "rules": [
-            "subject_to_source_tax"
-          ],
-          "source_refs": [
-            "F-TR-005",
-            "F-TR-006",
-            "F-TR-007",
-            "F-TR-008",
-            "F-TR-025",
-            "F-TR-029",
-            "F-TR-030",
-            "F-TR-034",
-            "F-TR-036",
-            "F-TR-037",
-            "F-TR-040",
-            "G-05"
-          ],
-          "status": "inferred"
-        }
-      ],
-      "items": [
-        "nationality",
-        "permit_type",
-        "spouse_nationality",
-        "spouse_permit_type",
-        "spouse_residence_country"
-      ],
-      "rules": [
-        "subject_to_source_tax"
-      ],
-      "open_questions": [
-        "OQ-01",
-        "OQ-05",
-        "OQ-06",
-        "OQ-07",
-        "OQ-08"
-      ],
-      "source_refs": [
-        "F-TR-005",
-        "F-TR-006",
-        "F-TR-007",
-        "F-TR-008",
-        "F-TR-025",
-        "F-TR-028",
-        "F-TR-029",
-        "F-TR-030",
-        "F-TR-031",
-        "F-TR-032",
-        "F-TR-033",
-        "F-TR-034",
-        "F-TR-036",
-        "F-TR-037",
-        "F-TR-038",
-        "F-TR-039",
-        "F-TR-040",
-        "G-01",
-        "G-05"
-      ]
-    }
-  ]
+  "feature": {
+    "id": "employee-onboarding",
+    "title": "Employee onboarding questionnaire",
+    "goal": "Define what Lonio asks a new employee during onboarding: which information, in which steps and order, and under which conditions - asking each piece of information once and reusing it for every receiving party.",
+    "context": "HR calls the first working day the most important item. It often changes, so HR asks the employee to confirm it (F-TR-014, F-TR-015). The pension fund requires an insurance start date that is always the 1st of a month (F-SC-008, F-SC-009). HR works it out by hand: if the first working day is the 1st of a month, insurance starts that day, otherwise on the 1st of the following month (F-TR-016, F-TR-017, F-TR-018). Once, an outdated first working day led to a wrong insurance start date at the fund (F-TR-019). Employees cannot know the insurance start date, so Lonio asks only for the primary fact and derives the date (G-08). The employee is not asked for the insurance start date (EX-05).\n\nHR posts many documents to employees and needs the complete address as written on an envelope: street, number, postcode, town and country, with no extra parts (F-TR-009, F-TR-010). The country of the home address is also the employee's country of residence (F-TR-040, G-09). Several later questions depend on it. Employees living abroad are always subject to source tax (F-TR-034, F-TR-037), and the pension fund canton is asked only of employees living in Switzerland. This feature therefore comes before the pension and source tax features that depend on it.\n\nThe pension fund portal requires first name, last name, date of birth, canton and civil status for every employee (F-SC-002 to F-SC-007, F-SC-010, F-SC-015). For married employees it also requires the spouse's date of birth and blocks the registration without it (F-TR-021, F-SC-012 to F-SC-014, F-SC-016). The civil status list shows only Single, Married, Divorced and Widowed (F-SC-011, G-07). HR's recollection of civil status matches the fund's list (F-TR-020, F-TR-022). Civil status is also an input for the source tax rule and the calculator (F-TR-029, F-TR-030). The fund offers only Swiss cantons and does not say whether it means the canton of residence or of work. Until the fund answers (OQ-02), the canton is asked only of employees living in Switzerland. It depends on address_country from FEAT-02. Registered partnerships, and portal behaviour for Divorced or Widowed, are still open.\n\nHR decides by hand whether an employee is subject to source tax. Employees living abroad always are. Swiss nationals and C permit holders living in Switzerland are not. Other foreigners living in Switzerland are not subject if married to a spouse who is Swiss or holds a C permit and lives in Switzerland (F-TR-005, F-TR-006, F-TR-025, F-TR-030, F-TR-034, F-TR-037). Data minimisation means each of these questions is asked only when its answer can change the outcome (G-01). The rule uses address_country (FEAT-02) and civil_status (FEAT-03). The tariff questions of the Zurich calculator have not been analysed yet (OQ-01, blocking). Until they are, this feature delivers the subject or not-subject decision that gates them. HR is not sure the rule is complete (OQ-05). The permit list is undefined (OQ-06). HR wished for a permit reminder because half of new employees forget to bring it (F-TR-028, OQ-07). Using the Zurich calculator for every employee is an agreed simplification (F-TR-008, G-05, OQ-08).",
+    "stakeholders": [
+      "employee",
+      "hr",
+      "pension_fund",
+      "source_tax"
+    ],
+    "sections": [
+      {
+        "id": "SEC-01-first-working-day-insurance-start",
+        "order": 1,
+        "title": "Confirmed first working day and derived pension insurance start date",
+        "purpose": "Every new employee confirms their first working day, and Lonio works out the pension insurance start date from it, so the fund never gets a wrong or outdated start date.",
+        "stories": [
+          {
+            "id": "US-01.1",
+            "title": "Employee confirms their first working day",
+            "as_a": "hr",
+            "i_want": "every new employee to confirm their first working day themselves during onboarding",
+            "so_that": "I always work with the latest agreed start date, even when it moved after the contract was signed, and can register the employee with the pension fund correctly",
+            "priority": "P1",
+            "priority_reason": "HR calls it 'the number one thing'; it changes often, and an outdated date once caused a wrong registration at the pension fund, an unfriendly letter and weeks of fixing (F-TR-014, F-TR-019).",
+            "acceptance_criteria": [
+              {
+                "id": "AC-01.1.1",
+                "title": "First working day is asked of every employee and is required",
+                "given": "a new employee is going through onboarding",
+                "when": "they reach the employment details",
+                "then": "they are asked to confirm their first working day at Muster AG, whatever their other answers, and cannot finish onboarding without giving it",
+                "examples": [
+                  {
+                    "name": "Julia (F-TR-019)",
+                    "given": [
+                      {
+                        "item": "first_working_day",
+                        "value": "15.03.2026"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "first_working_day",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "first_working_day",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-019"
+                    ],
+                    "illustrative": false
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-014"
+                ]
+              },
+              {
+                "id": "AC-01.1.2",
+                "title": "Employee gives the date as actually agreed, as a calendar date",
+                "given": "the employee's start date may have moved since the contract was signed (e.g. they left their old employer a week earlier)",
+                "when": "the employee answers the first working day question",
+                "then": "they give the start date as currently agreed with Muster AG, as a full date in the form DD.MM.YYYY, so it reflects the latest confirmed first working day",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-014",
+                  "F-TR-015",
+                  "G-10"
+                ]
+              },
+              {
+                "id": "AC-01.1.3",
+                "title": "First working day is available to HR and the pension fund",
+                "given": "the employee has confirmed their first working day",
+                "when": "onboarding data is handed on to the receiving parties",
+                "then": "HR receives the confirmed first working day, and it is the basis for the insurance start date the pension fund needs",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-014",
+                  "F-SC-008",
+                  "G-04"
+                ]
+              }
+            ],
+            "items": [
+              "first_working_day"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-TR-014",
+              "F-TR-015",
+              "F-TR-019",
+              "G-01"
+            ],
+            "status": "confirmed"
+          },
+          {
+            "id": "US-01.2",
+            "title": "Insurance start date is derived from the confirmed first working day",
+            "as_a": "pension_fund",
+            "i_want": "to receive an insurance start date that is the 1st of a month and follows from the employee's latest confirmed first working day",
+            "so_that": "the employee is insured from the correct date and registrations do not need weeks of correction",
+            "priority": "P1",
+            "priority_reason": "The insurance start date is required for registration (F-SC-008); a wrong date already caused an incident with an unfriendly letter and weeks of fixing (F-TR-019).",
+            "acceptance_criteria": [
+              {
+                "id": "AC-01.2.1",
+                "title": "Employee is not asked for the insurance start date",
+                "given": "a new employee is going through onboarding",
+                "when": "they answer the questionnaire",
+                "then": "they are never asked for an insurance start date; Lonio works it out from the confirmed first working day",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-018",
+                  "G-08"
+                ]
+              },
+              {
+                "id": "AC-01.2.2",
+                "title": "First working day on the 1st of a month: insurance starts that day",
+                "given": "the confirmed first working day is the 1st of a month",
+                "when": "Lonio derives the insurance start date",
+                "then": "the insurance start date is the same day as the first working day",
+                "examples": [
+                  {
+                    "name": "Starts on the 1st of a month",
+                    "given": [
+                      {
+                        "item": "first_working_day",
+                        "value": "01.04.2026"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "insurance_start_date",
+                        "expect": "01.04.2026"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-017"
+                    ],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Starts on 1st January",
+                    "given": [
+                      {
+                        "item": "first_working_day",
+                        "value": "01.01.2027"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "insurance_start_date",
+                        "expect": "01.01.2027"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-017"
+                    ],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-017",
+                  "F-TR-018"
+                ]
+              },
+              {
+                "id": "AC-01.2.3",
+                "title": "First working day not on the 1st: insurance starts on the 1st of the following month",
+                "given": "the confirmed first working day is any day other than the 1st of a month",
+                "when": "Lonio derives the insurance start date",
+                "then": "the insurance start date is the 1st of the month after the first working day, also across a year end",
+                "examples": [
+                  {
+                    "name": "Julia (F-TR-019)",
+                    "given": [
+                      {
+                        "item": "first_working_day",
+                        "value": "15.03.2026"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "insurance_start_date",
+                        "expect": "01.04.2026"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-016",
+                      "F-TR-019"
+                    ],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "Starts on the 2nd of a month",
+                    "given": [
+                      {
+                        "item": "first_working_day",
+                        "value": "02.03.2026"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "insurance_start_date",
+                        "expect": "01.04.2026"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-016"
+                    ],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Starts on the last day of a month",
+                    "given": [
+                      {
+                        "item": "first_working_day",
+                        "value": "31.01.2026"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "insurance_start_date",
+                        "expect": "01.02.2026"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-016"
+                    ],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Starts in December (year end)",
+                    "given": [
+                      {
+                        "item": "first_working_day",
+                        "value": "15.12.2026"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "insurance_start_date",
+                        "expect": "01.01.2027"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-016"
+                    ],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-016",
+                  "F-TR-018"
+                ]
+              },
+              {
+                "id": "AC-01.2.4",
+                "title": "Insurance start date follows the latest confirmed first working day",
+                "given": "the employee's first working day has moved and the employee confirmed the new date",
+                "when": "Lonio derives the insurance start date",
+                "then": "the insurance start date is based on the newly confirmed first working day, never on an earlier, outdated one",
+                "examples": [
+                  {
+                    "name": "Julia moved her start to 15 March (F-TR-019)",
+                    "given": [
+                      {
+                        "item": "first_working_day",
+                        "value": "15.03.2026"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "insurance_start_date",
+                        "expect": "01.04.2026"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-019"
+                    ],
+                    "illustrative": false
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-015",
+                  "F-TR-019"
+                ]
+              },
+              {
+                "id": "AC-01.2.5",
+                "title": "Insurance start date meets the fund's requirements",
+                "given": "an insurance start date has been derived",
+                "when": "it is made available for the pension fund registration",
+                "then": "it is always the 1st of a month and is given as DD.MM.YYYY, as the fund requires",
+                "examples": [],
+                "source_refs": [
+                  "F-SC-008",
+                  "F-SC-009"
+                ]
+              }
+            ],
+            "items": [
+              "first_working_day"
+            ],
+            "rules": [
+              "insurance_start_date"
+            ],
+            "source_refs": [
+              "F-TR-016",
+              "F-TR-017",
+              "F-TR-018",
+              "F-TR-019",
+              "F-SC-008",
+              "F-SC-009",
+              "G-08"
+            ],
+            "status": "confirmed"
+          }
+        ],
+        "items": [
+          "first_working_day"
+        ],
+        "rules": [
+          "insurance_start_date"
+        ],
+        "open_questions": [],
+        "source_refs": [
+          "F-TR-014",
+          "F-TR-015",
+          "F-TR-016",
+          "F-TR-017",
+          "F-TR-018",
+          "F-TR-019",
+          "F-SC-008",
+          "F-SC-009",
+          "G-08"
+        ]
+      },
+      {
+        "id": "SEC-02-home-address",
+        "order": 2,
+        "title": "Complete home address and country of residence",
+        "purpose": "Every new employee gives a complete postal address once, so HR can post documents, and its country tells the other steps whether the employee lives in Switzerland.",
+        "stories": [
+          {
+            "id": "US-02.1",
+            "title": "Complete postal address for HR mail",
+            "as_a": "hr",
+            "i_want": "every new employee to give their complete home address (street, house number, postcode, town and country) as it would be written on an envelope",
+            "so_that": "I can post documents to the employee without chasing missing address parts",
+            "priority": "P1",
+            "priority_reason": "HR posts many documents to employees and states the address 'has to be complete'; an incomplete address blocks HR's postal communication (F-TR-010).",
+            "acceptance_criteria": [
+              {
+                "id": "AC-02.1.1",
+                "title": "All address parts are always asked and required",
+                "given": "a new employee is filling in the onboarding questionnaire",
+                "when": "they reach the home address step",
+                "then": "they are asked for street, house number, postcode, town and country of their home address, and cannot complete the step while any of these five parts is empty",
+                "examples": [
+                  {
+                    "name": "Employee living in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "address_street",
+                        "expect": "required"
+                      },
+                      {
+                        "target": "address_house_number",
+                        "expect": "required"
+                      },
+                      {
+                        "target": "address_postcode",
+                        "expect": "required"
+                      },
+                      {
+                        "target": "address_town",
+                        "expect": "required"
+                      },
+                      {
+                        "target": "address_country",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Employee living abroad",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Germany"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "address_street",
+                        "expect": "required"
+                      },
+                      {
+                        "target": "address_house_number",
+                        "expect": "required"
+                      },
+                      {
+                        "target": "address_postcode",
+                        "expect": "required"
+                      },
+                      {
+                        "target": "address_town",
+                        "expect": "required"
+                      },
+                      {
+                        "target": "address_country",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-009",
+                  "F-TR-010"
+                ]
+              },
+              {
+                "id": "AC-02.1.2",
+                "title": "Normal postal address with no extra parts",
+                "given": "a new employee is at the home address step",
+                "when": "they enter their address",
+                "then": "only the parts of a normal postal address as written on an envelope are asked (street, house number, postcode, town, country); no further address parts are asked",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-010"
+                ]
+              },
+              {
+                "id": "AC-02.1.3",
+                "title": "Address is asked once and received by HR",
+                "given": "a new employee has completed the home address step",
+                "when": "the onboarding data is made available to the receiving parties",
+                "then": "HR receives the complete home address, and the employee is not asked for the address again in any later step",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-009",
+                  "F-TR-010",
+                  "G-01"
+                ]
+              }
+            ],
+            "items": [
+              "address_street",
+              "address_house_number",
+              "address_postcode",
+              "address_town",
+              "address_country"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-TR-009",
+              "F-TR-010"
+            ],
+            "status": "confirmed"
+          },
+          {
+            "id": "US-02.2",
+            "title": "Country of home address as country of residence",
+            "as_a": "source_tax",
+            "i_want": "the country of the employee's home address to be used as their country of residence",
+            "so_that": "employees living abroad are recognised as subject to source tax and only the questions relevant to where the employee lives are asked later",
+            "priority": "P1",
+            "priority_reason": "Whether the employee lives in Switzerland decides source tax liability (F-TR-034, F-TR-037) and which later questions are asked; without it later steps cannot be determined.",
+            "acceptance_criteria": [
+              {
+                "id": "AC-02.2.1",
+                "title": "Country of residence is not asked separately",
+                "given": "a new employee has given the country of their home address",
+                "when": "a later step needs to know whether the employee lives in Switzerland",
+                "then": "the country of the home address is used as the country of residence and the employee is not asked a separate question about where they live",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-040",
+                  "G-09",
+                  "G-01"
+                ]
+              },
+              {
+                "id": "AC-02.2.2",
+                "title": "Employees living abroad are subject to source tax whatever their nationality",
+                "given": "a new employee's home address is outside Switzerland",
+                "when": "the questionnaire determines the following steps",
+                "then": "the employee is treated as subject to source tax, is not asked their nationality or the pension fund canton, and source tax and HR receive the country of residence",
+                "examples": [
+                  {
+                    "name": "Stefan, Swiss, lives in Konstanz (F-TR-034)",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Germany"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "nationality",
+                        "expect": "not asked"
+                      },
+                      {
+                        "target": "residence_canton",
+                        "expect": "not asked"
+                      },
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "yes"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-034"
+                    ],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "Employee living in Liechtenstein",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Liechtenstein"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "nationality",
+                        "expect": "not asked"
+                      },
+                      {
+                        "target": "residence_canton",
+                        "expect": "not asked"
+                      },
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "yes"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-034",
+                  "F-TR-037",
+                  "F-TR-040"
+                ]
+              },
+              {
+                "id": "AC-02.2.3",
+                "title": "Employees living in Switzerland continue to nationality and canton",
+                "given": "a new employee's home address is in Switzerland",
+                "when": "the questionnaire determines the following steps",
+                "then": "the employee is asked their nationality and the pension fund canton, which decide the later source tax and pension steps",
+                "examples": [
+                  {
+                    "name": "Employee living in Winterthur",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "nationality",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "residence_canton",
+                        "expect": "asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-037",
+                  "F-TR-040"
+                ]
+              },
+              {
+                "id": "AC-02.2.4",
+                "title": "Address comes before dependent steps",
+                "given": "a new employee starts the onboarding questionnaire",
+                "when": "the steps are presented",
+                "then": "the home address step comes before the pension and source tax steps that depend on the country of residence; the additional source tax questions for employees living abroad are defined by the Zurich calculator and remain open (OQ-01)",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-036",
+                  "F-TR-040"
+                ]
+              }
+            ],
+            "items": [
+              "address_country"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-TR-034",
+              "F-TR-036",
+              "F-TR-037",
+              "F-TR-040",
+              "G-09"
+            ],
+            "status": "inferred"
+          }
+        ],
+        "items": [
+          "address_street",
+          "address_house_number",
+          "address_postcode",
+          "address_town",
+          "address_country"
+        ],
+        "rules": [],
+        "open_questions": [],
+        "source_refs": [
+          "F-TR-009",
+          "F-TR-010",
+          "F-TR-034",
+          "F-TR-036",
+          "F-TR-037",
+          "F-TR-040",
+          "G-09"
+        ]
+      },
+      {
+        "id": "SEC-03-pension-fund-registration-data",
+        "order": 3,
+        "title": "Personal and family details for pension fund registration",
+        "purpose": "Lonio collects every field Pensionskasse Muster requires, including the spouse's date of birth for married employees, so that a registration is never blocked by missing data.",
+        "stories": [
+          {
+            "id": "US-03.1",
+            "title": "Name and date of birth for the pension fund",
+            "as_a": "pension_fund",
+            "i_want": "to receive the new employee's first name, last name and date of birth",
+            "so_that": "I can register the employee for occupational pension without the registration being rejected for missing required fields",
+            "priority": "P1",
+            "priority_reason": "These are required fields of the pension fund registration; if any is missing, the portal rejects the registration and highlights the field (F-SC-015), which blocks the registration.",
+            "acceptance_criteria": [
+              {
+                "id": "AC-03.1.1",
+                "title": "First and last name are always asked and required",
+                "given": "a new employee is filling in the onboarding questionnaire",
+                "when": "they reach the personal details",
+                "then": "they are asked for their first name and their last name; neither can be left empty, and both are made available for the pension fund registration.",
+                "examples": [],
+                "source_refs": [
+                  "F-SC-002",
+                  "F-SC-003",
+                  "F-SC-015"
+                ]
+              },
+              {
+                "id": "AC-03.1.2",
+                "title": "Date of birth is always asked and required as a date",
+                "given": "a new employee is filling in the onboarding questionnaire",
+                "when": "they reach the personal details",
+                "then": "they are asked for their date of birth as a day, month and year (shown as DD.MM.YYYY, e.g. 14.02.1990); it cannot be left empty and is made available for the pension fund registration.",
+                "examples": [],
+                "source_refs": [
+                  "F-SC-004",
+                  "F-SC-005",
+                  "F-SC-015"
+                ]
+              },
+              {
+                "id": "AC-03.1.3",
+                "title": "Each detail is asked only once",
+                "given": "the employee has given their name and date of birth",
+                "when": "another part of the onboarding or another receiving party needs the same detail",
+                "then": "the employee is not asked for it again; the earlier answer is reused.",
+                "examples": [],
+                "source_refs": [
+                  "G-01"
+                ]
+              }
+            ],
+            "items": [
+              "first_name",
+              "last_name",
+              "date_of_birth"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-SC-002",
+              "F-SC-003",
+              "F-SC-004",
+              "F-SC-005",
+              "F-SC-015",
+              "G-01"
+            ],
+            "status": "confirmed"
+          },
+          {
+            "id": "US-03.2",
+            "title": "Civil status from the pension fund's list",
+            "as_a": "pension_fund",
+            "i_want": "to receive the employee's civil status as one of the values my registration accepts",
+            "so_that": "I can register the employee and know whether spouse details apply",
+            "priority": "P1",
+            "priority_reason": "Civil status is a required pension fund field; without it the registration is blocked (F-SC-010, F-SC-015). It is also an input for source tax (F-TR-029, F-TR-030).",
+            "acceptance_criteria": [
+              {
+                "id": "AC-03.2.1",
+                "title": "Civil status is always asked and required",
+                "given": "a new employee is filling in the onboarding questionnaire",
+                "when": "they reach the family details",
+                "then": "they are asked for their civil status; it cannot be left empty and is made available for the pension fund registration.",
+                "examples": [],
+                "source_refs": [
+                  "F-SC-010",
+                  "F-SC-015",
+                  "F-TR-020"
+                ]
+              },
+              {
+                "id": "AC-03.2.2",
+                "title": "Only the pension fund's civil status values are offered",
+                "given": "the employee is asked for their civil status",
+                "when": "they choose an answer",
+                "then": "they can choose exactly one of: Single, Married, Divorced, Widowed, as the pension fund lists them; no other values are offered. How employees in a registered partnership or another status (e.g. separated) answer is open (OQ-03).",
+                "examples": [],
+                "source_refs": [
+                  "F-SC-011",
+                  "F-TR-022",
+                  "G-07",
+                  "F-TR-023",
+                  "F-TR-024",
+                  "F-SC-018"
+                ]
+              },
+              {
+                "id": "AC-03.2.3",
+                "title": "Civil status is reused for source tax and HR",
+                "given": "the employee has given their civil status",
+                "when": "the source tax decision or the source tax questions need it",
+                "then": "the same answer is reused and the employee is not asked again.",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-029",
+                  "F-TR-030",
+                  "G-01"
+                ]
+              }
+            ],
+            "items": [
+              "civil_status"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-SC-010",
+              "F-SC-011",
+              "F-SC-015",
+              "F-SC-018",
+              "F-TR-020",
+              "F-TR-022",
+              "F-TR-023",
+              "F-TR-024",
+              "F-TR-029",
+              "F-TR-030",
+              "G-07"
+            ],
+            "status": "confirmed"
+          },
+          {
+            "id": "US-03.3",
+            "title": "Spouse's date of birth for married employees",
+            "as_a": "pension_fund",
+            "i_want": "to receive the spouse's date of birth for every married employee, and only for them",
+            "so_that": "the registration of married employees is not blocked and no spouse data is collected without need",
+            "priority": "P1",
+            "priority_reason": "The portal blocks the registration of a married employee without the spouse's date of birth (F-SC-016).",
+            "acceptance_criteria": [
+              {
+                "id": "AC-03.3.1",
+                "title": "Spouse's date of birth is asked and required only for married employees",
+                "given": "the employee has given their civil status",
+                "when": "the civil status is Married",
+                "then": "the employee is asked for their husband's or wife's date of birth (DD.MM.YYYY), cannot leave it empty, and it is made available for the pension fund registration; for any other civil status it is not asked. Whether the fund needs spouse data for Divorced or Widowed is open (OQ-04).",
+                "examples": [
+                  {
+                    "name": "Tomás, married, wife lives with him in Winterthur (F-TR-030)",
+                    "given": [
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_date_of_birth",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "spouse_date_of_birth",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-030",
+                      "F-SC-016"
+                    ],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "Single employee",
+                    "given": [
+                      {
+                        "item": "civil_status",
+                        "value": "Single"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_date_of_birth",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-SC-014"
+                    ],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Divorced employee",
+                    "given": [
+                      {
+                        "item": "civil_status",
+                        "value": "Divorced"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_date_of_birth",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-SC-014",
+                      "F-SC-018"
+                    ],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Widowed employee",
+                    "given": [
+                      {
+                        "item": "civil_status",
+                        "value": "Widowed"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_date_of_birth",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-SC-014",
+                      "F-SC-018"
+                    ],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-021",
+                  "F-SC-012",
+                  "F-SC-013",
+                  "F-SC-014",
+                  "F-SC-016",
+                  "F-SC-018",
+                  "G-01"
+                ]
+              }
+            ],
+            "items": [
+              "spouse_date_of_birth"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-TR-021",
+              "F-SC-012",
+              "F-SC-013",
+              "F-SC-014",
+              "F-SC-016",
+              "F-SC-018",
+              "G-01"
+            ],
+            "status": "confirmed"
+          },
+          {
+            "id": "US-03.4",
+            "title": "Canton for employees living in Switzerland",
+            "as_a": "pension_fund",
+            "i_want": "to receive a Swiss canton for the employee",
+            "so_that": "I can complete the required canton field of the registration",
+            "priority": "P1",
+            "priority_reason": "Canton is a required pension fund field; without it the registration is blocked (F-SC-006, F-SC-015).",
+            "acceptance_criteria": [
+              {
+                "id": "AC-03.4.1",
+                "title": "Canton is asked and required only of employees living in Switzerland",
+                "given": "the employee has given the country of their home address",
+                "when": "the country is Switzerland",
+                "then": "the employee is asked for their canton, cannot leave it empty, and it is made available for the pension fund registration; employees living outside Switzerland are not asked, until the fund clarifies whether it means the canton of residence or of work and what applies to employees living abroad (OQ-02).",
+                "examples": [
+                  {
+                    "name": "Tomás, lives in Winterthur (F-TR-030)",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "residence_canton",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "residence_canton",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-TR-030",
+                      "F-SC-006"
+                    ],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "Cross-border employee living in Germany",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Germany"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "residence_canton",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-SC-017"
+                    ],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Employee living in Liechtenstein",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Liechtenstein"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "residence_canton",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [
+                      "F-SC-017"
+                    ],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-SC-006",
+                  "F-SC-015",
+                  "F-SC-017",
+                  "G-01"
+                ]
+              },
+              {
+                "id": "AC-03.4.2",
+                "title": "Only the fund's Swiss cantons are offered",
+                "given": "the employee is asked for their canton",
+                "when": "they choose an answer",
+                "then": "they can choose exactly one of the 26 cantons the pension fund lists: Aargau, Appenzell Ausserrhoden, Appenzell Innerrhoden, Basel-Landschaft, Basel-Stadt, Bern, Fribourg, Geneva, Glarus, Graubünden, Jura, Lucerne, Neuchâtel, Nidwalden, Obwalden, Schaffhausen, Schwyz, Solothurn, St. Gallen, Thurgau, Ticino, Uri, Valais, Vaud, Zug, Zurich.",
+                "examples": [],
+                "source_refs": [
+                  "F-SC-007",
+                  "G-07"
+                ]
+              }
+            ],
+            "items": [
+              "residence_canton"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-SC-006",
+              "F-SC-007",
+              "F-SC-015",
+              "F-SC-017",
+              "G-01",
+              "G-07"
+            ],
+            "status": "inferred"
+          }
+        ],
+        "items": [
+          "first_name",
+          "last_name",
+          "date_of_birth",
+          "civil_status",
+          "spouse_date_of_birth",
+          "residence_canton"
+        ],
+        "rules": [],
+        "open_questions": [
+          "OQ-02",
+          "OQ-03",
+          "OQ-04"
+        ],
+        "source_refs": [
+          "F-SC-002",
+          "F-SC-003",
+          "F-SC-004",
+          "F-SC-005",
+          "F-SC-006",
+          "F-SC-007",
+          "F-SC-010",
+          "F-SC-011",
+          "F-SC-012",
+          "F-SC-013",
+          "F-SC-014",
+          "F-SC-015",
+          "F-SC-016",
+          "F-SC-017",
+          "F-SC-018",
+          "F-TR-020",
+          "F-TR-021",
+          "F-TR-022",
+          "F-TR-023",
+          "F-TR-024",
+          "G-07"
+        ]
+      },
+      {
+        "id": "SEC-04-source-tax-liability",
+        "order": 4,
+        "title": "Decide whether the employee is subject to source tax",
+        "purpose": "Lonio asks only the questions needed to decide whether an employee is subject to source tax, so that only those employees get the source tax questions and nobody gives nationality, permit or spouse data that is not needed.",
+        "stories": [
+          {
+            "id": "US-04.1",
+            "title": "Ask nationality only of employees living in Switzerland",
+            "as_a": "employee",
+            "i_want": "to be asked my nationality only when it matters for whether I pay source tax",
+            "so_that": "HR can tell whether I am Swiss without me giving my nationality when it changes nothing",
+            "priority": "P1",
+            "priority_reason": "Without nationality HR cannot tell Swiss employees from other employees living in Switzerland. Today Swiss employees get the source tax questions, get annoyed and call HR (F-TR-005).",
+            "acceptance_criteria": [
+              {
+                "id": "AC-04.1.1",
+                "title": "Nationality is asked and required for employees living in Switzerland",
+                "given": "the country of the employee's home address is Switzerland",
+                "when": "the employee fills in the questionnaire",
+                "then": "Lonio asks for the employee's nationality, the employee must answer it, and HR uses it to decide whether the employee is subject to source tax.",
+                "examples": [
+                  {
+                    "name": "Tomás (F-TR-030), lives in Winterthur",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "nationality",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "nationality",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": false
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-006",
+                  "F-TR-037",
+                  "F-TR-038",
+                  "F-TR-040"
+                ]
+              },
+              {
+                "id": "AC-04.1.2",
+                "title": "Nationality is not asked of employees living abroad",
+                "given": "the country of the employee's home address is not Switzerland",
+                "when": "the employee fills in the questionnaire",
+                "then": "Lonio does not ask for the employee's nationality, because employees living abroad are subject to source tax whatever their nationality. Whether the Zurich calculator needs it after all is open (OQ-01).",
+                "examples": [
+                  {
+                    "name": "Stefan (F-TR-034), Swiss, lives in Konstanz",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Germany"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "nationality",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "Employee living in Liechtenstein",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Liechtenstein"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "nationality",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-034",
+                  "F-TR-037",
+                  "G-01"
+                ]
+              }
+            ],
+            "items": [
+              "nationality"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-TR-005",
+              "F-TR-006",
+              "F-TR-034",
+              "F-TR-037",
+              "F-TR-038",
+              "F-TR-040",
+              "G-01"
+            ],
+            "status": "inferred"
+          },
+          {
+            "id": "US-04.2",
+            "title": "Ask the permit type only of non-Swiss employees living in Switzerland",
+            "as_a": "employee",
+            "i_want": "to be asked about my residence permit only if I live in Switzerland and am not Swiss",
+            "so_that": "HR can see whether I hold a C permit and, if I do, treat me like a Swiss national for source tax",
+            "priority": "P1",
+            "priority_reason": "C permit holders are not subject to source tax (F-TR-025). Without the permit type they would be asked the source tax questions for no reason (F-TR-005).",
+            "acceptance_criteria": [
+              {
+                "id": "AC-04.2.1",
+                "title": "Permit type is asked and required for non-Swiss employees living in Switzerland",
+                "given": "the employee lives in Switzerland and their nationality is not Swiss",
+                "when": "the employee fills in the questionnaire",
+                "then": "Lonio asks which Swiss residence permit the employee holds, the employee must answer it, and HR uses it to decide whether the employee is subject to source tax.",
+                "examples": [
+                  {
+                    "name": "Tomás (F-TR-030), Brazilian living in Winterthur",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "permit_type",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "permit_type",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "Maria (F-TR-025), Portuguese, assumed to live in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Portugal"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "permit_type",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "permit_type",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-025",
+                  "F-TR-037",
+                  "F-TR-039"
+                ]
+              },
+              {
+                "id": "AC-04.2.2",
+                "title": "Permit type is not asked of Swiss employees or employees living abroad",
+                "given": "the employee is Swiss, or lives outside Switzerland",
+                "when": "the employee fills in the questionnaire",
+                "then": "Lonio does not ask for a permit type, because the answer cannot change the source tax decision.",
+                "examples": [
+                  {
+                    "name": "Swiss employee living in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "permit_type",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Stefan (F-TR-034), lives in Konstanz",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Germany"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "permit_type",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": false
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-034",
+                  "F-TR-037",
+                  "G-01"
+                ]
+              },
+              {
+                "id": "AC-04.2.3",
+                "title": "Permit choices and permit reminder are still open",
+                "given": "the sources name only the B permit and the C permit",
+                "when": "the permit question is shown to the employee",
+                "then": "the answers include at least \"B permit\" and \"C permit\". The full list of permit types is still open (OQ-06). For the source tax decision, only C permit versus any other answer matters. HR wants the questionnaire to remind employees to bring their permit, but whether to add the reminder and its wording are still open (OQ-07).",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-025",
+                  "F-TR-028",
+                  "F-TR-039"
+                ]
+              }
+            ],
+            "items": [
+              "permit_type"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-TR-025",
+              "F-TR-028",
+              "F-TR-037",
+              "F-TR-039",
+              "G-01"
+            ],
+            "status": "inferred"
+          },
+          {
+            "id": "US-04.3",
+            "title": "Ask spouse details only when they can exempt the employee",
+            "as_a": "hr",
+            "i_want": "Lonio to collect the spouse's nationality, permit and country of residence only from married employees whose own status would otherwise make them subject to source tax",
+            "so_that": "I no longer have to check the spouse case by hand and collect spouse details by email",
+            "priority": "P1",
+            "priority_reason": "Today HR checks this case by hand and collects the details by email, which 'takes forever' (F-TR-033). Without the spouse details, employees like Tomás are wrongly treated as subject to source tax.",
+            "acceptance_criteria": [
+              {
+                "id": "AC-04.3.1",
+                "title": "Spouse's nationality is asked only when the spouse can change the outcome",
+                "given": "the employee is married, lives in Switzerland, is not Swiss and does not hold a C permit",
+                "when": "the employee fills in the questionnaire",
+                "then": "Lonio asks for the spouse's nationality and the employee must answer it. Lonio does not ask it of any other employee, including employees who are married but Swiss, hold a C permit or live abroad. HR uses the answer for the source tax decision.",
+                "examples": [
+                  {
+                    "name": "Tomás (F-TR-030), Brazilian, B permit, married",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_nationality",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "spouse_nationality",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "Single B permit holder in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Italy"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Single"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_nationality",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Married C permit holder in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Portugal"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "C permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_nationality",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Married Swiss employee in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_nationality",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Married employee living abroad",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Germany"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_nationality",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-030",
+                  "F-TR-031",
+                  "F-TR-032",
+                  "G-01"
+                ]
+              },
+              {
+                "id": "AC-04.3.2",
+                "title": "Spouse's permit type is asked only for a non-Swiss spouse and may be left empty",
+                "given": "the spouse's nationality is needed (AC-04.3.1) and the spouse is not Swiss",
+                "when": "the employee fills in the questionnaire",
+                "then": "Lonio asks for the spouse's Swiss residence permit, if they have one. The employee may leave it empty if the spouse has no permit. Lonio does not ask it if the spouse is Swiss. The list of permit types is open (OQ-06).",
+                "examples": [
+                  {
+                    "name": "Tomás (F-TR-030), wife is Swiss",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      },
+                      {
+                        "item": "spouse_nationality",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_permit_type",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "B permit holder with an Italian spouse",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      },
+                      {
+                        "item": "spouse_nationality",
+                        "value": "Italy"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_permit_type",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "spouse_permit_type",
+                        "expect": "optional"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-031",
+                  "F-TR-032",
+                  "G-01"
+                ]
+              },
+              {
+                "id": "AC-04.3.3",
+                "title": "Spouse's country of residence is asked only if the spouse is Swiss or holds a C permit",
+                "given": "the spouse's nationality is needed (AC-04.3.1)",
+                "when": "the spouse is Swiss or holds a C permit",
+                "then": "Lonio asks where the spouse lives and the employee must answer it. Lonio does not ask it if the spouse is neither Swiss nor a C permit holder, because then the spouse cannot exempt the employee.",
+                "examples": [
+                  {
+                    "name": "Tomás (F-TR-030), Swiss wife in Winterthur",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      },
+                      {
+                        "item": "spouse_nationality",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_residence_country",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "spouse_residence_country",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "Spouse is Italian with a C permit",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      },
+                      {
+                        "item": "spouse_nationality",
+                        "value": "Italy"
+                      },
+                      {
+                        "item": "spouse_permit_type",
+                        "value": "C permit"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_residence_country",
+                        "expect": "asked"
+                      },
+                      {
+                        "target": "spouse_residence_country",
+                        "expect": "required"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Spouse is Italian with a B permit",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      },
+                      {
+                        "item": "spouse_nationality",
+                        "value": "Italy"
+                      },
+                      {
+                        "item": "spouse_permit_type",
+                        "value": "B permit"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "spouse_residence_country",
+                        "expect": "not asked"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-030",
+                  "F-TR-031",
+                  "F-TR-032",
+                  "G-01"
+                ]
+              }
+            ],
+            "items": [
+              "spouse_nationality",
+              "spouse_permit_type",
+              "spouse_residence_country"
+            ],
+            "rules": [],
+            "source_refs": [
+              "F-TR-030",
+              "F-TR-031",
+              "F-TR-032",
+              "F-TR-033",
+              "F-TR-037",
+              "G-01"
+            ],
+            "status": "inferred"
+          },
+          {
+            "id": "US-04.4",
+            "title": "Decide whether the employee is subject to source tax",
+            "as_a": "hr",
+            "i_want": "Lonio to decide from the employee's answers whether they are subject to source tax",
+            "so_that": "I know up front who has to answer the source tax questions, and Swiss employees and other exempt employees are not bothered with them",
+            "priority": "P1",
+            "priority_reason": "HR never knows up front who has to answer the source tax questions, and Swiss employees get annoyed and call HR (F-TR-005). This decision controls whether the whole source tax step is asked.",
+            "acceptance_criteria": [
+              {
+                "id": "AC-04.4.1",
+                "title": "Employees living abroad are always subject",
+                "given": "the country of the employee's home address is not Switzerland",
+                "when": "Lonio decides on source tax",
+                "then": "the employee is subject to source tax, whatever their nationality.",
+                "examples": [
+                  {
+                    "name": "Stefan (F-TR-034), Swiss, lives in Konstanz",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Germany"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "yes"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": false
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-034",
+                  "F-TR-037",
+                  "F-TR-040"
+                ]
+              },
+              {
+                "id": "AC-04.4.2",
+                "title": "Swiss nationals and C permit holders living in Switzerland are not subject",
+                "given": "the employee lives in Switzerland",
+                "when": "the employee is Swiss or holds a C permit",
+                "then": "the employee is not subject to source tax. C permit holders are treated like Swiss nationals.",
+                "examples": [
+                  {
+                    "name": "Swiss employee living in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "no"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Maria (F-TR-025), Portuguese with a C permit, assumed to live in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Portugal"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "C permit"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "no"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-006",
+                  "F-TR-025",
+                  "F-TR-037"
+                ]
+              },
+              {
+                "id": "AC-04.4.3",
+                "title": "Spouse exemption for other foreigners living in Switzerland",
+                "given": "the employee lives in Switzerland, is not Swiss and does not hold a C permit",
+                "when": "Lonio decides on source tax",
+                "then": "the employee is not subject only if they are married to a spouse who is Swiss or holds a C permit and who lives in Switzerland. In every other case the employee is subject.",
+                "examples": [
+                  {
+                    "name": "Tomás (F-TR-030), Brazilian, B permit, Swiss wife in Winterthur",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      },
+                      {
+                        "item": "spouse_nationality",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "spouse_residence_country",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "no"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": false
+                  },
+                  {
+                    "name": "Spouse is Italian with a C permit and lives in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      },
+                      {
+                        "item": "spouse_nationality",
+                        "value": "Italy"
+                      },
+                      {
+                        "item": "spouse_permit_type",
+                        "value": "C permit"
+                      },
+                      {
+                        "item": "spouse_residence_country",
+                        "value": "Switzerland"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "no"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Swiss spouse lives in Germany",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      },
+                      {
+                        "item": "spouse_nationality",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "spouse_residence_country",
+                        "value": "Germany"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "yes"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Spouse is Italian with a B permit",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Brazil"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Married"
+                      },
+                      {
+                        "item": "spouse_nationality",
+                        "value": "Italy"
+                      },
+                      {
+                        "item": "spouse_permit_type",
+                        "value": "B permit"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "yes"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  },
+                  {
+                    "name": "Single B permit holder in Switzerland",
+                    "given": [
+                      {
+                        "item": "address_country",
+                        "value": "Switzerland"
+                      },
+                      {
+                        "item": "nationality",
+                        "value": "Italy"
+                      },
+                      {
+                        "item": "permit_type",
+                        "value": "B permit"
+                      },
+                      {
+                        "item": "civil_status",
+                        "value": "Single"
+                      }
+                    ],
+                    "then": [
+                      {
+                        "target": "subject_to_source_tax",
+                        "expect": "yes"
+                      }
+                    ],
+                    "source_refs": [],
+                    "illustrative": true
+                  }
+                ],
+                "source_refs": [
+                  "F-TR-025",
+                  "F-TR-030",
+                  "F-TR-037"
+                ]
+              },
+              {
+                "id": "AC-04.4.4",
+                "title": "Only employees subject to source tax get the source tax questions",
+                "given": "Lonio has decided whether the employee is subject to source tax",
+                "when": "the employee continues the questionnaire",
+                "then": "only employees who are subject are asked the source tax tariff questions; employees who are not subject are not asked them. The tariff questions themselves (including the different questions for married employees and the extra questions for employees living abroad) are not yet defined (OQ-01, blocking). For now, the Zurich calculator applies to every subject employee (OQ-08).",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-005",
+                  "F-TR-007",
+                  "F-TR-008",
+                  "F-TR-029",
+                  "F-TR-036",
+                  "G-05"
+                ]
+              },
+              {
+                "id": "AC-04.4.5",
+                "title": "Rule completeness to be confirmed by HR",
+                "given": "HR hedged on whether the rule is complete ('I think that's it')",
+                "when": "the decision rule is released",
+                "then": "HR has checked the decision rules against real cases (Stefan, Maria, Tomás). Any missing case is handled through OQ-05, not by inventing new rules.",
+                "examples": [],
+                "source_refs": [
+                  "F-TR-025",
+                  "F-TR-037"
+                ]
+              }
+            ],
+            "items": [],
+            "rules": [
+              "subject_to_source_tax"
+            ],
+            "source_refs": [
+              "F-TR-005",
+              "F-TR-006",
+              "F-TR-007",
+              "F-TR-008",
+              "F-TR-025",
+              "F-TR-029",
+              "F-TR-030",
+              "F-TR-034",
+              "F-TR-036",
+              "F-TR-037",
+              "F-TR-040",
+              "G-05"
+            ],
+            "status": "inferred"
+          }
+        ],
+        "items": [
+          "nationality",
+          "permit_type",
+          "spouse_nationality",
+          "spouse_permit_type",
+          "spouse_residence_country"
+        ],
+        "rules": [
+          "subject_to_source_tax"
+        ],
+        "open_questions": [
+          "OQ-01",
+          "OQ-05",
+          "OQ-06",
+          "OQ-07",
+          "OQ-08"
+        ],
+        "source_refs": [
+          "F-TR-005",
+          "F-TR-006",
+          "F-TR-007",
+          "F-TR-008",
+          "F-TR-025",
+          "F-TR-028",
+          "F-TR-029",
+          "F-TR-030",
+          "F-TR-031",
+          "F-TR-032",
+          "F-TR-033",
+          "F-TR-034",
+          "F-TR-036",
+          "F-TR-037",
+          "F-TR-038",
+          "F-TR-039",
+          "F-TR-040",
+          "G-01",
+          "G-05"
+        ]
+      }
+    ],
+    "source_refs": []
+  }
 }

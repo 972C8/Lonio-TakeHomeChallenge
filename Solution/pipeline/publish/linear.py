@@ -1,4 +1,4 @@
-"""Optional step 8: send the feature specs to Linear through the Linear MCP server.
+"""Optional step 8: send the feature spec to Linear through the Linear MCP server.
 
 Runs only when explicitly asked (`pipeline publish --team <key>`). The agent's
 instructions are in pipeline/agents/linear_publisher.md. Auth: a Linear API key
@@ -42,7 +42,7 @@ async def publish(problem: str, team: str, project: str | None, dry_run: bool) -
     report = await run_agent(
         f"publish_linear/{mode}", load_prompt(PIPELINE / "agents" / "linear_publisher.md"),
         f"Mode: {mode}\nTeam: {team}\nProject: {project or ctx.profile['title']}\n"
-        f"Feature specs folder: {req}\nPublish the feature specs as instructed.",
+        f"Spec folder: {req}\nPublish the feature spec as instructed.",
         PublishReport, model=ctx.model("default"), tools=["Read", "Glob", "mcp__linear__*"],
         mcp_servers={"linear": {"type": "http", "url": url, "headers": {"Authorization": f"Bearer {key}"}}},
         add_dirs=[req], max_turns=200)

@@ -4,13 +4,13 @@
      2 extract      per source, agent            -> build/<p>/extract/<src>.json    (Facts)
      3 verify       anchors (code) + fact judge  -> build/<p>/facts.json
      4 knowledge    agent                        -> build/<p>/knowledge.raw.json    (items, rules, open questions)
-     5 features     planner agent, then one writer agent per feature (parallel)
-                                                 -> build/<p>/features.plan.json, features/<id>.json
+     5 feature      planner agent (sections of the problem's ONE feature), then one writer agent
+                    per section (parallel)       -> build/<p>/feature.plan.json, sections/<id>.json
      6 decide       decisions.yaml (code)        -> build/<p>/spec.json
      7 check        checklist lint, examples executed against the knowledge model,
                     coverage, tech-leak scan, gold eval (code); trace judge (agent)
      8 render       templates (code)             -> requirements/<p>/
-     9 refinement   one dev-refinement agent per feature reads the rendered spec
+     9 refinement   a dev-refinement agent reads the rendered feature (feature.md)
     10 review       reviewer agent               -> build/<p>/review.md (verdict)
 
 Every LLM stage is cached by a fingerprint of its inputs. `--force <stage>`
@@ -32,7 +32,7 @@ from .engine import decisions as D
 from .engine.context import Context, sha
 from .engine.llm import COSTS, load_prompt, run_agent
 from .engine.paths import PIPELINE, REQUIREMENTS
-from .engine.schemas import Fact, Feature, FeaturePlan, Finding, KnowledgeModel, Spec, Unit
+from .engine.schemas import Fact, Feature, FeaturePlan, Finding, KnowledgeModel, Section, Spec, Unit
 from .render.render import TEMPLATES, render
 
 AGENTS = PIPELINE / "agents"
@@ -183,48 +183,54 @@ async def stage_knowledge(ctx, facts: list[Fact]) -> KnowledgeModel:
     return KnowledgeModel.model_validate(await ctx.stage("knowledge.raw", [payload, system], go))
 
 
-async def stage_features(ctx, km: KnowledgeModel, facts: list[Fact]) -> list[Feature]:
+async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
+    """One feature per problem: plan its sections, then one writer agent per section (parallel)."""
     pc = _profile_ctx(ctx)
-    constraints = ctx.profile.get("feature_constraints", "")
+    hints = ctx.profile.get("section_hints", "")
     plan_system = load_prompt(AGENTS / "feature_planner.md", **pc,
-                              plan_constraints=f"# Constraints from the problem profile\n{constraints}" if constraints else "")
+                              plan_constraints=f"# Hints from the problem profile\n{hints}" if hints else "")
     kmj = km.model_dump(exclude={"items": {"__all__": {"asked_when_expr", "required_when_expr", "depends_on"}},
                                  "rules": {"__all__": {"expression", "depends_on"}}})
     facts_by_id = {f.id: f for f in facts}
 
     async def plan():
-        return await run_agent("plan_features", plan_system,
+        return await run_agent("plan_feature", plan_system,
                                "Knowledge model (JSON):\n" + json.dumps(kmj, ensure_ascii=False, indent=1),
                                FeaturePlan, model=ctx.model("synthesize"), max_turns=6)
 
-    planned = FeaturePlan.model_validate(await ctx.stage("features.plan", [kmj, plan_system], plan)).features
+    planned = FeaturePlan.model_validate(await ctx.stage("feature.plan", [kmj, plan_system], plan))
     write_system = load_prompt(AGENTS / "feature_writer.md", **pc)
     full_km = km.model_dump(exclude={"items": {"__all__": {"depends_on"}}, "rules": {"__all__": {"depends_on"}}})
+    head = {"title": ctx.profile["title"], "goal": planned.goal, "context": planned.context,
+            "stakeholders": planned.stakeholders}
 
-    async def write(feat: Feature):
-        refs = set(feat.source_refs)
+    async def write(sec: Section):
+        refs = set(sec.source_refs)
         for i in km.items:
-            if i.id in feat.items:
+            if i.id in sec.items:
                 refs |= set(i.source_refs)
         for r in km.rules:
-            if r.id in feat.rules:
+            if r.id in sec.rules:
                 refs |= set(r.source_refs)
         cited = _fact_payload([facts_by_id[r] for r in sorted(refs) if r in facts_by_id])
-        prompt = ("Feature to write (JSON):\n" + feat.model_dump_json(indent=1) +
+        prompt = ("Feature (JSON; you write the stories of ONE section of it):\n" + json.dumps(head, ensure_ascii=False, indent=1) +
+                  "\n\nSection to write (JSON):\n" + sec.model_dump_json(indent=1) +
                   "\n\nFull knowledge model (JSON; *_expr/expression are the internal formalisation your examples are "
                   "checked against):\n" + json.dumps(full_km, ensure_ascii=False, indent=1) +
                   "\n\nCited facts (JSON):\n" + json.dumps(cited, ensure_ascii=False, indent=1) +
-                  "\n\nReturn this Feature with its stories written.")
+                  "\n\nReturn this Section with its stories written.")
 
         async def go():
-            return await run_agent(f"write_feature/{feat.id}", write_system, prompt, Feature,
+            return await run_agent(f"write_section/{sec.id}", write_system, prompt, Section,
                                    model=ctx.model("synthesize"), max_turns=6)
 
-        out = Feature.model_validate(await ctx.stage(f"features/{feat.id}", [prompt, write_system], go))
+        out = Section.model_validate(await ctx.stage(f"sections/{sec.id}", [prompt, write_system], go))
         # ownership and metadata stay as planned; the writer only adds stories
-        return feat.model_copy(update={"stories": out.stories})
+        return sec.model_copy(update={"stories": out.stories})
 
-    return list(await asyncio.gather(*[write(f) for f in sorted(planned, key=lambda f: f.order)]))
+    sections = list(await asyncio.gather(*[write(sec) for sec in sorted(planned.sections, key=lambda x: x.order)]))
+    return Feature(id=ctx.problem_id, title=ctx.profile["title"], goal=planned.goal, context=planned.context,
+                   stakeholders=planned.stakeholders, sections=sections)
 
 
 async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact]) -> tuple[dict, list[Finding]]:
@@ -240,10 +246,9 @@ async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact]) -> tuple[dict, l
              for i in spec.knowledge.items]
     items += [{"id": f"rule.{r.id}", "element": r.model_dump(exclude={"source_refs", "depends_on"}), "cited": cite(r.source_refs)}
               for r in spec.knowledge.rules]
-    for f in spec.features:
-        for s in f.stories:
-            refs = sorted(set(s.source_refs) | {r for ac in s.acceptance_criteria for r in ac.source_refs})
-            items.append({"id": f"story.{s.id}", "element": s.model_dump(exclude={"source_refs"}), "cited": cite(refs)})
+    for s in spec.stories():
+        refs = sorted(set(s.source_refs) | {r for ac in s.acceptance_criteria for r in ac.source_refs})
+        items.append({"id": f"story.{s.id}", "element": s.model_dump(exclude={"source_refs"}), "cited": cite(refs)})
     system = load_prompt(AGENTS / "requirement_judge.md")
 
     async def go():
@@ -260,22 +265,19 @@ async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact]) -> tuple[dict, l
 
 
 async def stage_dev_refinement(ctx, req_dir: Path, spec: Spec) -> tuple[dict, list[Finding]]:
+    """One engineer agent reads the rendered feature (feature.md + shared files) and reports what it would ask."""
     system = load_prompt(AGENTS / "dev_refinement.md")
+    path = req_dir / "feature.md"
 
-    async def one(f: Feature):
-        path = next((p for p in (req_dir / "features").glob(f"{f.id}*.md")), req_dir / "features")
+    async def go():
+        return await run_agent("dev_refinement", system,
+                               f"Feature file: {path}\nShared files are in: {req_dir}\nRead them, then answer.",
+                               RefinementReport, model=ctx.model("builder"), tools=["Read", "Glob", "Grep"],
+                               add_dirs=[req_dir], max_turns=60)
 
-        async def go():
-            return await run_agent(f"dev_refinement/{f.id}", system,
-                                   f"Feature file: {path}\nShared files are in: {req_dir}\nRead them, then answer.",
-                                   RefinementReport, model=ctx.model("builder"), tools=["Read", "Glob", "Grep"],
-                                   add_dirs=[req_dir], max_turns=40)
-        return await ctx.stage(f"dev_refinement/{f.id}", [path, req_dir / "information.md", system], go)
-
-    reps = await asyncio.gather(*[one(f) for f in spec.features])
-    merged = {"questions": [q for r in reps for q in r["questions"]],
-              "already_flagged": [q for r in reps for q in r.get("already_flagged", [])],
-              "tech_leaks": [t for r in reps for t in r.get("tech_leaks", [])]}
+    rep = await ctx.stage("dev_refinement", [path, req_dir / "information.md", req_dir / "open-questions.md", system], go)
+    merged = {"questions": rep["questions"], "already_flagged": rep.get("already_flagged", []),
+              "tech_leaks": rep.get("tech_leaks", [])}
     sev = {"blocker": "error", "major": "warning", "minor": "info"}
     F = [Finding(check="dev_refinement", severity=sev[q["severity"]], target=q["file"], message=q["question"])
          for q in merged["questions"]]
@@ -310,9 +312,9 @@ async def run(problem: str, force: set[str] | None = None, skip_llm_checks: bool
 
     ctx.log("[4] knowledge model")
     km = await stage_knowledge(ctx, facts)
-    ctx.log("[5] features and stories")
-    features = await stage_features(ctx, km, facts)
-    spec = Spec(knowledge=km, features=features)
+    ctx.log("[5] feature: sections and stories")
+    feature = await stage_feature(ctx, km, facts)
+    spec = Spec(knowledge=km, feature=feature)
 
     ctx.log("[6] apply decisions")
     spec, df = D.apply_to_spec(decisions, spec)
@@ -351,11 +353,11 @@ async def run(problem: str, force: set[str] | None = None, skip_llm_checks: bool
         refinement, rf = await stage_dev_refinement(ctx, req_dir, spec)
         findings += rf
 
-    stories = [s for f in spec.features for s in f.stories]
+    stories = spec.stories()
     report = {
         "problem": problem,
         "counts": {"units": len(units), "facts": len(facts), "items": len(km.items), "rules": len(km.rules),
-                   "features": len(spec.features), "stories": len(stories),
+                   "sections": len(spec.feature.sections), "stories": len(stories),
                    "acceptance_criteria": sum(len(s.acceptance_criteria) for s in stories),
                    "open_questions": len(km.open_questions), "exclusions": len(km.exclusions)},
         "findings": {sev: [f.model_dump() for f in findings if f.severity == sev] for sev in ("error", "warning", "info")},
@@ -387,9 +389,12 @@ def write_review_md(ctx: Context, r: dict, facts: list[Fact]) -> None:
         for i, f in enumerate(r["review"]["findings"], 1):
             L += [f"{i}. **{f['title']}** – {f['why']}  ", f"   Evidence: {f['evidence']}  ", f"   Action: {f['action']}"]
         L.append("")
+    else:
+        L += ["**Verdict: not available** – the LLM checks (trace judge, dev refinement, review) did not run for this "
+              "report. Run `pipeline run` for the full review.", ""]
     c = r["counts"]
     L += ["## Numbers", "", f"{c['units']} source units → {c['facts']} facts → {c['items']} information items, "
-          f"{c['rules']} business rules → {c['features']} features, {c['stories']} stories, "
+          f"{c['rules']} business rules → one feature with {c['sections']} sections, {c['stories']} stories, "
           f"{c['acceptance_criteria']} acceptance criteria; {c['open_questions']} open questions, {c['exclusions']} exclusions.", ""]
     if r["skipped_sources"]:
         L += [f"⚠ Sources without data (not explored / empty): {', '.join(r['skipped_sources'])}", ""]
@@ -407,10 +412,11 @@ def write_review_md(ctx: Context, r: dict, facts: list[Fact]) -> None:
     L += ["## Inferred items to confirm", ""] + [f"- {i}" for i in r["inferred_items"]] + \
          [f"- fact {f.id}: {f.statement}" for f in inferred] + [""]
     dr = r["dev_refinement"]
-    L += [f"## Dev refinement questions ({len(dr['questions'])})", ""] + \
-         [f"- [{q['severity']}] `{q['file']}` {q['question']}" for q in dr["questions"]] + [""]
+    if r.get("review"):
+        L += [f"## Dev refinement questions ({len(dr['questions'])})", ""] + \
+             [f"- [{q['severity']}] `{q['file']}` {q['question']}" for q in dr["questions"]] + [""]
     leaks = [f for f in r["findings"]["warning"] if f["check"] == "tech_leak"]
-    L += [f"## Technical decisions leaking into the spec ({len(leaks)})", ""] + \
+    L += [f"## Technical vocabulary found in the spec ({len(leaks)})", ""] + \
          [f"- `{f['target']}` {f['message']}" for f in leaks] + [""]
     if r["eval"]:
         L += ["## Eval against gold set", "", "```", yaml.safe_dump(r["eval"], sort_keys=False).strip(), "```", ""]

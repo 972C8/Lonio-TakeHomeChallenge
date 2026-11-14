@@ -107,7 +107,7 @@ def lint(spec: Spec, valid_refs: set[str], stakeholders: set[str], checklist: li
         _refs(F, f"exclusion.{x.id}", x.source_refs, valid_refs)
 
     owner = {}
-    for f in spec.features:
+    for f in spec.feature.sections:
         for i in f.items + f.rules:
             owner.setdefault(i, []).append(f.id)
             if i not in known:
@@ -130,9 +130,9 @@ def lint(spec: Spec, valid_refs: set[str], stakeholders: set[str], checklist: li
                 F.append(Finding(check="coverage", severity="error", target=f.id, message=f"owns {i} but no story covers it"))
     for i in known:
         if i not in owner:
-            F.append(Finding(check="coverage", severity="error", target=i, message="not owned by any feature"))
+            F.append(Finding(check="coverage", severity="error", target=i, message="not owned by any section of the feature"))
         elif len(owner[i]) > 1:
-            F.append(Finding(check="lint", severity="warning", target=i, message=f"owned by several features {owner[i]}"))
+            F.append(Finding(check="lint", severity="warning", target=i, message=f"owned by several sections {owner[i]}"))
     return F
 
 
@@ -160,7 +160,7 @@ def tech_leaks(spec: Spec, extra_words: list[str], allowed: list[str]) -> list[F
         texts += [(f"item.{it.id}", x) for x in (it.name, it.description, it.form, it.asked_when, it.required_when)]
     for r in spec.knowledge.rules:
         texts += [(f"rule.{r.id}", r.statement)]
-    for f in spec.features:
+    for f in spec.feature.sections:
         for s in f.stories:
             texts += [(f"story.{s.id}", x) for x in (s.i_want, s.so_that)]
             for ac in s.acceptance_criteria:
@@ -262,7 +262,7 @@ def run_examples(spec: Spec, profile_examples: list[dict]) -> tuple[list[dict], 
     results, F = [], []
     km = spec.knowledge
     cases = []
-    for f in spec.features:
+    for f in spec.feature.sections:
         for s in f.stories:
             for ac in s.acceptance_criteria:
                 for ex in ac.examples:
@@ -285,7 +285,8 @@ def coverage(units: list[Unit], facts: list[Fact], spec: Spec) -> tuple[dict, li
     for coll in (km.items, km.rules, km.open_questions, km.exclusions):
         for x in coll:
             used |= set(x.source_refs)
-    for f in spec.features:
+    used |= set(spec.feature.source_refs)
+    for f in spec.feature.sections:
         used |= set(f.source_refs)
         for s in f.stories:
             used |= set(s.source_refs)
@@ -336,7 +337,7 @@ def evaluate_gold(spec: Spec, gold: dict) -> tuple[dict, list[Finding]]:
                 F.append(Finding(check="eval", severity="warning", target=label, message=f"no {label} mentions {k!r}"))
         return f"{n}/{len(keys)}"
 
-    story_texts = [f"{s.title} {s.i_want} {s.so_that}" for f in spec.features for s in f.stories]
+    story_texts = [f"{s.title} {s.i_want} {s.so_that}" for f in spec.feature.sections for s in f.stories]
     n_gold = len(gold.get("items", []))
     return {
         "item_recall": round(hits / n_gold, 2) if n_gold else None,

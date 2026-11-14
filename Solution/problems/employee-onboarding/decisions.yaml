@@ -3,8 +3,8 @@
 # Applied deterministically AFTER the agents ran (they cannot reinterpret
 # them), cited in the feature specs like any source, with the highest precedence.
 #
-# action:  override  target: item.<id>.<attr> | rule.<id>.<attr> | story.<id>.<attr> | feature.<id>.<attr>
-#          add       target: item.<id> | rule.<id> | story.<id> (value.feature = owning feature id); value = full object
+# action:  override  target: item.<id>.<attr> | rule.<id>.<attr> | story.<id>.<attr> | section.<id>.<attr> | feature.<attr>
+#          add       target: item.<id> | rule.<id> | story.<id> (value.section = section id) | section.<id>; value = full object
 #          exclude   target: item.<id> | rule.<id> | story.<id>   (moves it to out of scope)
 #          resolve   target: open.<id>                             (closes an open question)
 #          accept    target: fact.<id>   (confirms an inferred fact)

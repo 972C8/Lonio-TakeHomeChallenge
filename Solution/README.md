@@ -2,10 +2,11 @@
 
 A generic pipeline of Claude agents and deterministic checks. It turns messy
 business sources (meeting transcripts, portal screenshots, live web
-calculators) into **feature specs**: user stories with acceptance criteria and
-concrete examples, every line traceable to a source quote. The specs say
-**what** is needed and **why**. They contain no technical decisions; how to
-build it is up to engineering.
+calculators) into a **feature spec**: each problem (e.g. employee onboarding)
+is one feature, and the feature holds its user stories, grouped in sections,
+with acceptance criteria and concrete examples, every line traceable to a
+source quote. The spec says **what** is needed and **why**. It contains no
+technical decisions; how to build it is up to engineering.
 
 ```mermaid
 flowchart LR
@@ -13,7 +14,7 @@ flowchart LR
     S2["<b>2 Extract</b><br/>atomic facts<br/>with verbatim quotes"]
     S3["<b>3 Verify</b><br/>quotes checked by code<br/>facts checked by a judge"]
     S4["<b>4 Knowledge model</b><br/>information, rules<br/>gaps → open questions"]
-    S5["<b>5 Feature specs</b><br/>stories, Given/When/Then,<br/>examples (business only)"]
+    S5["<b>5 Feature spec</b><br/>one feature, sections of stories,<br/>Given/When/Then, examples"]
     S6["<b>6 Decide</b><br/>product owner's<br/>decisions, applied by code"]
     S7["<b>7 Check, render & review</b><br/>examples executed · coverage<br/>dev refinement → review.md"]
     S8["<b>8 Linear (optional)</b><br/>agent sends specs<br/>via Linear MCP"]
@@ -25,7 +26,7 @@ flowchart LR
 Every stage is cached; a changed source or decision reruns only what depends on it.
 
 Deliverables of this run:
-- Onboarding feature specs: [`requirements/employee-onboarding/`](requirements/employee-onboarding/README.md)
+- Onboarding feature spec: [`requirements/employee-onboarding/`](requirements/employee-onboarding/README.md)
 - Review for the product owner: `build/employee-onboarding/review.md`
 
 ## Principles
@@ -54,8 +55,8 @@ Deliverables of this run:
 6. **Generic engine, problem profiles.** Nothing in `pipeline/` knows about
    onboarding. Everything domain-specific lives in `problems/<name>/`.
 7. **Cheap, traceable reruns.** Each stage is cached by a fingerprint of all
-   its inputs; a changed source reruns only what depends on it. Features are
-   written in parallel, one agent each.
+   its inputs; a changed source reruns only what depends on it. The sections of
+   the feature are written in parallel, one agent each.
 
 ## Quick start
 
@@ -77,9 +78,9 @@ The Agent SDK runs on the local Claude Code login; no API key is needed.
 pipeline/                    GENERIC - never changed for a new problem
   engine/                    schemas, stage cache, Agent SDK wrapper, condition language, decisions
   adapters/<source type>/    adapter.py + agent.md (+ config.yaml): transcript, screenshots, web_calculator
-  agents/                    knowledge modeler, feature planner, story writer, judges, dev refinement, reviewer
+  agents/                    knowledge modeler, feature planner (sections), story writer (per section), judges, dev refinement, reviewer
   checks/mechanical.py       checklist lint, example execution, coverage, tech-leak scan, gold eval
-  render/templates/          feature spec, information catalogue, open questions, out of scope, traceability
+  render/templates/          feature.md, information catalogue, open questions, out of scope, traceability
   publish/linear.py          optional step 8: Linear publisher agent (instructions: agents/linear_publisher.md)
 problems/<name>/             EVERYTHING SPECIFIC to one investigation
   profile.yaml               sources (+ authority, precedence), stakeholders, item checklist, models
@@ -88,8 +89,8 @@ problems/<name>/             EVERYTHING SPECIFIC to one investigation
   examples.yaml              named real cases from the sources, executed every run
   gold.yaml                  hand-labelled expectations for the eval
 .claude/skills/              /run-pipeline · /decide · /trace · /new-adapter · /new-problem · /learn
-build/<problem>/             every intermediate result (units, facts, verdicts, knowledge, features, report, review.md)
-requirements/<problem>/      the deliverable: feature specs
+build/<problem>/             every intermediate result (units, facts, verdicts, knowledge, feature plan, sections, report, review.md)
+requirements/<problem>/      the deliverable: feature.md + shared files
 ```
 
 ## The steps
@@ -178,22 +179,22 @@ and precedence) + `guidance.md` → `knowledge.raw.json`.
 - **No silent choices:** across sources, precedence decides, and a genuine conflict becomes an open question.
 - **Honest status:** items that rest on inference are marked `inferred`.
 
-### 5. Feature specs – slice into features and write stories
+### 5. Feature spec – group into sections and write the stories
 
 **What and why.**
-1. **Plan:** a planner agent slices the knowledge model into **features**, following the stakeholder goals and pain points the sources state. This is a generic heuristic, not a fixed journey. Each information item and rule is owned by exactly one feature.
-2. **Write:** one writer agent per feature, in parallel, writes **user stories** (*As a … I want … so that …*, with a priority and its reason) and **acceptance criteria** in Given / When / Then.
+1. **Plan:** the problem is **one feature**. A planner agent writes its goal and context and groups the knowledge model into **sections** (epic-style headings), following the stakeholder goals and pain points the sources state. This is a generic heuristic, not a fixed journey. Each information item and rule is owned by exactly one section.
+2. **Write:** one writer agent per section, in parallel, writes **user stories** (*As a … I want … so that …*, with a priority and its reason) and **acceptance criteria** in Given / When / Then.
 
 Where a criterion involves conditions or rules, it gets an **examples
 table**: real cases named in the sources first (Maria, Tomás, Stefan,
 Julia, …), then illustrative cases for the remaining branches. Everything
 stays in business language. How to build it is left to engineering.
 
-**In → out.** Knowledge model + cited facts → `features.plan.json` and
-`features/<feature>.json` (features with stories, criteria and examples).
+**In → out.** Knowledge model + cited facts → `feature.plan.json` and
+`sections/<section>.json` (the feature's sections with stories, criteria and examples).
 
 **Complete and correct.**
-- **Full coverage:** every item and rule a feature owns must be covered by at least one story, and every row of every decision table by a criterion.
+- **Full coverage:** every item and rule a section owns must be covered by at least one story, and every row of every decision table by a criterion.
 - **Exact examples:** examples must be complete enough to be executed in step 7.
 - **Cited sources:** stories and criteria cite facts, guidelines or decisions.
 - **Open questions referenced, not decided:** open questions are referenced, never resolved by the writer.
@@ -213,7 +214,7 @@ Decisions are applied by code **after** the agents ran, so no agent can
 ignore or reinterpret them. They are cited like any source, with the highest
 precedence.
 
-**In → out.** Knowledge model + features + `decisions.yaml` → `spec.json`.
+**In → out.** Knowledge model + feature + `decisions.yaml` → `spec.json`.
 
 **Complete and correct.**
 - **Fingerprinted evidence:** each decision records a fingerprint of the source units it is based on. If that evidence changes later, the decision is flagged "needs re-confirmation" instead of being applied silently.
@@ -232,12 +233,12 @@ precedence.
    - **Gold set:** recall and precision against the hand-written gold set.
 2. **Trace judge (agent):** each item, rule and story is compared with the facts it cites.
 3. **Render (code):** Jinja templates write `requirements/<problem>/`. The internal formalisation is never rendered. Files:
-   - one file per feature
+   - `feature.md`: the whole feature, with its sections, stories, criteria, examples and evidence
    - an information catalogue
    - open questions
    - out of scope
    - traceability
-4. **Dev refinement (one agent per feature):** an engineer agent that sees only the rendered files lists every question it would ask in refinement, plus any technical decisions that leaked into the spec. This is the acceptance test of the task: "built without anyone asking a single question".
+4. **Dev refinement (one agent):** an engineer agent that reads `feature.md` and the shared files lists every question it would ask in refinement, plus any technical decisions that leaked into the spec. This is the acceptance test of the task: "built without anyone asking a single question".
 5. **Review (agent):** summarises everything into one verdict (ready / ready with caveats / not ready), with prioritised findings and suggested decisions.
 
 **In → out.** `spec.json`, facts, units, `examples.yaml`, `gold.yaml` →
@@ -256,10 +257,10 @@ reruns. Only the affected steps run again.
 
 **What and why.** Only when the product owner asks for it
 (`pipeline publish --team <key>`). A Linear publisher agent
-(`pipeline/agents/linear_publisher.md`) reads the rendered feature specs and
-sends them to Linear through the Linear MCP server:
-- each feature becomes a parent issue
-- each story becomes a sub-issue, with its acceptance criteria and examples, and its sources in a collapsed section
+(`pipeline/agents/linear_publisher.md`) reads the rendered feature spec and
+sends it to Linear through the Linear MCP server:
+- the feature becomes one parent issue
+- each story becomes a sub-issue of it, with its acceptance criteria and examples, its section as a label, and its sources in a collapsed section
 - each open question becomes a `needs-decision` issue
 
 The Markdown files remain the source of truth.
@@ -277,7 +278,7 @@ a report (`build/<problem>/linear_publish.*.json`).
 
 | When | Where | What |
 |---|---|---|
-| before a run | `profile.yaml`, `guidance.md` | scope, stakeholders, source authority, vocabulary, optional feature constraints |
+| before a run | `profile.yaml`, `guidance.md` | scope, stakeholders, source authority, vocabulary, optional section hints |
 | after a run | `build/<p>/review.md` | the one file to read |
 | deciding | `decisions.yaml` (or `/decide`) | override / add / exclude / resolve / accept / reject, by stable id |
 | over time | `/learn` | turn repeated overrides into examples, gold entries, guidance or checks |

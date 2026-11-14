@@ -66,7 +66,7 @@ def _summary(rep, problem):
     errs, warns = len(rep["findings"]["error"]), len(rep["findings"]["warning"])
     ex = rep["examples"]
     print()
-    print(f"{c['facts']} facts -> {c['items']} information items, {c['rules']} rules -> {c['features']} features, "
+    print(f"{c['facts']} facts -> {c['items']} information items, {c['rules']} rules -> 1 feature with {c['sections']} sections, "
           f"{c['stories']} stories, {c['acceptance_criteria']} acceptance criteria; {c['open_questions']} open questions")
     print(f"errors {errs}, warnings {warns}, examples {sum(e['pass'] for e in ex)}/{len(ex)} pass, "
           f"dev refinement questions {len(rep['dev_refinement']['questions'])}, "

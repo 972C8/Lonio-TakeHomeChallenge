@@ -173,27 +173,44 @@ class Story(BaseModel):
     status: Literal["confirmed", "inferred", "decision"] = "confirmed"
 
 
-class Feature(BaseModel):
-    id: str                      # FEAT-02-start-date
+class Section(BaseModel):
+    """A group of related stories inside the feature (an epic heading, not a separate feature)."""
+    id: str                      # SEC-02-home-address
     order: int
     title: str
-    goal: str
-    context: str                 # the problem today, from the sources
-    stakeholders: list[str]
+    purpose: str                 # one sentence, business outcome
     stories: list[Story] = F(default_factory=list)
-    items: list[str] = F(default_factory=list)
-    rules: list[str] = F(default_factory=list)
+    items: list[str] = F(default_factory=list)       # info items owned by this section
+    rules: list[str] = F(default_factory=list)       # business rules owned by this section
     open_questions: list[str] = F(default_factory=list)
     source_refs: list[str] = F(default_factory=list)
 
 
+class Feature(BaseModel):
+    """One feature per problem: its sections hold all the user stories."""
+    id: str                      # the problem id
+    title: str                   # the problem title
+    goal: str
+    context: str                 # the problem today, from the sources
+    stakeholders: list[str]
+    sections: list[Section]
+    source_refs: list[str] = F(default_factory=list)
+
+
 class FeaturePlan(BaseModel):
-    features: list[Feature]      # stories left empty at planning time
+    """Planner output: goal, context and the sections (stories left empty)."""
+    goal: str
+    context: str
+    stakeholders: list[str]
+    sections: list[Section]
 
 
 class Spec(BaseModel):
     knowledge: KnowledgeModel
-    features: list[Feature]
+    feature: Feature
+
+    def stories(self) -> list[Story]:
+        return [s for sec in self.feature.sections for s in sec.stories]
 
 
 # -------------------------------------------------------------- decisions ---

@@ -11,7 +11,7 @@ import hashlib
 
 import yaml
 
-from .schemas import BusinessRule, Decision, Exclusion, Fact, Feature, Finding, InfoItem, OpenQuestion, Spec, Story, Unit
+from .schemas import BusinessRule, Decision, Exclusion, Fact, Finding, InfoItem, OpenQuestion, Section, Spec, Story, Unit
 
 
 def load(ctx) -> list[Decision]:
@@ -60,31 +60,37 @@ def apply_to_facts(decisions: list[Decision], facts: list[Fact]) -> list[Fact]:
 
 
 def apply_to_spec(decisions: list[Decision], spec: Spec) -> tuple[Spec, list[Finding]]:
-    """Targets: item.<id>[.<attr>] | rule.<id>[.<attr>] | open.<id> | exclusion.<id> | feature.<id>[.<attr>] | story.<id>[.<attr>]"""
+    """Targets: item.<id>[.<attr>] | rule.<id>[.<attr>] | open.<id> | exclusion.<id>
+    | section.<id>[.<attr>] | story.<id>[.<attr>] | feature[.<attr>]"""
     findings = []
-    km = spec.knowledge
-    stories = {s.id: (f, s) for f in spec.features for s in f.stories}
+    km, feat = spec.knowledge, spec.feature
+    stories = {s.id: sec for sec in feat.sections for s in sec.stories}
     colls = {"item": (km.items, InfoItem), "rule": (km.rules, BusinessRule), "open": (km.open_questions, OpenQuestion),
-             "exclusion": (km.exclusions, Exclusion), "feature": (spec.features, Feature)}
+             "exclusion": (km.exclusions, Exclusion), "section": (feat.sections, Section)}
     for d in decisions:
         kind, _, rest = d.target.partition(".")
         if kind == "fact":
             continue
-        item_id, _, attr = rest.partition(".")
         try:
+            if kind == "feature":                       # feature.<attr>: only override
+                if d.action != "override" or not rest:
+                    raise ValueError("only 'override' on feature.<attribute> is supported")
+                setattr(feat, rest, d.value)
+                _cite(feat, d)
+                continue
+            known_ids = list(stories) if kind == "story" else [x.id for x in colls[kind][0]]
+            item_id, attr = _split_target(rest, known_ids)   # ids may contain dots (US-02.1)
             if kind == "story":
-                coll = stories[item_id][0].stories if item_id in stories else None
-                model = Story
+                coll, model = (stories[item_id].stories if item_id in stories else None), Story
                 if coll is None and d.action == "add":
-                    feat = next(f for f in spec.features if f.id == (d.value or {}).get("feature"))
-                    coll = feat.stories
+                    coll = next(sec for sec in feat.sections if sec.id == (d.value or {}).get("section")).stories
             else:
                 coll, model = colls[kind]
             item = next((x for x in coll if x.id == item_id), None) if coll is not None else None
             if d.action == "add":
                 if item is not None:
                     coll.remove(item)
-                val = {k: v for k, v in (d.value or {}).items() if k != "feature"}
+                val = {k: v for k, v in (d.value or {}).items() if k != "section" or kind == "section"}
                 obj = model.model_validate({**val, "id": item_id})
                 _cite(obj, d)
                 coll.append(obj)
@@ -103,6 +109,16 @@ def apply_to_spec(decisions: list[Decision], spec: Spec) -> tuple[Spec, list[Fin
         except Exception as e:  # noqa: BLE001
             findings.append(Finding(check="decisions", severity="error", target=d.id, message=f"could not apply: {e}"))
     return spec, findings
+
+
+def _split_target(rest: str, ids: list[str]) -> tuple[str, str]:
+    """Split '<id>[.<attribute>]' where the id itself may contain dots (e.g. story id US-02.1)."""
+    for i in sorted(ids, key=len, reverse=True):
+        if rest == i:
+            return i, ""
+        if rest.startswith(i + "."):
+            return i, rest[len(i) + 1:]
+    return rest, ""      # unknown id (e.g. for 'add'); reported later if it must exist
 
 
 def _cite(obj, d):

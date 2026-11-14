@@ -7,15 +7,18 @@ criteria and concrete examples. They contain no technical decisions: how to
 build it is up to engineering. Every statement is traceable to a source quote,
 a product-owner guideline (G-) or a product decision (D-).
 
-## Features
+## The feature
 
-| # | Feature | Goal | Stories | Open questions |
+This problem is **one feature**: [{{ feature.title }}](feature.md). Its user
+stories are grouped into sections:
+
+| # | Section | Purpose | Stories | Open questions |
 |---|---|---|---|---|
-{% for f in features %}
-| {{ f.order }} | [{{ f.title | cell }}](features/{{ f.id }}.md) | {{ f.goal | cell }} | {{ f.stories | length }} | {{ f.open_questions | length }} |
+{% for sec in sections %}
+| {{ sec.order }} | [{{ sec.title | cell }}](feature.md#{{ sec.id }}) | {{ sec.purpose | cell }} | {{ sec.stories | length }} | {{ sec.open_questions | length }} |
 {% endfor %}
 
-## How to read a feature spec
+## How to read the feature spec
 - **User stories** (`US-x.y`): who wants what and why, with priority.
 - **Acceptance criteria** (`AC-x.y.z`): Given / When / Then in business
   language. Where a criterion involves conditions or rules, an **examples**
@@ -23,7 +26,7 @@ a product-owner guideline (G-) or a product decision (D-).
   "Checked" column means the pipeline executed the example against the
   consolidated business rules and it holds.
 - **Information needed**: what, when asked, when required, depends on, who
-  needs it – for every piece of information the feature owns.
+  needs it – for every piece of information in a section.
 - **Business rules**: plain-language rules with decision tables.
 - **Evidence**: the source quotes behind the feature.
 - The header of each file (between `---` lines) is traceability metadata for

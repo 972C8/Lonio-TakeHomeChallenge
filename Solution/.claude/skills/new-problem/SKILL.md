@@ -10,8 +10,8 @@ are reused.
 
 1. Interview the user briefly: goal, stakeholders, sources (type, location,
    authority, precedence), what is out of scope, the checklist every
-   information item must answer (`item_checklist`), optional feature
-   constraints.
+   information item must answer (`item_checklist`), optional section
+   hints.
 2. Create `problems/<name>/` with `profile.yaml`, `guidance.md` (tag citable
    product-owner statements `[G-nn]`; give id and value vocabulary),
    `decisions.yaml` (empty), `examples.yaml` (named cases taken from the

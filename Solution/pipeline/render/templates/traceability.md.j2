@@ -8,7 +8,7 @@ sources.
 
 | Story | Acceptance criteria | Sources |
 |---|---|---|
-{% for f in features %}{% for s in f.stories %}
+{% for sec in sections %}{% for s in sec.stories %}
 | {{ s.id }} {{ s.title | cell }} | {% for ac in s.acceptance_criteria %}{{ ac.id }}{{ ", " if not loop.last }}{% endfor %} | {{ s.source_refs | join(", ") }} |
 {% endfor %}{% endfor %}
 

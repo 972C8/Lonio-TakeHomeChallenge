@@ -1,32 +1,41 @@
 ---
-id: {{ f.id }}
-title: {{ f.title | tojson }}
-order: {{ f.order }}
-stakeholders: [{{ f.stakeholders | join(", ") }}]
-stories: [{% for s in f.stories %}{{ s.id }}{{ ", " if not loop.last }}{% endfor %}]
-information: [{{ f.items | join(", ") }}]
-rules: [{{ f.rules | join(", ") }}]
-open_questions: [{{ f.open_questions | join(", ") }}]
+id: {{ feature.id }}
+title: {{ feature.title | tojson }}
+stakeholders: [{{ feature.stakeholders | join(", ") }}]
+sections: [{% for sec in sections %}{{ sec.id }}{{ ", " if not loop.last }}{% endfor %}]
+stories: [{% for sec in sections %}{% for s in sec.stories %}{{ s.id }}{{ ", " if not (loop.last and sec == sections[-1]) }}{% endfor %}{% endfor %}]
 ---
 
-# {{ f.title }}
+# {{ feature.title }}
 
-**Goal:** {{ f.goal }}
+**Goal:** {{ feature.goal }}
 
 ## Context
-{{ f.context }}
+{{ feature.context }}
 
-**Stakeholders:** {% for st in f.stakeholders %}{{ stakeholders.get(st, st) }}{{ ", " if not loop.last }}{% endfor %}
+**Stakeholders:** {% for st in feature.stakeholders %}{{ stakeholders.get(st, st) }}{{ ", " if not loop.last }}{% endfor %}
 
 
-{% if f.open_questions %}
-> ⚠ Open questions affecting this feature: {% for q in f.open_questions %}[{{ q }}](../open-questions.md#{{ q | lower }}){{ ", " if not loop.last }}{% endfor %}
+## Contents
+
+| Section | Stories |
+|---|---|
+{% for sec in sections %}
+| [{{ sec.order }}. {{ sec.title | cell }}](#{{ sec.id }}) | {% for s in sec.stories %}{{ s.id }}{{ ", " if not loop.last }}{% endfor %} |
+{% endfor %}
+
+{% for sec in sections %}
+<a id="{{ sec.id }}"></a>
+
+## {{ sec.order }}. {{ sec.title }}
+
+{{ sec.purpose }}
+
+{% if sec.open_questions %}
+> ⚠ Open questions affecting this section: {% for q in sec.open_questions %}[{{ q }}](open-questions.md#{{ q | lower }}){{ ", " if not loop.last }}{% endfor %}
 
 {% endif %}
-
-## User stories
-
-{% for s in f.stories %}
+{% for s in sec.stories %}
 ### {{ s.id }} – {{ s.title }}
 **As** {{ stakeholders.get(s.as_a, s.as_a) }}, **I want** {{ s.i_want }}, **so that** {{ s.so_that }}
 
@@ -61,14 +70,15 @@ _Trace check: {{ judge["story." ~ s.id].verdict }} – {{ judge["story." ~ s.id]
 
 {% endif %}
 {% endfor %}
-## Information needed
+{% if sec.items %}
+### Information needed in this section
 
-The information this feature owns. Each piece is asked once and reused by
-every stakeholder listed (see [information.md](../information.md) for all).
+Each piece is asked once and reused by every stakeholder listed (all of it is
+also in [information.md](information.md)).
 
-{% for x in f.items if x in items %}
+{% for x in sec.items if x in items %}
 {% set it = items[x] %}
-### {{ it.name }}
+#### {{ it.name }}
 | | |
 |---|---|
 | **What?** | {{ it.description | cell }}{% if it.form %} – Form: {{ it.form | cell }}{% endif %} |
@@ -83,12 +93,13 @@ every stakeholder listed (see [information.md](../information.md) for all).
 {% endif %}
 
 {% endfor %}
-{% if f.rules %}
-## Business rules
+{% endif %}
+{% if sec.rules %}
+### Business rules in this section
 
-{% for x in f.rules if x in rules %}
+{% for x in sec.rules if x in rules %}
 {% set r = rules[x] %}
-### {{ r.name }}
+#### {{ r.name }}
 {{ r.statement }}
 
 {% if r.table %}
@@ -103,8 +114,9 @@ _Status: {{ r.status }} · Sources: {{ r.source_refs | join(", ") }}_
 
 {% endfor %}
 {% endif %}
+{% endfor %}
 ## Evidence
-{% for e in evidence(feature_refs(f)) %}
+{% for e in evidence(feature_refs()) %}
 - **{{ e.id }}** ({{ e.source }}{% if e.basis %}, {{ e.basis }}{% endif %}): {{ e.statement }}
 {% for q in e.quotes %}
   - "{{ q.quote }}" — {{ q.where }}

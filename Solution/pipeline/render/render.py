@@ -1,4 +1,4 @@
-"""Deterministic rendering: spec JSON + facts -> requirements/<problem>/ feature specs.
+"""Deterministic rendering: spec JSON + facts -> requirements/<problem>/ (feature.md + shared files).
 
 The Markdown is never written by an LLM directly: agents produce structured
 data, templates decide the format. The internal formalisation (expressions)
@@ -28,12 +28,9 @@ def render(out_dir: Path, ctx, spec: Spec, facts: list[Fact], units: dict[str, U
     items = {i.id: i for i in km.items}
     rules = {r.id: r for r in km.rules}
     names = {**{i.id: i.name for i in km.items}, **{r.id: r.name for r in km.rules}}
-    owner = {x: f for f in spec.features for x in f.items + f.rules}
-    used_in = {}
-    for f in spec.features:
-        for s in f.stories:
-            for x in s.items + s.rules:
-                used_in.setdefault(x, []).append((f, s))
+    feature = spec.feature
+    sections = sorted(feature.sections, key=lambda x: x.order)
+    owner = {x: sec for sec in sections for x in sec.items + sec.rules}
     verified = {e["case"]: e["pass"] for e in (examples or [])}
 
     def evidence(refs):
@@ -51,16 +48,18 @@ def render(out_dir: Path, ctx, spec: Spec, facts: list[Fact], units: dict[str, U
                             "quotes": [{"quote": a.quote, "where": _where(units.get(a.unit_id))} for a in f.anchors]})
         return out
 
-    def feature_refs(f):
-        refs = set(f.source_refs)
-        for s in f.stories:
-            refs |= set(s.source_refs)
-            for ac in s.acceptance_criteria:
-                refs |= set(ac.source_refs)
-        for x in f.items:
-            refs |= set(items[x].source_refs) if x in items else set()
-        for x in f.rules:
-            refs |= set(rules[x].source_refs) if x in rules else set()
+    def feature_refs():
+        refs = set(feature.source_refs)
+        for sec in sections:
+            refs |= set(sec.source_refs)
+            for st in sec.stories:
+                refs |= set(st.source_refs)
+                for ac in st.acceptance_criteria:
+                    refs |= set(ac.source_refs)
+        for i in km.items:
+            refs |= set(i.source_refs)
+        for r in km.rules:
+            refs |= set(r.source_refs)
         return sorted(refs)
 
     def example_table(ac):
@@ -85,12 +84,11 @@ def render(out_dir: Path, ctx, spec: Spec, facts: list[Fact], units: dict[str, U
     # stakeholders: "id: short name - description" -> rendered by short name
     stakeholders = {k: str(v).split(" - ")[0].strip() for k, v in ctx.profile["stakeholders"].items()}
     common = dict(spec=spec, km=km, items=items, rules=rules, names=names, stakeholders=stakeholders,
-                  owner=owner, used_in=used_in, evidence=evidence, judge=judge or {}, profile=ctx.profile,
-                  oq={q.id: q for q in km.open_questions}, feature_refs=feature_refs, example_table=example_table,
-                  features=sorted(spec.features, key=lambda f: f.order))
+                  owner=owner, evidence=evidence, feature=feature, sections=sections, judge=judge or {}, profile=ctx.profile,
+                  oq={q.id: q for q in km.open_questions}, feature_refs=feature_refs, example_table=example_table)
     if out_dir.exists():
         shutil.rmtree(out_dir)
-    (out_dir / "features").mkdir(parents=True)
+    out_dir.mkdir(parents=True)
     written = []
 
     def w(path, tpl, **kw):
@@ -99,8 +97,7 @@ def render(out_dir: Path, ctx, spec: Spec, facts: list[Fact], units: dict[str, U
         written.append(p)
 
     w("README.md", "index.md.j2")
-    for f in common["features"]:
-        w(f"features/{f.id}.md", "feature.md.j2", f=f)
+    w("feature.md", "feature.md.j2")
     w("information.md", "information.md.j2")
     w("open-questions.md", "open_questions.md.j2")
     w("out-of-scope.md", "exclusions.md.j2")
