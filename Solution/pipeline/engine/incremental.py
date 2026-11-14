@@ -40,6 +40,19 @@ def fact_digest(payload: list[dict]) -> dict[str, str]:
             for p in payload}
 
 
+def directive_digest(decisions) -> dict[str, str]:
+    """Directive id -> hash of its statement. Patch decisions are not in it: code applies them, no rebuild needed."""
+    import hashlib
+    return {d.id: hashlib.sha256(d.statement.encode()).hexdigest()[:16] for d in decisions if d.action == "direct"}
+
+
+def directives_changed(prev_record: dict | None, digest: dict[str, str]) -> bool:
+    """True when the directives differ from those of the run that wrote `prev_record` (knowledge.input /
+    feature.input). No record, or one from before directives were recorded, cannot prove they are the
+    same: rebuild in full rather than assume nothing changed."""
+    return prev_record is None or prev_record.get("directives") != digest
+
+
 def fact_changes(prev: dict[str, str], cur: dict[str, str]) -> tuple[list[str], list[str]]:
     """(new or changed fact ids, removed fact ids)."""
     return sorted(i for i, h in cur.items() if prev.get(i) != h), sorted(i for i in prev if i not in cur)

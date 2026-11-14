@@ -199,12 +199,15 @@ async def stage_knowledge(ctx, facts: list[Fact], known_before: set[str] | None 
 
     system_fp = sha(fingerprint_system)
     digest = I.fact_digest(payload)
+    dir_digest = I.directive_digest(D.load(ctx))
 
     async def go():
         prev_in = _previous(ctx, "knowledge.input")
         # bootstrap: a model from before incremental runs has no input record; treat its prompt as unchanged
         same_system = prev_in is None or prev_in.get("system") == system_fp
-        full = not prev or not same_system or (prev_in is None and known_before is None) or "all" in ctx.force or "knowledge.raw" in ctx.force
+        # ...but never the directives: a new or changed one reshapes the model, not just the facts it cites
+        full = (not prev or not same_system or (prev_in is None and known_before is None)
+                or I.directives_changed(prev_in, dir_digest) or "all" in ctx.force or "knowledge.raw" in ctx.force)
         if full:
             out = await run_agent("knowledge", system, "Facts (JSON):\n" + json.dumps(payload, ensure_ascii=False, indent=1)
                                   + "\n\nProduce the complete KnowledgeModel.", KnowledgeModel,
@@ -218,7 +221,7 @@ async def stage_knowledge(ctx, facts: list[Fact], known_before: set[str] | None 
                 removed = sorted(known_before - set(digest))
             km = await _knowledge_delta(ctx, system, KnowledgeModel.model_validate(prev),
                                         [p for p in payload if p["id"] in set(new_ids)], removed)
-        ctx.write("knowledge.input", {"system": system_fp, "facts": digest})
+        ctx.write("knowledge.input", {"system": system_fp, "facts": digest, "directives": dir_digest})
         return await _repair_tables(ctx, system, km)
 
     return KnowledgeModel.model_validate(await ctx.stage("knowledge.raw", [payload, fingerprint_system], go))
@@ -326,12 +329,15 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dic
     write_fingerprint_system = load_prompt(AGENTS / "story_writer.md", **pc, existing_ids="")
     write_fp = sha(write_fingerprint_system)
     feat_in = _previous(ctx, "feature.input")            # None before the first incremental run: treat prompts as unchanged
+    dir_digest = I.directive_digest(D.load(ctx))
+    same_directives = not I.directives_changed(feat_in, dir_digest)   # ...but never the directives
     old_km = KnowledgeModel.model_validate(prev_km) if prev_km else None
     changed = I.changed_ids(old_km, km)                  # None = no previous model -> full rewrite
     changed_behaviour = I.behaviour_changed_ids(old_km, km)
-    incremental_plan = (prev_plan is not None and changed is not None and (feat_in is None or feat_in["plan"] == plan_fp)
+    incremental_plan = (prev_plan is not None and changed is not None and same_directives
+                        and (feat_in is None or feat_in["plan"] == plan_fp)
                         and not ({"all", "feature.plan"} & ctx.force))
-    incremental_write = (changed is not None and (feat_in is None or feat_in["write"] == write_fp)
+    incremental_write = (changed is not None and same_directives and (feat_in is None or feat_in["write"] == write_fp)
                          and not ({"all", "sections"} & ctx.force))
 
     async def plan():
@@ -342,7 +348,7 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dic
                                FeaturePlan, model=ctx.model("synthesize"), max_turns=6)
 
     planned = FeaturePlan.model_validate(await ctx.stage("feature.plan", [kmj, plan_fingerprint_system], plan))
-    ctx.write("feature.input", {"plan": plan_fp, "write": write_fp})
+    ctx.write("feature.input", {"plan": plan_fp, "write": write_fp, "directives": dir_digest})
     full_km = km.model_dump(exclude={"items": {"__all__": {"depends_on"}}, "rules": {"__all__": {"depends_on"}}})
     head = {"title": ctx.profile["title"], "goal": planned.goal, "context": planned.context,
             "stakeholders": planned.stakeholders}

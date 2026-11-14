@@ -143,5 +143,39 @@ class NewEvidenceSinceDecision(unittest.TestCase):
         self.assertEqual(len(f), 1)
 
 
+class DirectivesForceFullRebuild(unittest.TestCase):
+    """A new or changed directive must rebuild the model and rewrite every section (README, LIMITATIONS #4).
+    Regression: with no input record yet (first incremental run), D-037/D-038 were treated as unchanged."""
+
+    def directive(self, id="D-037", statement="Read-only after submission."):
+        return Decision(id=id, action="direct", statement=statement, rationale="r")
+
+    def test_no_record_rebuilds(self):
+        self.assertTrue(I.directives_changed(None, I.directive_digest([self.directive()])))
+
+    def test_record_from_before_directives_were_recorded_rebuilds(self):
+        old = {"system": "x", "facts": {}}               # what the run before the fix wrote
+        self.assertTrue(I.directives_changed(old, I.directive_digest([self.directive()])))
+        self.assertTrue(I.directives_changed(old, I.directive_digest([])))
+
+    def test_new_directive_rebuilds(self):
+        rec = {"directives": I.directive_digest([self.directive("D-001", "a")])}
+        now = I.directive_digest([self.directive("D-001", "a"), self.directive("D-037", "b")])
+        self.assertTrue(I.directives_changed(rec, now))
+
+    def test_changed_statement_rebuilds(self):
+        rec = {"directives": I.directive_digest([self.directive(statement="a")])}
+        self.assertTrue(I.directives_changed(rec, I.directive_digest([self.directive(statement="b")])))
+
+    def test_same_directives_stay_incremental(self):
+        rec = {"directives": I.directive_digest([self.directive()])}
+        self.assertFalse(I.directives_changed(rec, I.directive_digest([self.directive()])))
+
+    def test_patch_decision_does_not_rebuild(self):
+        rec = {"directives": I.directive_digest([self.directive()])}
+        patch = Decision(id="D-039", action="override", target="item.x", rationale="r")
+        self.assertFalse(I.directives_changed(rec, I.directive_digest([self.directive(), patch])))
+
+
 if __name__ == "__main__":
     unittest.main()
