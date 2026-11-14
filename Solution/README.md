@@ -280,19 +280,20 @@ The pipeline never decides what a product owner must decide. Your judgment
 enters at four moments. Nothing generated is edited by hand: you change the
 inputs (profile, guidance, decisions, sources) and rerun.
 
-**Skills you can use** (Claude Code skills in `.claude/skills/`; type the
-name in Claude Code opened in this folder):
+**Skills you can use.** They are Claude Code skills in `.claude/skills/`;
+type the name in Claude Code opened in this folder. The numbers refer to the
+four moments below.
 
-| Skill | Use it | What it does there |
+| Skill | Where (moment) | What it does there |
 |---|---|---|
-| `/new-feature` | before the first run of a new feature | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions, examples, gold) |
-| `/new-adapter` | when a new *kind* of source appears | scaffolds an adapter (reader + extraction prompt) for it |
-| `/run-pipeline` | to run or refresh | checks which sources changed, runs the pipeline in the background, summarises the result |
-| `/review` | after every run | guided walk through `review.md`; records your answers as decisions |
-| `/decide` | whenever you want to record one decision | turns a sentence into a `decisions.yaml` entry |
-| `/trace` | whenever you doubt something | shows why a story, rule or fact says what it says, down to the quote |
-| `/publish-linear` | before handing over to engineering (optional step 8) | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
-| `/learn` | now and then | turns decisions you keep repeating into examples, gold entries, guidance or checks |
+| `/new-feature` | 1 · before the first run of a new feature | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions, examples, gold) |
+| `/new-adapter` | 1, 3 · a new *kind* of source appears | scaffolds an adapter (reader + extraction prompt) for it |
+| `/run-pipeline` | 1, 2, 3 · every time you run or rerun | checks which sources changed, runs the pipeline in the background, summarises the result |
+| `/review` | 2, 3 · after every run | guided walk through `review.md`; records your answers as decisions |
+| `/decide` | 2, 3 · whenever you decide one thing | turns a sentence into a `decisions.yaml` entry |
+| `/trace` | 2, 4 · whenever you doubt something | shows why a story, rule or fact says what it says, down to the quote |
+| `/publish-linear` | 4 · optional step 8 | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
+| `/learn` | occasionally · after a few review rounds | turns decisions you keep repeating into examples, gold entries, guidance or checks |
 
 ### 1. Before the first run (once per feature)
 
@@ -306,9 +307,10 @@ name in Claude Code opened in this folder):
    value and id conventions, and product-owner statements tagged `[G-nn]` that
    may be cited as sources. Do not put facts of a source here.
 3. **`examples.yaml`** – confirm the named real cases from the sources and
-   what is expected for each. They are executed on every run, and no agent
+   what is expected for each (`/new-feature` drafts them for a new feature). They are executed on every run, and no agent
    sees them.
-4. **`gold.yaml`** – confirm the expected items, rules and keywords. It only
+4. **`gold.yaml`** – confirm the expected items, rules and keywords (drafted by
+   `/new-feature`, but yours to confirm). It only
    produces warnings and is a regression alarm, not a quality score. It is
    most useful when written without looking at the pipeline's output.
 5. **Optional: explore a live source once** – `pipeline explore <source>`
