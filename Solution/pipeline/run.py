@@ -554,18 +554,49 @@ async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact], prev_spec: Spec 
                   for v in verdicts if v["verdict"] != "supported"]
 
 
-async def stage_dev_refinement(ctx, req_dir: Path, spec: Spec) -> tuple[dict, list[Finding]]:
-    """One engineer agent reads the rendered feature (feature.md, stories/, shared files) and reports what it would ask."""
+REFINE_SHARED = ("feature.md", "information.md", "open-questions.md", "out-of-scope.md")
+REFINE_SKIP = ("traceability.md", "README.md")     # tool metadata and an index: not what an engineer refines
+
+
+def requirement_files(req_dir: Path) -> dict[str, str]:
+    """Rendered files (path relative to the requirements folder -> content hash): what dev refinement read."""
+    return {str(p.relative_to(req_dir)): sha(p) for p in sorted(req_dir.rglob("*.md"))} if req_dir.exists() else {}
+
+
+def _story_id(rel: str) -> str:
+    """'stories/US-01.2-complete-home-address.md' -> 'US-01.2'."""
+    return "-".join(Path(rel).stem.split("-")[:2])
+
+
+async def stage_dev_refinement(ctx, req_dir: Path, spec: Spec, files_before: dict[str, str] | None = None
+                               ) -> tuple[dict, list[Finding]]:
+    """One engineer agent reads the rendered feature (feature.md, stories/, shared files) and reports what it would ask.
+    First run (or a changed prompt, or --force): the agent reads every file with tools. Later runs: one call without
+    tools that gets only the files that changed (plus feature.md and the stories sharing their items as context);
+    the questions on unchanged files are kept by code."""
     system = load_prompt(AGENTS / "dev_refinement.md")
     path = req_dir / "feature.md"
     story_files = sorted((req_dir / "stories").glob("*.md"))
+    files_now = requirement_files(req_dir)
 
-    async def go():
+    async def full():
         return await run_agent("dev_refinement", system,
                                f"Feature file: {path}\nStory files are in: {req_dir / 'stories'}\n"
                                f"Shared files are in: {req_dir}\nRead them all, then answer.",
                                RefinementReport, model=ctx.model("builder"), tools=["Read", "Glob", "Grep"],
                                add_dirs=[req_dir], max_turns=60)
+
+    async def go():
+        prev = _previous(ctx, "dev_refinement")
+        rec = _previous(ctx, "dev_refinement.input")
+        # files the previous refinement saw: recorded, or (first run with this code) the folder as it was before render
+        base = (rec["files"] if rec.get("system") == sha(system) else None) if rec else files_before
+        if prev is None or not base or {"all", "dev_refinement"} & ctx.force:
+            rep = await full()
+        else:
+            rep = await _refine_delta(ctx, system, req_dir, spec, prev, base, files_now)
+        ctx.write("dev_refinement.input", {"system": sha(system), "files": files_now})
+        return rep
 
     rep = await ctx.stage("dev_refinement", [path, *story_files, req_dir / "information.md", req_dir / "open-questions.md", system], go)
     merged = {"questions": rep["questions"], "already_flagged": rep.get("already_flagged", []),
@@ -576,6 +607,63 @@ async def stage_dev_refinement(ctx, req_dir: Path, spec: Spec) -> tuple[dict, li
     F += [Finding(check="tech_leak", severity="warning", target=t["file"], message=f"\"{t['quote']}\" - {t['why']}")
           for t in merged["tech_leaks"]]
     return merged, F
+
+
+def refinement_scope(spec: Spec, base: dict[str, str], now: dict[str, str]) -> tuple[list[str], list[str], list[str]]:
+    """(changed files to review, removed files, unchanged files given as context) for an incremental refinement.
+    Context: feature.md and the shared files, and every unchanged story that shares an item or rule with a changed one."""
+    changed = sorted(f for f in now if base.get(f) != now[f] and f not in REFINE_SKIP)
+    removed = sorted(f for f in base if f not in now)
+    changed_ids = {_story_id(f) for f in changed if f.startswith("stories/")}
+    stories = {s.id: s for s in spec.stories()}
+    used = {x for i in changed_ids if i in stories for x in stories[i].items + stories[i].rules}
+    related = {s.id for s in stories.values() if s.id not in changed_ids and used & set(s.items + s.rules)}
+    context = [f for f in REFINE_SHARED if f in now and f not in changed]
+    context += sorted(f for f in now if f.startswith("stories/") and _story_id(f) in related and f not in changed)
+    return changed, removed, context
+
+
+def merge_refinement(prev: dict, new: dict, reviewed: set[str]) -> dict:
+    """Questions and leaks on files that were not reviewed again are kept; the agent's answer replaces the rest."""
+    def norm(f: str) -> str:
+        return f.split("employee-onboarding/")[-1].lstrip("./") if f else f
+    keep_q = [q for q in prev.get("questions", []) if norm(q["file"]) not in reviewed]
+    keep_t = [t for t in prev.get("tech_leaks", []) if norm(t["file"]) not in reviewed]
+    seen, questions = set(), []
+    for q in keep_q + new.get("questions", []):
+        k = (norm(q["file"]), q["question"])
+        if k not in seen:
+            seen.add(k)
+            questions.append(q)
+    return {"questions": questions,
+            "already_flagged": new.get("already_flagged") or prev.get("already_flagged", []),
+            "tech_leaks": keep_t + new.get("tech_leaks", [])}
+
+
+async def _refine_delta(ctx, system: str, req_dir: Path, spec: Spec, prev: dict, base: dict, now: dict) -> dict:
+    changed, removed, context = refinement_scope(spec, base, now)
+    if not changed and not removed:
+        ctx.log("  dev refinement: no rendered file changed, previous questions kept")
+        return prev
+    reviewed = set(changed) | set(removed)
+    ctx.log(f"  dev refinement (incremental): {len(changed)} changed, {len(removed)} removed, {len(context)} context files")
+
+    def block(rel):
+        return f"### {rel}\n\n{(req_dir / rel).read_text()}"
+
+    prev_on = {"questions": [q for q in prev.get("questions", []) if q["file"] in reviewed],
+               "tech_leaks": [t for t in prev.get("tech_leaks", []) if t["file"] in reviewed],
+               "already_flagged": prev.get("already_flagged", [])}
+    prompt = ("You refined this feature before. Since then these files changed: " + ", ".join(changed)
+              + (". Removed: " + ", ".join(removed) if removed else "") + ".\n\n"
+              + "## Files to review again (changed)\n\n" + "\n\n".join(block(f) for f in changed)
+              + "\n\n## Context (unchanged; read them to find contradictions, but their own questions are kept as they are)\n\n"
+              + "\n\n".join(block(f) for f in context)
+              + "\n\n## Your previous answer for the changed and removed files (JSON)\n\n"
+              + json.dumps(prev_on, ensure_ascii=False, indent=1)
+              + "\n\n" + load_prompt(AGENTS / "dev_refinement_delta.md"))
+    out = await run_agent("dev_refinement", system, prompt, RefinementReport, model=ctx.model("builder"), max_turns=4)
+    return merge_refinement(prev, out, reviewed)
 
 
 async def stage_review(ctx, report: dict) -> dict:
@@ -652,12 +740,13 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
 
     ctx.log("[8] render feature specs")
     req_dir = REQUIREMENTS / feature_id
+    files_before = requirement_files(req_dir)        # what the previous dev refinement read (incremental refinement)
     render(req_dir, ctx, spec, facts, unit_by_id, decisions, judge, guidance, examples)
 
     refinement = {"questions": [], "already_flagged": [], "tech_leaks": []}
     if not skip_llm_checks:
         ctx.log("[9] dev refinement")
-        refinement, rf = await stage_dev_refinement(ctx, req_dir, spec)
+        refinement, rf = await stage_dev_refinement(ctx, req_dir, spec, files_before)
         findings += rf
 
     stories = spec.stories()
