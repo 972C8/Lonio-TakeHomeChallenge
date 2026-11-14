@@ -294,7 +294,7 @@ type the name in Claude Code opened in this folder.
 | `/publish-linear` | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
 | `/learn` | turns decisions you keep repeating into examples, gold entries, guidance or checks |
 
-### 1. Before the first run (once per feature)
+### 1. Before the first run (once per feature, use `/new-feature`)
 
 1. **`features/<f>/profile.yaml`** – check the `goal` (the feature planner and
    the story writer both read it, so its wording shapes the sections and
