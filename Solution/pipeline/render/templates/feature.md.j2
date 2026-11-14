@@ -8,6 +8,9 @@ stories: [{% for sec in sections %}{% for s in sec.stories %}{{ s.id }}{{ ", " i
 
 # {{ feature.title }}
 
+Each user story is its own file in [stories/](stories/); this file holds the
+feature, its sections and the information and rules they share.
+
 **Goal:** {{ feature.goal }}
 
 ## Context
@@ -21,7 +24,7 @@ stories: [{% for sec in sections %}{% for s in sec.stories %}{{ s.id }}{{ ", " i
 | Section | Stories |
 |---|---|
 {% for sec in sections %}
-| [{{ sec.order }}. {{ sec.title | cell }}](#{{ sec.id }}) | {% for s in sec.stories %}{{ s.id }}{{ ", " if not loop.last }}{% endfor %} |
+| [{{ sec.order }}. {{ sec.title | cell }}](#{{ sec.id }}) | {% for s in sec.stories %}[{{ s.id }}]({{ story_path[s.id] }}){{ ", " if not loop.last }}{% endfor %} |
 {% endfor %}
 
 {% for sec in sections %}
@@ -35,41 +38,12 @@ stories: [{% for sec in sections %}{% for s in sec.stories %}{{ s.id }}{{ ", " i
 > ⚠ Open questions affecting this section: {% for q in sec.open_questions %}[{{ q }}](open-questions.md#{{ q | lower }}){{ ", " if not loop.last }}{% endfor %}
 
 {% endif %}
+| Story | Priority | Status |
+|---|---|---|
 {% for s in sec.stories %}
-### {{ s.id }} – {{ s.title }}
-**As** {{ stakeholders.get(s.as_a, s.as_a) }}, **I want** {{ s.i_want }}, **so that** {{ s.so_that }}
-
-Priority **{{ s.priority }}** – {{ s.priority_reason }}{% if s.status != "confirmed" %} · Status: **{{ s.status }}**{% endif %} · Sources: {{ s.source_refs | join(", ") }}
-
-{% if s.items or s.rules %}
-Covers: {% for x in s.items + s.rules %}{{ names.get(x, x) }}{{ ", " if not loop.last }}{% endfor %}
-
-
-{% endif %}
-**Acceptance criteria**
-
-{% for ac in s.acceptance_criteria %}
-- **{{ ac.id }} {{ ac.title }}**
-  - **Given** {{ ac.given }}
-  - **When** {{ ac.when }}
-  - **Then** {{ ac.then }}
-  - _Sources: {{ ac.source_refs | join(", ") }}_
-{% if ac.examples %}
-{% set t = example_table(ac) %}
-
-  | Example | {% for c in t.in %}{{ c | cell }} | {% endfor %}→ | {% for c in t.out %}{{ c | cell }} | {% endfor %}Checked |
-  |---|{% for c in t.in %}---|{% endfor %}---|{% for c in t.out %}---|{% endfor %}---|
-{% for r in t.rows %}
-  | {{ r.name | cell }} | {% for v in r.in %}{{ v | cell }} | {% endfor %}→ | {% for v in r.out %}{{ v | cell }} | {% endfor %}{{ r.ok }} |
+| [{{ s.id }} – {{ s.title | cell }}]({{ story_path[s.id] }}) | {{ s.priority }} | {{ s.status }} |
 {% endfor %}
 
-{% endif %}
-{% endfor %}
-{% if judge.get("story." ~ s.id) and judge["story." ~ s.id].verdict != "supported" %}
-_Trace check: {{ judge["story." ~ s.id].verdict }} – {{ judge["story." ~ s.id].note }}_
-
-{% endif %}
-{% endfor %}
 {% if sec.items %}
 ### Information needed in this section
 
@@ -116,7 +90,7 @@ _Status: {{ r.status }} · Sources: {{ r.source_refs | join(", ") }}_
 {% endif %}
 {% endfor %}
 ## Evidence
-{% for e in evidence(feature_refs()) %}
+{% for e in evidence(feature_refs(stories=False)) %}
 - **{{ e.id }}** ({{ e.source }}{% if e.basis %}, {{ e.basis }}{% endif %}): {{ e.statement }}
 {% for q in e.quotes %}
   - "{{ q.quote }}" — {{ q.where }}

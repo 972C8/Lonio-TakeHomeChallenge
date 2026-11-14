@@ -1,13 +1,22 @@
 """Apply product decisions (decisions.yaml) to facts and to the synthesized spec.
 
-Decisions are data, not prompts: they are applied by code after the agents
-ran, so no agent can reinterpret or ignore them. Each decision fingerprints the
-evidence it is based on; if that evidence changes later, the decision is
-flagged for re-confirmation instead of silently applied.
+Two kinds of decision:
+- Patches (override / add / exclude / resolve / accept / reject) are data, not
+  prompts: they are applied by code after the agents ran (accept / reject before
+  modelling), so no agent can reinterpret or ignore them.
+- Directives (`direct`) steer the agents before they write: a scope or product
+  choice that needs new or different content derived from the sources (e.g.
+  "Lonio computes the full tariff code"). They are given to the modelling and
+  writing agents as precedence-0 input that must be followed and cited; the
+  checks flag a directive that nothing in the spec cites.
+Each decision fingerprints the evidence it is based on; if that evidence
+changes later, the decision is flagged for re-confirmation instead of silently
+applied.
 """
 from __future__ import annotations
 
 import hashlib
+import re
 
 import yaml
 
@@ -18,6 +27,52 @@ def load(ctx) -> list[Decision]:
     path = ctx.feature_dir / ctx.profile.get("decisions_file", "decisions.yaml")
     data = yaml.safe_load(path.read_text()) or {}
     return [Decision.model_validate(d) for d in data.get("decisions") or []]
+
+
+def directives(decisions: list[Decision]) -> list[Decision]:
+    return [d for d in decisions if d.action == "direct"]
+
+
+def directives_prompt(decisions: list[Decision]) -> str:
+    """The prompt block for the agents. Empty string when there are none, so an
+    unchanged decisions file without directives does not change any fingerprint."""
+    ds = directives(decisions)
+    if not ds:
+        return ""
+    lines = ["# Product decisions to follow (precedence 0: they win over every source)",
+             "Follow each one. Model and write everything it implies, deriving the details from the",
+             "facts as usual, and cite its id (e.g. D-001) in `source_refs` of every element it shapes.",
+             "If the facts are not enough to carry it out, add an open question instead of guessing."]
+    lines += [f"- [{d.id}] {d.statement} (why: {d.rationale})" for d in ds]
+    return "\n".join(lines) + "\n"
+
+
+def check_directives(decisions: list[Decision], spec: Spec) -> list[Finding]:
+    """A directive that no element of the spec cites was probably ignored by the agents."""
+    km, feat = spec.knowledge, spec.feature
+    cited = set(feat.source_refs)
+    for coll in (km.items, km.rules, km.open_questions, km.exclusions):
+        for x in coll:
+            cited |= set(x.source_refs)
+    for sec in feat.sections:
+        cited |= set(sec.source_refs)
+        for s in sec.stories:
+            cited |= set(s.source_refs)
+            for ac in s.acceptance_criteria:
+                cited |= set(ac.source_refs)
+    return [Finding(check="decisions", severity="error", target=d.id,
+                    message=f"directive is not cited anywhere in the spec - the agents may have ignored it: {d.statement}")
+            for d in directives(decisions) if d.id not in cited]
+
+
+def validate(decisions: list[Decision]) -> list[Finding]:
+    F = []
+    for d in decisions:
+        if d.action == "direct" and not d.statement.strip():
+            F.append(Finding(check="decisions", severity="error", target=d.id, message="'direct' needs a statement"))
+        if d.action != "direct" and not d.target:
+            F.append(Finding(check="decisions", severity="error", target=d.id, message=f"'{d.action}' needs a target"))
+    return F
 
 
 def evidence_hash(d: Decision, units: dict[str, Unit]) -> str:
@@ -38,7 +93,10 @@ def stamp_and_check(ctx, decisions: list[Decision], units: dict[str, Unit]) -> l
                                             f"(then clear evidence_hash to re-stamp)"))
     if changed:
         path = ctx.feature_dir / ctx.profile.get("decisions_file", "decisions.yaml")
-        header = path.read_text().split("decisions:")[0]
+        # split at the top-level key only: the header comments may contain the word "decisions:" too
+        text = path.read_text()
+        m = re.search(r"^decisions:", text, flags=re.M)
+        header = text[:m.start()] if m else text
         body = yaml.safe_dump({"decisions": [d.model_dump(exclude_defaults=False) for d in decisions]},
                               sort_keys=False, allow_unicode=True, width=100)
         path.write_text(header + body)
@@ -49,7 +107,7 @@ def apply_to_facts(decisions: list[Decision], facts: list[Fact]) -> list[Fact]:
     by_id = {f.id: f for f in facts}
     for d in decisions:
         kind, _, rest = d.target.partition(".")
-        if kind != "fact" or rest not in by_id:
+        if d.action == "direct" or kind != "fact" or rest not in by_id:
             continue
         if d.action == "reject":
             by_id.pop(rest)
@@ -69,7 +127,7 @@ def apply_to_spec(decisions: list[Decision], spec: Spec) -> tuple[Spec, list[Fin
              "exclusion": (km.exclusions, Exclusion), "section": (feat.sections, Section)}
     for d in decisions:
         kind, _, rest = d.target.partition(".")
-        if kind == "fact":
+        if kind == "fact" or d.action == "direct":
             continue
         try:
             if kind == "feature":                       # feature.<attr>: only override

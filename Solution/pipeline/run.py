@@ -7,10 +7,11 @@
      5 feature      planner agent (sections of the ONE feature), then one writer agent
                     per section (parallel)       -> build/<f>/feature.plan.json, sections/<id>.json
      6 decide       decisions.yaml (code)        -> build/<f>/spec.json
+                    (directives - action 'direct' - already steered stages 4-5)
      7 check        checklist lint, examples executed against the knowledge model,
                     coverage, tech-leak scan (code); trace judge (agent)
      8 render       templates (code)             -> requirements/<f>/
-     9 refinement   a dev-refinement agent reads the rendered feature (feature.md)
+     9 refinement   a dev-refinement agent reads the rendered feature (feature.md + stories/)
     10 review       reviewer agent               -> build/<f>/review.md (verdict)
 
 Every LLM stage is cached by a fingerprint of its inputs. `--force <stage>`
@@ -31,7 +32,8 @@ from .engine import decisions as D
 from .engine.context import Context, sha
 from .engine.llm import COSTS, load_prompt, run_agent
 from .engine.paths import PIPELINE, REQUIREMENTS
-from .engine.schemas import Fact, Feature, FeaturePlan, Finding, KnowledgeModel, Section, Spec, Unit
+from .engine.schemas import (AcceptanceCriterion, BusinessRule, Fact, Feature, FeaturePlan, Finding, KnowledgeModel,
+                             Section, Spec, Unit)
 from .render.render import TEMPLATES, render
 
 AGENTS = PIPELINE / "agents"
@@ -48,6 +50,14 @@ class Verdict(BaseModel):
 
 class Verdicts(BaseModel):
     verdicts: list[Verdict]
+
+
+class RuleFixes(BaseModel):
+    rules: list[BusinessRule]
+
+
+class CriterionFixes(BaseModel):
+    acceptance_criteria: list[AcceptanceCriterion]
 
 
 class RefinementQuestion(BaseModel):
@@ -154,6 +164,7 @@ def _profile_ctx(ctx: Context) -> dict:
         sources="\n".join(f"- `{s['id']}` ({s['type']}, precedence {s.get('precedence', 9)}): {s.get('authority', '')}"
                           for s in p["sources"]),
         guidance=(ctx.feature_dir / "guidance.md").read_text(),
+        directives=D.directives_prompt(D.load(ctx)),
         conventions=COND_LANG.read_text(),
     )
 
@@ -186,11 +197,58 @@ async def stage_knowledge(ctx, facts: list[Fact]) -> KnowledgeModel:
     payload = _fact_payload(usable)
 
     async def go():
-        return await run_agent("knowledge", system, "Facts (JSON):\n" + json.dumps(payload, ensure_ascii=False, indent=1)
-                               + "\n\nProduce the complete KnowledgeModel.", KnowledgeModel,
-                               model=ctx.model("synthesize"), max_turns=8)
+        out = await run_agent("knowledge", system, "Facts (JSON):\n" + json.dumps(payload, ensure_ascii=False, indent=1)
+                              + "\n\nProduce the complete KnowledgeModel.", KnowledgeModel,
+                              model=ctx.model("synthesize"), max_turns=8)
+        return await _repair_tables(ctx, system, KnowledgeModel.model_validate(out))
 
     return KnowledgeModel.model_validate(await ctx.stage("knowledge.raw", [payload, fingerprint_system], go))
+
+
+async def _repair_tables(ctx, system: str, km: KnowledgeModel) -> dict:
+    """One repair round for decision tables whose rows do not have one cell per input (only the broken rules go back)."""
+    errors = M.table_shape_errors(km)
+    if not errors:
+        return km.model_dump()
+    broken = {e.split(":")[0].removeprefix("rule ") for e in errors}
+    rules = [r for r in km.rules if r.id in broken]
+    ctx.log(f"  repairing decision tables of {len(rules)} rules ...")
+    out = await run_agent("knowledge_repair", system,
+                          "These rules have decision-table rows without one cell per input:\n- " + "\n- ".join(errors)
+                          + "\n\nRules (JSON):\n" + json.dumps([r.model_dump() for r in rules], ensure_ascii=False, indent=1)
+                          + "\n\nReturn these rules corrected: every row exactly one cell per input, in column order "
+                            "('any' / '-' where needed). Change nothing else.", RuleFixes, model=ctx.model("synthesize"), max_turns=4)
+    fixed = {r["id"]: BusinessRule.model_validate(r) for r in out["rules"]}
+    km.rules = [fixed.get(r.id, r) for r in km.rules]
+    return km.model_dump()
+
+
+async def _repair_examples(ctx, system: str, km: KnowledgeModel, sec: Section) -> Section:
+    """One repair round for the section's acceptance criteria whose examples fail against the knowledge model."""
+    failing = {}
+    for s in sec.stories:
+        for ac in s.acceptance_criteria:
+            msgs = [f"{ex.name}: {m}" for ex in ac.examples
+                    for m in M.check_example(km, {g.item: g.value for g in ex.given}, [(t.target, t.expect) for t in ex.then])[0]]
+            if msgs:
+                failing[ac.id] = (ac, msgs)
+    if not failing:
+        return sec
+    ctx.log(f"  repairing {len(failing)} criteria of {sec.id} ...")
+    items = [{"id": i.id, "asked_when_expr": i.asked_when_expr, "allowed_values": i.allowed_values} for i in km.items]
+    prompt = ("These acceptance criteria have examples that fail when executed against the knowledge model:\n"
+              + "\n".join(f"- {cid}: " + "; ".join(m) for cid, (_, m) in failing.items())
+              + "\n\nCriteria (JSON):\n" + json.dumps([ac.model_dump() for ac, _ in failing.values()], ensure_ascii=False, indent=1)
+              + "\n\nItems involved (JSON):\n" + json.dumps(items, ensure_ascii=False, indent=1)
+              + "\n\nRules (JSON):\n" + json.dumps([{"id": r.id, "expression": r.expression} for r in km.rules], ensure_ascii=False, indent=1)
+              + "\n\nReturn these criteria with corrected examples (usually missing inputs that make an item asked). "
+                "Only change an expected outcome if the criterion's own text says otherwise. Change nothing else.")
+    out = await run_agent(f"write_section_repair/{sec.id}", system, prompt, CriterionFixes,
+                          model=ctx.model("synthesize"), max_turns=4)
+    fixed = {a["id"]: AcceptanceCriterion.model_validate(a) for a in out["acceptance_criteria"]}
+    stories = [s.model_copy(update={"acceptance_criteria": [fixed.get(a.id, a) for a in s.acceptance_criteria]})
+               for s in sec.stories]
+    return sec.model_copy(update={"stories": stories})
 
 
 async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
@@ -237,8 +295,9 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
                   "\n\nReturn this Section with its stories written.")
 
         async def go():
-            return await run_agent(f"write_section/{sec.id}", write_system, prompt, Section,
-                                   model=ctx.model("synthesize"), max_turns=6)
+            out = await run_agent(f"write_section/{sec.id}", write_system, prompt, Section,
+                                  model=ctx.model("synthesize"), max_turns=6)
+            return (await _repair_examples(ctx, write_system, km, Section.model_validate(out))).model_dump()
 
         out = Section.model_validate(await ctx.stage(f"sections/{sec.id}", [prompt, write_fingerprint_system], go))
         # ownership and metadata stay as planned; the writer only adds stories
@@ -252,10 +311,12 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
 async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact]) -> tuple[dict, list[Finding]]:
     fb = {f.id: f for f in facts}
     guidance = ctx.guidance_items()
+    dec = {d.id: d for d in D.load(ctx)}
 
     def cite(refs):
         return [{"id": r, "statement": fb[r].statement, "quotes": [a.quote for a in fb[r].anchors]} if r in fb
                 else {"id": r, "statement": "product owner guidance: " + guidance[r]} if r in guidance
+                else {"id": r, "statement": "product decision: " + (dec[r].statement or dec[r].rationale)} if r in dec
                 else {"id": r, "statement": "product decision"} for r in refs]
 
     items = [{"id": f"item.{i.id}", "element": i.model_dump(exclude={"source_refs", "depends_on"}), "cited": cite(i.source_refs)}
@@ -281,17 +342,19 @@ async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact]) -> tuple[dict, l
 
 
 async def stage_dev_refinement(ctx, req_dir: Path, spec: Spec) -> tuple[dict, list[Finding]]:
-    """One engineer agent reads the rendered feature (feature.md + shared files) and reports what it would ask."""
+    """One engineer agent reads the rendered feature (feature.md, stories/, shared files) and reports what it would ask."""
     system = load_prompt(AGENTS / "dev_refinement.md")
     path = req_dir / "feature.md"
+    story_files = sorted((req_dir / "stories").glob("*.md"))
 
     async def go():
         return await run_agent("dev_refinement", system,
-                               f"Feature file: {path}\nShared files are in: {req_dir}\nRead them, then answer.",
+                               f"Feature file: {path}\nStory files are in: {req_dir / 'stories'}\n"
+                               f"Shared files are in: {req_dir}\nRead them all, then answer.",
                                RefinementReport, model=ctx.model("builder"), tools=["Read", "Glob", "Grep"],
                                add_dirs=[req_dir], max_turns=60)
 
-    rep = await ctx.stage("dev_refinement", [path, req_dir / "information.md", req_dir / "open-questions.md", system], go)
+    rep = await ctx.stage("dev_refinement", [path, *story_files, req_dir / "information.md", req_dir / "open-questions.md", system], go)
     merged = {"questions": rep["questions"], "already_flagged": rep.get("already_flagged", []),
               "tech_leaks": rep.get("tech_leaks", [])}
     sev = {"blocker": "error", "major": "warning", "minor": "info"}
@@ -321,7 +384,7 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
 
     ctx.log("[3] verify facts")
     decisions = D.load(ctx)
-    findings = D.stamp_and_check(ctx, decisions, unit_by_id)
+    findings = D.validate(decisions) + D.stamp_and_check(ctx, decisions, unit_by_id)
     facts, ff = await stage_verify_facts(ctx, adapters, units, facts)
     findings += ff
     facts = D.apply_to_facts(decisions, facts)
@@ -334,7 +397,7 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
 
     ctx.log("[6] apply decisions")
     spec, df = D.apply_to_spec(decisions, spec)
-    findings += df
+    findings += df + D.check_directives(decisions, spec)
     M.compute_depends_on(spec.knowledge)
     ctx.write("spec", spec.model_dump())
 

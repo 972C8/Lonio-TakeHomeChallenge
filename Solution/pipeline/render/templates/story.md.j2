@@ -1,0 +1,59 @@
+---
+id: {{ s.id }}
+feature: {{ feature.id }}
+section: {{ sec.id }}
+priority: {{ s.priority }}
+status: {{ s.status }}
+as_a: {{ s.as_a }}
+items: [{{ s.items | join(", ") }}]
+rules: [{{ s.rules | join(", ") }}]
+---
+
+# {{ s.id }} – {{ s.title }}
+
+Part of [{{ feature.title }}](../feature.md), section [{{ sec.order }}. {{ sec.title }}](../feature.md#{{ sec.id }}).
+
+**As** {{ stakeholders.get(s.as_a, s.as_a) }}, **I want** {{ s.i_want }}, **so that** {{ s.so_that }}
+
+Priority **{{ s.priority }}** – {{ s.priority_reason }}{% if s.status != "confirmed" %} · Status: **{{ s.status }}**{% endif %} · Sources: {{ s.source_refs | join(", ") }}
+
+{% if sec.open_questions %}
+> ⚠ Open questions affecting this section: {% for q in sec.open_questions %}[{{ q }}](../open-questions.md#{{ q | lower }}){{ ", " if not loop.last }}{% endfor %}
+
+{% endif %}
+{% if s.items or s.rules %}
+Covers (details in [the section](../feature.md#{{ sec.id }}) and [information.md](../information.md)): {% for x in s.items + s.rules %}{{ names.get(x, x) }}{{ ", " if not loop.last }}{% endfor %}
+
+
+{% endif %}
+## Acceptance criteria
+
+{% for ac in s.acceptance_criteria %}
+- **{{ ac.id }} {{ ac.title }}**
+  - **Given** {{ ac.given }}
+  - **When** {{ ac.when }}
+  - **Then** {{ ac.then }}
+  - _Sources: {{ ac.source_refs | join(", ") }}_
+{% if ac.examples %}
+{% set t = example_table(ac) %}
+
+  | Example | {% for c in t.in %}{{ c | cell }} | {% endfor %}→ | {% for c in t.out %}{{ c | cell }} | {% endfor %}Checked |
+  |---|{% for c in t.in %}---|{% endfor %}---|{% for c in t.out %}---|{% endfor %}---|
+{% for r in t.rows %}
+  | {{ r.name | cell }} | {% for v in r.in %}{{ v | cell }} | {% endfor %}→ | {% for v in r.out %}{{ v | cell }} | {% endfor %}{{ r.ok }} |
+{% endfor %}
+
+{% endif %}
+{% endfor %}
+{% if judge.get("story." ~ s.id) and judge["story." ~ s.id].verdict != "supported" %}
+_Trace check: {{ judge["story." ~ s.id].verdict }} – {{ judge["story." ~ s.id].note }}_
+
+{% endif %}
+
+## Evidence
+{% for e in evidence(story_refs(s)) %}
+- **{{ e.id }}** ({{ e.source }}{% if e.basis %}, {{ e.basis }}{% endif %}): {{ e.statement }}
+{% for q in e.quotes %}
+  - "{{ q.quote }}" — {{ q.where }}
+{% endfor %}
+{% endfor %}

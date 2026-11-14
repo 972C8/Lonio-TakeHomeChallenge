@@ -11,7 +11,7 @@ the user stories will be written. Sections are not separate features.
 
 # Feature guidance
 {{guidance}}
-
+{{directives}}
 # Your input
 The knowledge model: information items, business rules, open questions and
 exclusions, all cited.

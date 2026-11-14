@@ -222,6 +222,12 @@ def _norm(v):
         return s
 
 
+def table_shape_errors(km: KnowledgeModel) -> list[str]:
+    """Decision-table rows whose cell count does not match the rule's inputs."""
+    return [f"rule {r.id}: row {n} {row.when} has {len(row.when)} cells for {len(r.inputs)} inputs {r.inputs}"
+            for r in km.rules for n, row in enumerate(r.table, 1) if r.inputs and len(row.when) != len(r.inputs)]
+
+
 def check_example(km: KnowledgeModel, given: dict, then: list[tuple[str, str]]) -> tuple[list[str], dict]:
     sim = simulate(km, given)
     items, rules = {i.id for i in km.items}, {r.id for r in km.rules}
@@ -245,6 +251,12 @@ def check_example(km: KnowledgeModel, given: dict, then: list[tuple[str, str]]) 
                 fails.append(f"{target} = {got!r}, expected {expect!r}")
         else:
             fails.append(f"unknown target {target}")
+    if fails:                       # explain the most common cause: an answer to a question not asked in this case
+        for k in given:
+            if k in items and k not in sim["asked"]:
+                it = next(i for i in km.items if i.id == k)
+                fails.append(f"input {k} was given but is not asked in this case (asked when: {it.asked_when or it.asked_when_expr}) "
+                             f"- the example must also give the inputs that make it asked")
     for k in given:
         if k in C.BUILTINS:
             continue

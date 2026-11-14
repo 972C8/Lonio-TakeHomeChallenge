@@ -52,7 +52,7 @@ Read `build/<f>/review.md` and report, briefly:
 2. **New content not used:** uncited units of the changed or new source in
    the coverage section.
 3. **What moved in the spec:** `git diff --stat -- requirements/<f>/` (and
-   the diff of `feature.md` if short). If `requirements/<f>/` was not
+   the diff of `feature.md` and the changed files in `stories/` if short). If `requirements/<f>/` was not
    committed before, say there is nothing to compare against.
 
 Then offer **`/review`** for everything else in the review.

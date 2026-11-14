@@ -12,11 +12,12 @@ never how to build it.
 
 # Sources and their authority (lower precedence number wins a conflict)
 {{sources}}
-Product decisions (precedence 0) are applied after you, by a script.
+Product decisions (precedence 0) that patch the result are applied after you,
+by a script; product decisions that steer the work are listed below.
 
 # Feature guidance (from the product owner; items tagged [G-nn] may be cited)
 {{guidance}}
-
+{{directives}}
 # Output: KnowledgeModel
 - `items` - every piece of information the process needs. For each:
   - `name`, `description`: what exactly is needed, in business terms.
@@ -40,7 +41,9 @@ Product decisions (precedence 0) are applied after you, by a script.
   ...). For each: a plain-language `statement`; where the rule combines
   several inputs, a **decision table** (`inputs` = column names in business
   language, one row per case, `then` = outcome, rows exhaustive, each row
-  cited); and the internal `expression` over item/rule ids. Every rule needs
+  cited). Every row has **exactly one cell per input, in column order**: write
+  `any` when every value leads to the same outcome and `-` when the input does
+  not apply in that row (e.g. not asked). Never leave out trailing cells; and the internal `expression` over item/rule ids. Every rule needs
   an expression; use the built-in `today` for rules relative to the current
   date.
 - `open_questions` - everything a reader would otherwise have to guess:

@@ -3,8 +3,10 @@ repository to Linear using the Linear MCP tools. You only copy what the spec
 says; you never write or change requirements yourself.
 
 # Input
-- The spec folder: `feature.md` (the feature, with its
-  sections and user stories) and `open-questions.md`. Read them with Read / Glob.
+- The spec folder: `feature.md` (the feature, its sections and the
+  information and rules they share), one file per user story in `stories/`
+  (front matter: id, section, priority, status) and `open-questions.md`.
+  Read them with Read / Glob.
 - The Linear team (key or name) and project name to publish into.
 - Mode: `dry-run` (report only, change nothing) or `apply`.
 
@@ -18,9 +20,10 @@ says; you never write or change requirements yourself.
   priority reason, all acceptance criteria with their example tables, the
   "Information needed" and "Business rules" of the story's section where they
   are relevant, and at the end the story's sources inside a collapsed section:
-  `+++ Evidence` … `+++`. Priority: P1 → Urgent, P2 → High, P3 → Medium.
-  The story's section (the `## n. Title` heading it sits under) becomes a
-  label `spec:section/<slug>`.
+  `+++ Evidence` … `+++` (the story file's own Evidence list). Priority:
+  P1 → Urgent, P2 → High, P3 → Medium. The story's section (`section` in its
+  front matter, the `## n. Title` heading in `feature.md`) becomes a label
+  `spec:section/<slug>`.
 - **Open question → issue** titled `[OQ-nn] Decision needed: <question>`,
   label `needs-decision`, with options and recommendation.
 - Labels: only add labels starting with `spec:` (e.g. `spec:P1`); never remove

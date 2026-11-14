@@ -55,7 +55,9 @@ Deliverables of this run:
 5. **The human decides, as data.** Open questions and inferred items surface in
    `review.md`. The product owner answers in `decisions.yaml` (or with
    `/decide`); code applies decisions after the agents ran, cites them, and
-   flags them for re-confirmation if their evidence changes.
+   flags them for re-confirmation if their evidence changes. A scope choice
+   that needs new content (a *directive*) steers the agents before they write
+   instead, and the checks report it if nothing cites it.
 6. **Generic engine, one folder per feature.** Nothing in `pipeline/` knows about
    onboarding. Everything domain-specific lives in `features/<name>/`.
 7. **Cheap, traceable reruns.** Each stage is cached by a fingerprint of all
@@ -86,7 +88,7 @@ pipeline/                    GENERIC - never changed for a new feature
   adapters/<source type>/    adapter.py + agent.md (+ config.yaml): transcript, screenshots, web_calculator
   agents/                    knowledge modeler, feature planner (sections), story writer (per section), judges, dev refinement, reviewer
   checks/mechanical.py       checklist lint, example execution, coverage, tech-leak scan
-  render/templates/          feature.md, information catalogue, open questions, out of scope, traceability
+  render/templates/          feature.md, one file per story, information catalogue, open questions, out of scope, traceability
   publish/linear.py          optional step 8: Linear publisher agent (instructions: agents/linear_publisher.md)
 features/<name>/             EVERYTHING SPECIFIC to one feature (one process)
   profile.yaml               sources (+ authority, precedence), stakeholders, item checklist, models
@@ -94,7 +96,7 @@ features/<name>/             EVERYTHING SPECIFIC to one feature (one process)
   decisions.yaml             product decisions (the override layer)
 .claude/skills/              /run-pipeline · /review · /decide · /trace · /new-adapter · /new-feature · /learn
 build/<feature>/             every intermediate result (units, facts, verdicts, knowledge, feature plan, sections, report, review.md)
-requirements/<feature>/      the deliverable: feature.md + shared files
+requirements/<feature>/      the deliverable: feature.md + stories/<US-id>-<title>.md + shared files
 ```
 
 ## The steps
@@ -182,6 +184,7 @@ and precedence) + `guidance.md` → `knowledge.raw.json`.
 - **Corrections win:** within a source, the latest statement wins.
 - **No silent choices:** across sources, precedence decides, and a genuine conflict becomes an open question.
 - **Honest status:** items that rest on inference are marked `inferred`.
+- **Complete decision tables:** every row has one cell per input (`any` / `-` where needed). If the modeler leaves cells out, the rules concerned go back to it once to be fixed, before anything is cached.
 
 ### 5. Feature spec – group into sections and write the stories
 
@@ -199,7 +202,7 @@ stays in business language. How to build it is left to engineering.
 
 **Complete and correct.**
 - **Full coverage:** every item and rule a section owns must be covered by at least one story, and every row of every decision table by a criterion.
-- **Exact examples:** examples must be complete enough to be executed in step 7.
+- **Exact examples:** examples must be complete enough to be executed in step 7. Each section's examples are already executed right after writing; failing ones go back to the writer once, with the reason (typically an answer to a question that is not asked in that case).
 - **Cited sources:** stories and criteria cite facts, guidelines or decisions.
 - **Open questions referenced, not decided:** open questions are referenced, never resolved by the writer.
 
@@ -213,16 +216,23 @@ skill. Each decision can:
 - **exclude** something
 - **resolve** an open question
 - **accept or reject** a fact
+- **direct** the agents (a directive): a product or scope choice that needs
+  new content derived from the sources, e.g. "Lonio computes the full tariff
+  code". A patch can only change what the agents wrote; a directive changes
+  what they write.
 
-Decisions are applied by code **after** the agents ran, so no agent can
-ignore or reinterpret them. They are cited like any source, with the highest
-precedence.
+Patches are applied by code **after** the agents ran, so no agent can
+ignore or reinterpret them. Directives are given to the knowledge modeler,
+the feature planner and the story writers as precedence-0 input that they
+must follow and cite; adding or changing one reruns those stages. All
+decisions are cited like any source, with the highest precedence.
 
 **In → out.** Knowledge model + feature + `decisions.yaml` → `spec.json`.
 
 **Complete and correct.**
 - **Fingerprinted evidence:** each decision records a fingerprint of the source units it is based on. If that evidence changes later, the decision is flagged "needs re-confirmation" instead of being applied silently.
 - **Broken targets reported:** a decision whose target no longer exists is reported as an error.
+- **Ignored directives reported:** a directive that no item, rule, story or criterion cites is reported as an error.
 
 ### 7. Check, render & review – prove it, publish it, judge it
 
@@ -236,12 +246,13 @@ precedence.
    - **Tech-leak scan:** a vocabulary scan flags implementation terms.
 2. **Trace judge (agent):** each item, rule and story is compared with the facts it cites.
 3. **Render (code):** Jinja templates write `requirements/<feature>/`. The internal formalisation is never rendered. Files:
-   - `feature.md`: the whole feature, with its sections, stories, criteria, examples and evidence
+   - `feature.md`: the feature (goal, context), its sections, and the information and business rules the sections share, with links to the stories
+   - `stories/US-x.y-<title>.md`: one file per user story, with its acceptance criteria, examples and evidence, readable on its own (e.g. as a ticket)
    - an information catalogue
    - open questions
    - out of scope
    - traceability
-4. **Dev refinement (one agent):** an engineer agent that reads `feature.md` and the shared files lists every question it would ask in refinement, plus any technical decisions that leaked into the spec. This is the acceptance test of the task: "built without anyone asking a single question".
+4. **Dev refinement (one agent):** an engineer agent that reads `feature.md`, the story files and the shared files lists every question it would ask in refinement, plus any technical decisions that leaked into the spec. This is the acceptance test of the task: "built without anyone asking a single question".
 5. **Review (agent):** summarises everything into one verdict (ready / ready with caveats / not ready), with prioritised findings and suggested decisions.
 
 **In → out.** `spec.json`, facts, units →

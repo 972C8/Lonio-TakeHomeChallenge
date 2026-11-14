@@ -40,7 +40,9 @@ never answer for them.
    it matters, options and the pipeline's recommendation, plus the quote that
    raised it. Record the answer as **two things**: the change itself
    (`override` / `add` / `exclude` of the affected item, rule, story or
-   section) and `resolve` for `open.<id>`. A `resolve` alone only closes the
+   section) and `resolve` for `open.<id>`. If the answer is a scope or product
+   choice that needs new content derived from the sources, record a `direct`
+   decision instead of the change (see /decide). A `resolve` alone only closes the
    question; it does not change the spec.
 4. **Inferred items** – facts and elements that rest on interpretation: show
    the fact statement and the quote, say whether the reading is reasonable.

@@ -11,7 +11,7 @@ for a product team that will hand them to engineering. You describe **what** mus
 
 # Feature guidance
 {{guidance}}
-
+{{directives}}
 # Your input
 The feature (title, goal, context), the section to write (purpose, owned
 information items and rules, open questions), the full knowledge model (so you can reference items owned by
@@ -44,7 +44,13 @@ For each story:
     for a rule id - its expected outcome (e.g. "yes", "no", "01.04.2026").
   Every example is executed by the pipeline against the knowledge model, so
   it must be exact and complete enough to evaluate (give every input the
-  outcome depends on).
+  outcome depends on). An answer only counts if its question is **asked** in
+  that case: also give the inputs that make every given item asked (check its
+  `asked_when_expr`; e.g. an item asked only when `subject_to_source_tax`
+  needs inputs that make the employee subject).
+- Each story is published as **its own file** and read on its own (e.g. as
+  one ticket): its text and criteria must make sense without the neighbouring
+  stories, so name what it relies on instead of writing "as above".
 - `source_refs` on stories and criteria: only fact ids (F-), guidance (G-)
   and decisions (D-) behind them. Open questions are referenced in the text
   (e.g. "see OQ-02"), never in `source_refs`. `status` `inferred` if any part rests on inference.

@@ -217,8 +217,9 @@ class Spec(BaseModel):
 
 class Decision(BaseModel):
     id: str                      # D-001
-    action: Literal["override", "add", "exclude", "accept", "reject", "resolve"]
-    target: str                  # field.<id>.<attr> | field.<id> | rule.<id>... | fact.<id> | open.<id>
+    action: Literal["direct", "override", "add", "exclude", "accept", "reject", "resolve"]
+    target: str = ""             # field.<id>.<attr> | field.<id> | rule.<id>... | fact.<id> | open.<id>; empty for direct
+    statement: str = ""          # direct only: the instruction the agents must follow and cite
     value: object = None
     rationale: str
     by: str = "product"

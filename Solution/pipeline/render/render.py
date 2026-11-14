@@ -1,4 +1,5 @@
-"""Deterministic rendering: spec JSON + facts -> requirements/<feature>/ (feature.md + shared files).
+"""Deterministic rendering: spec JSON + facts -> requirements/<feature>/ (feature.md, one file per story in
+stories/, shared files).
 
 The Markdown is never written by an LLM directly: agents produce structured
 data, templates decide the format. The internal formalisation (expressions)
@@ -6,6 +7,7 @@ is deliberately NOT rendered - the output contains business knowledge only.
 """
 from __future__ import annotations
 
+import re
 import shutil
 from pathlib import Path
 
@@ -40,7 +42,7 @@ def render(out_dir: Path, ctx, spec: Spec, facts: list[Fact], units: dict[str, U
                 out.append({"id": r, "source": "product owner guidance", "statement": guidance[r], "quotes": [], "basis": ""})
             elif r in dec_by_id:
                 d = dec_by_id[r]
-                out.append({"id": r, "source": f"product decision ({d.by})", "statement": d.rationale, "quotes": [], "basis": ""})
+                out.append({"id": r, "source": f"product decision ({d.by})", "statement": d.statement or d.rationale, "quotes": [], "basis": ""})
             elif r in facts_by_id:
                 f = facts_by_id[r]
                 out.append({"id": r, "source": f.source_id, "statement": f.statement,
@@ -48,14 +50,19 @@ def render(out_dir: Path, ctx, spec: Spec, facts: list[Fact], units: dict[str, U
                             "quotes": [{"quote": a.quote, "where": _where(units.get(a.unit_id))} for a in f.anchors]})
         return out
 
-    def feature_refs():
+    def story_refs(st):
+        refs = set(st.source_refs)
+        for ac in st.acceptance_criteria:
+            refs |= set(ac.source_refs)
+        return sorted(refs)
+
+    def feature_refs(stories=True):
         refs = set(feature.source_refs)
         for sec in sections:
             refs |= set(sec.source_refs)
-            for st in sec.stories:
-                refs |= set(st.source_refs)
-                for ac in st.acceptance_criteria:
-                    refs |= set(ac.source_refs)
+            if stories:
+                for st in sec.stories:
+                    refs |= set(story_refs(st))
         for i in km.items:
             refs |= set(i.source_refs)
         for r in km.rules:
@@ -83,9 +90,11 @@ def render(out_dir: Path, ctx, spec: Spec, facts: list[Fact], units: dict[str, U
 
     # stakeholders: "id: short name - description" -> rendered by short name
     stakeholders = {k: str(v).split(" - ")[0].strip() for k, v in ctx.profile["stakeholders"].items()}
+    story_path = {s.id: f"stories/{story_file(s)}" for sec in sections for s in sec.stories}
     common = dict(spec=spec, km=km, items=items, rules=rules, names=names, stakeholders=stakeholders,
                   owner=owner, evidence=evidence, feature=feature, sections=sections, judge=judge or {}, profile=ctx.profile,
-                  oq={q.id: q for q in km.open_questions}, feature_refs=feature_refs, example_table=example_table)
+                  oq={q.id: q for q in km.open_questions}, feature_refs=feature_refs, story_refs=story_refs,
+                  example_table=example_table, story_path=story_path)
     if out_dir.exists():
         shutil.rmtree(out_dir)
     out_dir.mkdir(parents=True)
@@ -98,11 +107,23 @@ def render(out_dir: Path, ctx, spec: Spec, facts: list[Fact], units: dict[str, U
 
     w("README.md", "index.md.j2")
     w("feature.md", "feature.md.j2")
+    (out_dir / "stories").mkdir()
+    for sec in sections:
+        for s in sec.stories:
+            w(story_path[s.id], "story.md.j2", sec=sec, s=s)
     w("information.md", "information.md.j2")
     w("open-questions.md", "open_questions.md.j2")
     w("out-of-scope.md", "exclusions.md.j2")
     w("traceability.md", "traceability.md.j2", facts=facts)
     return written
+
+
+def story_file(s) -> str:
+    """stories/US-02.1-confirm-the-first-working-day.md - id first so the files sort in story order."""
+    slug = re.sub(r"[^a-z0-9]+", "-", s.title.lower()).strip("-")
+    if len(slug) > 60:                                  # cut at a word boundary
+        slug = slug[:61].rsplit("-", 1)[0]
+    return f"{s.id}-{slug}.md"
 
 
 def _where(u: Unit | None) -> str:

@@ -9,3 +9,13 @@
    get squeezed into generic rules and cannot be checked by examples. Making it
    fully generic would need pluggable item types per feature, each with its
    own checklist and kind of example.
+
+2. **Directives are followed by agents, so only their citation is guaranteed.**
+   Patch decisions (override, add, exclude, resolve, accept, reject) are applied
+   by code and cannot be ignored. A directive (`action: direct`, e.g. "Lonio
+   computes the full tariff code") has to steer the agents before they write,
+   so it is a precedence-0 instruction in their prompts, not code. The checks
+   prove that something in the spec cites it, and the trace judge reads the
+   directive's statement when it judges an element that cites it, but no check
+   proves that everything the directive implies was written. A directive also
+   reruns modelling and writing, so it costs more than a patch.

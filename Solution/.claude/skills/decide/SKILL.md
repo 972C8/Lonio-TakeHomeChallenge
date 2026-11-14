@@ -12,7 +12,16 @@ synthesis, cited like a source, and fingerprinted against their evidence.
 1. Identify the feature (default `employee-onboarding`) and read
    `build/<feature>/spec.json` (knowledge model + the feature with its sections),
    `build/<feature>/facts.json` and the decisions file.
-2. Translate the user's words into one or more entries:
+2. Translate the user's words into one or more entries. First choose the kind:
+   a **patch** (below) when the change can be stated exactly on existing or new
+   elements; a **directive** when it is a product or scope choice that needs
+   new or different content the agents must derive from the sources (e.g.
+   "Lonio computes the full tariff code" needs new rules from the calculator
+   facts). Never hand-write domain rules to avoid a directive.
+   - `direct` – `statement` = the instruction in one or two sentences, no
+     `target`. Given to the modelling and writing agents, who must follow and
+     cite it. Reruns modelling and writing (costs about as much as most of a
+     full run): say so before saving.
    - `override` – change one attribute: `target: item.<id>.<attr>` (e.g.
      `asked_when` + `asked_when_expr` – always change the business text AND
      the internal expression together, as two decisions), `rule.<id>.<attr>`,
