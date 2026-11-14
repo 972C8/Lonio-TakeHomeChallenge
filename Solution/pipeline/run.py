@@ -29,6 +29,7 @@ from typing import Literal
 from .adapters.base import get_adapter
 from .checks import mechanical as M
 from .engine import decisions as D
+from .engine import incremental as I
 from .engine.context import Context, sha
 from .engine.llm import COSTS, load_prompt, run_agent
 from .engine.paths import PIPELINE, REQUIREMENTS
@@ -185,7 +186,7 @@ def _existing(ids: list[str]) -> str:
     return ", ".join(ids) or "(none yet)"
 
 
-async def stage_knowledge(ctx, facts: list[Fact]) -> KnowledgeModel:
+async def stage_knowledge(ctx, facts: list[Fact], known_before: set[str] | None = None) -> KnowledgeModel:
     """Ids of items and rules are fed back from the last run (knowledge.raw) so reruns reuse them."""
     usable = [f for f in facts if f.anchor_ok and f.judge != "unsupported"]
     prev = _previous(ctx, "knowledge.raw")
@@ -196,13 +197,54 @@ async def stage_knowledge(ctx, facts: list[Fact]) -> KnowledgeModel:
     fingerprint_system = load_prompt(AGENTS / "knowledge_modeler.md", **args, existing_ids="")
     payload = _fact_payload(usable)
 
+    system_fp = sha(fingerprint_system)
+    digest = I.fact_digest(payload)
+
     async def go():
-        out = await run_agent("knowledge", system, "Facts (JSON):\n" + json.dumps(payload, ensure_ascii=False, indent=1)
-                              + "\n\nProduce the complete KnowledgeModel.", KnowledgeModel,
-                              model=ctx.model("synthesize"), max_turns=8)
-        return await _repair_tables(ctx, system, KnowledgeModel.model_validate(out))
+        prev_in = _previous(ctx, "knowledge.input")
+        # bootstrap: a model from before incremental runs has no input record; treat its prompt as unchanged
+        same_system = prev_in is None or prev_in.get("system") == system_fp
+        full = not prev or not same_system or (prev_in is None and known_before is None) or "all" in ctx.force or "knowledge.raw" in ctx.force
+        if full:
+            out = await run_agent("knowledge", system, "Facts (JSON):\n" + json.dumps(payload, ensure_ascii=False, indent=1)
+                                  + "\n\nProduce the complete KnowledgeModel.", KnowledgeModel,
+                                  model=ctx.model("synthesize"), max_turns=8)
+            km = KnowledgeModel.model_validate(out)
+        else:
+            if prev_in:
+                new_ids, removed = I.fact_changes(prev_in["facts"], digest)
+            else:                    # bootstrap: compare with the fact ids of the previous run
+                new_ids = sorted(set(digest) - known_before)
+                removed = sorted(known_before - set(digest))
+            km = await _knowledge_delta(ctx, system, KnowledgeModel.model_validate(prev),
+                                        [p for p in payload if p["id"] in set(new_ids)], removed)
+        ctx.write("knowledge.input", {"system": system_fp, "facts": digest})
+        return await _repair_tables(ctx, system, km)
 
     return KnowledgeModel.model_validate(await ctx.stage("knowledge.raw", [payload, fingerprint_system], go))
+
+
+async def _knowledge_delta(ctx, system: str, prev: KnowledgeModel, new_facts: list[dict],
+                           removed: list[str]) -> KnowledgeModel:
+    """Incremental modelling: the agent returns only what the new / removed facts change; code applies it."""
+    ctx.log(f"  delta: {len(new_facts)} new or changed facts, {len(removed)} removed")
+    if not new_facts and not removed:
+        return prev
+    prompt = ("Previous knowledge model (JSON) - it stays exactly as it is except for what you return:\n"
+              + prev.model_dump_json(indent=1, exclude={"items": {"__all__": {"depends_on"}}, "rules": {"__all__": {"depends_on"}}})
+              + "\n\nNew or changed facts (JSON):\n" + json.dumps(new_facts, ensure_ascii=False, indent=1)
+              + "\n\nRemoved fact ids (no longer valid; elements citing only them must change or go): "
+              + (", ".join(removed) or "none")
+              + "\n\nReturn a delta: every item, rule, open question or exclusion that must be ADDED or CHANGED because "
+                "of these facts, as complete objects (keep the id when an element changes), and in `remove` the ids of "
+                "elements to delete (item.<id>, rule.<id>, open.<id>, exclusion.<id>). An open question the new facts "
+                "answer is removed or updated. Cite the new facts. Apply source precedence and corrections as usual. "
+                "Return nothing for elements the facts do not affect.")
+    out = await run_agent("knowledge_delta", system, prompt, I.KnowledgeDelta, model=ctx.model("synthesize"), max_turns=6)
+    delta = I.KnowledgeDelta.model_validate(out)
+    ctx.log(f"  delta: {len(delta.items)} items, {len(delta.rules)} rules, {len(delta.open_questions)} open questions "
+            f"changed or added; {len(delta.remove)} removed")
+    return I.apply_delta(prev, delta)
 
 
 async def _repair_tables(ctx, system: str, km: KnowledgeModel) -> dict:
@@ -251,7 +293,23 @@ async def _repair_examples(ctx, system: str, km: KnowledgeModel, sec: Section) -
     return sec.model_copy(update={"stories": stories})
 
 
-async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
+async def _plan_delta(ctx, system: str, prev: FeaturePlan, km: KnowledgeModel) -> dict:
+    """Keep the previous sections; only new items, rules and open questions are assigned to one of them."""
+    plan, unassigned = I.plan_update(prev, km)
+    if unassigned:
+        names = {x.id: getattr(x, "name", None) or getattr(x, "question", "") for x in [*km.items, *km.rules, *km.open_questions]}
+        ctx.log(f"  plan: keeping {len(plan.sections)} sections, assigning {', '.join(unassigned)}")
+        out = await run_agent("plan_assign", system,
+                              "Existing sections (JSON):\n" + json.dumps([{"id": s.id, "title": s.title, "purpose": s.purpose}
+                                                                           for s in plan.sections], ensure_ascii=False, indent=1)
+                              + "\n\nNew elements to assign (id: name):\n" + "\n".join(f"- {i}: {names.get(i, '')}" for i in unassigned)
+                              + "\n\nAssign each new element to the ONE existing section whose goal needs it most. "
+                                "Do not create sections.", I.Assignments, model=ctx.model("synthesize"), max_turns=3)
+        plan = I.assign(plan, km, I.Assignments.model_validate(out).assignments)
+    return plan.model_dump()
+
+
+async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dict | None = None) -> Feature:
     """The whole feature: plan its sections, then one writer agent per section (parallel)."""
     pc = _profile_ctx(ctx)
     hints = ctx.profile.get("section_hints", "")
@@ -264,13 +322,27 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
                                  "rules": {"__all__": {"expression", "depends_on"}}})
     facts_by_id = {f.id: f for f in facts}
 
+    plan_fp = sha(plan_fingerprint_system)
+    write_fingerprint_system = load_prompt(AGENTS / "story_writer.md", **pc, existing_ids="")
+    write_fp = sha(write_fingerprint_system)
+    feat_in = _previous(ctx, "feature.input")            # None before the first incremental run: treat prompts as unchanged
+    old_km = KnowledgeModel.model_validate(prev_km) if prev_km else None
+    changed = I.changed_ids(old_km, km)                  # None = no previous model -> full rewrite
+    changed_behaviour = I.behaviour_changed_ids(old_km, km)
+    incremental_plan = (prev_plan is not None and changed is not None and (feat_in is None or feat_in["plan"] == plan_fp)
+                        and not ({"all", "feature.plan"} & ctx.force))
+    incremental_write = (changed is not None and (feat_in is None or feat_in["write"] == write_fp)
+                         and not ({"all", "sections"} & ctx.force))
+
     async def plan():
+        if incremental_plan:
+            return await _plan_delta(ctx, plan_system, FeaturePlan.model_validate(prev_plan), km)
         return await run_agent("plan_feature", plan_system,
                                "Knowledge model (JSON):\n" + json.dumps(kmj, ensure_ascii=False, indent=1),
                                FeaturePlan, model=ctx.model("synthesize"), max_turns=6)
 
     planned = FeaturePlan.model_validate(await ctx.stage("feature.plan", [kmj, plan_fingerprint_system], plan))
-    write_fingerprint_system = load_prompt(AGENTS / "story_writer.md", **pc, existing_ids="")
+    ctx.write("feature.input", {"plan": plan_fp, "write": write_fp})
     full_km = km.model_dump(exclude={"items": {"__all__": {"depends_on"}}, "rules": {"__all__": {"depends_on"}}})
     head = {"title": ctx.profile["title"], "goal": planned.goal, "context": planned.context,
             "stakeholders": planned.stakeholders}
@@ -283,8 +355,14 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
         for r in km.rules:
             if r.id in sec.rules:
                 refs |= set(r.source_refs)
-        cited = _fact_payload([facts_by_id[r] for r in sorted(refs) if r in facts_by_id])
         prev_sec = _previous(ctx, f"sections/{sec.id}")
+        prev_obj = Section.model_validate(prev_sec) if prev_sec else None
+        rel = I.relevant_ids(sec, prev_obj, km)
+        rel_elements = [x.model_dump(exclude={"depends_on"}) for x in [*km.items, *km.rules, *km.open_questions] if x.id in rel]
+        for x in [*km.items, *km.rules]:
+            if x.id in rel:
+                refs |= set(x.source_refs)
+        cited = _fact_payload([facts_by_id[r] for r in sorted(refs) if r in facts_by_id])
         prev_stories = [f"{s['id']} ({s['title']})" for s in prev_sec["stories"]] if prev_sec else []
         write_system = load_prompt(AGENTS / "story_writer.md", **pc, existing_ids=_existing(prev_stories))
         prompt = ("Feature (JSON; you write the stories of ONE section of it):\n" + json.dumps(head, ensure_ascii=False, indent=1) +
@@ -294,12 +372,31 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
                   "\n\nCited facts (JSON):\n" + json.dumps(cited, ensure_ascii=False, indent=1) +
                   "\n\nReturn this Section with its stories written.")
 
-        async def go():
-            out = await run_agent(f"write_section/{sec.id}", write_system, prompt, Section,
-                                  model=ctx.model("synthesize"), max_turns=6)
-            return (await _repair_examples(ctx, write_system, km, Section.model_validate(out))).model_dump()
+        touched = I.touched_ids(sec, rel, changed, changed_behaviour) if changed is not None else None
+        meta = sec.model_dump(exclude={"stories"})
+        if prev_obj and incremental_write and not touched and prev_obj.model_dump(exclude={"stories"}) == meta:
+            ctx.log(f"  reusing sections/{sec.id} (nothing it depends on changed)")
+            return sec.model_copy(update={"stories": prev_obj.stories})
 
-        out = Section.model_validate(await ctx.stage(f"sections/{sec.id}", [prompt, write_fingerprint_system], go))
+        async def go():
+            if prev_obj and incremental_write:
+                ctx.log(f"  updating sections/{sec.id}: {', '.join(sorted(touched)) or 'section changed'}")
+                upd = (prompt + "\n\nThis section was written before. Previous version (JSON):\n" + prev_obj.model_dump_json(indent=1)
+                       + "\n\nWhat changed in the knowledge model since then: " + (", ".join(sorted(touched)) or "the section's "
+                       "own scope") + ". Update the section for these changes only: keep every story, criterion and example "
+                       "they do not affect word for word (same ids), change or add only what they require.")
+                out = await run_agent(f"write_section/{sec.id}", write_system, upd, Section,
+                                      model=ctx.model("synthesize"), max_turns=6)
+                new = I.keep_untouched(prev_obj, Section.model_validate(out), touched or set())
+            else:
+                out = await run_agent(f"write_section/{sec.id}", write_system, prompt, Section,
+                                      model=ctx.model("synthesize"), max_turns=6)
+                new = Section.model_validate(out)
+            return (await _repair_examples(ctx, write_system, km, new)).model_dump()
+
+        # fingerprint: only what this section depends on (not the whole model), so a change elsewhere does not rewrite it
+        fingerprint = [meta, rel_elements, cited, head, write_fingerprint_system]
+        out = Section.model_validate(await ctx.stage(f"sections/{sec.id}", fingerprint, go))
         # ownership and metadata stay as planned; the writer only adds stories
         return sec.model_copy(update={"stories": out.stories})
 
@@ -382,6 +479,13 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
     adapters, units, facts = await stage_sources(ctx)
     unit_by_id = {u.id: u for u in units}
 
+    # what the previous run knew (read before this run overwrites it): for decisions and incremental reruns
+    prev_facts = _previous(ctx, "facts")
+    known_before = {f["id"] for f in prev_facts} if prev_facts else None
+    prev_km = _previous(ctx, "knowledge.raw")
+    prev_spec = _previous(ctx, "spec")
+    prev_spec = Spec.model_validate(prev_spec) if prev_spec else None
+
     ctx.log("[3] verify facts")
     decisions = D.load(ctx)
     findings = D.validate(decisions) + D.stamp_and_check(ctx, decisions, unit_by_id)
@@ -390,14 +494,14 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
     facts = D.apply_to_facts(decisions, facts)
 
     ctx.log("[4] knowledge model")
-    km = await stage_knowledge(ctx, facts)
+    km = await stage_knowledge(ctx, facts, known_before)
     ctx.log("[5] feature: sections and stories")
-    feature = await stage_feature(ctx, km, facts)
+    feature = await stage_feature(ctx, km, facts, prev_km)
     spec = Spec(knowledge=km, feature=feature)
 
     ctx.log("[6] apply decisions")
     spec, df = D.apply_to_spec(decisions, spec)
-    findings += df + D.check_directives(decisions, spec)
+    findings += df + D.check_directives(decisions, spec) + D.new_evidence(ctx, decisions, spec, facts, known_before, prev_spec)
     M.compute_depends_on(spec.knowledge)
     ctx.write("spec", spec.model_dump())
 

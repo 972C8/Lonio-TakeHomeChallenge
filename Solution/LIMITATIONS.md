@@ -19,3 +19,16 @@
    directive's statement when it judges an element that cites it, but no check
    proves that everything the directive implies was written. A directive also
    reruns modelling and writing, so it costs more than a patch.
+
+3. **Incremental reruns trust a few heuristics.** A section counts as affected
+   when something it owns, covers or uses in an example (or what their
+   conditions reference) changed; a dependency outside that set would not
+   trigger a rewrite. The knowledge delta relies on the agent naming every
+   element the new facts affect. The checks, dev refinement and review still
+   run over the whole spec, and `--force knowledge.raw` / `--force sections`
+   rebuild in full. A model from before incremental runs is treated as built
+   with the current prompts.
+   "Behaviour" is a fixed list of fields (conditions, allowed values, form,
+   rule tables and expressions): a change that only rewords a description or
+   adds citations is deliberately ignored for sections that merely use the
+   element and for decision flags.

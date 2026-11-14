@@ -3,6 +3,7 @@
     python -m pipeline run [--feature employee-onboarding] [--force STAGE ...] [--fast]
     python -m pipeline explore <source_id>      # crawl an interactive source (expensive, network)
     python -m pipeline status                   # what changed since the last run
+    python -m pipeline reconfirm D-002 [...]    # decisions re-confirmed after "new evidence since this decision"
     python -m pipeline publish --team KEY [--dry-run]   # optional step 8: send feature specs to Linear
 """
 from __future__ import annotations
@@ -27,6 +28,8 @@ def main(argv=None):
     e = sub.add_parser("explore", help="explore an interactive source (e.g. the tax calculator)")
     e.add_argument("source_id")
     sub.add_parser("status", help="show which stages are stale")
+    rc = sub.add_parser("reconfirm", help="re-stamp decisions the product owner re-confirmed after new evidence")
+    rc.add_argument("ids", nargs="+")
     pub = sub.add_parser("publish", help="optional step 8: send the feature specs to Linear (Linear MCP)")
     pub.add_argument("--team", required=True, help="Linear team key or name")
     pub.add_argument("--project", help="Linear project name (default: the feature title)")
@@ -56,6 +59,9 @@ def main(argv=None):
             fp = sha(*ad.normalize_inputs())
             state = "unchanged" if ctx.manifest.get(name, {}).get("fingerprint") == fp else "CHANGED -> will rerun"
             print(f"{s['id']:<28} {state}")
+    elif a.cmd == "reconfirm":
+        from .engine import decisions as D
+        print("re-stamped against the current facts:", ", ".join(D.reconfirm(Context(a.feature), a.ids)))
     elif a.cmd == "publish":
         from .publish.linear import publish
         print(json.dumps(asyncio.run(publish(a.feature, a.team, a.project, a.dry_run)), indent=2, ensure_ascii=False))

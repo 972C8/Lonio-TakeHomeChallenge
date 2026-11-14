@@ -49,6 +49,11 @@ cannot, and the **product owner decides** the rest.
 - **Stable ids:** fact ids are content-based and source-scoped; item, rule and
   story ids of the last run are fed back to the agents. Decisions and Linear
   issues stay attached to the right things.
+- **Incremental reruns:** when only facts changed, the modeler returns a delta
+  applied by code, the plan keeps its sections, and only sections whose inputs
+  changed are rewritten; untouched stories are restored word for word.
+- **New evidence flags decisions:** a decision whose shaped elements now cite
+  a fact that did not exist when it was made is flagged for re-confirmation.
 - **Decisions remember their evidence:** if the source text a decision rests on
   changes, it is flagged "needs re-confirmation" instead of applied silently. A
   decision whose target disappeared is reported.

@@ -184,6 +184,7 @@ and precedence) + `guidance.md` → `knowledge.raw.json`.
 - **Corrections win:** within a source, the latest statement wins.
 - **No silent choices:** across sources, precedence decides, and a genuine conflict becomes an open question.
 - **Honest status:** items that rest on inference are marked `inferred`.
+- **Incremental reruns:** when only facts changed (same prompts, guidance and directives), the modeler gets the previous model and the new or removed facts and returns a delta; code applies it, so everything the delta does not name stays identical. `--force knowledge.raw` rebuilds in full.
 - **Complete decision tables:** every row has one cell per input (`any` / `-` where needed). If the modeler leaves cells out, the rules concerned go back to it once to be fixed, before anything is cached.
 
 ### 5. Feature spec – group into sections and write the stories
@@ -202,6 +203,7 @@ stays in business language. How to build it is left to engineering.
 
 **Complete and correct.**
 - **Full coverage:** every item and rule a section owns must be covered by at least one story, and every row of every decision table by a criterion.
+- **Only affected sections are rewritten:** the plan keeps its sections and only assigns new elements. A section is rewritten only when something it owns changed, or something it merely uses changed in behaviour (conditions, allowed values, expression - not descriptions or citations); it gets its previous version, and stories the change does not touch are restored word for word by code. Untouched sections are reused as they are.
 - **Exact examples:** examples must be complete enough to be executed in step 7. Each section's examples are already executed right after writing; failing ones go back to the writer once, with the reason (typically an answer to a question that is not asked in that case).
 - **Cited sources:** stories and criteria cite facts, guidelines or decisions.
 - **Open questions referenced, not decided:** open questions are referenced, never resolved by the writer.
@@ -232,6 +234,7 @@ decisions are cited like any source, with the highest precedence.
 **Complete and correct.**
 - **Fingerprinted evidence:** each decision records a fingerprint of the source units it is based on. If that evidence changes later, the decision is flagged "needs re-confirmation" instead of being applied silently.
 - **Broken targets reported:** a decision whose target no longer exists is reported as an error.
+- **New evidence reported:** the pipeline remembers which facts existed when a decision was made. If an element the decision shapes changed in substance and now cites a newer fact (e.g. from a new source), the decision is flagged for re-confirmation (a mere new citation does not count); `pipeline reconfirm D-00N` re-stamps it.
 - **Ignored directives reported:** a directive that no item, rule, story or criterion cites is reported as an error.
 
 ### 7. Check, render & review – prove it, publish it, judge it

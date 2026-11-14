@@ -16,6 +16,7 @@ applied.
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 
 import yaml
@@ -187,3 +188,90 @@ def _cite(obj, d):
         obj.source_refs = sorted(set(obj.source_refs) | {d.id})
     if hasattr(obj, "status"):
         obj.status = "decision"
+
+
+# ------------------------------------------------- new evidence since a decision --
+# A decision is fingerprinted against its own evidence units (above). That misses a NEW
+# source (or a changed one) that brings facts contradicting or refining the decision.
+# So the pipeline also remembers which fact ids existed when each decision was first
+# seen (build/<f>/decision_facts.json). Fact ids are content-based, so this set is stable.
+# If an element the decision shapes now cites a fact outside that set, the decision is
+# flagged for re-confirmation (`pipeline reconfirm D-00N` re-stamps it).
+
+STATE = "decision_facts"
+MODEL_KINDS = {"item", "rule", "open", "exclusion"}
+
+
+def _elements(spec: Spec):
+    km, feat = spec.knowledge, spec.feature
+    for kind, coll in (("item", km.items), ("rule", km.rules), ("open", km.open_questions),
+                       ("exclusion", km.exclusions), ("section", feat.sections)):
+        for x in coll:
+            yield kind, x.id, x
+    for sec in feat.sections:
+        for s in sec.stories:
+            yield "story", s.id, s
+            for ac in s.acceptance_criteria:
+                yield "ac", ac.id, ac
+
+
+def shaped_by(d: Decision, spec: Spec) -> list[tuple[str, str, object]]:
+    """The spec elements a decision shapes, after it was applied."""
+    els = list(_elements(spec))
+    if d.action == "direct":
+        return [e for e in els if d.id in getattr(e[2], "source_refs", [])]
+    kind, _, rest = d.target.partition(".")
+    if kind == "fact":                                   # accept / reject: whatever cites that fact
+        return [e for e in els if rest in getattr(e[2], "source_refs", [])]
+    if d.action in ("override", "add"):
+        ids = [i for k, i, _ in els if k == kind]
+        item_id, _ = _split_target(rest, ids)
+        return [e for e in els if e[0] == kind and e[1] == item_id]
+    return []                                            # exclude / resolve: the element is gone
+
+
+def new_evidence(ctx, decisions: list[Decision], spec: Spec, facts: list[Fact],
+                 known_before: set[str] | None, prev_spec: Spec | None = None) -> list[Finding]:
+    """Flag decisions whose shaped elements now cite facts that did not exist when the decision was stamped -
+    but only through elements that are new or changed in substance since the previous run (`prev_spec`):
+    an element that merely gained a citation does not put the decision in question.
+    `known_before`: fact ids of the previous run (used to stamp decisions seen for the first time)."""
+    from .incremental import behaviour
+    before = {(k, i): behaviour(k, e) for k, i, e in _elements(prev_spec)} if prev_spec else None
+
+    def substantive(kind, id_, el):
+        return before is None or before.get((kind, id_)) != behaviour(kind, el)
+
+    path = ctx.out(STATE)
+    state = json.loads(path.read_text()) if path.exists() else {}
+    by_id = {f.id: f for f in facts}
+    current = set(by_id)
+    F = []
+    for d in decisions:
+        if d.id not in state:
+            state[d.id] = sorted(known_before if known_before is not None else current)
+        known = set(state[d.id])
+        # directives and accept/reject: judged on the knowledge model (stories follow from it and get rewritten for
+        # other reasons); a patch on a story, section or criterion is judged on that target itself
+        kinds = MODEL_KINDS if d.action in ("direct", "accept", "reject") else None
+        cited = {r for k, i, e in shaped_by(d, spec) if (kinds is None or k in kinds) and substantive(k, i, e)
+                 for r in getattr(e, "source_refs", []) if r.startswith("F-")}
+        new = sorted(r for r in cited - known if r in by_id)
+        if new:
+            shown = "; ".join(f"{r}: {by_id[r].statement[:140]}" for r in new[:3]) + (" ..." if len(new) > 3 else "")
+            F.append(Finding(check="decisions", severity="error", target=d.id,
+                             message=f"new evidence since this decision ({len(new)} fact(s)) - re-confirm, update or drop "
+                                     f"it, then run `pipeline reconfirm {d.id}`: {shown}"))
+    path.write_text(json.dumps(state, indent=1))
+    return F
+
+
+def reconfirm(ctx, ids: list[str]) -> list[str]:
+    """Re-stamp decisions against the facts of the last run (after the product owner re-confirmed them)."""
+    path = ctx.out(STATE)
+    state = json.loads(path.read_text()) if path.exists() else {}
+    current = sorted(f["id"] for f in json.loads(ctx.out("facts").read_text()))
+    for i in ids:
+        state[i] = current
+    path.write_text(json.dumps(state, indent=1))
+    return ids

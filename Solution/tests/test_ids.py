@@ -112,6 +112,8 @@ class IdFeedback(unittest.TestCase):
             return {"items": [{"id": "alpha", "name": "A", "description": "d", "asked_when": "always",
                                "required_when": "always", "needed_by": [{"stakeholder": "hr", "purpose": "p"}],
                                "source_refs": ["F-x-1"]}]}
+        if name == "knowledge_delta":                                    # incremental rerun: nothing to change
+            return {"rationale": "no change"}
         if name == "plan_feature":
             return FeaturePlan(goal="g", context="c", stakeholders=["hr"], sections=[
                 Section(id="SEC-01-alpha", order=1, title="Alpha", purpose="p", items=["alpha"])]).model_dump()
@@ -137,7 +139,8 @@ class IdFeedback(unittest.TestCase):
         n = len(self.calls)
         run(R.stage_knowledge(self.ctx, self.facts("one")))                   # plain rerun: cache hit
         self.assertEqual(len(self.calls), n, "fed-back ids must not invalidate the cache")
-        run(R.stage_knowledge(self.ctx, self.facts("two")))                   # facts changed: reruns, with the ids
+        run(R.stage_knowledge(self.ctx, self.facts("two")))                   # facts changed: reruns (as a delta), with the ids
+        self.assertEqual(self.calls[-1][0], "knowledge_delta")
         self.assertIn("alpha", self.system_of("knowledge"))
 
     def test_section_and_story_ids_are_fed_back(self):

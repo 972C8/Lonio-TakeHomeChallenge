@@ -49,6 +49,10 @@ Read `build/<f>/review.md` and report, briefly:
    drop? "Still valid" = clear that decision's `evidence_hash` in
    `decisions.yaml` so the next run re-stamps it (confirm before writing);
    update / drop follow `/decide`.
+   Also report decisions flagged with **"new evidence since this decision"**
+   (a new or changed source now feeds something the decision shapes): show the
+   decision and the new facts, ask still valid / update / drop. "Still valid"
+   = `python -m pipeline --feature <f> reconfirm D-00N`.
 2. **New content not used:** uncited units of the changed or new source in
    the coverage section.
 3. **What moved in the spec:** `git diff --stat -- requirements/<f>/` (and
