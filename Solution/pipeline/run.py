@@ -703,7 +703,11 @@ async def stage_review(ctx, report: dict) -> dict:
         return await run_agent("review", load_prompt(AGENTS / "reviewer.md"),
                                json.dumps(report, ensure_ascii=False, indent=1, default=str), Review,
                                model=ctx.model("review"), max_turns=6)
-    return await ctx.stage("review", [report, AGENTS / "reviewer.md"], go)
+    # the impact section says what the last run changed; on a rerun with nothing new it only flips to "nothing
+    # changed", which is no reason to review again
+    stable = {k: v for k, v in report.items() if k != "impact"}
+    stable["findings"] = {sev: [f for f in fs if f["check"] != "impact"] for sev, fs in report["findings"].items()}
+    return await ctx.stage("review", [stable, AGENTS / "reviewer.md"], go)
 
 
 # -------------------------------------------------------------------- main --
