@@ -20,21 +20,17 @@ direction I would take to improve it. Ordered by impact.
 
 ## State of this delivery
 
-- Onboarding: 61 facts → 17 information items, 2 business rules → one feature
-  with 4 sections, 12 stories, 37 acceptance criteria. 0 errors, 58/58
-  executed examples pass. Stakeholder recall against the gold set is 0.74: the
-  model says HR (not the source tax office) needs nationality, permit and the
-  spouse's data, because HR decides liability by hand; I left the gold set as
-  written. The verdict is "not ready" because of open product questions
-  (calculator, fund canton, form lifecycle), not because of pipeline errors.
-- **The committed onboarding spec is a mechanical conversion**, not a fresh
-  run. When the problem became one feature with sections, the four previous
-  features became four sections with their stories, criteria and examples
-  unchanged. The checks and rendering were re-run on it (no LLM), but the
-  planner and writer prompts have not produced it, and some context
-  paragraphs still point to the old features (e.g. "FEAT-02"). The next full
-  `pipeline run` regenerates everything (the cache detects the changed
-  prompts); the earlier engine fixes (built-in `today`, open questions not
-  cited as sources, guidance conventions not extracted as facts) are included.
+- The pipeline is built end to end. **No generated output is committed**:
+  `build/` and `requirements/` are created by `pipeline run`, and the
+  committed state is the pipeline with the latest prompts, schemas and
+  templates.
+- Earlier runs (before the problem became one feature with sections) gave 61
+  facts → 17 information items and 2 business rules, with all executed
+  examples passing and no errors. They were removed so that the next run starts
+  from a clean cache.
+- Known before the next run: stakeholder recall against the gold set was 0.74.
+  The model said HR (not the source tax office) needs nationality, permit and
+  the spouse's data, because HR decides liability by hand; the gold set says
+  the source tax office. The gold set has not been changed.
 - Genericity is by construction (nothing domain-specific in `pipeline/`), but
   only one real problem has been run through it so far.
