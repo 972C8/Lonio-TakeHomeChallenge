@@ -48,7 +48,6 @@ class Tree(BaseModel):
 
 class WebCalculatorAdapter(Adapter):
     type = "web_calculator"
-    prefix = "CA"
 
     @property
     def cache(self):
@@ -83,12 +82,12 @@ class WebCalculatorAdapter(Adapter):
                 text += " Options: " + " | ".join(q.options)
             if q.help_text:
                 text += " Help: " + q.help_text
-            units.append(Unit(id=f"C-{q.id}", source_id=self.src["id"], text=text,
+            units.append(Unit(id=self.uid(f"C-{q.id}"), source_id=self.src["id"], text=text,
                               meta={"control": q.control, "shown_when": q.shown_when, "required": q.required}))
         for v in tree.vectors:
-            units.append(Unit(id=f"C-{v.id}", source_id=self.src["id"],
+            units.append(Unit(id=self.uid(f"C-{v.id}"), source_id=self.src["id"],
                               text=f"Answers {json.dumps(v.answers, ensure_ascii=False)} -> result {v.result}",
                               meta={"kind": "test_vector"}))
         for i, n in enumerate(tree.notes, 1):
-            units.append(Unit(id=f"C-N{i:02d}", source_id=self.src["id"], text=n, meta={"kind": "explorer_note"}))
+            units.append(Unit(id=self.uid(f"C-N{i:02d}"), source_id=self.src["id"], text=n, meta={"kind": "explorer_note"}))
         return units

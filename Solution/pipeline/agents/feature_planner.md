@@ -34,7 +34,9 @@ exclusions, all cited.
 - `goal`: one sentence, the business outcome of the whole feature.
 - `context`: the situation today, citing the pain points the sources state.
 - `stakeholders`: ids of the stakeholders involved.
-- `sections`: for each, `id` (`SEC-01-short-slug`), `order`, `title`,
+- `sections`: for each, `id` (`SEC-01-short-slug`; **reuse the id of an
+  existing section when it covers substantially the same work**; existing
+  sections: {{existing_ids}}), `order`, `title`,
   `purpose` (one sentence), owned `items` and `rules`, `open_questions` and
   `source_refs`. Leave `stories` empty: they are written in the next stage.
 

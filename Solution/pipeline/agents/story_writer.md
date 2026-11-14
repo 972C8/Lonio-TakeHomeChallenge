@@ -19,7 +19,9 @@ other sections), and the cited facts.
 
 # Output: the Section with `stories` filled in
 For each story:
-- `id` `US-<section number>.<n>` (e.g. US-02.1), `title`.
+- `id` `US-<section number>.<n>` (e.g. US-02.1), `title`. **Reuse the id of an
+  existing story when it is substantially the same story** (existing stories
+  of this section: {{existing_ids}}); new stories get the next free number.
 - `as_a` (a stakeholder id), `i_want`, `so_that`: the stakeholder's goal and
   its business value, grounded in the sources.
 - `priority` P1/P2/P3 with `priority_reason` from source signals (pain,
@@ -33,7 +35,7 @@ For each story:
   Cover every row of every business rule the story covers.
 - `examples` on acceptance criteria that involve conditions or rules: a
   table of concrete cases. Use the **real cases named in the sources first**
-  (with their unit id in `name`, e.g. "Julia (T-021)"); add illustrative
+  (with their unit id in `name`, e.g. "Julia (hr_transcript/T-021)"); add illustrative
   cases only to cover remaining branches, and mark them `illustrative`.
   - `given`: item id + value. Use exactly the `allowed_values` strings; dates
     as DD.MM.YYYY; yes/no as "yes"/"no". For rules that depend on the

@@ -13,6 +13,7 @@ the type in REGISTRY below. Nothing downstream changes.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -46,9 +47,49 @@ def norm_ws(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip().lower()
 
 
+def make_fact_id(source_id: str, kind: str, anchors: list[Anchor]) -> str:
+    """Source-scoped, content-based id: F-<source id>-<hash of kind + anchors>.
+
+    Two sources can never clash, and the id survives re-extraction as long as
+    the fact is anchored on the same quotes (decisions on facts keep working).
+    The statement is deliberately not part of the hash: the agent words it
+    differently on every run.
+    """
+    key = "|".join(sorted(f"{a.unit_id}\u241f{norm_ws(a.quote)}" for a in anchors))
+    h = hashlib.sha1(f"{kind}\u241e{key}".encode()).hexdigest()[:6]
+    safe = re.sub(r"[^A-Za-z0-9_-]", "_", source_id)      # no dots: decision targets split on the first dot
+    return f"F-{safe}-{h}"
+
+
+def build_facts(source_id: str, extracted: list[ExtractedFact], unit_ids: set[str]) -> list[Fact]:
+    """Turn the agent's output into Facts: full unit ids in anchors, source-scoped ids, resolved supersedes."""
+    facts, local_to_id, used = [], {}, set()
+    for ef in extracted:
+        d = ef.model_dump(exclude={"local_id"})
+        for a in d["anchors"]:       # agents sometimes drop the source prefix; repair it (same source only)
+            if a["unit_id"] not in unit_ids and f"{source_id}/{a['unit_id']}" in unit_ids:
+                a["unit_id"] = f"{source_id}/{a['unit_id']}"
+        fact = Fact(source_id=source_id, local_id=ef.local_id, **d)
+        base = make_fact_id(source_id, fact.kind, fact.anchors)
+        fid, n = base, 1
+        while fid in used:            # identical anchors and kind: keep both, numbered in extraction order
+            n += 1
+            fid = f"{base}-{n}"
+        used.add(fid)
+        fact.id = fid
+        local_to_id[ef.local_id] = fid
+        facts.append(fact)
+    for f in facts:
+        f.supersedes = [local_to_id[s] for s in f.supersedes if s in local_to_id]
+    return facts
+
+
 class Adapter:
     type: str = "base"
-    prefix: str = "X"
+
+    def uid(self, local_id: str) -> str:
+        """Unit ids are scoped by the source id (e.g. hr_transcript/T-044), so sources never clash."""
+        return f"{self.src['id']}/{local_id}"
 
     def __init__(self, src: dict, ctx: Context):
         self.src = src
@@ -82,22 +123,15 @@ class Adapter:
         )
         out = await run_agent(f"extract/{self.src['id']}", system, prompt, Extraction,
                               model=self.ctx.model(self.config.get("model_role", "extract")))
-        facts = []
-        local_to_id = {}
-        for i, ef in enumerate(Extraction.model_validate(out).facts, 1):
-            fid = f"F-{self.prefix}-{i:03d}"
-            local_to_id[ef.local_id] = fid
-            facts.append(Fact(id=fid, source_id=self.src["id"], local_id=ef.local_id,
-                              **ef.model_dump(exclude={"local_id"})))
-        for f in facts:  # resolve supersedes to global ids
-            f.supersedes = [local_to_id[s] for s in f.supersedes if s in local_to_id]
-        return facts
+        return build_facts(self.src["id"], Extraction.model_validate(out).facts, {u.id for u in units})
 
     def verify_anchor(self, anchor: Anchor, units: dict[str, Unit]) -> tuple[bool, str]:
         """Default: the quote must be a verbatim (whitespace/case-insensitive) substring of the unit."""
         u = units.get(anchor.unit_id)
         if u is None:
             return False, f"unit {anchor.unit_id} does not exist"
+        if u.source_id != self.src["id"]:
+            return False, f"unit {anchor.unit_id} belongs to another source"
         if not anchor.quote.strip():
             return False, "empty quote"
         if norm_ws(anchor.quote) in norm_ws(u.text):

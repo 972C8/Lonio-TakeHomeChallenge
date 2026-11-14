@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field as F
 
 class Unit(BaseModel):
     """Smallest addressable piece of a source (a speaker turn, a screen line, a calculator node)."""
-    id: str                      # e.g. T-031, S05-L07, C-Q03
+    id: str                      # source-scoped, e.g. hr_transcript/T-031, pension_portal/S05-E14, calc/C-Q03
     source_id: str
     text: str                    # exact text; anchors quote from here
     meta: dict = F(default_factory=dict)  # speaker, file, screen, ...
@@ -40,7 +40,7 @@ FactKind = Literal[
 
 
 class Fact(BaseModel):
-    id: str = ""                 # assigned by the engine: F-<SRC>-NNN
+    id: str = ""                 # assigned by the engine: F-<source id>-<hash of kind + quotes>
     source_id: str = ""
     kind: FactKind
     subject: str                 # short snake_case topic, e.g. civil_status

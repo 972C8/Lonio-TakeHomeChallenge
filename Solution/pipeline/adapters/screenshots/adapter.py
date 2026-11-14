@@ -41,7 +41,6 @@ class ScreenRead(BaseModel):
 
 class ScreenshotsAdapter(Adapter):
     type = "screenshots"
-    prefix = "SC"
 
     def normalize_inputs(self) -> list:
         return super().normalize_inputs() + [self.dir / "reader.md"]
@@ -66,10 +65,10 @@ class ScreenshotsAdapter(Adapter):
         units, self.disagreements = [], []
         for n, (f, r, c) in enumerate(zip(files, reads, checks), 1):
             screen = f"S{n:02d}"
-            units.append(Unit(id=f"{screen}-E00", source_id=self.src["id"], text=r.screen_summary,
+            units.append(Unit(id=self.uid(f"{screen}-E00"), source_id=self.src["id"], text=r.screen_summary,
                               meta={"file": f.name, "kind": "screen_summary (reader's description, not visible text)"}))
             for i, e in enumerate(r.elements, 1):
-                units.append(Unit(id=f"{screen}-E{i:02d}", source_id=self.src["id"], text=e.text,
+                units.append(Unit(id=self.uid(f"{screen}-E{i:02d}"), source_id=self.src["id"], text=e.text,
                                   meta={"file": f.name, **e.model_dump(exclude={"text"})}))
             if c is not None:
                 # compare the words read, not how they were segmented into elements

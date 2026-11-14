@@ -1,4 +1,4 @@
-"""Meeting transcripts (PDF, .md or .txt) -> one Unit per speaker turn (T-001 ...).
+"""Meeting transcripts (PDF, .md or .txt) -> one Unit per speaker turn (<source id>/T-001 ...).
 
 Normalization is deterministic (no LLM), so turn ids are stable across runs and
 quotes can be checked by exact substring match.
@@ -21,7 +21,6 @@ def read_text(path: Path) -> str:
 
 class TranscriptAdapter(Adapter):
     type = "transcript"
-    prefix = "TR"
 
     async def normalize(self) -> list[Unit]:
         text = re.sub(r"\s+", " ", read_text(self.ctx.source_path(self.src))).strip()
@@ -33,9 +32,9 @@ class TranscriptAdapter(Adapter):
         units = []
         preamble = parts[0].strip()
         if preamble:
-            units.append(Unit(id="T-000", source_id=self.src["id"], text=preamble, meta={"speaker": "(document header)"}))
+            units.append(Unit(id=self.uid("T-000"), source_id=self.src["id"], text=preamble, meta={"speaker": "(document header)"}))
         for i in range(1, len(parts) - 1, 2):
             n = len(units) if preamble else len(units) + 1
-            units.append(Unit(id=f"T-{n:03d}", source_id=self.src["id"], text=parts[i + 1].strip(),
+            units.append(Unit(id=self.uid(f"T-{n:03d}"), source_id=self.src["id"], text=parts[i + 1].strip(),
                               meta={"speaker": parts[i]}))
         return units

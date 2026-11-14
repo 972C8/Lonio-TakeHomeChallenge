@@ -9,9 +9,10 @@ description: Scaffold a new source adapter (a new type of source such as email t
    adapter (`transcript` for text, `screenshots` for images, `web_calculator`
    for live sites).
 2. Create `pipeline/adapters/<type>/` with:
-   - `adapter.py` – subclass `Adapter`; set `type` and a 2-letter `prefix`;
-     implement `normalize()` returning `Unit`s with **stable ids** and the
-     exact source text (deterministic if at all possible); override
+   - `adapter.py` – subclass `Adapter`; set `type`;
+     implement `normalize()` returning `Unit`s with **stable ids** built
+     with `self.uid(local_id)` (so they start with the source id and never
+     clash with another source) and the exact source text (deterministic if at all possible); override
      `verify_anchor()` if exact substring matching does not fit the type;
      extend `normalize_inputs()` with every file whose change must trigger a
      rerun.

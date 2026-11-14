@@ -68,6 +68,7 @@ python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m pipeline run --fast                       # skip LLM checks while iterating on decisions
 .venv/bin/python -m pipeline explore zh_source_tax_calculator # crawl a live calculator (Playwright MCP)
 LINEAR_API_KEY=… .venv/bin/python -m pipeline publish --team ONB [--dry-run]   # optional step 8
+.venv/bin/python -m unittest discover -s tests                    # deterministic tests (no LLM, no network)
 ```
 
 The Agent SDK runs on the local Claude Code login; no API key is needed.
@@ -75,6 +76,7 @@ The Agent SDK runs on the local Claude Code login; no API key is needed.
 ## Layout
 
 ```
+tests/                       deterministic tests: source-scoped ids, id feedback between runs
 pipeline/                    GENERIC - never changed for a new feature
   engine/                    schemas, stage cache, Agent SDK wrapper, condition language, decisions
   adapters/<source type>/    adapter.py + agent.md (+ config.yaml): transcript, screenshots, web_calculator
@@ -105,7 +107,7 @@ type, path or URL, what the source is trusted for (`authority`) and which
 source wins a conflict (`precedence`). An **adapter** per source type turns the
 raw source into small numbered **units** that hold the exact source text, so
 that everything later can quote it and code can check the quote.
-- `transcript`: plain code, no AI. It splits the text at the speaker names, giving one unit per turn (`T-044`, speaker attached).
+- `transcript`: plain code, no AI. It splits the text at the speaker names, giving one unit per turn (`hr_transcript/T-044`, speaker attached). Unit ids always start with the source id, so several sources of the same type never clash.
 - `screenshots`: a vision agent copies every visible element word for word (labels, values, options, hints, errors, required markers), giving one unit per element (`S05-E14`).
 - `web_calculator`: `pipeline explore` drives the live site with Playwright and caches its question tree and test cases. Normal runs turn that cache into units (`C-Q03`, `C-V02`).
 
@@ -131,7 +133,7 @@ can't. The prompts handle what interviews are full of:
 - Each fact is tagged `explicit` or `inferred`, so interpretations are visible.
 
 **In → out.** Units + source-type prompt (`adapters/<type>/agent.md`) +
-feature guidance → `extract/<source>.json` (facts `F-TR-031` with kind,
+feature guidance → `extract/<source>.json` (facts `F-hr_transcript-3fa9c1` – source id plus a hash of the kind and the quotes, so ids stay stable across reruns – with kind,
 statement, anchors, tags and supersedes links).
 
 **Complete and correct.**
@@ -322,13 +324,13 @@ Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`, `story.<id>`
 `feature.<attribute>`, `open.<id>`, `exclusion.<id>`, `fact.<id>`. Actions:
 `override`, `add`, `exclude`, `resolve`, `accept`, `reject`.
 
-### 3. After a source changes or a new one arrives – `/update-source`, `/run-pipeline`, `/review`, `/decide`, `/new-adapter`
+### 3. After a source changes or a new one arrives – `/update-source`
 
 Replace the file (or add the source to `profile.yaml`), run `pipeline status`,
 then `pipeline run`. In `review.md`, re-confirm the decisions flagged because
 their evidence changed. `git diff requirements/` shows what moved.
 
-### 4. Before publishing to Linear (optional step 8) – `/publish-linear`, `/trace`
+### 4. Before publishing to Linear (optional step 8) – `/publish-linear`
 
 Publish only when the verdict is acceptable. The skill previews read-only,
 asks for your go, then publishes (by hand: `pipeline publish --team <key>

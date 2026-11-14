@@ -164,14 +164,25 @@ def _fact_payload(facts: list[Fact]) -> list[dict]:
              "quotes": [a.quote for a in f.anchors]} for f in facts]
 
 
+def _previous(ctx, name: str):
+    """The saved output of an earlier run of stage `name` (None on the first run)."""
+    p = ctx.out(name)
+    return json.loads(p.read_text()) if p.exists() else None
+
+
+def _existing(ids: list[str]) -> str:
+    return ", ".join(ids) or "(none yet)"
+
+
 async def stage_knowledge(ctx, facts: list[Fact]) -> KnowledgeModel:
+    """Ids of items and rules are fed back from the last run (knowledge.raw) so reruns reuse them."""
     usable = [f for f in facts if f.anchor_ok and f.judge != "unsupported"]
-    prev = ctx.out("knowledge")
-    existing = []
-    if prev.exists():
-        km = json.loads(prev.read_text())
-        existing = [i["id"] for i in km["items"]] + [r["id"] for r in km.get("rules", [])]
-    system = load_prompt(AGENTS / "knowledge_modeler.md", **_profile_ctx(ctx), existing_ids=", ".join(existing) or "(none yet)")
+    prev = _previous(ctx, "knowledge.raw")
+    existing = [i["id"] for i in prev["items"]] + [r["id"] for r in prev.get("rules", [])] if prev else []
+    args = dict(**_profile_ctx(ctx))
+    system = load_prompt(AGENTS / "knowledge_modeler.md", **args, existing_ids=_existing(existing))
+    # The ids fed back are not an input of the cache fingerprint: otherwise the first rerun would always recompute.
+    fingerprint_system = load_prompt(AGENTS / "knowledge_modeler.md", **args, existing_ids="")
     payload = _fact_payload(usable)
 
     async def go():
@@ -179,15 +190,18 @@ async def stage_knowledge(ctx, facts: list[Fact]) -> KnowledgeModel:
                                + "\n\nProduce the complete KnowledgeModel.", KnowledgeModel,
                                model=ctx.model("synthesize"), max_turns=8)
 
-    return KnowledgeModel.model_validate(await ctx.stage("knowledge.raw", [payload, system], go))
+    return KnowledgeModel.model_validate(await ctx.stage("knowledge.raw", [payload, fingerprint_system], go))
 
 
 async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
     """The whole feature: plan its sections, then one writer agent per section (parallel)."""
     pc = _profile_ctx(ctx)
     hints = ctx.profile.get("section_hints", "")
-    plan_system = load_prompt(AGENTS / "feature_planner.md", **pc,
-                              plan_constraints=f"# Hints from the feature profile\n{hints}" if hints else "")
+    prev_plan = _previous(ctx, "feature.plan")
+    prev_sections = [f"{s['id']} ({s['title']})" for s in prev_plan["sections"]] if prev_plan else []
+    plan_args = dict(**pc, plan_constraints=f"# Hints from the feature profile\n{hints}" if hints else "")
+    plan_system = load_prompt(AGENTS / "feature_planner.md", **plan_args, existing_ids=_existing(prev_sections))
+    plan_fingerprint_system = load_prompt(AGENTS / "feature_planner.md", **plan_args, existing_ids="")
     kmj = km.model_dump(exclude={"items": {"__all__": {"asked_when_expr", "required_when_expr", "depends_on"}},
                                  "rules": {"__all__": {"expression", "depends_on"}}})
     facts_by_id = {f.id: f for f in facts}
@@ -197,8 +211,8 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
                                "Knowledge model (JSON):\n" + json.dumps(kmj, ensure_ascii=False, indent=1),
                                FeaturePlan, model=ctx.model("synthesize"), max_turns=6)
 
-    planned = FeaturePlan.model_validate(await ctx.stage("feature.plan", [kmj, plan_system], plan))
-    write_system = load_prompt(AGENTS / "story_writer.md", **pc)
+    planned = FeaturePlan.model_validate(await ctx.stage("feature.plan", [kmj, plan_fingerprint_system], plan))
+    write_fingerprint_system = load_prompt(AGENTS / "story_writer.md", **pc, existing_ids="")
     full_km = km.model_dump(exclude={"items": {"__all__": {"depends_on"}}, "rules": {"__all__": {"depends_on"}}})
     head = {"title": ctx.profile["title"], "goal": planned.goal, "context": planned.context,
             "stakeholders": planned.stakeholders}
@@ -212,6 +226,9 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
             if r.id in sec.rules:
                 refs |= set(r.source_refs)
         cited = _fact_payload([facts_by_id[r] for r in sorted(refs) if r in facts_by_id])
+        prev_sec = _previous(ctx, f"sections/{sec.id}")
+        prev_stories = [f"{s['id']} ({s['title']})" for s in prev_sec["stories"]] if prev_sec else []
+        write_system = load_prompt(AGENTS / "story_writer.md", **pc, existing_ids=_existing(prev_stories))
         prompt = ("Feature (JSON; you write the stories of ONE section of it):\n" + json.dumps(head, ensure_ascii=False, indent=1) +
                   "\n\nSection to write (JSON):\n" + sec.model_dump_json(indent=1) +
                   "\n\nFull knowledge model (JSON; *_expr/expression are the internal formalisation your examples are "
@@ -223,7 +240,7 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
             return await run_agent(f"write_section/{sec.id}", write_system, prompt, Section,
                                    model=ctx.model("synthesize"), max_turns=6)
 
-        out = Section.model_validate(await ctx.stage(f"sections/{sec.id}", [prompt, write_system], go))
+        out = Section.model_validate(await ctx.stage(f"sections/{sec.id}", [prompt, write_fingerprint_system], go))
         # ownership and metadata stay as planned; the writer only adds stories
         return sec.model_copy(update={"stories": out.stories})
 
