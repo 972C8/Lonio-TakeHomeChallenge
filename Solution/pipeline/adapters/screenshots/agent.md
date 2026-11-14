@@ -36,7 +36,7 @@ and under which conditions.
 - The portal shows the **current state** of a third-party system; facts about
   what it requires are `desired` (our product must satisfy them).
 
-## Problem guidance
+## Feature guidance
 Context for interpreting the source. Its conventions (ids, value wording,
 formats) are NOT facts of this source: never extract a fact that only the
 guidance states.

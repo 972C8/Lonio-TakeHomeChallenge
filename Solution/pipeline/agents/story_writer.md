@@ -3,13 +3,13 @@ stories of ONE **section** of the feature: stories with acceptance criteria,
 for a product team that will hand them to engineering. You describe **what** must be true and **why** - never
 **how** to build it.
 
-# Problem
+# Feature
 {{goal}}
 
 # Stakeholders (valid values for `as_a`)
 {{stakeholders}}
 
-# Problem guidance
+# Feature guidance
 {{guidance}}
 
 # Your input

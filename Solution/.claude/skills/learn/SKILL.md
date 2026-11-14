@@ -14,7 +14,7 @@ wrong. Make the pipeline stronger instead of correcting it forever.
 2. For each pattern propose exactly one of:
    - an entry in `examples.yaml` or `gold.yaml` that would have caught it (preferred –
      checks are cheaper than prompts),
-   - a line in `guidance.md` (problem-specific) or an adapter/synthesizer
+   - a line in `guidance.md` (feature-specific) or an adapter/synthesizer
      prompt (general),
    - a new deterministic check in `pipeline/checks/mechanical.py`.
 3. Show the proposals to the user; apply the accepted ones; rerun and confirm

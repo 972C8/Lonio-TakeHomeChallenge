@@ -62,7 +62,7 @@ class Adapter:
         return [self.ctx.source_path(self.src), self.config, self.src]
 
     def extract_inputs(self) -> list:
-        return [self.dir / "agent.md", self.ctx.problem_dir / "guidance.md"]
+        return [self.dir / "agent.md", self.ctx.feature_dir / "guidance.md"]
 
     async def normalize(self) -> list[Unit]:
         raise NotImplementedError
@@ -72,7 +72,7 @@ class Adapter:
             return []
         system = load_prompt(
             self.dir / "agent.md",
-            guidance=(self.ctx.problem_dir / "guidance.md").read_text(),
+            guidance=(self.ctx.feature_dir / "guidance.md").read_text(),
             source_description=self.src.get("description", ""),
         )
         payload = json.dumps([u.model_dump() for u in units], ensure_ascii=False, indent=1)

@@ -5,7 +5,7 @@ Two phases, deliberately separated:
 1. `explore` (expensive, run on demand: `pipeline explore <source_id>`):
    an agent drives the live site through Playwright MCP, walks every branch
    and records a question tree + test vectors to
-   build/<problem>/cache/<source_id>/tree.json, with a snapshot of each
+   build/<feature>/cache/<source_id>/tree.json, with a snapshot of each
    question's visible text. This is the only step that touches the network.
 2. `normalize` (cheap, every run): turns the cached tree into Units
    (C-Q01 per question, C-V01 per test vector). If the site changes, rerun

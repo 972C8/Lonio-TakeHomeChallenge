@@ -6,12 +6,12 @@ description: Record a product decision or override in decisions.yaml from plain 
 # /decide – write a product decision
 
 The product owner's judgment enters the pipeline only through
-`problems/<problem>/decisions.yaml`. Decisions are applied by code after
+`features/<feature>/decisions.yaml`. Decisions are applied by code after
 synthesis, cited like a source, and fingerprinted against their evidence.
 
-1. Identify the problem (default `employee-onboarding`) and read
-   `build/<problem>/spec.json` (knowledge model + the feature with its sections),
-   `build/<problem>/facts.json` and the decisions file.
+1. Identify the feature (default `employee-onboarding`) and read
+   `build/<feature>/spec.json` (knowledge model + the feature with its sections),
+   `build/<feature>/facts.json` and the decisions file.
 2. Translate the user's words into one or more entries:
    - `override` – change one attribute: `target: item.<id>.<attr>` (e.g.
      `asked_when` + `asked_when_expr` – always change the business text AND

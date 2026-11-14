@@ -78,7 +78,7 @@ def lint(spec: Spec, valid_refs: set[str], stakeholders: set[str], checklist: li
 
     for it in km.items:
         t = f"item.{it.id}"
-        for c in checklist:  # the problem's checklist: every item must answer each question
+        for c in checklist:  # the feature's checklist: every item must answer each question
             v = getattr(it, c["attribute"], None)
             if v in (None, "", []):
                 F.append(Finding(check="checklist", severity="error", target=t,

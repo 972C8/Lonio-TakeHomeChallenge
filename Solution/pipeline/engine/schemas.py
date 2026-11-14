@@ -58,7 +58,7 @@ class Fact(BaseModel):
 
 
 # ---------------------------------------------------------- knowledge ---
-# What we learned, in business language. Generic across problems.
+# What we learned, in business language. Generic across features.
 # `*_expr` / `expression` are an INTERNAL formalisation used only by the
 # pipeline to verify examples; they are never rendered into the feature specs.
 
@@ -187,11 +187,11 @@ class Section(BaseModel):
 
 
 class Feature(BaseModel):
-    """One feature per problem: its sections hold all the user stories."""
-    id: str                      # the problem id
-    title: str                   # the problem title
+    """One feature (one process to specify): its sections hold all the user stories."""
+    id: str                      # the feature id (folder name)
+    title: str                   # the feature title
     goal: str
-    context: str                 # the problem today, from the sources
+    context: str                 # the situation today, from the sources
     stakeholders: list[str]
     sections: list[Section]
     source_refs: list[str] = F(default_factory=list)

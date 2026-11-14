@@ -15,10 +15,10 @@ never touch status / assignee / estimate).
 Publishing writes to an outside system, so it needs the user's explicit go.
 
 ## 0. Check before anything
-1. Problem: the one the user names, default `employee-onboarding`.
-2. `requirements/<problem>/feature.md` must exist. If not, say so and suggest
+1. Feature: the one the user names.
+2. `requirements/<feature>/feature.md` must exist. If not, say so and suggest
    `/run-pipeline` first.
-3. Read the verdict in `build/<problem>/review.md`. If it is not "ready" or
+3. Read the verdict in `build/<feature>/review.md`. If it is not "ready" or
    "ready with caveats", or blocking open questions remain, say so in one
    line and ask whether to publish anyway (they may want `/review` first).
 4. `LINEAR_API_KEY` must be set in the environment. Check only whether it is
@@ -27,17 +27,17 @@ Publishing writes to an outside system, so it needs the user's explicit go.
    terminal where Claude Code runs. Never ask them to paste the key into the
    chat.
 5. Ask for the **Linear team key** (e.g. `ONB`) and, optionally, a project
-   name (default: the problem title from `profile.yaml`).
+   name (default: the feature title from `profile.yaml`).
 
 ## 1. Preview (read-only)
 Run, from `Solution/`:
 
 ```bash
-.venv/bin/python -m pipeline --problem <problem> publish --team <KEY> [--project "<name>"] --dry-run
+.venv/bin/python -m pipeline --feature <feature> publish --team <KEY> [--project "<name>"] --dry-run
 ```
 
 This connects to Linear's **read-only** endpoint, so nothing can be written.
-Summarise the report (also saved as `build/<problem>/linear_publish.dry-run.json`):
+Summarise the report (also saved as `build/<feature>/linear_publish.dry-run.json`):
 how many issues would be created, updated and left unchanged, and anything
 skipped with its reason (for example several issues matching one title
 prefix). Show titles of a few of each, not the whole list.
@@ -52,11 +52,11 @@ changes first, point to `/review` or `/decide` and a rerun.
 Only after the yes, the same command **without** `--dry-run`:
 
 ```bash
-.venv/bin/python -m pipeline --problem <problem> publish --team <KEY> [--project "<name>"]
+.venv/bin/python -m pipeline --feature <feature> publish --team <KEY> [--project "<name>"]
 ```
 
 Report what was created, updated, unchanged and skipped, with the Linear
-identifiers (saved as `build/<problem>/linear_publish.apply.json`). Skipped
+identifiers (saved as `build/<feature>/linear_publish.apply.json`). Skipped
 items need the user's attention: explain why and what to do.
 
 ## 4. Finish

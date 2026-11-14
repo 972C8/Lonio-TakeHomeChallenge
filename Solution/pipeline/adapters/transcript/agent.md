@@ -48,7 +48,7 @@ Source: {{source_description}}
    under which conditions, in which form, for which receiving party, and what is
    out of scope. Skip pure small talk.
 
-## Problem guidance
+## Feature guidance
 Context for interpreting the source. Its conventions (ids, value wording,
 formats) are NOT facts of this source: never extract a fact that only the
 guidance states.

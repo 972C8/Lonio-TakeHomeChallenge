@@ -2,9 +2,9 @@
 
 A generic pipeline of Claude agents and deterministic checks. It turns messy
 business sources (meeting transcripts, portal screenshots, live web
-calculators) into a **feature spec**: each problem (e.g. employee onboarding)
-is one feature, and the feature holds its user stories, grouped in sections,
-with acceptance criteria and concrete examples, every line traceable to a
+calculators) into a **feature spec**: each feature (e.g. employee onboarding) is
+specified in one spec that holds its user stories, grouped in sections, with
+acceptance criteria and concrete examples, every line traceable to a
 source quote. The spec says **what** is needed and **why**. It contains no
 technical decisions; how to build it is up to engineering.
 
@@ -41,7 +41,7 @@ Deliverables of this run:
    out.* A deterministic vocabulary scan and the dev-refinement agent flag
    technical decisions that leak in.
 3. **Rules before judges.** Everything checkable by code is checked by code:
-   quotes, references, the problem's checklist, coverage, and **every example
+   quotes, references, the feature's checklist, coverage, and **every example
    in every acceptance criterion is executed** against an internal
    formalisation of the business rules. LLM judges only cover what code
    cannot, one item at a time.
@@ -52,8 +52,8 @@ Deliverables of this run:
    `review.md`. The product owner answers in `decisions.yaml` (or with
    `/decide`); code applies decisions after the agents ran, cites them, and
    flags them for re-confirmation if their evidence changes.
-6. **Generic engine, problem profiles.** Nothing in `pipeline/` knows about
-   onboarding. Everything domain-specific lives in `problems/<name>/`.
+6. **Generic engine, one folder per feature.** Nothing in `pipeline/` knows about
+   onboarding. Everything domain-specific lives in `features/<name>/`.
 7. **Cheap, traceable reruns.** Each stage is cached by a fingerprint of all
    its inputs; a changed source reruns only what depends on it. The sections of
    the feature are written in parallel, one agent each.
@@ -62,8 +62,8 @@ Deliverables of this run:
 
 ```bash
 python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
-.venv/bin/python -m pipeline run                              # onboarding (default problem)
-.venv/bin/python -m pipeline --problem <name> run             # any other problem profile
+.venv/bin/python -m pipeline run                              # onboarding (default feature)
+.venv/bin/python -m pipeline --feature <name> run             # any other feature
 .venv/bin/python -m pipeline status                           # which sources changed since the last run
 .venv/bin/python -m pipeline run --fast                       # skip LLM checks while iterating on decisions
 .venv/bin/python -m pipeline explore zh_source_tax_calculator # crawl a live calculator (Playwright MCP)
@@ -75,34 +75,34 @@ The Agent SDK runs on the local Claude Code login; no API key is needed.
 ## Layout
 
 ```
-pipeline/                    GENERIC - never changed for a new problem
+pipeline/                    GENERIC - never changed for a new feature
   engine/                    schemas, stage cache, Agent SDK wrapper, condition language, decisions
   adapters/<source type>/    adapter.py + agent.md (+ config.yaml): transcript, screenshots, web_calculator
   agents/                    knowledge modeler, feature planner (sections), story writer (per section), judges, dev refinement, reviewer
   checks/mechanical.py       checklist lint, example execution, coverage, tech-leak scan, gold eval
   render/templates/          feature.md, information catalogue, open questions, out of scope, traceability
   publish/linear.py          optional step 8: Linear publisher agent (instructions: agents/linear_publisher.md)
-problems/<name>/             EVERYTHING SPECIFIC to one investigation
+features/<name>/             EVERYTHING SPECIFIC to one feature (one process)
   profile.yaml               sources (+ authority, precedence), stakeholders, item checklist, models
   guidance.md                product-owner guidance; [G-nn] items are citable
   decisions.yaml             product decisions (the override layer)
   examples.yaml              named real cases from the sources, executed every run
   gold.yaml                  hand-labelled expectations for the eval
-.claude/skills/              /run-pipeline · /review · /decide · /trace · /new-adapter · /new-problem · /learn
-build/<problem>/             every intermediate result (units, facts, verdicts, knowledge, feature plan, sections, report, review.md)
-requirements/<problem>/      the deliverable: feature.md + shared files
+.claude/skills/              /run-pipeline · /review · /decide · /trace · /new-adapter · /new-feature · /learn
+build/<feature>/             every intermediate result (units, facts, verdicts, knowledge, feature plan, sections, report, review.md)
+requirements/<feature>/      the deliverable: feature.md + shared files
 ```
 
 ## The steps
 
 Each step below answers three questions: **what it does and why**, **what
 goes in and what comes out**, and **how it keeps the result complete and
-correct**. All intermediate results are written to `build/<problem>/`, so
+correct**. All intermediate results are written to `build/<feature>/`, so
 every step can be inspected and rerun on its own.
 
 ### 1. Sources – read every source into quotable units
 
-**What and why.** Each problem lists its sources in `profile.yaml`: id,
+**What and why.** Each feature lists its sources in `profile.yaml`: id,
 type, path or URL, what the source is trusted for (`authority`) and which
 source wins a conflict (`precedence`). An **adapter** per source type turns the
 raw source into small numbered **units** that hold the exact source text, so
@@ -133,7 +133,7 @@ can't. The prompts handle what interviews are full of:
 - Each fact is tagged `explicit` or `inferred`, so interpretations are visible.
 
 **In → out.** Units + source-type prompt (`adapters/<type>/agent.md`) +
-problem guidance → `extract/<source>.json` (facts `F-TR-031` with kind,
+feature guidance → `extract/<source>.json` (facts `F-TR-031` with kind,
 statement, anchors, tags and supersedes links).
 
 **Complete and correct.**
@@ -182,7 +182,7 @@ and precedence) + `guidance.md` → `knowledge.raw.json`.
 ### 5. Feature spec – group into sections and write the stories
 
 **What and why.**
-1. **Plan:** the problem is **one feature**. A planner agent writes its goal and context and groups the knowledge model into **sections** (epic-style headings), following the stakeholder goals and pain points the sources state. This is a generic heuristic, not a fixed journey. Each information item and rule is owned by exactly one section.
+1. **Plan:** the whole process is **one feature**. A planner agent writes its goal and context and groups the knowledge model into **sections** (epic-style headings), following the stakeholder goals and pain points the sources state. This is a generic heuristic, not a fixed journey. Each information item and rule is owned by exactly one section.
 2. **Write:** one writer agent per section, in parallel, writes **user stories** (*As a … I want … so that …*, with a priority and its reason) and **acceptance criteria** in Given / When / Then.
 
 Where a criterion involves conditions or rules, it gets an **examples
@@ -225,14 +225,14 @@ precedence.
 **What and why.** This step proves the spec, renders it and passes a verdict.
 
 1. **Mechanical checks (code):**
-   - **Checklist:** every information item answers the problem's checklist from `profile.yaml`. For this assignment that is what, when asked, when required, depends on, and who needs it.
+   - **Checklist:** every information item answers the feature's checklist from `profile.yaml`. For this assignment that is what, when asked, when required, depends on, and who needs it.
    - **References:** every condition refers to items that exist, and every element cites a valid fact, guideline or decision.
    - **Example execution:** **every example in every acceptance criterion is executed** against the internal formalisation, plus the named cases in `examples.yaml`. Shown as ✅ in the specs.
    - **Coverage, both ways:** every item and rule sits in a story, and uncited source units and unused facts are listed.
    - **Tech-leak scan:** a vocabulary scan flags implementation terms.
    - **Gold set:** recall and precision against the hand-written gold set.
 2. **Trace judge (agent):** each item, rule and story is compared with the facts it cites.
-3. **Render (code):** Jinja templates write `requirements/<problem>/`. The internal formalisation is never rendered. Files:
+3. **Render (code):** Jinja templates write `requirements/<feature>/`. The internal formalisation is never rendered. Files:
    - `feature.md`: the whole feature, with its sections, stories, criteria, examples and evidence
    - an information catalogue
    - open questions
@@ -242,7 +242,7 @@ precedence.
 5. **Review (agent):** summarises everything into one verdict (ready / ready with caveats / not ready), with prioritised findings and suggested decisions.
 
 **In → out.** `spec.json`, facts, units, `examples.yaml`, `gold.yaml` →
-`requirements/<problem>/` (the deliverable), `report.json` and **`review.md`**,
+`requirements/<feature>/` (the deliverable), `report.json` and **`review.md`**,
 the one file the product owner reads.
 
 **Complete and correct.** This step *is* the safety net:
@@ -265,8 +265,8 @@ sends it to Linear through the Linear MCP server:
 
 The Markdown files remain the source of truth.
 
-**In → out.** `requirements/<problem>/` + team/project → issues in Linear and
-a report (`build/<problem>/linear_publish.*.json`).
+**In → out.** `requirements/<feature>/` + team/project → issues in Linear and
+a report (`build/<feature>/linear_publish.*.json`).
 
 **Complete and correct.**
 - **No duplicates:** the agent searches existing issues by id prefix (`[US-2.1]`) before creating; existing ones are updated with a comment, never duplicated.
@@ -285,7 +285,7 @@ name in Claude Code opened in this folder):
 
 | Skill | Use it | What it does there |
 |---|---|---|
-| `/new-problem` | before the first run of a new problem | interviews you, then scaffolds `problems/<name>/` (profile, guidance, decisions, examples, gold) |
+| `/new-feature` | before the first run of a new feature | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions, examples, gold) |
 | `/new-adapter` | when a new *kind* of source appears | scaffolds an adapter (reader + extraction prompt) for it |
 | `/run-pipeline` | to run or refresh | checks which sources changed, runs the pipeline in the background, summarises the result |
 | `/review` | after every run | guided walk through `review.md`; records your answers as decisions |
@@ -294,15 +294,15 @@ name in Claude Code opened in this folder):
 | `/publish-linear` | before handing over to engineering (optional step 8) | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
 | `/learn` | now and then | turns decisions you keep repeating into examples, gold entries, guidance or checks |
 
-### 1. Before the first run (once per problem)
+### 1. Before the first run (once per feature)
 
-1. **`problems/<p>/profile.yaml`** – check the `goal` (the feature planner and
+1. **`features/<f>/profile.yaml`** – check the `goal` (the feature planner and
    the story writer both read it, so its wording shapes the sections and
    stories), the `stakeholders`, each source's `authority` and `precedence`,
    and the `item_checklist`. Optionally add `section_hints`. For a **new
-   problem**, `/new-problem` interviews you and drafts steps 1–4; for a new
+   feature**, `/new-feature` interviews you and drafts steps 1–4; for a new
    *kind* of source (emails, regulation PDFs, …), `/new-adapter`.
-2. **`problems/<p>/guidance.md`** – state scope and what is out of scope,
+2. **`features/<f>/guidance.md`** – state scope and what is out of scope,
    value and id conventions, and product-owner statements tagged `[G-nn]` that
    may be cited as sources. Do not put facts of a source here.
 3. **`examples.yaml`** – confirm the named real cases from the sources and
@@ -316,9 +316,9 @@ name in Claude Code opened in this folder):
    the calculator is reported as an open question.
 6. **Run** – `pipeline run`, or `/run-pipeline`, which also summarises the
    result (about 15–20 minutes, roughly $5–7 for the first run). Output is
-   created, not committed: `build/<p>/` and `requirements/<p>/`.
+   created, not committed: `build/<f>/` and `requirements/<f>/`.
 
-### 2. After every run (`/review`, or read `build/<p>/review.md` yourself)
+### 2. After every run (`/review`, or read `build/<f>/review.md` yourself)
 
 The **`/review` skill** does this for you. It reads `review.md`, gives the
 verdict in one line, then walks you through the items below one at a time,
@@ -383,8 +383,8 @@ Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`,
   entries, guidance or checks, so the next run gets it right without you.
   Use it after a few review rounds, when the same kind of decision shows up
   again and again.
-- **Delivering:** after the final run, commit `requirements/<p>/` (and
-  `build/<p>/` if you want to show the intermediate results) together with
+- **Delivering:** after the final run, commit `requirements/<f>/` (and
+  `build/<f>/` if you want to show the intermediate results) together with
   the pipeline.
 
 ## When a source changes, or a new one arrives
@@ -395,7 +395,7 @@ reruns that source's chain and everything downstream of it; unchanged sources
 come from the cache.
 
 New source type → new adapter folder (`/new-adapter`) + one entry in
-`profile.yaml`. New process → new `problems/<name>/` folder (`/new-problem`),
+`profile.yaml`. New process → new `features/<name>/` folder (`/new-feature`),
 with no change to `pipeline/`.
 
 See [LIMITATIONS.md](LIMITATIONS.md) for where the pipeline stands.

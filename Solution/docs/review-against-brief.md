@@ -50,7 +50,7 @@ State reviewed: commit `7b495da`, last pipeline run of 14 Nov (build output in
 | 11 | Sources: screenshots, transcript | ✅ | All 7 portal fields covered; every transcript turn with content is cited (uncited turns are small talk) |
 | 12 | Treat sources as truth | ✅ | Guidance G-06, a judge per fact, "no outside knowledge" in the modeller prompt |
 | 13 | Ask too little vs. too much | ✅ Strong on minimisation, ⚠️ on "too little" | Source tax questions are asked only when the answer can change the outcome (FEAT-04 examples). But "too little" is not solved: cross-border employees cannot be registered with the fund (canton, OQ-02), and subject employees get no tariff questions. |
-| 14 | Markdown, clear templates, **reusable for the next process** | ✅ Design, ⚠️ unproven | Jinja templates, problem profile, `/new-problem`. The only second problem (`address-change`) was deleted in `7b495da`, so reuse is shown by construction only. |
+| 14 | Markdown, clear templates, **reusable for the next process** | ✅ Design, ⚠️ unproven | Jinja templates, feature profile, `/new-problem`. The only second problem (`address-change`) was deleted in `7b495da`, so reuse is shown by construction only. |
 | 15 | Business language, no technical decisions (your own bar) | ⚠️ Partial | 9 tech leaks flagged (e.g. "cannot complete the step", DD.MM.YYYY input, internal ids such as `address_country` in prose) |
 | 16 | Pipeline + README: what each stage does and why, in → out, how it ensures completeness and correctness | ✅ | README seven steps; a few claims are stronger than the code (section 4) |
 | 17 | Limitations: what, where from, which direction | ✅ Honest | `LIMITATIONS.md`, 12 rows. It is missing the bugs in section 4. |

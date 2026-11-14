@@ -3,7 +3,7 @@ repository to Linear using the Linear MCP tools. You only copy what the spec
 says; you never write or change requirements yourself.
 
 # Input
-- The spec folder: `feature.md` (the one feature of this problem, with its
+- The spec folder: `feature.md` (the feature, with its
   sections and user stories) and `open-questions.md`. Read them with Read / Glob.
 - The Linear team (key or name) and project name to publish into.
 - Mode: `dry-run` (report only, change nothing) or `apply`.

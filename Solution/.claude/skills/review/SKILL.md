@@ -6,13 +6,13 @@ description: Walk the product owner through the latest pipeline review so they d
 # /review – a guided walk through the latest review
 
 Goal: the product owner answers questions; they never have to open
-`build/<problem>/review.md` themselves. You read it, explain, recommend, and
+`build/<feature>/review.md` themselves. You read it, explain, recommend, and
 record their answers as decisions (the same mechanism as `/decide`).
 
 ## 0. Load
-1. Problem: the one the user names, default `employee-onboarding`.
-2. Read `build/<problem>/review.md`, `report.json`, `spec.json`,
-   `facts.json` and `problems/<problem>/decisions.yaml`. If `review.md` does
+1. Feature: the one the user names, default `employee-onboarding`.
+2. Read `build/<feature>/review.md`, `report.json`, `spec.json`,
+   `facts.json` and `features/<feature>/decisions.yaml`. If `review.md` does
    not exist, say so and suggest `/run-pipeline` (a run costs money and takes
    minutes: never start it without asking).
 3. If `review.md` says "Verdict: not available", the LLM checks did not run:

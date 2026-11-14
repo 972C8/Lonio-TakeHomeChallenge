@@ -81,7 +81,7 @@ Don't let an agent write stories straight from facts. The pipeline's strength is
 - **New stage: `slice`** (agent, structured output). Input: `spec.json`, personas and story guidance from the profile, and the previous `stories.json` as a baseline. Output: `stories.json`, where each story has persona, I want / so that, owned information and rules, Given/When/Then examples, priority, milestone and blocked_by. The agent only writes prose and groupings. All facts, conditions and options come from `spec.json` by id, so it can't invent requirements.
 - **Story ids are a registry.** The same mechanism LIMITATIONS #9 already proposes for field ids: reuse existing story ids, never renumber, and mark a story withdrawn with a reason.
 - **Decisions can target stories** (`story.US-03.priority`, `story.US-03.split`), like fields today.
-- The current `requirements/` rendering (field and rule files) moves to `build/<problem>/model/` as an internal artefact. It's still useful for debugging and for the video, but it's not the deliverable.
+- The current `requirements/` rendering (field and rule files) moves to `build/<feature>/model/` as an internal artefact. It's still useful for debugging and for the video, but it's not the deliverable.
 
 ### b. Story checks (deterministic, no LLM)
 
@@ -100,7 +100,7 @@ The naive builder then reads only `feature-specs/`, and its job becomes "could y
 
 ### c. Extensibility: what to make pluggable
 
-The repo already splits engine, adapters and problems. The remaining hard-coding is the **requirement shape** and the **output format**. Make both declared in `profile.yaml`:
+The repo already splits engine, adapters and features. The remaining hard-coding is the **requirement shape** and the **output format**. Make both declared in `profile.yaml`:
 
 ```yaml
 requirement_shapes: [data_collection]     # later: workflow, business_rule, notification, integration
@@ -112,11 +112,11 @@ output:
 
 - **Shape plugin** = one folder: a schema for its knowledge items, synthesis guidance, lint rules and story-slicing hints. `data_collection` is today's field, rule and condition model. A shape like `workflow` (e.g. "HR is notified when the first working day changes", the Julia case) can be added without touching the engine. This is LIMITATIONS #10.
 - **Output plugin** = templates + checks + an optional publisher. `feature_spec` (stories) is the default; the old data dictionary stays available as `data_dictionary`.
-- **Skills follow:** `/new-problem` scaffolds personas and a story map; a new `/new-shape` skill sits beside `/new-adapter`.
+- **Skills follow:** `/new-feature` scaffolds personas and a story map; a new `/new-shape` skill sits beside `/new-adapter`.
 
 ### d. Scalability: many features, many sources, many runs
 
-1. **A shared knowledge base across features.** Today facts live per problem. Lonio's promise ("ask each piece of information once and use it everywhere") is really cross-feature. Onboarding, address change and offboarding all ask about the address. Move normalized units and verified facts to a shared `knowledge/` store keyed by source, plus a shared **information registry** (id, definition, form, receiving parties). Each feature's synthesis then *reuses* registry items instead of re-inventing `address_country` versus `residence_country`. This is the highest-leverage change for "the next process" and for the video.
+1. **A shared knowledge base across features.** Today facts live per feature. Lonio's promise ("ask each piece of information once and use it everywhere") is really cross-feature. Onboarding, address change and offboarding all ask about the address. Move normalized units and verified facts to a shared `knowledge/` store keyed by source, plus a shared **information registry** (id, definition, form, receiving parties). Each feature's synthesis then *reuses* registry items instead of re-inventing `address_country` versus `residence_country`. This is the highest-leverage change for "the next process" and for the video.
 2. **Incremental synthesis per subject** (LIMITATIONS #2) and **unit-level caching** (#8). A changed transcript turn reruns only the facts from it, the subjects they touch, and the stories that own those subjects. The output diff is then a story-level changelog: "US-03 changed: R3 added, AC-3 new; reason: T-038 changed."
 3. **Parallelism:** extraction is already per source. Slicing and judging can run per story in parallel, because each story is independent once the model is fixed.
 4. **Model tiering by eval:** keep Opus for synthesis and slicing; move extraction and judges to Sonnet where the gold-set numbers allow (LIMITATIONS #12).

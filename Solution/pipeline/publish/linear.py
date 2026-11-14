@@ -31,13 +31,13 @@ class PublishReport(BaseModel):
     would_update: list[Entry] = F(default_factory=list)
 
 
-async def publish(problem: str, team: str, project: str | None, dry_run: bool) -> dict:
-    ctx = Context(problem)
+async def publish(feature_id: str, team: str, project: str | None, dry_run: bool) -> dict:
+    ctx = Context(feature_id)
     key = os.environ.get("LINEAR_API_KEY")
     if not key:
         raise SystemExit("Set LINEAR_API_KEY (a Linear API key) to publish.")
     url = "https://mcp.linear.app/mcp/readonly" if dry_run else "https://mcp.linear.app/mcp"
-    req = REQUIREMENTS / problem
+    req = REQUIREMENTS / feature_id
     mode = "dry-run" if dry_run else "apply"
     report = await run_agent(
         f"publish_linear/{mode}", load_prompt(PIPELINE / "agents" / "linear_publisher.md"),

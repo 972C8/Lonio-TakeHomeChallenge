@@ -1,6 +1,6 @@
 # Limitations
 
-Where the pipeline stands today, where each problem comes from, and which
+Where the pipeline stands today, where each limitation comes from, and which
 direction I would take to improve it. Ordered by impact.
 
 | # | Limitation | Where it comes from | Direction |
@@ -24,7 +24,7 @@ direction I would take to improve it. Ordered by impact.
   `build/` and `requirements/` are created by `pipeline run`, and the
   committed state is the pipeline with the latest prompts, schemas and
   templates.
-- Earlier runs (before the problem became one feature with sections) gave 61
+- Earlier runs (before the pipeline wrote one feature spec with sections instead of several features) gave 61
   facts → 17 information items and 2 business rules, with all executed
   examples passing and no errors. They were removed so that the next run starts
   from a clean cache.
@@ -33,4 +33,4 @@ direction I would take to improve it. Ordered by impact.
   the spouse's data, because HR decides liability by hand; the gold set says
   the source tax office. The gold set has not been changed.
 - Genericity is by construction (nothing domain-specific in `pipeline/`), but
-  only one real problem has been run through it so far.
+  only one real feature has been run through it so far.

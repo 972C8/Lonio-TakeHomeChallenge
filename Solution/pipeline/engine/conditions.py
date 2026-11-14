@@ -47,7 +47,7 @@ def _first_day_of_month(d):
 
 # Generic functions only. Domain logic (e.g. "insurance starts on the 1st of
 # the following month") is expressed WITH these in a business rule of the
-# problem, never added here.
+# feature, never added here.
 FUNCTIONS = {
     "is_set": lambda v: v not in (None, "", []),
     "date": _as_date,
@@ -67,7 +67,7 @@ _ALLOWED = (
 _CONSTS = {"true": True, "false": False, "null": None, "True": True, "False": False, "None": None}
 
 
-BUILTINS = {"today"}  # context values every problem may use; examples may set them
+BUILTINS = {"today"}  # context values every feature may use; examples may set them
 
 
 class ConditionError(ValueError):

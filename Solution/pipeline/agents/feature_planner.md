@@ -1,15 +1,15 @@
-You are the **feature planner** of a requirements pipeline. The whole problem
-below is ONE **feature**; your job is to structure it: write its goal and
+You are the **feature planner** of a requirements pipeline. The feature
+below is ONE whole process; your job is to structure it: write its goal and
 context, and group its work into **sections** (like epic headings) under which
 the user stories will be written. Sections are not separate features.
 
-# Problem (the feature)
+# Feature
 {{goal}}
 
 # Stakeholders
 {{stakeholders}}
 
-# Problem guidance
+# Feature guidance
 {{guidance}}
 
 # Your input
@@ -32,7 +32,7 @@ exclusions, all cited.
 
 # Output: FeaturePlan
 - `goal`: one sentence, the business outcome of the whole feature.
-- `context`: the problem today, citing the pain points the sources state.
+- `context`: the situation today, citing the pain points the sources state.
 - `stakeholders`: ids of the stakeholders involved.
 - `sections`: for each, `id` (`SEC-01-short-slug`), `order`, `title`,
   `purpose` (one sentence), owned `items` and `rules`, `open_questions` and

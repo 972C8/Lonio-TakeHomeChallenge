@@ -1,4 +1,4 @@
-"""Run context: loaded problem profile, build directory, and the stage cache.
+"""Run context: loaded feature profile, build directory, and the stage cache.
 
 The cache is what makes reruns cheap and source changes traceable: every stage
 output is stored with a fingerprint of everything that went into it (source
@@ -15,7 +15,7 @@ from typing import Any, Awaitable, Callable
 
 import yaml
 
-from .paths import BUILD, PROBLEMS, ROOT
+from .paths import BUILD, FEATURES, ROOT
 
 
 def sha(*parts: Any) -> str:
@@ -37,14 +37,14 @@ def sha(*parts: Any) -> str:
 
 @dataclass
 class Context:
-    problem_id: str
+    feature_id: str
     force: set[str] = field(default_factory=set)       # stage names to force-rerun ("all" for everything)
     log: Callable[[str], None] = print
 
     def __post_init__(self):
-        self.problem_dir = PROBLEMS / self.problem_id
-        self.profile = yaml.safe_load((self.problem_dir / "profile.yaml").read_text())
-        self.build = BUILD / self.problem_id
+        self.feature_dir = FEATURES / self.feature_id
+        self.profile = yaml.safe_load((self.feature_dir / "profile.yaml").read_text())
+        self.build = BUILD / self.feature_id
         self.build.mkdir(parents=True, exist_ok=True)
         self.manifest_path = self.build / "manifest.json"
         self.manifest = json.loads(self.manifest_path.read_text()) if self.manifest_path.exists() else {}
@@ -59,7 +59,7 @@ class Context:
     def guidance_items(self) -> dict[str, str]:
         """Product-owner statements tagged [G-nn] in guidance.md (citable like facts)."""
         import re
-        text = (self.problem_dir / "guidance.md").read_text()
+        text = (self.feature_dir / "guidance.md").read_text()
         items = {}
         for m in re.finditer(r"\[(G-\d+)\]\s*(.+?)(?=\n\s*-|\n\n|\Z)", text, re.S):
             items[m.group(1)] = re.sub(r"\s+", " ", m.group(2)).strip()

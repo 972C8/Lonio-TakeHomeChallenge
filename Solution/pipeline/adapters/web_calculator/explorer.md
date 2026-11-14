@@ -22,5 +22,5 @@ Copy all text verbatim in the site's own language (do not translate).
 Never submit personal data; use neutral dummy values where free text or dates
 are required, and say so in `notes`.
 
-## Exploration hints for this source (from the problem profile)
+## Exploration hints for this source (from the feature profile)
 {{hints}}

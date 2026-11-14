@@ -1,4 +1,4 @@
-"""Deterministic rendering: spec JSON + facts -> requirements/<problem>/ (feature.md + shared files).
+"""Deterministic rendering: spec JSON + facts -> requirements/<feature>/ (feature.md + shared files).
 
 The Markdown is never written by an LLM directly: agents produce structured
 data, templates decide the format. The internal formalisation (expressions)

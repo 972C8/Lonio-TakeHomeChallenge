@@ -1,17 +1,17 @@
 """The pipeline: stages, in order.
 
-     1 normalize    per source, adapter          -> build/<p>/normalize/<src>.json  (Units)
-     2 extract      per source, agent            -> build/<p>/extract/<src>.json    (Facts)
-     3 verify       anchors (code) + fact judge  -> build/<p>/facts.json
-     4 knowledge    agent                        -> build/<p>/knowledge.raw.json    (items, rules, open questions)
-     5 feature      planner agent (sections of the problem's ONE feature), then one writer agent
-                    per section (parallel)       -> build/<p>/feature.plan.json, sections/<id>.json
-     6 decide       decisions.yaml (code)        -> build/<p>/spec.json
+     1 normalize    per source, adapter          -> build/<f>/normalize/<src>.json  (Units)
+     2 extract      per source, agent            -> build/<f>/extract/<src>.json    (Facts)
+     3 verify       anchors (code) + fact judge  -> build/<f>/facts.json
+     4 knowledge    agent                        -> build/<f>/knowledge.raw.json    (items, rules, open questions)
+     5 feature      planner agent (sections of the ONE feature), then one writer agent
+                    per section (parallel)       -> build/<f>/feature.plan.json, sections/<id>.json
+     6 decide       decisions.yaml (code)        -> build/<f>/spec.json
      7 check        checklist lint, examples executed against the knowledge model,
                     coverage, tech-leak scan, gold eval (code); trace judge (agent)
-     8 render       templates (code)             -> requirements/<p>/
+     8 render       templates (code)             -> requirements/<f>/
      9 refinement   a dev-refinement agent reads the rendered feature (feature.md)
-    10 review       reviewer agent               -> build/<p>/review.md (verdict)
+    10 review       reviewer agent               -> build/<f>/review.md (verdict)
 
 Every LLM stage is cached by a fingerprint of its inputs. `--force <stage>`
 reruns a stage regardless.
@@ -154,7 +154,7 @@ def _profile_ctx(ctx: Context) -> dict:
         stakeholders="\n".join(f"- `{k}`: {v}" for k, v in p["stakeholders"].items()),
         sources="\n".join(f"- `{s['id']}` ({s['type']}, precedence {s.get('precedence', 9)}): {s.get('authority', '')}"
                           for s in p["sources"]),
-        guidance=(ctx.problem_dir / "guidance.md").read_text(),
+        guidance=(ctx.feature_dir / "guidance.md").read_text(),
         conventions=COND_LANG.read_text(),
     )
 
@@ -184,11 +184,11 @@ async def stage_knowledge(ctx, facts: list[Fact]) -> KnowledgeModel:
 
 
 async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
-    """One feature per problem: plan its sections, then one writer agent per section (parallel)."""
+    """The whole feature: plan its sections, then one writer agent per section (parallel)."""
     pc = _profile_ctx(ctx)
     hints = ctx.profile.get("section_hints", "")
     plan_system = load_prompt(AGENTS / "feature_planner.md", **pc,
-                              plan_constraints=f"# Hints from the problem profile\n{hints}" if hints else "")
+                              plan_constraints=f"# Hints from the feature profile\n{hints}" if hints else "")
     kmj = km.model_dump(exclude={"items": {"__all__": {"asked_when_expr", "required_when_expr", "depends_on"}},
                                  "rules": {"__all__": {"expression", "depends_on"}}})
     facts_by_id = {f.id: f for f in facts}
@@ -199,7 +199,7 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
                                FeaturePlan, model=ctx.model("synthesize"), max_turns=6)
 
     planned = FeaturePlan.model_validate(await ctx.stage("feature.plan", [kmj, plan_system], plan))
-    write_system = load_prompt(AGENTS / "feature_writer.md", **pc)
+    write_system = load_prompt(AGENTS / "story_writer.md", **pc)
     full_km = km.model_dump(exclude={"items": {"__all__": {"depends_on"}}, "rules": {"__all__": {"depends_on"}}})
     head = {"title": ctx.profile["title"], "goal": planned.goal, "context": planned.context,
             "stakeholders": planned.stakeholders}
@@ -229,7 +229,7 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact]) -> Feature:
         return sec.model_copy(update={"stories": out.stories})
 
     sections = list(await asyncio.gather(*[write(sec) for sec in sorted(planned.sections, key=lambda x: x.order)]))
-    return Feature(id=ctx.problem_id, title=ctx.profile["title"], goal=planned.goal, context=planned.context,
+    return Feature(id=ctx.feature_id, title=ctx.profile["title"], goal=planned.goal, context=planned.context,
                    stakeholders=planned.stakeholders, sections=sections)
 
 
@@ -296,9 +296,9 @@ async def stage_review(ctx, report: dict) -> dict:
 
 # -------------------------------------------------------------------- main --
 
-async def run(problem: str, force: set[str] | None = None, skip_llm_checks: bool = False) -> dict:
-    ctx = Context(problem, force=force or set())
-    ctx.log(f"Pipeline for problem '{problem}'")
+async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: bool = False) -> dict:
+    ctx = Context(feature_id, force=force or set())
+    ctx.log(f"Pipeline for feature '{feature_id}'")
     ctx.log("[1-2] normalize + extract sources")
     adapters, units, facts = await stage_sources(ctx)
     unit_by_id = {u.id: u for u in units}
@@ -331,11 +331,11 @@ async def run(problem: str, force: set[str] | None = None, skip_llm_checks: bool
     findings += M.tech_leaks(spec, leak_cfg.get("flag", []), leak_cfg.get("allow", []))
     cov, cf = M.coverage(units, facts, spec)
     findings += cf
-    ex_path = ctx.problem_dir / "examples.yaml"
+    ex_path = ctx.feature_dir / "examples.yaml"
     profile_examples = (yaml.safe_load(ex_path.read_text()) or {}).get("examples", []) if ex_path.exists() else []
     examples, ef = M.run_examples(spec, profile_examples)
     findings += ef
-    gold_path = ctx.problem_dir / "gold.yaml"
+    gold_path = ctx.feature_dir / "gold.yaml"
     metrics, gf = M.evaluate_gold(spec, yaml.safe_load(gold_path.read_text())) if gold_path.exists() else ({}, [])
     findings += gf
     judge = {}
@@ -344,7 +344,7 @@ async def run(problem: str, force: set[str] | None = None, skip_llm_checks: bool
         findings += jf
 
     ctx.log("[8] render feature specs")
-    req_dir = REQUIREMENTS / problem
+    req_dir = REQUIREMENTS / feature_id
     render(req_dir, ctx, spec, facts, unit_by_id, decisions, judge, guidance, examples)
 
     refinement = {"questions": [], "already_flagged": [], "tech_leaks": []}
@@ -355,7 +355,7 @@ async def run(problem: str, force: set[str] | None = None, skip_llm_checks: bool
 
     stories = spec.stories()
     report = {
-        "problem": problem,
+        "feature_id": feature_id,
         "counts": {"units": len(units), "facts": len(facts), "items": len(km.items), "rules": len(km.rules),
                    "sections": len(spec.feature.sections), "stories": len(stories),
                    "acceptance_criteria": sum(len(s.acceptance_criteria) for s in stories),
@@ -382,7 +382,7 @@ async def run(problem: str, force: set[str] | None = None, skip_llm_checks: bool
 
 
 def write_review_md(ctx: Context, r: dict, facts: list[Fact]) -> None:
-    L = [f"# Review: {r['problem']}", ""]
+    L = [f"# Review: {r['feature_id']}", ""]
     if r.get("review"):
         L += [f"**Verdict: {r['review']['verdict'].replace('_', ' ').upper()}**", "", r["review"]["summary"], "",
               "## Reviewer findings", ""]

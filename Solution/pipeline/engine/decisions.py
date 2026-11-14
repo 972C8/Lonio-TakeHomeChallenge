@@ -15,7 +15,7 @@ from .schemas import BusinessRule, Decision, Exclusion, Fact, Finding, InfoItem,
 
 
 def load(ctx) -> list[Decision]:
-    path = ctx.problem_dir / ctx.profile.get("decisions_file", "decisions.yaml")
+    path = ctx.feature_dir / ctx.profile.get("decisions_file", "decisions.yaml")
     data = yaml.safe_load(path.read_text()) or {}
     return [Decision.model_validate(d) for d in data.get("decisions") or []]
 
@@ -37,7 +37,7 @@ def stamp_and_check(ctx, decisions: list[Decision], units: dict[str, Unit]) -> l
                                     message=f"evidence {d.evidence} changed since this decision was made - re-confirm "
                                             f"(then clear evidence_hash to re-stamp)"))
     if changed:
-        path = ctx.problem_dir / ctx.profile.get("decisions_file", "decisions.yaml")
+        path = ctx.feature_dir / ctx.profile.get("decisions_file", "decisions.yaml")
         header = path.read_text().split("decisions:")[0]
         body = yaml.safe_dump({"decisions": [d.model_dump(exclude_defaults=False) for d in decisions]},
                               sort_keys=False, allow_unicode=True, width=100)

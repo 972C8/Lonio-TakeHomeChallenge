@@ -1,6 +1,6 @@
 """Command line interface.
 
-    python -m pipeline run [--problem employee-onboarding] [--force STAGE ...] [--fast]
+    python -m pipeline run [--feature employee-onboarding] [--force STAGE ...] [--fast]
     python -m pipeline explore <source_id>      # crawl an interactive source (expensive, network)
     python -m pipeline status                   # what changed since the last run
     python -m pipeline publish --team KEY [--dry-run]   # optional step 8: send feature specs to Linear
@@ -14,12 +14,12 @@ import sys
 
 from .engine.context import Context
 
-DEFAULT_PROBLEM = "employee-onboarding"
+DEFAULT_FEATURE = "employee-onboarding"
 
 
 def main(argv=None):
     p = argparse.ArgumentParser(prog="pipeline")
-    p.add_argument("--problem", default=DEFAULT_PROBLEM)
+    p.add_argument("--feature", default=DEFAULT_FEATURE)
     sub = p.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run", help="run the pipeline (cached stages are reused)")
     r.add_argument("--force", nargs="*", default=[], help="stage names to rerun, or 'all'")
@@ -29,17 +29,17 @@ def main(argv=None):
     sub.add_parser("status", help="show which stages are stale")
     pub = sub.add_parser("publish", help="optional step 8: send the feature specs to Linear (Linear MCP)")
     pub.add_argument("--team", required=True, help="Linear team key or name")
-    pub.add_argument("--project", help="Linear project name (default: the problem title)")
+    pub.add_argument("--project", help="Linear project name (default: the feature title)")
     pub.add_argument("--dry-run", action="store_true", help="read-only: report what would be created/updated")
     a = p.parse_args(argv)
 
     if a.cmd == "run":
         from .run import run
-        rep = asyncio.run(run(a.problem, set(a.force), skip_llm_checks=a.fast))
-        _summary(rep, a.problem)
+        rep = asyncio.run(run(a.feature, set(a.force), skip_llm_checks=a.fast))
+        _summary(rep, a.feature)
     elif a.cmd == "explore":
         from .adapters.base import get_adapter
-        ctx = Context(a.problem)
+        ctx = Context(a.feature)
         src = next(s for s in ctx.profile["sources"] if s["id"] == a.source_id)
         ad = get_adapter(src, ctx)
         if not hasattr(ad, "explore"):
@@ -49,7 +49,7 @@ def main(argv=None):
     elif a.cmd == "status":
         from .adapters.base import get_adapter
         from .engine.context import sha
-        ctx = Context(a.problem)
+        ctx = Context(a.feature)
         for s in ctx.profile["sources"]:
             ad = get_adapter(s, ctx)
             name = f"normalize/{s['id']}"
@@ -58,10 +58,10 @@ def main(argv=None):
             print(f"{s['id']:<28} {state}")
     elif a.cmd == "publish":
         from .publish.linear import publish
-        print(json.dumps(asyncio.run(publish(a.problem, a.team, a.project, a.dry_run)), indent=2, ensure_ascii=False))
+        print(json.dumps(asyncio.run(publish(a.feature, a.team, a.project, a.dry_run)), indent=2, ensure_ascii=False))
 
 
-def _summary(rep, problem):
+def _summary(rep, feature_id):
     c = rep["counts"]
     errs, warns = len(rep["findings"]["error"]), len(rep["findings"]["warning"])
     ex = rep["examples"]
@@ -74,7 +74,7 @@ def _summary(rep, problem):
     if rep.get("review"):
         print(f"verdict: {rep['review']['verdict']}")
     print(f"cost this run: ${rep['cost_usd_this_run']}")
-    print(f"review: build/{problem}/review.md   requirements: requirements/{problem}/")
+    print(f"review: build/{feature_id}/review.md   requirements: requirements/{feature_id}/")
 
 
 if __name__ == "__main__":

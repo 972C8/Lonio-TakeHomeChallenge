@@ -20,6 +20,6 @@ description: Scaffold a new source adapter (a new type of source such as email t
      desired vs current_state, `{{guidance}}` placeholder).
    - `config.yaml` – model role and options.
 3. Register it in `get_adapter()` in `base.py`.
-4. Add the source to the problem's `profile.yaml` with `authority` and
+4. Add the source to the feature's `profile.yaml` with `authority` and
    `precedence`, then `python -m pipeline run`. Check `review.md` coverage for
    the new source.

@@ -1,5 +1,5 @@
 Domain guidance for **employee onboarding** (written by the product owner;
-shared with every agent of this problem). Statements tagged `[G-nn]` are
+shared with every agent of this feature). Statements tagged `[G-nn]` are
 product-owner input and may be cited as sources (`source_refs`), like facts.
 
 ## Context

@@ -4,7 +4,7 @@ model**: the information the process needs, the business rules, what is
 still open and what is out of scope. You describe **what is needed and why** -
 never how to build it.
 
-# Problem
+# Feature
 {{goal}}
 
 # Stakeholders (who needs things, who acts)
@@ -14,7 +14,7 @@ never how to build it.
 {{sources}}
 Product decisions (precedence 0) are applied after you, by a script.
 
-# Problem guidance (from the product owner; items tagged [G-nn] may be cited)
+# Feature guidance (from the product owner; items tagged [G-nn] may be cited)
 {{guidance}}
 
 # Output: KnowledgeModel
