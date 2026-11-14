@@ -9,14 +9,15 @@ build it is up to engineering.
 
 ```mermaid
 flowchart LR
-    S["<b>Sources</b><br/>transcripts · screenshots ·<br/>live calculator (explorer)"]
-    E["<b>1–3 Read & extract</b><br/>normalize into quotable units<br/>atomic facts with verbatim quotes<br/>quotes checked by code, facts by a judge"]
-    K["<b>4 Knowledge model</b><br/>information items, business rules<br/>conflicts & gaps → open questions"]
-    F["<b>5 Feature specs</b><br/>plan features, then one writer per feature:<br/>stories, Given/When/Then, examples<br/>(business language only)"]
-    D["<b>6 Decide</b><br/>product owner's decisions.yaml<br/>applied by code"]
-    C["<b>7–10 Check, render & review</b><br/>examples executed · coverage · tech-leak scan<br/>Markdown from templates · dev refinement<br/>→ review.md verdict"]
-    S --> E --> K --> F --> D --> C
-    C -. "answers to open questions" .-> D
+    S1["<b>1 Sources</b><br/>transcripts · screenshots · calculator<br/>→ quotable units"]
+    S2["<b>2 Extract</b><br/>atomic facts<br/>with verbatim quotes"]
+    S3["<b>3 Verify</b><br/>quotes checked by code<br/>facts checked by a judge"]
+    S4["<b>4 Knowledge model</b><br/>information, rules<br/>gaps → open questions"]
+    S5["<b>5 Feature specs</b><br/>stories, Given/When/Then,<br/>examples (business only)"]
+    S6["<b>6 Decide</b><br/>product owner's<br/>decisions, applied by code"]
+    S7["<b>7 Check, render & review</b><br/>examples executed · coverage<br/>dev refinement → review.md"]
+    S1 --> S2 --> S3 --> S4 --> S5 --> S6 --> S7
+    S7 -. "answers to open questions" .-> S6
 ```
 
 Every stage is cached; a changed source or decision reruns only what depends on it.
@@ -91,35 +92,165 @@ build/<problem>/             every intermediate result (units, facts, verdicts, 
 requirements/<problem>/      the deliverable: feature specs
 ```
 
-## Stages: what, why, in → out
+## The seven steps
 
-| # | Stage | Who | In | Out | Why |
-|---|---|---|---|---|---|
-| 1 | **normalize** | adapter | raw source | `normalize/<src>.json`: Units with stable ids (`T-031`, `S05-E14`, `C-Q03`) and exact text | Makes sources addressable and quotable. Transcripts are split deterministically; screenshots are transcribed verbatim by a vision agent, twice, with disagreements reported. |
-| 2 | **extract** | one agent per source (parallel) | units + source-type prompt + guidance | `extract/<src>.json`: atomic Facts (kind, verbatim anchors, explicit/inferred, desired/current state, supersedes) | Small facts are checkable; stakeholder self-corrections are kept as linked history instead of being merged silently. |
-| 3 | **verify** | code + judge agent | facts + units | `facts.json` | Quotes must be exact substrings (code). A narrow judge checks each fact against its units. Unsupported facts never go further. |
-| 4 | **knowledge** | agent | verified facts, profile, guidance | `knowledge.raw.json`: information items (what, form, allowed values, when asked, when required, who needs it), business rules with decision tables, open questions, exclusions | One consolidated model of what we know, in business language, plus an internal formalisation (conditions as expressions) used only to verify examples. |
-| 5 | **features** | planner agent, then one writer agent per feature (parallel) | knowledge model + cited facts | `features.plan.json`, `features/<id>.json`: features with user stories, acceptance criteria (Given/When/Then) and example tables | The planner slices by the stakeholder goals and pain points the sources state (generic heuristic, no fixed journey). Writing per feature keeps contexts small and reruns local. |
-| 6 | **decide** | code (+ human) | spec + `decisions.yaml` | `spec.json` | Human judgment applied as a deterministic patch with the highest precedence. |
-| 7 | **check** | code + judge agent | spec, facts, units, examples, gold | findings | Checklist lint (the profile's questions answered for every item), every example executed, coverage both ways (every item/rule covered by a story; every source unit cited or listed), tech-leak scan, gold eval, per-element trace judge. |
-| 8 | **render** | code (Jinja) | spec + facts | `requirements/<problem>/` | Fixed, reusable format; evidence inline; internal expressions are never rendered. |
-| 9 | **dev refinement** | one agent per feature, reading only the rendered files | `requirements/` | questions engineering would ask + technical leaks | The acceptance test of the task: "built without anyone asking a single question". |
-| 10 | **review** | agent | full check report | `review.md`: verdict ready / ready with caveats / not ready | One place for the human. |
+Each step below answers three questions: **what it does and why**, **what
+goes in and what comes out**, and **how it keeps the result complete and
+correct**. All intermediate results are written to `build/<problem>/`, so
+every step can be inspected and rerun on its own.
 
-## How it makes sure the result is complete and correct
+### 1. Sources – read every source into quotable units
 
-**Correct (nothing invented):** verbatim-quote check on every anchor ·
-screenshot double read · fact judge per fact · trace judge per item, rule and
-story · every element must cite a valid fact, guideline or decision ·
-**every acceptance-criterion example is executed** against the business rules,
-plus the named cases in `examples.yaml` (Maria, Tomás, Stefan, Julia, …) ·
-guidance forbids outside knowledge; inferred elements are labelled and listed.
+**What and why.** Each problem lists its sources in `profile.yaml`: id,
+type, path or URL, what the source is trusted for (`authority`) and which
+source wins a conflict (`precedence`). An **adapter** per source type turns the
+raw source into small numbered **units** that hold the exact source text, so
+that everything later can quote it and code can check the quote.
+- `transcript`: plain code, no AI. It splits the text at the speaker names, giving one unit per turn (`T-044`, speaker attached).
+- `screenshots`: a vision agent copies every visible element word for word (labels, values, options, hints, errors, required markers), giving one unit per element (`S05-E14`).
+- `web_calculator`: `pipeline explore` drives the live site with Playwright and caches its question tree and test cases. Normal runs turn that cache into units (`C-Q03`, `C-V02`).
 
-**Complete (nothing lost):** the profile's checklist is enforced for every
-information item (for this assignment: what, when asked, when required,
-depends on, who needs it) · every item and rule is owned by a feature and
-covered by a story · uncited source units and unused facts are listed for the
-human · gold-set recall/precision · dev-refinement questions.
+**In → out.** Raw files or URLs plus `profile.yaml` →
+`normalize/<source>.json` (units with id, exact text and metadata such as speaker, screenshot file, field, or required marker).
+
+**Complete and correct.**
+- **Deterministic ids:** transcripts are split by code, so their unit ids are stable across runs.
+- **Double read:** every screenshot is transcribed twice, independently, and any words the two reads disagree on are reported.
+- **No interpretation yet:** the vision agent is told to transcribe only, never to interpret.
+- **Change detection:** each source is fingerprinted, and `pipeline status` shows which sources changed.
+
+### 2. Extract – atomic facts with verbatim quotes
+
+**What and why.** One agent per source (in parallel) extracts **atomic
+facts**: one claim each, typed (needed information, option, condition, rule,
+decision, exclusion, wish, open point, context). Each fact is anchored by
+verbatim quotes. Small facts can be checked one by one; whole requirements
+can't. The prompts handle what interviews are full of:
+- Self-corrections are kept as separate facts linked with `supersedes`, never merged silently.
+- Retractions ("let's not do the photo") become exclusions.
+- Today's manual process is tagged `current_state`, so it is not mistaken for a requirement.
+- Each fact is tagged `explicit` or `inferred`, so interpretations are visible.
+
+**In → out.** Units + source-type prompt (`adapters/<type>/agent.md`) +
+problem guidance → `extract/<source>.json` (facts `F-TR-031` with kind,
+statement, anchors, tags and supersedes links).
+
+**Complete and correct.**
+- **Exhaustive extraction:** the prompt asks the agent to be exhaustive about who needs what, when and why.
+- **Guidance is not a fact:** guidance conventions must not be extracted as facts of the source.
+- **Hedges kept:** hedged statements ("I think that's it") keep their hedge.
+
+### 3. Verify – prove every fact against its source
+
+**What and why.** Before anything is built on a fact, it is checked:
+1. **Code:** every quote must be an exact substring of the unit it cites. For screenshots, only visible text counts.
+2. **A narrow judge agent:** each fact is compared with its quoted units and their neighbours. The question is "could a careful reader infer this from these units alone?" The answer is supported, partial or unsupported.
+3. **Code:** supersede links are resolved, so the history of a corrected statement is kept.
+
+**In → out.** Facts + units → `facts.json` (each fact with `anchor_ok`, the
+judge's verdict and note, and `superseded_by`).
+
+**Complete and correct.**
+- **Unusable facts stop here:** facts with a broken quote, or judged unsupported, never reach the next step. They are listed as errors in `review.md`.
+- **Partial facts stay visible:** they are kept but shown as warnings.
+- **Rejecting a fact:** a product decision (`reject fact.<id>`) can remove one explicitly.
+
+### 4. Knowledge model – consolidate what we know
+
+**What and why.** One agent merges the verified facts from all sources into
+a single **knowledge model**, in business language:
+- **Information items:** what is needed, the form the sources require, allowed values, when it is asked, when it is required, and who needs it and why.
+- **Business rules:** each with a plain statement and a decision table.
+- **Open questions:** conflicts between sources, values a receiving party doesn't support, unknowns the stakeholders admitted. Each comes with options and a recommendation.
+- **Exclusions.**
+
+Each piece of information appears once, even if several stakeholders need it.
+Alongside the business text, every condition and rule gets an **internal
+formalisation** (a small expression language). It is never shown to readers;
+it exists so that code can execute examples later.
+
+**In → out.** Verified facts + `profile.yaml` (stakeholders, source authority
+and precedence) + `guidance.md` → `knowledge.raw.json`.
+
+**Complete and correct.**
+- **Nothing invented:** no item, value, condition or rule without a fact or a product-owner guideline (`G-nn`) behind it, and no outside knowledge (the sources are treated as the truth).
+- **Corrections win:** within a source, the latest statement wins.
+- **No silent choices:** across sources, precedence decides, and a genuine conflict becomes an open question.
+- **Honest status:** items that rest on inference are marked `inferred`.
+
+### 5. Feature specs – slice into features and write stories
+
+**What and why.**
+1. **Plan:** a planner agent slices the knowledge model into **features**, following the stakeholder goals and pain points the sources state. This is a generic heuristic, not a fixed journey. Each information item and rule is owned by exactly one feature.
+2. **Write:** one writer agent per feature, in parallel, writes **user stories** (*As a … I want … so that …*, with a priority and its reason) and **acceptance criteria** in Given / When / Then.
+
+Where a criterion involves conditions or rules, it gets an **examples
+table**: real cases named in the sources first (Maria, Tomás, Stefan,
+Julia, …), then illustrative cases for the remaining branches. Everything
+stays in business language. How to build it is left to engineering.
+
+**In → out.** Knowledge model + cited facts → `features.plan.json` and
+`features/<feature>.json` (features with stories, criteria and examples).
+
+**Complete and correct.**
+- **Full coverage:** every item and rule a feature owns must be covered by at least one story, and every row of every decision table by a criterion.
+- **Exact examples:** examples must be complete enough to be executed in step 7.
+- **Cited sources:** stories and criteria cite facts, guidelines or decisions.
+- **Open questions referenced, not decided:** open questions are referenced, never resolved by the writer.
+
+### 6. Decide – the product owner's judgment, applied by code
+
+**What and why.** The product owner answers open questions and overrides
+conclusions in `decisions.yaml`, or in plain words with the `/decide`
+skill. Each decision can:
+- **override** an attribute
+- **add** an item, rule or story
+- **exclude** something
+- **resolve** an open question
+- **accept or reject** a fact
+
+Decisions are applied by code **after** the agents ran, so no agent can
+ignore or reinterpret them. They are cited like any source, with the highest
+precedence.
+
+**In → out.** Knowledge model + features + `decisions.yaml` → `spec.json`.
+
+**Complete and correct.**
+- **Fingerprinted evidence:** each decision records a fingerprint of the source units it is based on. If that evidence changes later, the decision is flagged "needs re-confirmation" instead of being applied silently.
+- **Broken targets reported:** a decision whose target no longer exists is reported as an error.
+
+### 7. Check, render & review – prove it, publish it, judge it
+
+**What and why.** This step proves the spec, renders it and passes a verdict.
+
+1. **Mechanical checks (code):**
+   - **Checklist:** every information item answers the problem's checklist from `profile.yaml`. For this assignment that is what, when asked, when required, depends on, and who needs it.
+   - **References:** every condition refers to items that exist, and every element cites a valid fact, guideline or decision.
+   - **Example execution:** **every example in every acceptance criterion is executed** against the internal formalisation, plus the named cases in `examples.yaml`. Shown as ✅ in the specs.
+   - **Coverage, both ways:** every item and rule sits in a story, and uncited source units and unused facts are listed.
+   - **Tech-leak scan:** a vocabulary scan flags implementation terms.
+   - **Gold set:** recall and precision against the hand-written gold set.
+2. **Trace judge (agent):** each item, rule and story is compared with the facts it cites.
+3. **Render (code):** Jinja templates write `requirements/<problem>/`. The internal formalisation is never rendered. Files:
+   - one file per feature
+   - an information catalogue
+   - open questions
+   - out of scope
+   - traceability
+4. **Dev refinement (one agent per feature):** an engineer agent that sees only the rendered files lists every question it would ask in refinement, plus any technical decisions that leaked into the spec. This is the acceptance test of the task: "built without anyone asking a single question".
+5. **Review (agent):** summarises everything into one verdict (ready / ready with caveats / not ready), with prioritised findings and suggested decisions.
+
+**In → out.** `spec.json`, facts, units, `examples.yaml`, `gold.yaml` →
+`requirements/<problem>/` (the deliverable), `report.json` and **`review.md`**,
+the one file the product owner reads.
+
+**Complete and correct.** This step *is* the safety net:
+- **Correct:** quotes proven, examples executed, every element traced, nothing technical leaking.
+- **Complete:** checklist enforced, coverage both ways, gold recall, refinement questions.
+
+Anything that fails surfaces in `review.md`. The product owner then fixes
+it at the right level: a decision (step 6), guidance, or a source, and
+reruns. Only the affected steps run again.
 
 ## Human in the loop
 
