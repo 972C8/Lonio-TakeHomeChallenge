@@ -1,5 +1,9 @@
 # Requirements pipeline
 
+<p align="center">
+  <img src="docs/architecture.svg" alt="Architecture: skills guide eight steps of specialised agents and code, from sources to a feature spec in business language, built on Python and the Claude Agent SDK" width="100%">
+</p>
+
 A generic pipeline of Claude agents and deterministic checks. It turns messy
 business sources (meeting transcripts, portal screenshots, live web
 calculators) into a **feature spec**: each feature (e.g. employee onboarding) is
