@@ -60,6 +60,9 @@ pipeline/
 problems/
   employee-onboarding/   profile.yaml · guidance.md · decisions.yaml · personas.yaml · gold.yaml
 .claude/skills/    /run-pipeline · /decide · /trace · /new-adapter · /new-problem · /learn
+docs/
+  feature-specs/   output format design: proposal, user story template, worked example (US-03)
+  research/        background research on requirement formats and extraction pipelines
 build/<problem>/   every intermediate result (units, facts, verdicts, spec, report, review.md)
 requirements/<problem>/  the deliverable
 ```
@@ -117,5 +120,12 @@ requirements/<problem>/  the deliverable
 
 New source → new adapter folder (see `/new-adapter`) + one entry in
 `profile.yaml`. New process → new `problems/<name>/` folder (see `/new-problem`).
+
+## Design docs
+
+- [`docs/feature-specs/proposal.md`](docs/feature-specs/proposal.md): why the output is a feature spec (stories + acceptance criteria) and how it maps to Linear
+- [`docs/feature-specs/user-story-template.md`](docs/feature-specs/user-story-template.md): the generic user story template (core sections for any feature; data-collection and tracker fields optional)
+- [`docs/feature-specs/example-US-03-source-tax-liability.md`](docs/feature-specs/example-US-03-source-tax-liability.md): one data-collection story fully worked out from the real facts
+- [`docs/research/`](docs/research/): format recommendation, extraction patterns, comparable open-source pipelines
 
 See [LIMITATIONS.md](LIMITATIONS.md) for where the pipeline stands.
