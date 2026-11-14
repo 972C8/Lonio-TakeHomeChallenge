@@ -304,7 +304,7 @@ type the name in Claude Code opened in this folder.
 3. **Run** – `pipeline run` (about 15–20 minutes, roughly $5–7 the first time).
    Output is generated, not committed.
 
-### 2. After every run – `/review`, `/decide`, `/trace`, `/run-pipeline`
+### 2. After every run – `/review`
 
 Read `build/<f>/review.md` (or let `/review` walk you through it) and answer,
 in this order:
