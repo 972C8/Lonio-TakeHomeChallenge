@@ -1,0 +1,759 @@
+--- baseline/requirements/employee-onboarding/feature.md
++++ run/requirements/employee-onboarding/feature.md
+@@ -47,8 +47,8 @@
+ | 1. Personal details | First name, last name and date of birth. | Everyone | [US-01.1](stories/US-01.1-personal-details-for-the-pension-fund-registration.md) |
+ | 2. Home address | Street, house number, postcode, town and country of the home address. This country is also the country of residence. The canton is asked only if the country is Switzerland. | Everyone | [US-01.2](stories/US-01.2-complete-home-address-for-posting-documents.md), [US-01.3](stories/US-01.3-home-address-country-is-the-country-of-residence-for-later.md), [US-01.4](stories/US-01.4-canton-of-residence-for-employees-living-in-switzerland.md) |
+ | 3. Start of employment | The first working day. | Everyone | [US-02.1](stories/US-02.1-employee-enters-the-first-working-day.md), [US-02.2](stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md) |
+-| 4. Nationality and permit | The nationality. Anyone with Swiss citizenship counts as Swiss, even with another nationality. Non-Swiss employees are also asked whether they hold a C permit (yes/no). | Employees living in Switzerland | [US-04.1](stories/US-04.1-ask-swiss-citizenship-and-c-permit-only-of-employees-living.md) |
+-| 5. Civil status and spouse | The civil status, from the pension fund's list. The spouse's or registered partner's date of birth is asked only if the employee is married, in a registered partnership or separated. Spouse questions are asked only if the employee lives in Switzerland, is not Swiss, holds no C permit and is married or in a registered partnership. The first is the spouse's or partner's country of residence. If the spouse lives in Switzerland, the spouse's nationality is asked. If the spouse is not Swiss, the employee is asked whether the spouse holds a C permit. | Everyone | [US-03.1](stories/US-03.1-ask-the-civil-status-once-using-the-pension-fund-s-list.md), [US-03.2](stories/US-03.2-ask-the-spouse-s-or-partner-s-date-of-birth-from-married.md), [US-03.3](stories/US-03.3-enter-the-civil-status-in-the-pension-fund-s-terms.md), [US-03.4](stories/US-03.4-group-the-civil-status-for-source-tax.md), [US-04.2](stories/US-04.2-ask-spouse-details-only-when-the-spouse-could-exempt-the.md) |
++| 4. Nationality and permit | Whether the employee is a Swiss citizen (yes/no). The country of nationality is not asked. Anyone with Swiss citizenship counts as Swiss, even with another nationality. Non-Swiss employees are also asked whether they hold a C permit (yes/no). | Employees living in Switzerland | [US-04.1](stories/US-04.1-ask-swiss-citizenship-and-c-permit-only-of-employees-living.md) |
++| 5. Civil status and spouse | The civil status, from the pension fund's list. The spouse's or registered partner's date of birth is asked only if the employee is married, in a registered partnership or separated. Spouse questions are asked only if the employee lives in Switzerland, is not Swiss, holds no C permit and is married or in a registered partnership. The first is the spouse's or partner's country of residence. If the spouse lives in Switzerland, the employee is asked whether the spouse is a Swiss citizen (yes/no). If the spouse is not Swiss, the employee is asked whether the spouse holds a C permit. | Everyone | [US-03.1](stories/US-03.1-ask-the-civil-status-once-using-the-pension-fund-s-list.md), [US-03.2](stories/US-03.2-ask-the-spouse-s-or-partner-s-date-of-birth-from-married.md), [US-03.3](stories/US-03.3-enter-the-civil-status-in-the-pension-fund-s-terms.md), [US-03.4](stories/US-03.4-group-the-civil-status-for-source-tax.md), [US-04.2](stories/US-04.2-ask-spouse-details-only-when-the-spouse-could-exempt-the.md) |
+ | 6. Source tax | The denomination. Employees who are married or in a registered partnership are asked whether the spouse or partner is gainfully employed or receives replacement income. Everyone in this step is asked whether they have children. | Employees subject to source tax: everyone living abroad, and employees living in Switzerland who are not Swiss, hold no C permit and are not exempted by a Swiss or C-permit spouse or partner living in Switzerland | [US-05.3](stories/US-05.3-state-the-denomination-for-the-church-tax-part-of-the-tariff.md), [US-05.4](stories/US-05.4-state-whether-the-spouse-or-registered-partner-works-for.md), [US-06.1](stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md), [US-06.6](stories/US-06.6-derive-the-child-digit-and-the-single-parent-h-tariff.md) |
+ | 7. Children | One block per child, repeated for each child the employee adds. It asks whether the child is a minor or of age and in first education, and whether the child lives in the same household. Further questions follow only where the earlier answers make them relevant: custody, common household with the other parent, alternating care, who contributes more to the child's maintenance, and whether the employee mainly maintains a child of age (more than 50%). | Employees subject to source tax who have children | [US-06.1](stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md), [US-06.2](stories/US-06.2-ask-custody-and-common-household-for-a-minor-child-living.md), [US-06.3](stories/US-06.3-ask-custody-and-alternating-care-for-a-minor-child-not.md), [US-06.4](stories/US-06.4-ask-who-contributes-more-to-the-child-s-maintenance.md), [US-06.5](stories/US-06.5-ask-household-and-maintenance-for-a-child-of-age-in-first.md) |
+ | 8. Cross-border commuting | Employees living in Germany are asked whether they return home daily. With daily return, they are asked whether they have a certificate of residence ('not yet' is a valid answer). Without daily return, they are asked whether a daily return would be reasonable (less than 100 km). If it would be, they are asked whether they expect more than 60 work-related non-return days. Employees living in Liechtenstein are asked whether they return home daily. If not, they are asked whether they expect more than 45 work-related non-return days. | Employees subject to source tax who live in Germany or Liechtenstein | [US-07.2](stories/US-07.2-decide-the-cross-border-tariff-for-employees-living-in.md), [US-07.3](stories/US-07.3-determine-the-source-tax-outcome-for-employees-living-in.md) |
+@@ -322,13 +322,14 @@
+ #### Nationality
+ | | |
+ |---|---|
+-| **What?** | The nationality of an employee living in Switzerland, needed to decide whether they are subject to source tax. Anyone with Swiss citizenship counts as Swiss, even with another nationality, and answers Switzerland. – Form: Country by English name; employees holding Swiss citizenship answer "Switzerland" |
++| **What?** | Whether an employee living in Switzerland is Swiss (holds Swiss citizenship). It is needed only to decide whether source tax can apply at all. Anyone with Swiss citizenship counts as Swiss, even with another nationality, and answers yes. The actual country of nationality is not collected. |
++| **Allowed values** | yes · no |
+ | **When do we ask?** | Only if the employee lives in Switzerland |
+ | **When is it required?** | Whenever it is asked |
+ | **Depends on** | Country (home address) |
+ | **Who needs it?** | source tax office: Swiss citizens living in Switzerland are not subject to source tax<br>HR: Non-Swiss employees get the reminder to bring their permit on the first day |
+-| **Status · sources** | decision · F-hr_transcript-35fae3, F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, G-01, G-10, D-008, D-010, D-038 |
+-| **Notes** | Step 4 'Nationality and permit'. Not asked from employees living abroad: they are subject to source tax whatever their nationality (D-038). See OQ-nationality-wording. |
++| **Status · sources** | decision · F-hr_transcript-35fae3, F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, F-hr_followup-e8164e, F-hr_followup-8d9f77, F-hr_followup-32873d, F-hr_followup-ee7d68, G-01, G-10, D-008, D-010, D-038 |
++| **Notes** | Step 4 'Nationality and permit'. Not asked from employees living abroad: they are subject to source tax whatever their nationality (D-038). Only 'Swiss: yes or no' is asked, not the country (HR follow-up). |
+ 
+ #### Holds a C permit (permanent residence)
+ | | |
+@@ -339,7 +340,7 @@
+ | **When is it required?** | Whenever it is asked |
+ | **Depends on** | Country (home address), Nationality |
+ | **Who needs it?** | source tax office: Non-Swiss employees with a C permit are treated like Swiss people and are not subject to source tax |
+-| **Status · sources** | decision · F-hr_transcript-4ad146, F-hr_transcript-845204, F-hr_transcript-b6d9b3, G-01, D-005 |
++| **Status · sources** | decision · F-hr_transcript-4ad146, F-hr_transcript-845204, F-hr_transcript-b6d9b3, F-hr_followup-8d9f77, G-01, D-005 |
+ | **Notes** | Step 4 'Nationality and permit'. |
+ 
+ #### Spouse's / partner's country of residence
+@@ -350,19 +351,20 @@
+ | **When is it required?** | Whenever it is asked |
+ | **Depends on** | Country (home address), Civil status, Nationality, Holds a C permit (permanent residence) |
+ | **Who needs it?** | source tax office: A Swiss or C-permit spouse exempts the employee only if the spouse lives in Switzerland |
+-| **Status · sources** | inferred · F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, G-01, G-10, D-003 |
++| **Status · sources** | inferred · F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, F-hr_followup-8d9f77, G-01, G-10, D-003 |
+ | **Notes** | Step 5. Asking residence before nationality and permit is an inference from data minimisation (G-01). Separated employees count as single for source tax (D-003), so they are not asked. |
+ 
+ #### Spouse's / partner's nationality
+ | | |
+ |---|---|
+-| **What?** | Nationality of the spouse or registered partner living in Switzerland. A spouse with Swiss citizenship counts as Swiss, even with another nationality. – Form: Country by English name; a spouse holding Swiss citizenship is entered as "Switzerland" |
++| **What?** | Whether the spouse or registered partner living in Switzerland is Swiss (holds Swiss citizenship). A spouse with Swiss citizenship counts as Swiss, even with another nationality. The actual country of nationality is not collected. |
++| **Allowed values** | yes · no |
+ | **When do we ask?** | Only if the spouse/partner question block applies and the spouse lives in Switzerland |
+ | **When is it required?** | Whenever it is asked |
+ | **Depends on** | Country (home address), Civil status, Nationality, Holds a C permit (permanent residence), Spouse's / partner's country of residence |
+ | **Who needs it?** | source tax office: A Swiss spouse living in Switzerland exempts the employee from source tax |
+-| **Status · sources** | inferred · F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, G-10, D-003, D-008 |
+-| **Notes** | Step 5. Applying the dual-citizenship rule (D-008) to the spouse is an inference (see OQ-nationality-wording). |
++| **Status · sources** | inferred · F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, F-hr_followup-e8164e, F-hr_followup-ee7d68, G-01, G-10, D-003, D-008 |
++| **Notes** | Step 5. Asking the spouse only 'Swiss: yes or no' (as HR asked for the employee) and applying the dual-citizenship rule (D-008) to the spouse are inferences (see OQ-nationality-wording). |
+ 
+ #### Spouse / partner holds a C permit
+ | | |
+@@ -373,7 +375,7 @@
+ | **When is it required?** | Whenever it is asked |
+ | **Depends on** | Country (home address), Civil status, Nationality, Holds a C permit (permanent residence), Spouse's / partner's nationality, Spouse's / partner's country of residence |
+ | **Who needs it?** | source tax office: A spouse with a C permit living in Switzerland exempts the employee from source tax |
+-| **Status · sources** | decision · F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, D-005 |
++| **Status · sources** | decision · F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, F-hr_followup-8d9f77, D-005 |
+ | **Notes** | Step 5. |
+ 
+ ### Business rules in this section
+@@ -384,12 +386,12 @@
+ | # | Country of home address | Swiss citizen | C permit | Spouse exempts | → Result | Sources |
+ |---|---|---|---|---|---|---|
+ | 1 | Not Switzerland | - | - | - | Subject to source tax | F-hr_transcript-1a20bb, F-hr_transcript-b6d9b3, D-007, D-038 |
+-| 2 | Switzerland | yes | - | - | Not subject | F-hr_transcript-b6d9b3, D-008 |
++| 2 | Switzerland | yes | - | - | Not subject | F-hr_transcript-b6d9b3, F-hr_followup-32873d, D-008 |
+ | 3 | Switzerland | no | yes | - | Not subject | F-hr_transcript-845204, D-005 |
+ | 4 | Switzerland | no | no | yes | Not subject | F-hr_transcript-d7431e |
+ | 5 | Switzerland | no | no | no | Subject to source tax | F-hr_transcript-b6d9b3 |
+ 
+-_Status: decision · Sources: F-hr_transcript-b6d9b3, F-hr_transcript-b84498, F-hr_transcript-1a20bb, F-hr_transcript-845204, F-hr_transcript-d7431e, F-hr_transcript-4e180e, D-005, D-007, D-008_
++_Status: decision · Sources: F-hr_transcript-b6d9b3, F-hr_transcript-b84498, F-hr_transcript-1a20bb, F-hr_transcript-845204, F-hr_transcript-d7431e, F-hr_transcript-4e180e, F-hr_followup-32873d, F-hr_followup-8d9f77, D-005, D-007, D-008_
+ 
+ #### Spouse exempts from source tax
+ An employee who is married or in a registered partnership is exempt from source tax if the spouse/partner lives in Switzerland and is Swiss or holds a C permit.
+@@ -402,7 +404,7 @@
+ | 4 | Married or registered partnership | Switzerland | no | yes | yes | F-hr_transcript-d7431e, D-005 |
+ | 5 | Married or registered partnership | Switzerland | no | no | no | F-hr_transcript-b6d9b3 |
+ 
+-_Status: decision · Sources: F-hr_transcript-d7431e, F-hr_transcript-f3ce84, F-hr_transcript-b6d9b3, D-003, D-005, D-008_
++_Status: decision · Sources: F-hr_transcript-d7431e, F-hr_transcript-f3ce84, F-hr_transcript-b6d9b3, F-hr_followup-e8164e, D-003, D-005, D-008_
+ 
+ <a id="SEC-05-tariff-basics"></a>
+ 
+@@ -851,7 +853,7 @@
+ | 2 | Switzerland | no | Show reminder | D-010 |
+ | 3 | Switzerland | yes | No reminder | D-010 |
+ 
+-_Status: decision · Sources: F-hr_transcript-c53552, D-010, D-038_
++_Status: decision · Sources: F-hr_transcript-c53552, F-hr_followup-8d9f77, D-010, D-038_
+ 
+ #### Discard answers that no longer apply
+ If the employee changes an earlier answer so that later questions no longer apply, those answers may be kept while the employee goes back and forth, but are discarded on submission. After submission the questionnaire is read-only for the employee; later changes are made by HR.
+@@ -875,6 +877,15 @@
+ - **D-036** (product decision (Product owner)): Answers to questions that no longer apply after the employee changes an earlier answer are discarded on submission; until then they may be kept so going back and forth loses no input.
+ - **D-037** (product decision (Product owner)): After submission the questionnaire is read-only for the employee. Any later change (a move, a marriage, a new child, a certificate of residence handed in later, a corrected nationality) is made by HR and belongs to the later HR-side spec (D-034). Every derived result (insurance start date, civil status for the fund and for source tax, subject to source tax, tariff code) is always derived again from the latest answers, as for the first working day (D-033).
+ - **D-038** (product decision (Product owner)): Employees living abroad get the permit reminder whatever their nationality, because nationality is not asked of them (data minimisation, G-01). HR words the reminder so that a Swiss citizen living abroad, such as Stefan, can see that it does not apply to them. Asking everyone 'Swiss citizen yes/no' only for the reminder is not worth the extra question.
++- **F-hr_followup-32873d** (hr_followup): Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.
++  - "We only need it to know whether source tax can apply at all." — hr_followup/T-002, Anna
++- **F-hr_followup-8d9f77** (hr_followup): The nationality question can be answered as Swiss yes or no (allowed values: yes / no).
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
++- **F-hr_followup-e8164e** (hr_followup): For nationality, HR (Muster AG) only needs to know whether the employee is Swiss or not; the actual country of nationality is not needed.
++  - "For nationality, do you need the actual country, or is it enough to know whether someone is Swiss?" — hr_followup/T-001, Leo
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
++- **F-hr_followup-ee7d68** (hr_followup, inferred): The exact country of nationality should not be collected, since only Swiss yes/no is needed (data minimisation).
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
+ - **F-hr_transcript-09b3fe** (hr_transcript): For married employees, the source tax calculator asks additional questions, e.g. whether the husband or wife works.
+   - "It changes the questions in the calculator, yes. Whether the husband or wife works." — hr_transcript/T-044, Anna
+ - **F-hr_transcript-1a20bb** (hr_transcript): Employees who work in Switzerland but live abroad (e.g. Konstanz in Germany, Liechtenstein) are always subject to source tax, regardless of nationality – even Swiss citizens.
+--- baseline/requirements/employee-onboarding/information.md
++++ run/requirements/employee-onboarding/information.md
+@@ -16,12 +16,12 @@
+ | **Country (home address)** | Country of the employee's home address. It is also the employee's country of residence: it decides whether the employee lives abroad (and is therefore subject to source tax), which cross-border questions apply (Germany, Liechtenstein, other country), whether the canton is asked and whether the permit reminder is shown. Form: Country by English name (e.g. "Switzerland", "Germany", "Liechtenstein") | Always | Always |  | hr, source_tax, pension_fund | [Personal details and home address](feature.md#SEC-01-identity-and-address) |
+ | **Canton** | The Swiss canton for the pension fund's required 'Canton' field. Asked only from employees living in Switzerland (provisional, D-002). Values: Aargau · Appenzell Ausserrhoden · Appenzell Innerrhoden · Basel-Landschaft · Basel-Stadt · Bern · Fribourg · Geneva · Glarus · Graubünden · Jura · Lucerne · Neuchâtel · Nidwalden · Obwalden · Schaffhausen · Schwyz · Solothurn · St. Gallen · Thurgau · Ticino · Uri · Valais · Vaud · Zug · Zurich | Only if the employee lives in Switzerland (home address country is Switzerland) | Whenever it is asked | Country (home address) | pension_fund | [Personal details and home address](feature.md#SEC-01-identity-and-address) |
+ | **First working day** | The employee's first working day at Muster AG, entered and thereby confirmed by the employee (it often moves, e.g. after negotiating an earlier exit with the old employer). The pension fund insurance start date is derived from it. Form: Date, DD.MM.YYYY | Always | Always |  | pension_fund, hr | [First working day and insurance start date](feature.md#SEC-02-start-date-insurance) |
+-| **Nationality** | The nationality of an employee living in Switzerland, needed to decide whether they are subject to source tax. Anyone with Swiss citizenship counts as Swiss, even with another nationality, and answers Switzerland. Form: Country by English name; employees holding Swiss citizenship answer "Switzerland" | Only if the employee lives in Switzerland | Whenever it is asked | Country (home address) | source_tax, hr | [Source tax liability check](feature.md#SEC-04-source-tax-liability) |
++| **Nationality** | Whether an employee living in Switzerland is Swiss (holds Swiss citizenship). It is needed only to decide whether source tax can apply at all. Anyone with Swiss citizenship counts as Swiss, even with another nationality, and answers yes. The actual country of nationality is not collected. Values: yes · no | Only if the employee lives in Switzerland | Whenever it is asked | Country (home address) | source_tax, hr | [Source tax liability check](feature.md#SEC-04-source-tax-liability) |
+ | **Holds a C permit (permanent residence)** | Whether a non-Swiss employee living in Switzerland holds a C permit (permanent residence). The permit type itself is not asked; only 'C permit or not' drives a rule. Values: yes · no | Only if the employee lives in Switzerland and is not Swiss | Whenever it is asked | Country (home address), Nationality | source_tax | [Source tax liability check](feature.md#SEC-04-source-tax-liability) |
+ | **Civil status** | The employee's civil status. Used for the pension fund (mapped to the fund's list) and for source tax (married/registered partnership vs. not married). Values: Single · Married · Divorced · Widowed · Registered partnership · Separated | Always | Always |  | pension_fund, source_tax | [Civil status and spouse for the pension fund](feature.md#SEC-03-civil-status-spouse) |
+ | **Spouse's / registered partner's date of birth** | Date of birth of the employee's husband, wife or registered partner (for separated employees: of the spouse they are still married to). Form: Date in the format DD.MM.YYYY | Only if the employee is married, in a registered partnership or separated (all entered at the fund as Married) | Whenever it is asked | Civil status | pension_fund | [Civil status and spouse for the pension fund](feature.md#SEC-03-civil-status-spouse) |
+ | **Spouse's / partner's country of residence** | The country where the employee's spouse or registered partner lives. Asked first among the spouse's source tax details, because a spouse living outside Switzerland can never exempt the employee, so nationality and permit are then not needed. Form: Country by English name | Only if the employee lives in Switzerland, is not Swiss, has no C permit and is married or in a registered partnership | Whenever it is asked | Country (home address), Civil status, Nationality, Holds a C permit (permanent residence) | source_tax | [Source tax liability check](feature.md#SEC-04-source-tax-liability) |
+-| **Spouse's / partner's nationality** | Nationality of the spouse or registered partner living in Switzerland. A spouse with Swiss citizenship counts as Swiss, even with another nationality. Form: Country by English name; a spouse holding Swiss citizenship is entered as "Switzerland" | Only if the spouse/partner question block applies and the spouse lives in Switzerland | Whenever it is asked | Country (home address), Civil status, Nationality, Holds a C permit (permanent residence), Spouse's / partner's country of residence | source_tax | [Source tax liability check](feature.md#SEC-04-source-tax-liability) |
++| **Spouse's / partner's nationality** | Whether the spouse or registered partner living in Switzerland is Swiss (holds Swiss citizenship). A spouse with Swiss citizenship counts as Swiss, even with another nationality. The actual country of nationality is not collected. Values: yes · no | Only if the spouse/partner question block applies and the spouse lives in Switzerland | Whenever it is asked | Country (home address), Civil status, Nationality, Holds a C permit (permanent residence), Spouse's / partner's country of residence | source_tax | [Source tax liability check](feature.md#SEC-04-source-tax-liability) |
+ | **Spouse / partner holds a C permit** | Whether a non-Swiss spouse or registered partner living in Switzerland holds a C permit (permanent residence). Values: yes · no | Only if the spouse lives in Switzerland and is not Swiss (within the spouse block) | Whenever it is asked | Country (home address), Civil status, Nationality, Holds a C permit (permanent residence), Spouse's / partner's nationality, Spouse's / partner's country of residence | source_tax | [Source tax liability check](feature.md#SEC-04-source-tax-liability) |
+ | **Denomination** | Whether the employee belongs to the Roman Catholic, Christian Catholic or Evangelical Reformed church, or to none or another denomination. Sets the church-tax suffix of the tariff code. Values: Roman Catholic, Christian Catholic or Evangelical Reformed · None or other | Only if the employee is subject to source tax | Whenever it is asked | Subject to source tax | source_tax | [Source tax tariff basics and computed result](feature.md#SEC-05-tariff-basics) |
+ | **Spouse / partner is gainfully employed or receives replacement income** | Whether the employee's spouse or registered partner is gainfully employed or receives replacement income. Values: yes · no | Only if the employee is subject to source tax and married or in a registered partnership | Whenever it is asked | Civil status for source tax, Subject to source tax | source_tax | [Source tax tariff basics and computed result](feature.md#SEC-05-tariff-basics) |
+--- baseline/requirements/employee-onboarding/open-questions.md
++++ run/requirements/employee-onboarding/open-questions.md
+@@ -71,18 +71,19 @@
+ - **D-009**: Before go-live a domain expert compares Lonio's computed tariff code with the calculator for the paths not explored (residence block for A/B/H, more than 3 children, H3N/P3N). Special tariffs such as D (second job) are out of scope for onboarding. Keep OQ-calculator-coverage open as a non-blocking go-live condition.
+ 
+ ## OQ-nationality-wording
+-**Should the questionnaire ask for the nationality as a country, or only whether the employee (and the spouse) holds Swiss citizenship? And does the dual-citizenship rule (D-008) also apply to the spouse?**
++**HR confirmed that only 'Swiss: yes or no' is needed for the employee. Is the same enough for the spouse or registered partner? And does the dual-citizenship rule (D-008) also apply to the spouse?**
+ 
+-Only 'Swiss or not' drives a rule; asking the full nationality may collect more than needed (G-01). The spouse's dual citizenship is not covered by D-008.
++The spouse's nationality only matters for the spouse exemption. HR's answer covered the employee explicitly, and D-008 does not mention the spouse.
+ 
+ Options:
+-- Ask the nationality as a country, Swiss citizens answer Switzerland (current model)
+-- Ask 'Do you hold Swiss citizenship? yes/no' only
++- Ask the spouse 'Swiss: yes or no' too; a spouse with Swiss citizenship answers yes (current model)
++- Ask the spouse's nationality as a country
+ 
+-**Recommendation:** Keep the current model and confirm with the product owner; apply D-008 to the spouse unless a domain expert says otherwise.
++**Recommendation:** Keep yes/no for the spouse (data minimisation, G-01) and apply D-008 to the spouse unless a domain expert says otherwise.
+ 
+-Affects: Nationality, Spouse's / partner's nationality, Subject to source tax, Spouse exempts from source tax
+-- **F-hr_transcript-35fae3**: The employee's nationality is needed to determine source tax liability. — "If you don't have a Swiss passport, you do source tax." (hr_transcript/T-010, Anna)
++Affects: Spouse's / partner's nationality, Spouse exempts from source tax
++- **F-hr_followup-e8164e**: For nationality, HR (Muster AG) only needs to know whether the employee is Swiss or not; the actual country of nationality is not needed. — "For nationality, do you need the actual country, or is it enough to know whether someone is Swiss?" (hr_followup/T-001, Leo) — "Swiss yes or no is enough." (hr_followup/T-002, Anna)
++- **F-hr_followup-ee7d68**: The exact country of nationality should not be collected, since only Swiss yes/no is needed (data minimisation). — "Swiss yes or no is enough." (hr_followup/T-002, Anna)
+ - **F-hr_transcript-f3ce84**: For married employees, the spouse's nationality, permit (if any) and whether the spouse lives in Switzerland are needed to determine source tax liability. — "So you need to know about the spouse as well." (hr_transcript/T-045, Leo) — "Yes. Their nationality, their permit if they have one, and that they live here." (hr_transcript/T-046, Anna)
+ - **G-01**: Lonio collects onboarding data from a new employee **once** and reuses it for every receiving party. Asking too little blocks a registration; asking too much collects personal data we must not have (data minimisation). A question must only be asked when at least one receiving party needs the answer for this person.
+ - **D-008**: Anyone with Swiss citizenship counts as Swiss for source tax, even with another nationality. This closes OQ-dual-nationality. To be verified by a domain expert.
+--- baseline/requirements/employee-onboarding/stories/US-01.3-home-address-country-is-the-country-of-residence-for-later.md
++++ run/requirements/employee-onboarding/stories/US-01.3-home-address-country-is-the-country-of-residence-for-later.md
+@@ -15,7 +15,7 @@
+ 
+ **As** source tax office, **I want** the country of the employee's home address to count as the employee's country of residence for all later questions, **so that** whether the employee lives abroad (and so is subject to source tax), and in which state of residence, is known without asking again
+ 
+-Priority **P1** – Living abroad decides source tax liability and the cross-border part of the tariff code. Asking it twice would contradict the ask-once principle. · Sources: F-hr_transcript-e505f8, F-hr_transcript-1a20bb, F-hr_transcript-b6d9b3, F-zh_source_tax_calculator-f29009, F-zh_source_tax_calculator-4c65ae, F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-52b67a, G-01, D-002, D-038
++Priority **P1** – Living abroad decides source tax liability and the cross-border part of the tariff code. Asking it twice would contradict the ask-once principle. · Sources: F-hr_transcript-e505f8, F-hr_transcript-1a20bb, F-hr_transcript-b6d9b3, F-hr_followup-8d9f77, F-zh_source_tax_calculator-f29009, F-zh_source_tax_calculator-4c65ae, F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-52b67a, G-01, D-002, D-038
+ 
+ > ⚠ Open questions affecting this section: [OQ-canton-abroad](../open-questions.md#oq-canton-abroad)
+ Covers (details in [the section](../feature.md#SEC-01-identity-and-address) and [information.md](../information.md)): Country (home address)
+@@ -43,8 +43,8 @@
+ - **AC-01.3.3 Living abroad makes the employee subject to source tax without a nationality question**
+   - **Given** the home address country is not Switzerland
+   - **When** the questionnaire decides which questions follow
+-  - **Then** the employee counts as subject to source tax whatever their nationality, and is not asked for nationality, C permit or canton. An employee living in Switzerland is asked for their nationality and canton.
+-  - _Sources: F-hr_transcript-1a20bb, F-hr_transcript-b6d9b3, D-002, D-038, G-01_
++  - **Then** the employee counts as subject to source tax whatever their nationality, and is not asked whether they are Swiss, whether they hold a C permit, or for their canton. An employee living in Switzerland is asked whether they are Swiss (Swiss citizenship: yes or no) and for their canton.
++  - _Sources: F-hr_transcript-1a20bb, F-hr_transcript-b6d9b3, F-hr_followup-8d9f77, D-002, D-038, G-01_
+ 
+   | Example | Country (home address) | → | Subject to source tax | Nationality | Holds a C permit (permanent residence) | Canton | Checked |
+   |---|---|---|---|---|---|---|---|
+@@ -55,6 +55,8 @@
+ ## Evidence
+ - **D-002** (product decision (Product owner)): Ask for the canton (pension fund 'Canton' field) only from employees living in Switzerland. Provisional - keep OQ-canton-abroad open as non-blocking, to be verified by a domain expert and Pensionskasse Muster (what to enter for employees living abroad, and whether 'Canton' means residence or work).
+ - **D-038** (product decision (Product owner)): Employees living abroad get the permit reminder whatever their nationality, because nationality is not asked of them (data minimisation, G-01). HR words the reminder so that a Swiss citizen living abroad, such as Stefan, can see that it does not apply to them. Asking everyone 'Swiss citizen yes/no' only for the reminder is not worth the extra question.
++- **F-hr_followup-8d9f77** (hr_followup): The nationality question can be answered as Swiss yes or no (allowed values: yes / no).
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
+ - **F-hr_transcript-1a20bb** (hr_transcript): Employees who work in Switzerland but live abroad (e.g. Konstanz in Germany, Liechtenstein) are always subject to source tax, regardless of nationality – even Swiss citizens.
+   - "Those people do source tax because they work here and they don't live here. And there it doesn't matter what passport you have, by the way." — hr_transcript/T-048, Anna
+   - "Stefan is actually Swiss, and he still has it." — hr_transcript/T-048, Anna
+--- baseline/requirements/employee-onboarding/stories/US-04.1-ask-swiss-citizenship-and-c-permit-only-of-employees-living.md
++++ run/requirements/employee-onboarding/stories/US-04.1-ask-swiss-citizenship-and-c-permit-only-of-employees-living.md
+@@ -13,9 +13,9 @@
+ 
+ Part of [Employee onboarding questionnaire](../feature.md), section [4. Source tax liability check](../feature.md#SEC-04-source-tax-liability).
+ 
+-**As** new employee, **I want** to give my nationality, and whether I hold a C permit, only when I live in Switzerland and it matters for my source tax liability, **so that** Lonio can tell whether I am subject to source tax without collecting personal data that no receiving party needs
++**As** new employee, **I want** to say whether I am Swiss, and whether I hold a C permit, only when I live in Switzerland and it matters for my source tax liability, **so that** Lonio can tell whether I am subject to source tax without collecting personal data that no receiving party needs
+ 
+-Priority **P1** – Without nationality and C permit Lonio cannot decide source tax liability for residents of Switzerland. HR today does not know up front who has to answer the source tax questions. Data minimisation (G-01) makes asking too much a compliance issue. · Status: **decision** · Sources: F-hr_transcript-35fae3, F-hr_transcript-4ad146, F-hr_transcript-845204, F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, G-01, G-10, D-005, D-008, D-010, D-038
++Priority **P1** – Without nationality and C permit Lonio cannot decide source tax liability for residents of Switzerland. HR today does not know up front who has to answer the source tax questions. Data minimisation (G-01) makes asking too much a compliance issue. · Status: **decision** · Sources: F-hr_transcript-35fae3, F-hr_transcript-4ad146, F-hr_transcript-845204, F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, F-hr_followup-e8164e, F-hr_followup-8d9f77, F-hr_followup-32873d, F-hr_followup-ee7d68, G-01, G-10, D-005, D-008, D-010, D-038
+ 
+ > ⚠ Open questions affecting this section: [OQ-nationality-wording](../open-questions.md#oq-nationality-wording)
+ Covers (details in [the section](../feature.md#SEC-04-source-tax-liability) and [information.md](../information.md)): Nationality, Holds a C permit (permanent residence)
+@@ -34,21 +34,21 @@
+   | Employee living in Liechtenstein (illustrative) | Liechtenstein | → | not asked | – | ✅ |
+   | Tomás, Brazilian living in Winterthur (hr_transcript/F-hr_transcript-d7431e) | Switzerland | → | required | – | ✅ |
+ 
+-- **AC-04.1.2 Nationality is given as a country; Swiss citizens answer Switzerland**
++- **AC-04.1.2 Nationality is asked as Swiss yes or no; dual citizens answer yes**
+   - **Given** the employee lives in Switzerland and is asked for their nationality
+   - **When** the employee answers
+-  - **Then** the nationality is given as a country by its English name (e.g. "Switzerland", "Germany"). Anyone holding Swiss citizenship answers "Switzerland", even if they also hold another nationality, and counts as Swiss for source tax. Whether to ask only 'Swiss citizen yes/no' instead is open (see OQ-nationality-wording).
+-  - _Sources: F-hr_transcript-35fae3, G-10, D-008_
++  - **Then** the employee only states whether they are Swiss, answered with "yes" or "no". The actual country of nationality is not asked or collected, because only 'Swiss or not' is needed to know whether source tax can apply. Anyone holding Swiss citizenship answers "yes", even if they also hold another nationality, and counts as Swiss for source tax.
++  - _Sources: F-hr_followup-e8164e, F-hr_followup-8d9f77, F-hr_followup-32873d, F-hr_followup-ee7d68, F-hr_transcript-35fae3, G-01, G-10, D-008_
+ - **AC-04.1.3 C permit is asked only of non-Swiss employees living in Switzerland**
+-  - **Given** the employee lives in Switzerland and has given their nationality
+-  - **When** the nationality is not Switzerland
++  - **Given** the employee lives in Switzerland and has stated whether they are Swiss
++  - **When** the employee has answered "no" to being Swiss
+   - **Then** the employee is asked whether they hold a C permit (permanent residence), answered with "yes" or "no", and must answer it. The answer is recorded for source tax. Swiss employees and employees living abroad are not asked.
+   - _Sources: F-hr_transcript-4ad146, F-hr_transcript-845204, F-hr_transcript-b6d9b3, D-005_
+ 
+   | Example | Country (home address) | Nationality | → | Holds a C permit (permanent residence) | Checked |
+   |---|---|---|---|---|---|
+-  | Tomás, Brazilian living in Winterthur (hr_transcript/F-hr_transcript-d7431e) | Switzerland | Brazil | → | required | ✅ |
+-  | Swiss citizen (also dual citizen) living in Switzerland (illustrative) | Switzerland | Switzerland | → | not asked | ✅ |
++  | Tomás, Brazilian living in Winterthur (hr_transcript/F-hr_transcript-d7431e) | Switzerland | no | → | required | ✅ |
++  | Swiss citizen (also dual citizen) living in Switzerland (illustrative) | Switzerland | yes | → | not asked | ✅ |
+   | Employee living in Germany (illustrative) | Germany | – | → | not asked | ✅ |
+ 
+ - **AC-04.1.4 The permit type itself is never asked**
+@@ -62,6 +62,15 @@
+ - **D-008** (product decision (Product owner)): Anyone with Swiss citizenship counts as Swiss for source tax, even with another nationality. This closes OQ-dual-nationality. To be verified by a domain expert.
+ - **D-010** (product decision (Product owner)): At the end of the questionnaire, remind every non-Swiss employee and every employee living abroad to bring their permit on the first working day. HR words the reminder; the spec states only its purpose. This closes OQ-permit-reminder.
+ - **D-038** (product decision (Product owner)): Employees living abroad get the permit reminder whatever their nationality, because nationality is not asked of them (data minimisation, G-01). HR words the reminder so that a Swiss citizen living abroad, such as Stefan, can see that it does not apply to them. Asking everyone 'Swiss citizen yes/no' only for the reminder is not worth the extra question.
++- **F-hr_followup-32873d** (hr_followup): Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.
++  - "We only need it to know whether source tax can apply at all." — hr_followup/T-002, Anna
++- **F-hr_followup-8d9f77** (hr_followup): The nationality question can be answered as Swiss yes or no (allowed values: yes / no).
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
++- **F-hr_followup-e8164e** (hr_followup): For nationality, HR (Muster AG) only needs to know whether the employee is Swiss or not; the actual country of nationality is not needed.
++  - "For nationality, do you need the actual country, or is it enough to know whether someone is Swiss?" — hr_followup/T-001, Leo
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
++- **F-hr_followup-ee7d68** (hr_followup, inferred): The exact country of nationality should not be collected, since only Swiss yes/no is needed (data minimisation).
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
+ - **F-hr_transcript-1a20bb** (hr_transcript): Employees who work in Switzerland but live abroad (e.g. Konstanz in Germany, Liechtenstein) are always subject to source tax, regardless of nationality – even Swiss citizens.
+   - "Those people do source tax because they work here and they don't live here. And there it doesn't matter what passport you have, by the way." — hr_transcript/T-048, Anna
+   - "Stefan is actually Swiss, and he still has it." — hr_transcript/T-048, Anna
+--- baseline/requirements/employee-onboarding/stories/US-04.2-ask-spouse-details-only-when-the-spouse-could-exempt-the.md
++++ run/requirements/employee-onboarding/stories/US-04.2-ask-spouse-details-only-when-the-spouse-could-exempt-the.md
+@@ -13,9 +13,9 @@
+ 
+ Part of [Employee onboarding questionnaire](../feature.md), section [4. Source tax liability check](../feature.md#SEC-04-source-tax-liability).
+ 
+-**As** HR, **I want** Lonio to ask about the spouse or registered partner (where they live, their nationality, their C permit) only when that can exempt the employee from source tax, **so that** employees like Tomás, married to a Swiss wife living in Switzerland, are correctly found not subject to source tax, without asking every married employee about their spouse
++**As** HR, **I want** Lonio to ask about the spouse or registered partner (where they live, whether they are Swiss, whether they hold a C permit) only when that can exempt the employee from source tax, **so that** employees like Tomás, married to a Swiss wife living in Switzerland, are correctly found not subject to source tax, without asking every married employee about their spouse
+ 
+-Priority **P1** – The spouse exemption decides source tax liability. A wrong decision gives a wrong tariff or asks source tax questions of people who do not need them. Data minimisation (G-01) limits the spouse questions to the cases where they decide something. · Status: **inferred** · Sources: F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, G-01, G-10, D-003, D-005, D-008
++Priority **P1** – The spouse exemption decides source tax liability. A wrong decision gives a wrong tariff or asks source tax questions of people who do not need them. Data minimisation (G-01) limits the spouse questions to the cases where they decide something. · Status: **inferred** · Sources: F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, F-hr_followup-e8164e, F-hr_followup-ee7d68, G-01, G-10, D-003, D-005, D-008
+ 
+ > ⚠ Open questions affecting this section: [OQ-nationality-wording](../open-questions.md#oq-nationality-wording)
+ Covers (details in [the section](../feature.md#SEC-04-source-tax-liability) and [information.md](../information.md)): Spouse's / partner's country of residence, Spouse's / partner's nationality, Spouse / partner holds a C permit, Spouse exempts from source tax
+@@ -30,55 +30,62 @@
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | → | Spouse's / partner's country of residence | Checked |
+   |---|---|---|---|---|---|---|---|
+-  | Tomás, Brazilian, B permit, married (hr_transcript/F-hr_transcript-d7431e) | Switzerland | Brazil | no | Married | → | required | ✅ |
+-  | Registered partner without C permit (illustrative) | Switzerland | Germany | no | Registered partnership | → | asked | ✅ |
+-  | Separated employee without C permit (illustrative) | Switzerland | Germany | no | Separated | → | not asked | ✅ |
+-  | Married employee with C permit (illustrative) | Switzerland | Germany | yes | Married | → | not asked | ✅ |
++  | Tomás, Brazilian, B permit, married (hr_transcript/F-hr_transcript-d7431e) | Switzerland | no | no | Married | → | required | ✅ |
++  | Registered partner without C permit (illustrative) | Switzerland | no | no | Registered partnership | → | asked | ✅ |
++  | Separated employee without C permit (illustrative) | Switzerland | no | no | Separated | → | not asked | ✅ |
++  | Married employee with C permit (illustrative) | Switzerland | no | yes | Married | → | not asked | ✅ |
+   | Married employee living abroad (illustrative) | Germany | – | – | Married | → | not asked | ✅ |
+ 
+ - **AC-04.2.2 Spouse's nationality is asked only if the spouse lives in Switzerland**
+   - **Given** the employee has been asked where their spouse or registered partner lives
+   - **When** the spouse lives in Switzerland
+-  - **Then** the employee is asked for the spouse's nationality, given as a country by its English name, and must answer it. A spouse holding Swiss citizenship is entered as "Switzerland", even with another nationality. Applying the dual-citizenship rule to the spouse is an inference (see OQ-nationality-wording). It is recorded for source tax. If the spouse lives in any other country, neither the spouse's nationality nor their C permit is asked.
+-  - _Sources: F-hr_transcript-f3ce84, F-hr_transcript-d7431e, G-10, D-008_
++  - **Then** the employee is asked whether the spouse is Swiss, answered with "yes" or "no", and must answer it. The spouse's actual country of nationality is not collected. A spouse holding Swiss citizenship counts as Swiss ("yes"), even with another nationality. Asking only 'Swiss yes or no' for the spouse and applying the dual-citizenship rule to the spouse are inferences (see OQ-nationality-wording). It is recorded for source tax. If the spouse lives in any other country, neither the spouse's nationality nor their C permit is asked.
++  - _Sources: F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_followup-e8164e, F-hr_followup-ee7d68, G-01, G-10, D-008_
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Spouse's / partner's country of residence | → | Spouse's / partner's nationality | Spouse / partner holds a C permit | Checked |
+   |---|---|---|---|---|---|---|---|---|---|
+-  | Tomás, wife lives in Winterthur (hr_transcript/F-hr_transcript-d7431e) | Switzerland | Brazil | no | Married | Switzerland | → | required | – | ✅ |
+-  | Spouse lives in Germany (illustrative) | Switzerland | Brazil | no | Married | Germany | → | not asked | not asked | ✅ |
++  | Tomás, wife lives in Winterthur (hr_transcript/F-hr_transcript-d7431e) | Switzerland | no | no | Married | Switzerland | → | required | – | ✅ |
++  | Spouse lives in Germany (illustrative) | Switzerland | no | no | Married | Germany | → | not asked | not asked | ✅ |
+ 
+ - **AC-04.2.3 Spouse's C permit is asked only for a non-Swiss spouse living in Switzerland**
+-  - **Given** the spouse or registered partner lives in Switzerland and the employee has given the spouse's nationality
+-  - **When** the spouse's nationality is not Switzerland
++  - **Given** the spouse or registered partner lives in Switzerland and the employee has stated whether the spouse is Swiss
++  - **When** the employee has answered "no" to the spouse being Swiss
+   - **Then** the employee is asked whether the spouse holds a C permit, answered with "yes" or "no", and must answer it. It is recorded for source tax. It is not asked for a Swiss spouse, and the spouse's other permit types are never asked.
+   - _Sources: F-hr_transcript-f3ce84, D-005_
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Spouse's / partner's country of residence | Spouse's / partner's nationality | → | Spouse / partner holds a C permit | Checked |
+   |---|---|---|---|---|---|---|---|---|---|
+-  | Tomás, Swiss wife (hr_transcript/F-hr_transcript-d7431e) | Switzerland | Brazil | no | Married | Switzerland | Switzerland | → | not asked | ✅ |
+-  | Italian spouse living in Switzerland (illustrative) | Switzerland | Brazil | no | Married | Switzerland | Italy | → | required | ✅ |
++  | Tomás, Swiss wife (hr_transcript/F-hr_transcript-d7431e) | Switzerland | no | no | Married | Switzerland | yes | → | not asked | ✅ |
++  | Non-Swiss spouse living in Switzerland (illustrative) | Switzerland | no | no | Married | Switzerland | no | → | required | ✅ |
+ 
+ - **AC-04.2.4 Lonio decides whether the spouse exempts the employee**
+-  - **Given** the employee has answered civil status and, where asked, the spouse's country of residence, nationality and C permit
++  - **Given** the employee has answered civil status and, where asked, the spouse's country of residence, whether the spouse is Swiss and whether the spouse holds a C permit
+   - **When** Lonio decides whether the spouse exempts the employee from source tax
+   - **Then** the spouse exempts the employee only if the employee is married or in a registered partnership and the spouse or partner lives in Switzerland and is Swiss or holds a C permit. In every other case (not married for source tax, including separated; spouse living abroad; spouse neither Swiss nor holding a C permit) the spouse does not exempt.
+   - _Sources: F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, F-hr_transcript-f3ce84, D-003, D-005, D-008_
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Spouse's / partner's country of residence | Spouse's / partner's nationality | Spouse / partner holds a C permit | → | Spouse exempts from source tax | Checked |
+   |---|---|---|---|---|---|---|---|---|---|---|
+-  | Tomás, Swiss wife in Winterthur (hr_transcript/F-hr_transcript-d7431e) | Switzerland | Brazil | no | Married | Switzerland | Switzerland | – | → | yes | ✅ |
+-  | Registered partner with Swiss partner (illustrative) | Switzerland | Germany | no | Registered partnership | Switzerland | Switzerland | – | → | yes | ✅ |
+-  | Spouse with C permit living in Switzerland (illustrative) | Switzerland | Brazil | no | Married | Switzerland | Italy | yes | → | yes | ✅ |
+-  | Spouse without C permit living in Switzerland (illustrative) | Switzerland | Brazil | no | Married | Switzerland | Italy | no | → | no | ✅ |
+-  | Spouse living abroad (illustrative) | Switzerland | Brazil | no | Married | Germany | – | – | → | no | ✅ |
+-  | Separated employee (counts as not married) (illustrative) | Switzerland | Brazil | no | Separated | – | – | – | → | no | ✅ |
+-  | Single employee (illustrative) | Switzerland | Brazil | no | Single | – | – | – | → | no | ✅ |
++  | Tomás, Swiss wife in Winterthur (hr_transcript/F-hr_transcript-d7431e) | Switzerland | no | no | Married | Switzerland | yes | – | → | yes | ✅ |
++  | Registered partner with Swiss partner (illustrative) | Switzerland | no | no | Registered partnership | Switzerland | yes | – | → | yes | ✅ |
++  | Spouse with C permit living in Switzerland (illustrative) | Switzerland | no | no | Married | Switzerland | no | yes | → | yes | ✅ |
++  | Spouse without C permit living in Switzerland (illustrative) | Switzerland | no | no | Married | Switzerland | no | no | → | no | ✅ |
++  | Spouse living abroad (illustrative) | Switzerland | no | no | Married | Germany | – | – | → | no | ✅ |
++  | Separated employee (counts as not married) (illustrative) | Switzerland | no | no | Separated | – | – | – | → | no | ✅ |
++  | Single employee (illustrative) | Switzerland | no | no | Single | – | – | – | → | no | ✅ |
++
++_Trace check: partial – Asking the spouse's residence first, asking the spouse's Swiss yes/no and applying the dual-citizenship rule to the spouse are self-declared inferences, not backed by the cited facts._
+ 
+ 
+ ## Evidence
+ - **D-003** (product decision (Product owner)): Civil status offers Single, Married, Divorced, Widowed, Registered partnership and Separated. For source tax, registered partnership counts as married (including the spouse exemption) and separated counts as single, as in the calculator. For the pension fund, provisionally, registered partnership is entered as Married with the partner's date of birth, and separated as Married. Keep OQ-civil-status-partnership open as non-blocking, to be verified by a domain expert.
+ - **D-005** (product decision (Product owner)): Do not ask for the permit type. Ask non-Swiss employees only whether they hold a C permit (permanent residence), yes or no, and the same for a non-Swiss spouse. No party needs any other permit type. This closes OQ-permit-list. To be verified by a domain expert.
+ - **D-008** (product decision (Product owner)): Anyone with Swiss citizenship counts as Swiss for source tax, even with another nationality. This closes OQ-dual-nationality. To be verified by a domain expert.
++- **F-hr_followup-e8164e** (hr_followup): For nationality, HR (Muster AG) only needs to know whether the employee is Swiss or not; the actual country of nationality is not needed.
++  - "For nationality, do you need the actual country, or is it enough to know whether someone is Swiss?" — hr_followup/T-001, Leo
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
++- **F-hr_followup-ee7d68** (hr_followup, inferred): The exact country of nationality should not be collected, since only Swiss yes/no is needed (data minimisation).
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
+ - **F-hr_transcript-b6d9b3** (hr_transcript): Consolidated final rule: an employee is subject to source tax if they live abroad (home address country not Switzerland), regardless of nationality. If they live in Switzerland, they are subject only if they are not Swiss and do not hold a C permit, unless they are married to a spouse who is Swiss or holds a C permit and lives in Switzerland (then not subject).
+   - "If you don't have a Swiss passport, you do source tax." — hr_transcript/T-010, Anna
+   - "So, not the people with a C permit." — hr_transcript/T-038, Anna
+--- baseline/requirements/employee-onboarding/stories/US-04.3-decide-whether-the-employee-is-subject-to-source-tax.md
++++ run/requirements/employee-onboarding/stories/US-04.3-decide-whether-the-employee-is-subject-to-source-tax.md
+@@ -15,7 +15,7 @@
+ 
+ **As** HR, **I want** Lonio to decide from the employee's answers whether they are subject to source tax, and to ask the source tax questions only of those who are, **so that** I no longer have to work out up front who must answer the source tax questions, and only subject employees give that data
+ 
+-Priority **P1** – HR states the pain directly: they never know up front who has to answer the source tax questions. The decision gates the whole source tax part and the computed tariff code (D-001). · Status: **decision** · Sources: F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, F-hr_transcript-845204, F-hr_transcript-d7431e, F-hr_transcript-b84498, G-01, D-005, D-007, D-008, D-037, D-038
++Priority **P1** – HR states the pain directly: they never know up front who has to answer the source tax questions. The decision gates the whole source tax part and the computed tariff code (D-001). · Status: **decision** · Sources: F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, F-hr_transcript-845204, F-hr_transcript-d7431e, F-hr_transcript-b84498, F-hr_followup-32873d, G-01, D-005, D-007, D-008, D-037, D-038
+ 
+ > ⚠ Open questions affecting this section: [OQ-nationality-wording](../open-questions.md#oq-nationality-wording)
+ Covers (details in [the section](../feature.md#SEC-04-source-tax-liability) and [information.md](../information.md)): Subject to source tax
+@@ -38,16 +38,16 @@
+   - **Given** the employee lives in Switzerland
+   - **When** Lonio decides source tax liability
+   - **Then** the employee is not subject to source tax if they are Swiss (including dual citizens), hold a C permit, or are exempted by a spouse or registered partner who lives in Switzerland and is Swiss or holds a C permit. Otherwise the employee is subject to source tax.
+-  - _Sources: F-hr_transcript-b6d9b3, F-hr_transcript-845204, F-hr_transcript-d7431e, D-005, D-008_
++  - _Sources: F-hr_transcript-b6d9b3, F-hr_transcript-845204, F-hr_transcript-d7431e, F-hr_followup-32873d, D-005, D-008_
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Spouse's / partner's country of residence | Spouse's / partner's nationality | Spouse / partner holds a C permit | → | Subject to source tax | Checked |
+   |---|---|---|---|---|---|---|---|---|---|---|
+-  | Swiss citizen living in Switzerland (incl. dual citizen) (illustrative) | Switzerland | Switzerland | – | – | – | – | – | → | no | ✅ |
+-  | Non-Swiss with C permit (illustrative) | Switzerland | Germany | yes | – | – | – | – | → | no | ✅ |
+-  | Tomás, Brazilian, B permit, Swiss wife in Winterthur (hr_transcript/F-hr_transcript-d7431e) | Switzerland | Brazil | no | Married | Switzerland | Switzerland | – | → | no | ✅ |
+-  | Single non-Swiss without C permit (illustrative) | Switzerland | Brazil | no | Single | – | – | – | → | yes | ✅ |
+-  | Married non-Swiss without C permit, spouse living abroad (illustrative) | Switzerland | Brazil | no | Married | Germany | – | – | → | yes | ✅ |
+-  | Married non-Swiss without C permit, non-Swiss spouse without C permit (illustrative) | Switzerland | Brazil | no | Married | Switzerland | Italy | no | → | yes | ✅ |
++  | Swiss citizen living in Switzerland (incl. dual citizen) (illustrative) | Switzerland | yes | – | – | – | – | – | → | no | ✅ |
++  | Non-Swiss with C permit (illustrative) | Switzerland | no | yes | – | – | – | – | → | no | ✅ |
++  | Tomás, Brazilian, B permit, Swiss wife in Winterthur (hr_transcript/F-hr_transcript-d7431e) | Switzerland | no | no | Married | Switzerland | yes | – | → | no | ✅ |
++  | Single non-Swiss without C permit (illustrative) | Switzerland | no | no | Single | – | – | – | → | yes | ✅ |
++  | Married non-Swiss without C permit, spouse living abroad (illustrative) | Switzerland | no | no | Married | Germany | – | – | → | yes | ✅ |
++  | Married non-Swiss without C permit, non-Swiss spouse without C permit (illustrative) | Switzerland | no | no | Married | Switzerland | no | no | → | yes | ✅ |
+ 
+ - **AC-04.3.3 Only employees subject to source tax get the source tax questions**
+   - **Given** Lonio has decided whether the employee is subject to source tax
+@@ -57,8 +57,8 @@
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Spouse's / partner's country of residence | Spouse's / partner's nationality | → | Denomination | Checked |
+   |---|---|---|---|---|---|---|---|---|---|
+-  | Swiss citizen living in Switzerland (illustrative) | Switzerland | Switzerland | – | – | – | – | → | not asked | ✅ |
+-  | Tomás (hr_transcript/F-hr_transcript-d7431e) | Switzerland | Brazil | no | Married | Switzerland | Switzerland | → | not asked | ✅ |
++  | Swiss citizen living in Switzerland (illustrative) | Switzerland | yes | – | – | – | – | → | not asked | ✅ |
++  | Tomás (hr_transcript/F-hr_transcript-d7431e) | Switzerland | no | no | Married | Switzerland | yes | → | not asked | ✅ |
+   | Living in Germany (illustrative) | Germany | – | – | – | – | – | → | asked | ✅ |
+ 
+ - **AC-04.3.4 Liability always follows the latest answers**
+@@ -73,6 +73,8 @@
+ - **D-008** (product decision (Product owner)): Anyone with Swiss citizenship counts as Swiss for source tax, even with another nationality. This closes OQ-dual-nationality. To be verified by a domain expert.
+ - **D-037** (product decision (Product owner)): After submission the questionnaire is read-only for the employee. Any later change (a move, a marriage, a new child, a certificate of residence handed in later, a corrected nationality) is made by HR and belongs to the later HR-side spec (D-034). Every derived result (insurance start date, civil status for the fund and for source tax, subject to source tax, tariff code) is always derived again from the latest answers, as for the first working day (D-033).
+ - **D-038** (product decision (Product owner)): Employees living abroad get the permit reminder whatever their nationality, because nationality is not asked of them (data minimisation, G-01). HR words the reminder so that a Swiss citizen living abroad, such as Stefan, can see that it does not apply to them. Asking everyone 'Swiss citizen yes/no' only for the reminder is not worth the extra question.
++- **F-hr_followup-32873d** (hr_followup): Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.
++  - "We only need it to know whether source tax can apply at all." — hr_followup/T-002, Anna
+ - **F-hr_transcript-1a20bb** (hr_transcript): Employees who work in Switzerland but live abroad (e.g. Konstanz in Germany, Liechtenstein) are always subject to source tax, regardless of nationality – even Swiss citizens.
+   - "Those people do source tax because they work here and they don't live here. And there it doesn't matter what passport you have, by the way." — hr_transcript/T-048, Anna
+   - "Stefan is actually Swiss, and he still has it." — hr_transcript/T-048, Anna
+--- baseline/requirements/employee-onboarding/stories/US-05.3-state-the-denomination-for-the-church-tax-part-of-the-tariff.md
++++ run/requirements/employee-onboarding/stories/US-05.3-state-the-denomination-for-the-church-tax-part-of-the-tariff.md
+@@ -30,11 +30,11 @@
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Spouse's / partner's country of residence | Spouse's / partner's nationality | → | Subject to source tax | Denomination | Checked |
+   |---|---|---|---|---|---|---|---|---|---|---|
+-  | Tomás (hr_transcript/F-hr_transcript-d7431e) - Brazilian, B permit, Swiss wife living in Switzerland, not subject | Switzerland | Brazil | no | Married | Switzerland | Switzerland | → | no | not asked | ✅ |
++  | Tomás (hr_transcript/F-hr_transcript-d7431e) - Brazilian, B permit, Swiss wife living in Switzerland, not subject | Switzerland | no | no | Married | Switzerland | yes | → | no | not asked | ✅ |
+   | Employee living in Germany - subject whatever the nationality (illustrative) | Germany | – | – | Single | – | – | → | yes | required | ✅ |
+-  | Non-Swiss resident of Switzerland without C permit, single - subject (illustrative) | Switzerland | Italy | no | Single | – | – | → | yes | required | ✅ |
+-  | Swiss citizen living in Switzerland - not subject (illustrative) | Switzerland | Switzerland | – | Single | – | – | → | no | not asked | ✅ |
+-  | Non-Swiss resident of Switzerland with C permit - not subject (illustrative) | Switzerland | Italy | yes | Single | – | – | → | no | not asked | ✅ |
++  | Non-Swiss resident of Switzerland without C permit, single - subject (illustrative) | Switzerland | no | no | Single | – | – | → | yes | required | ✅ |
++  | Swiss citizen living in Switzerland - not subject (illustrative) | Switzerland | yes | – | Single | – | – | → | no | not asked | ✅ |
++  | Non-Swiss resident of Switzerland with C permit - not subject (illustrative) | Switzerland | no | yes | Single | – | – | → | no | not asked | ✅ |
+ 
+ - **AC-05.3.2 Denomination offers exactly the calculator's two choices**
+   - **Given** an employee who is asked their denomination
+@@ -49,8 +49,10 @@
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Denomination | Has children | → | Church-tax suffix | Checked |
+   |---|---|---|---|---|---|---|---|---|---|
+-  | Calculator run A0Y - single, no children, church member (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c) | Switzerland | Italy | no | Single | Roman Catholic, Christian Catholic or Evangelical Reformed | no | → | Y | ✅ |
+-  | Calculator run A0N - single, no children, none or other (zh_source_tax_calculator/F-zh_source_tax_calculator-2eab9a) | Switzerland | Italy | no | Single | None or other | no | → | N | ✅ |
++  | Calculator run A0Y - single, no children, church member (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c) | Switzerland | no | no | Single | Roman Catholic, Christian Catholic or Evangelical Reformed | no | → | Y | ✅ |
++  | Calculator run A0N - single, no children, none or other (zh_source_tax_calculator/F-zh_source_tax_calculator-2eab9a) | Switzerland | no | no | Single | None or other | no | → | N | ✅ |
++
++_Trace check: partial – Who is subject to source tax is relied on (e.g. the Tomás example, F-hr_transcript-d7431e) but neither that fact nor the subject rule F-hr_transcript-b6d9b3 is cited._
+ 
+ 
+ ## Evidence
+--- baseline/requirements/employee-onboarding/stories/US-05.4-state-whether-the-spouse-or-registered-partner-works-for.md
++++ run/requirements/employee-onboarding/stories/US-05.4-state-whether-the-spouse-or-registered-partner-works-for.md
+@@ -36,7 +36,7 @@
+   | Single employee living in Germany (illustrative) | Germany | Single | – | – | – | – | → | not asked | ✅ |
+   | Divorced employee living in Germany (illustrative) | Germany | Divorced | – | – | – | – | → | not asked | ✅ |
+   | Widowed employee living in Germany (illustrative) | Germany | Widowed | – | – | – | – | → | not asked | ✅ |
+-  | Tomás (hr_transcript/F-hr_transcript-d7431e) - married but not subject, Swiss wife in Switzerland | Switzerland | Married | Brazil | no | Switzerland | Switzerland | → | not asked | ✅ |
++  | Tomás (hr_transcript/F-hr_transcript-d7431e) - married but not subject, Swiss wife in Switzerland | Switzerland | Married | no | no | Switzerland | yes | → | not asked | ✅ |
+ 
+ - **AC-05.4.2 Answer is yes or no and covers replacement income**
+   - **Given** an employee who is asked whether the spouse or registered partner works
+@@ -51,10 +51,10 @@
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Spouse's / partner's country of residence | Spouse / partner is gainfully employed or receives replacement income | → | Spouse / partner is gainfully employed or receives replacement income | Base letter for married employees | Checked |
+   |---|---|---|---|---|---|---|---|---|---|---|
+-  | Calculator run C0Y - spouse employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) | Switzerland | Italy | no | Married | Italy | yes | → | asked | C | ✅ |
+-  | Calculator run B0Y - spouse not employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) | Switzerland | Italy | no | Married | Italy | no | → | asked | B | ✅ |
++  | Calculator run C0Y - spouse employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) | Switzerland | no | no | Married | Italy | yes | → | asked | C | ✅ |
++  | Calculator run B0Y - spouse not employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) | Switzerland | no | no | Married | Italy | no | → | asked | B | ✅ |
+ 
+-_Trace check: partial – The non-illustrative Tomás example cites F-hr_transcript-d7431e and the 'not subject to source tax' condition rests on a rule (F-hr_transcript-b6d9b3), and neither is among the cited facts._
++_Trace check: partial – The non-illustrative Tomás example (not subject) depends on F-hr_transcript-d7431e and the subject rule, which are not among the cited facts._
+ 
+ 
+ ## Evidence
+--- baseline/requirements/employee-onboarding/stories/US-05.6-determine-the-tariff-letter-including-the-cross-border.md
++++ run/requirements/employee-onboarding/stories/US-05.6-determine-the-tariff-letter-including-the-cross-border.md
+@@ -30,12 +30,12 @@
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Spouse's / partner's country of residence | Spouse / partner is gainfully employed or receives replacement income | Has children | Child: minor or of age in first education | Child lives in the same household | Parental custody (child in household) | → | Tariff letter | Spouse / partner is gainfully employed or receives replacement income | Checked |
+   |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+-  | Calculator run C0Y - married, spouse employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) | Switzerland | Italy | no | Married | Italy | yes | no | – | – | – | → | C | – | ✅ |
+-  | Calculator run B0Y - married, spouse not employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) | Switzerland | Italy | no | Married | Italy | no | no | – | – | – | → | B | – | ✅ |
+-  | Calculator run A0Y - single, no children (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c) | Switzerland | Italy | no | Single | – | – | no | – | – | – | → | A | – | ✅ |
+-  | Calculator run H1Y - single, minor child in household with sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-c53a22) | Switzerland | Italy | no | Single | – | – | yes | Minor | yes | Sole custody | → | H | – | ✅ |
+-  | Separated employee counts as not married - letter A (illustrative) | Switzerland | Italy | no | Separated | – | – | no | – | – | – | → | A | not asked | ✅ |
+-  | Registered partner counts as married - partner employed gives C (illustrative) | Switzerland | Italy | no | Registered partnership | Italy | yes | no | – | – | – | → | C | – | ✅ |
++  | Calculator run C0Y - married, spouse employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) | Switzerland | no | no | Married | Italy | yes | no | – | – | – | → | C | – | ✅ |
++  | Calculator run B0Y - married, spouse not employed (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) | Switzerland | no | no | Married | Italy | no | no | – | – | – | → | B | – | ✅ |
++  | Calculator run A0Y - single, no children (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c) | Switzerland | no | no | Single | – | – | no | – | – | – | → | A | – | ✅ |
++  | Calculator run H1Y - single, minor child in household with sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-c53a22) | Switzerland | no | no | Single | – | – | yes | Minor | yes | Sole custody | → | H | – | ✅ |
++  | Separated employee counts as not married - letter A (illustrative) | Switzerland | no | no | Separated | – | – | no | – | – | – | → | A | not asked | ✅ |
++  | Registered partner counts as married - partner employed gives C (illustrative) | Switzerland | no | no | Registered partnership | Italy | yes | no | – | – | – | → | C | – | ✅ |
+   | Calculator run A0N - single living in another country keeps the base letter (zh_source_tax_calculator/F-zh_source_tax_calculator-52b67a) | France | – | – | Single | – | – | no | – | – | – | → | A | – | ✅ |
+ 
+ - **AC-05.6.2 Cross-border letters for employees living in Germany**
+@@ -54,6 +54,8 @@
+   | Calculator run C1Y - daily return not reasonable gives the normal letter (zh_source_tax_calculator/F-zh_source_tax_calculator-bc1639) | Germany | Married | no | no | – | yes | – | – | – | no | – | → | C | ✅ |
+   | Daily return, certificate 'not yet' - normal letter A (illustrative) | Germany | Single | no | yes | not yet | – | – | – | – | – | – | → | A | ✅ |
+   | Calculator run - daily return without certificate gives the normal letter (zh_source_tax_calculator/F-zh_source_tax_calculator-4d3ac0) | Germany | Married | no | yes | no | yes | – | – | – | – | – | → | C | ✅ |
++
++_Trace check: partial – The base-letter scope excludes Liechtenstein residents, and no cited fact covers Liechtenstein; the cited facts mention only CH, other countries and Germany._
+ 
+ 
+ ## Evidence
+--- baseline/requirements/employee-onboarding/stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md
++++ run/requirements/employee-onboarding/stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md
+@@ -30,8 +30,8 @@
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Spouse's / partner's country of residence | Spouse's / partner's nationality | → | Source tax result | Checked |
+   |---|---|---|---|---|---|---|---|---|---|
+-  | Tomás (hr_transcript/F-hr_transcript-d7431e) - Swiss wife living in Switzerland | Switzerland | Brazil | no | Married | Switzerland | Switzerland | → | Not subject to source tax | ✅ |
+-  | Swiss citizen living in Switzerland (illustrative) | Switzerland | Switzerland | – | Single | – | – | → | Not subject to source tax | ✅ |
++  | Tomás (hr_transcript/F-hr_transcript-d7431e) - Swiss wife living in Switzerland | Switzerland | no | no | Married | Switzerland | yes | → | Not subject to source tax | ✅ |
++  | Swiss citizen living in Switzerland (illustrative) | Switzerland | yes | – | Single | – | – | → | Not subject to source tax | ✅ |
+ 
+ - **AC-05.7.2 Full tariff code for employees subject to source tax**
+   - **Given** an employee subject to source tax who does not qualify for the Liechtenstein result
+@@ -41,10 +41,10 @@
+ 
+   | Example | Country (home address) | Nationality | Holds a C permit (permanent residence) | Civil status | Denomination | Has children | Daily return to the home in Germany | Certificate of residence | Spouse / partner is gainfully employed or receives replacement income | Spouse's / partner's country of residence | Child: minor or of age in first education | Child lives in the same household | Parental custody (child in household) | → | Source tax result | Tariff letter | Child digit of the tariff code | Church-tax suffix | Checked |
+   |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+-  | Calculator run A0Y - single, no children, church member (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c) | Switzerland | Italy | no | Single | Roman Catholic, Christian Catholic or Evangelical Reformed | no | – | – | – | – | – | – | – | → | Tariff code | A | 0 | Y | ✅ |
++  | Calculator run A0Y - single, no children, church member (zh_source_tax_calculator/F-zh_source_tax_calculator-c78e0c) | Switzerland | no | no | Single | Roman Catholic, Christian Catholic or Evangelical Reformed | no | – | – | – | – | – | – | – | → | Tariff code | A | 0 | Y | ✅ |
+   | Calculator run L0Y - single living in Germany, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e) | Germany | – | – | Single | Roman Catholic, Christian Catholic or Evangelical Reformed | no | yes | yes | – | – | – | – | – | → | Tariff code | L | 0 | Y | ✅ |
+   | Calculator run M0N - married living in Germany, spouse not employed, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-b7154e) | Germany | – | – | Married | None or other | no | yes | yes | no | – | – | – | – | → | Tariff code | M | 0 | N | ✅ |
+-  | Calculator run C1Y - married resident, spouse employed, one minor child with sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-c53a22) | Switzerland | Italy | no | Married | Roman Catholic, Christian Catholic or Evangelical Reformed | yes | – | – | yes | Italy | Minor | yes | Sole custody | → | Tariff code | C | 1 | Y | ✅ |
++  | Calculator run C1Y - married resident, spouse employed, one minor child with sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-c53a22) | Switzerland | no | no | Married | Roman Catholic, Christian Catholic or Evangelical Reformed | yes | – | – | yes | Italy | Minor | yes | Sole custody | → | Tariff code | C | 1 | Y | ✅ |
+ 
+ - **AC-05.7.3 Liechtenstein residents: in principle no source tax liability, or the normal tariff code**
+   - **Given** an employee living in Liechtenstein, who is therefore subject to source tax and answers the source tax and cross-border questions (D-007)
+@@ -68,6 +68,8 @@
+   - **When** the feature is prepared for release
+   - **Then** a domain expert compares Lonio's computed codes with the Zurich calculator for these paths, and the release waits until they match (go-live condition, see OQ-calculator-coverage). Special tariffs such as D (second job) are not computed, because they are out of scope for onboarding.
+   - _Sources: D-009, F-zh_source_tax_calculator-86d588_
++_Trace check: partial – AC-05.7.5 lists 'child results marked inferred' as unexplored paths, but D-009 does not list that path; the Tomás example also cites F-hr_transcript-d7431e, which is not provided._
++
+ 
+ ## Evidence
+ - **D-001** (product decision (Product owner)): Lonio computes the full Zurich source tax tariff code (tariff letter including the cross-border letters, child digit and church-tax suffix, e.g. "C1Y", "L0Y") for every employee subject to source tax, from the answers it collects, following the calculator's logic. HR no longer clicks through the calculator.
+--- baseline/requirements/employee-onboarding/stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md
++++ run/requirements/employee-onboarding/stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md
+@@ -15,7 +15,7 @@
+ 
+ **As** source tax office, **I want** employees subject to source tax to say whether they have children and, for each child, whether the child is a minor or of age and in first education, and whether the child lives in their household, **so that** Lonio can tell which children may count for the Zurich tariff code without asking anyone else about their children
+ 
+-Priority **P1** – Lonio now computes the full tariff code itself instead of HR using the calculator (D-001). Without the children questions the child digit cannot be set. · Status: **decision** · Sources: F-zh_source_tax_calculator-103b19, F-zh_source_tax_calculator-ab8a06, F-zh_source_tax_calculator-a166c7, F-zh_source_tax_calculator-b62b85, F-zh_source_tax_calculator-052c98, F-zh_source_tax_calculator-09b06d, F-zh_source_tax_calculator-42d590, F-zh_source_tax_calculator-fd9a15, F-zh_source_tax_calculator-987091, F-zh_source_tax_calculator-5725a8, F-zh_source_tax_calculator-3a75cc, F-zh_source_tax_calculator-7c667f, F-hr_transcript-b84498, G-01, D-001, D-003, D-036
++Priority **P1** – Lonio now computes the full tariff code itself instead of HR using the calculator (D-001). Without the children questions the child digit cannot be set. · Status: **decision** · Sources: F-zh_source_tax_calculator-103b19, F-zh_source_tax_calculator-ab8a06, F-zh_source_tax_calculator-a166c7, F-zh_source_tax_calculator-b62b85, F-zh_source_tax_calculator-052c98, F-zh_source_tax_calculator-09b06d, F-zh_source_tax_calculator-42d590, F-zh_source_tax_calculator-fd9a15, F-zh_source_tax_calculator-987091, F-zh_source_tax_calculator-5725a8, F-zh_source_tax_calculator-3a75cc, F-zh_source_tax_calculator-7c667f, F-hr_transcript-b84498, G-01, D-001, D-003, D-005, D-008, D-036
+ 
+ Covers (details in [the section](../feature.md#SEC-06-children) and [information.md](../information.md)): Has children, Child: minor or of age in first education, Child lives in the same household, Child result (per child)
+ 
+@@ -25,14 +25,14 @@
+   - **Given** an employee is filling in the onboarding questionnaire
+   - **When** Lonio has decided whether the employee is subject to source tax (rule subject_to_source_tax)
+   - **Then** only employees subject to source tax are asked whether they have biological or adopted children, answered "yes" or "no", and the answer is required. Married employees and registered partners are asked about children of the employee or of either spouse or partner. Everybody else is not asked. The answer is recorded for source tax.
+-  - _Sources: F-zh_source_tax_calculator-103b19, F-zh_source_tax_calculator-ab8a06, F-zh_source_tax_calculator-a166c7, F-zh_source_tax_calculator-b62b85, F-hr_transcript-b84498, G-01, D-001, D-003_
++  - _Sources: F-zh_source_tax_calculator-103b19, F-zh_source_tax_calculator-ab8a06, F-zh_source_tax_calculator-a166c7, F-zh_source_tax_calculator-b62b85, F-hr_transcript-b84498, G-01, D-001, D-003, D-005, D-008_
+ 
+   | Example | Country (home address) | Civil status | Nationality | Holds a C permit (permanent residence) | → | Has children | Child: minor or of age in first education | Checked |
+   |---|---|---|---|---|---|---|---|---|
+   | Employee living in Germany is asked (illustrative) | Germany | Single | – | – | → | required | – | ✅ |
+-  | Non-Swiss employee without C permit living in Switzerland is asked (illustrative) | Switzerland | Divorced | Brazil | no | → | asked | – | ✅ |
+-  | Swiss employee living in Switzerland is not asked (illustrative) | Switzerland | Married | Switzerland | – | → | not asked | not asked | ✅ |
+-  | C permit holder living in Switzerland is not asked (illustrative) | Switzerland | Single | Italy | yes | → | not asked | – | ✅ |
++  | Non-Swiss employee without C permit living in Switzerland is asked (illustrative) | Switzerland | Divorced | no | no | → | asked | – | ✅ |
++  | Swiss employee living in Switzerland is not asked (illustrative) | Switzerland | Married | yes | – | → | not asked | not asked | ✅ |
++  | C permit holder living in Switzerland is not asked (illustrative) | Switzerland | Single | no | yes | → | not asked | – | ✅ |
+ 
+ - **AC-06.1.2 One block per child, starting with the age status**
+   - **Given** an employee subject to source tax answered "yes" to having children
+@@ -71,6 +71,8 @@
+ ## Evidence
+ - **D-001** (product decision (Product owner)): Lonio computes the full Zurich source tax tariff code (tariff letter including the cross-border letters, child digit and church-tax suffix, e.g. "C1Y", "L0Y") for every employee subject to source tax, from the answers it collects, following the calculator's logic. HR no longer clicks through the calculator.
+ - **D-003** (product decision (Product owner)): Civil status offers Single, Married, Divorced, Widowed, Registered partnership and Separated. For source tax, registered partnership counts as married (including the spouse exemption) and separated counts as single, as in the calculator. For the pension fund, provisionally, registered partnership is entered as Married with the partner's date of birth, and separated as Married. Keep OQ-civil-status-partnership open as non-blocking, to be verified by a domain expert.
++- **D-005** (product decision (Product owner)): Do not ask for the permit type. Ask non-Swiss employees only whether they hold a C permit (permanent residence), yes or no, and the same for a non-Swiss spouse. No party needs any other permit type. This closes OQ-permit-list. To be verified by a domain expert.
++- **D-008** (product decision (Product owner)): Anyone with Swiss citizenship counts as Swiss for source tax, even with another nationality. This closes OQ-dual-nationality. To be verified by a domain expert.
+ - **D-036** (product decision (Product owner)): Answers to questions that no longer apply after the employee changes an earlier answer are discarded on submission; until then they may be kept so going back and forth loses no input.
+ - **F-hr_transcript-b84498** (hr_transcript): Source tax questions should only be asked to employees who are subject to source tax, not to everybody.
+   - "Because I never know up front who has to answer those questions." — hr_transcript/T-008, Anna
+--- baseline/requirements/employee-onboarding/stories/US-06.2-ask-custody-and-common-household-for-a-minor-child-living.md
++++ run/requirements/employee-onboarding/stories/US-06.2-ask-custody-and-common-household-for-a-minor-child-living.md
+@@ -66,7 +66,7 @@
+   | Example | Country (home address) | Civil status | Has children | Child: minor or of age in first education | Child lives in the same household | Parental custody (child in household) | Nationality | Holds a C permit (permanent residence) | Common household with the other parent | Alternating care | → | Child result (per child) | Checked |
+   |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+   | Single, sole custody (illustrative) | Germany | Single | yes | Minor | yes | Sole custody | – | – | – | – | → | Counted with H | ✅ |
+-  | Divorced, shared custody, no common household, no alternating care (illustrative) | Switzerland | Divorced | yes | Minor | yes | Shared custody | Brazil | no | no | no | → | Counted with H | ✅ |
++  | Divorced, shared custody, no common household, no alternating care (illustrative) | Switzerland | Divorced | yes | Minor | yes | Shared custody | no | no | no | no | → | Counted with H | ✅ |
+ 
+ 
+ ## Evidence
+--- baseline/requirements/employee-onboarding/stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md
++++ run/requirements/employee-onboarding/stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md
+@@ -15,21 +15,21 @@
+ 
+ **As** HR, **I want** every non-Swiss employee and every employee living abroad to be reminded at the end of the questionnaire to bring their permit on the first working day, **so that** fewer new employees forget their permit on day one ("Half of them forget"), without Lonio collecting any extra data
+ 
+-Priority **P2** – HR asked for it explicitly and it fixes a recurring annoyance (half of the new employees forget their permit), but it blocks no registration. · Status: **decision** · Sources: F-hr_transcript-c53552, F-hr_transcript-1a20bb, F-hr_transcript-d7431e, G-01, D-010, D-038
++Priority **P2** – HR asked for it explicitly and it fixes a recurring annoyance (half of the new employees forget their permit), but it blocks no registration. · Status: **decision** · Sources: F-hr_transcript-c53552, F-hr_transcript-1a20bb, F-hr_transcript-d7431e, F-hr_followup-8d9f77, G-01, D-010, D-038
+ 
+ Covers (details in [the section](../feature.md#SEC-08-completion-and-submission) and [information.md](../information.md)): Permit reminder
+ 
+ ## Acceptance criteria
+ 
+ - **AC-08.1.1 Reminder shown to non-Swiss employees living in Switzerland**
+-  - **Given** an employee whose home address is in Switzerland and whose nationality is not Switzerland
++  - **Given** an employee whose home address is in Switzerland and who answered that they are not Swiss (do not hold Swiss citizenship)
+   - **When** they reach the end of the questionnaire, before submitting
+   - **Then** Lonio shows the reminder to bring their permit on the first working day
+-  - _Sources: F-hr_transcript-c53552, D-010_
++  - _Sources: F-hr_transcript-c53552, F-hr_followup-8d9f77, D-010_
+ 
+   | Example | Country (home address) | Nationality | → | Nationality | Permit reminder | Checked |
+   |---|---|---|---|---|---|---|
+-  | Tomás (hr_transcript/F-hr_transcript-d7431e) | Switzerland | Brazil | → | asked | yes | ✅ |
++  | Tomás (hr_transcript/F-hr_transcript-d7431e) | Switzerland | no | → | asked | yes | ✅ |
+ 
+ - **AC-08.1.2 Reminder shown to every employee living abroad, whatever their nationality**
+   - **Given** an employee whose home address is in a country other than Switzerland (nationality is not asked of them)
+@@ -43,14 +43,14 @@
+   | Employee living in Liechtenstein (illustrative) | Liechtenstein | → | not asked | yes | ✅ |
+ 
+ - **AC-08.1.3 No reminder for Swiss employees living in Switzerland**
+-  - **Given** an employee whose home address is in Switzerland and whose nationality is Switzerland (including dual citizens holding Swiss citizenship)
++  - **Given** an employee whose home address is in Switzerland and who answered that they are Swiss (hold Swiss citizenship, including dual citizens)
+   - **When** they reach the end of the questionnaire
+   - **Then** Lonio shows no permit reminder
+-  - _Sources: D-010, D-008_
++  - _Sources: F-hr_followup-8d9f77, D-010, D-008_
+ 
+   | Example | Country (home address) | Nationality | → | Permit reminder | Checked |
+   |---|---|---|---|---|---|
+-  | Swiss employee living in Switzerland (illustrative) | Switzerland | Switzerland | → | no | ✅ |
++  | Swiss employee living in Switzerland (illustrative) | Switzerland | yes | → | no | ✅ |
+ 
+ - **AC-08.1.4 The reminder collects no data**
+   - **Given** the permit reminder is shown
+@@ -63,6 +63,8 @@
+ - **D-010** (product decision (Product owner)): At the end of the questionnaire, remind every non-Swiss employee and every employee living abroad to bring their permit on the first working day. HR words the reminder; the spec states only its purpose. This closes OQ-permit-reminder.
+ - **D-035** (product decision (Product owner)): For the cross-border questions the employee states what they expect for the year (non-return days). For the certificate of residence 'not yet' is a valid answer and counts as 'no' for the tariff code. Documents go to HR outside Lonio; no upload.
+ - **D-038** (product decision (Product owner)): Employees living abroad get the permit reminder whatever their nationality, because nationality is not asked of them (data minimisation, G-01). HR words the reminder so that a Swiss citizen living abroad, such as Stefan, can see that it does not apply to them. Asking everyone 'Swiss citizen yes/no' only for the reminder is not worth the extra question.
++- **F-hr_followup-8d9f77** (hr_followup): The nationality question can be answered as Swiss yes or no (allowed values: yes / no).
++  - "Swiss yes or no is enough." — hr_followup/T-002, Anna
+ - **F-hr_transcript-1a20bb** (hr_transcript): Employees who work in Switzerland but live abroad (e.g. Konstanz in Germany, Liechtenstein) are always subject to source tax, regardless of nationality – even Swiss citizens.
+   - "Those people do source tax because they work here and they don't live here. And there it doesn't matter what passport you have, by the way." — hr_transcript/T-048, Anna
+   - "Stefan is actually Swiss, and he still has it." — hr_transcript/T-048, Anna
+--- baseline/requirements/employee-onboarding/stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md
++++ run/requirements/employee-onboarding/stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md
+@@ -36,7 +36,7 @@
+   |---|---|---|---|---|---|---|---|---|---|---|---|
+   | Moved the home address from Switzerland to Germany after answering nationality and canton (illustrative) | Germany | – | – | → | not asked | not asked | not asked | – | – | – | ✅ |
+   | Changed civil status from Married to Single after entering the spouse's date of birth (illustrative) | – | Single | – | → | – | – | – | not asked | – | – | ✅ |
+-  | Changed nationality to Switzerland after answering the C permit question and the source tax questions (illustrative) | Switzerland | Single | Switzerland | → | – | – | not asked | – | not asked | not asked | ✅ |
++  | Changed the Swiss citizenship answer to yes after answering the C permit question and the source tax questions (illustrative) | Switzerland | Single | yes | → | – | – | not asked | – | not asked | not asked | ✅ |
+ 
+ 
+ ## Evidence
+--- baseline/requirements/employee-onboarding/stories/US-08.4-step-by-step-questionnaire-flow.md
++++ run/requirements/employee-onboarding/stories/US-08.4-step-by-step-questionnaire-flow.md
+@@ -32,7 +32,7 @@
+ 
+   | Example | Country (home address) | Nationality | Civil status | → | Canton | Holds a C permit (permanent residence) | Denomination | Daily return to the home in Germany | Nationality | Daily return to the home in Liechtenstein | Checked |
+   |---|---|---|---|---|---|---|---|---|---|---|---|
+-  | Swiss employee living in Switzerland, single (illustrative) | Switzerland | Switzerland | Single | → | asked | not asked | not asked | not asked | – | – | ✅ |
++  | Swiss employee living in Switzerland, single (illustrative) | Switzerland | yes | Single | → | asked | not asked | not asked | not asked | – | – | ✅ |
+   | Employee living in Germany, single (illustrative) | Germany | – | Single | → | not asked | – | asked | asked | not asked | not asked | ✅ |
+ 
+ - **AC-08.4.3 Submission only with all required answers**
+@@ -40,7 +40,7 @@
+   - **When** they submit
+   - **Then** submission succeeds only if every question that is asked for them and required has been answered; after submission the answers are recorded for HR and the receiving parties and the questionnaire becomes read-only for the employee
+   - _Sources: G-01, D-036, D-037_
+-_Trace check: partial – No cited fact sets the nine-step order in AC-08.4.1; only English (G-09), canton for Swiss residents (D-002) and the reminder at the end (D-010) are backed._
++_Trace check: partial – No cited fact gives the nine-step order in AC-08.4.1, and the 'submission only with all required answers' rule in AC-08.4.3 is not stated in the cited facts; the rest (English, skipping, read-only after submission) is backed._
+ 
+ 
+ ## Evidence
+--- baseline/requirements/employee-onboarding/traceability.md
++++ run/requirements/employee-onboarding/traceability.md
+@@ -10,7 +10,7 @@
+ |---|---|---|
+ | US-01.1 Personal details for the pension fund registration | AC-01.1.1, AC-01.1.2, AC-01.1.3 | F-pension_portal-b5c835, F-pension_portal-c688e4, F-pension_portal-88b436, F-pension_portal-967bc9, F-pension_portal-44a27b, F-pension_portal-3cfe89, G-01, G-09, G-10 |
+ | US-01.2 Complete home address for posting documents | AC-01.2.1, AC-01.2.2, AC-01.2.3 | F-hr_transcript-5518ad, F-hr_transcript-ec57d3, F-hr_transcript-66fe15, G-09, G-10 |
+-| US-01.3 Home address country is the country of residence for later questions | AC-01.3.1, AC-01.3.2, AC-01.3.3 | F-hr_transcript-e505f8, F-hr_transcript-1a20bb, F-hr_transcript-b6d9b3, F-zh_source_tax_calculator-f29009, F-zh_source_tax_calculator-4c65ae, F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-52b67a, G-01, D-002, D-038 |
++| US-01.3 Home address country is the country of residence for later questions | AC-01.3.1, AC-01.3.2, AC-01.3.3 | F-hr_transcript-e505f8, F-hr_transcript-1a20bb, F-hr_transcript-b6d9b3, F-hr_followup-8d9f77, F-zh_source_tax_calculator-f29009, F-zh_source_tax_calculator-4c65ae, F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-52b67a, G-01, D-002, D-038 |
+ | US-01.4 Canton of residence for employees living in Switzerland | AC-01.4.1, AC-01.4.2, AC-01.4.3 | F-pension_portal-587d3f, F-pension_portal-3432a9, F-pension_portal-44a27b, F-pension_portal-b359c3, G-01, D-002, D-036 |
+ | US-02.1 Employee enters the first working day | AC-02.1.1, AC-02.1.2, AC-02.1.3, AC-02.1.4 | F-hr_transcript-872bd7, F-hr_transcript-e3721e, F-hr_transcript-d7a23b, G-08, G-10, D-033, D-034, D-037 |
+ | US-02.2 Insurance start date derived from the first working day | AC-02.2.1, AC-02.2.2, AC-02.2.3, AC-02.2.4 | F-hr_transcript-1d5c07, F-hr_transcript-30d25c, F-hr_transcript-fdf50a, F-hr_transcript-d7a23b, F-pension_portal-509cbe, F-pension_portal-dd8126, G-08, D-033, D-037 |
+@@ -18,14 +18,14 @@
+ | US-03.2 Ask the spouse's or partner's date of birth from married, partnered and separated employees | AC-03.2.1, AC-03.2.2, AC-03.2.3, AC-03.2.4 | F-hr_transcript-2334d8, F-pension_portal-a0065b, F-pension_portal-39bab1, F-pension_portal-0eed50, F-pension_portal-ef28c3, F-pension_portal-6d3630, G-01, G-10, D-003, D-004, D-036 |
+ | US-03.3 Enter the civil status in the pension fund's terms | AC-03.3.1, AC-03.3.2, AC-03.3.3 | F-pension_portal-3d1ae4, F-pension_portal-9b24c5, F-hr_transcript-f197d6, D-003, D-037 |
+ | US-03.4 Group the civil status for source tax | AC-03.4.1, AC-03.4.2, AC-03.4.3 | F-zh_source_tax_calculator-051bb9, F-zh_source_tax_calculator-9007c3, G-01, D-003, D-037 |
+-| US-04.1 Ask Swiss citizenship and C permit only of employees living in Switzerland | AC-04.1.1, AC-04.1.2, AC-04.1.3, AC-04.1.4 | F-hr_transcript-35fae3, F-hr_transcript-4ad146, F-hr_transcript-845204, F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, G-01, G-10, D-005, D-008, D-010, D-038 |
+-| US-04.2 Ask spouse details only when the spouse could exempt the employee | AC-04.2.1, AC-04.2.2, AC-04.2.3, AC-04.2.4 | F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, G-01, G-10, D-003, D-005, D-008 |
+-| US-04.3 Decide whether the employee is subject to source tax | AC-04.3.1, AC-04.3.2, AC-04.3.3, AC-04.3.4 | F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, F-hr_transcript-845204, F-hr_transcript-d7431e, F-hr_transcript-b84498, G-01, D-005, D-007, D-008, D-037, D-038 |
++| US-04.1 Ask Swiss citizenship and C permit only of employees living in Switzerland | AC-04.1.1, AC-04.1.2, AC-04.1.3, AC-04.1.4 | F-hr_transcript-35fae3, F-hr_transcript-4ad146, F-hr_transcript-845204, F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, F-hr_followup-e8164e, F-hr_followup-8d9f77, F-hr_followup-32873d, F-hr_followup-ee7d68, G-01, G-10, D-005, D-008, D-010, D-038 |
++| US-04.2 Ask spouse details only when the spouse could exempt the employee | AC-04.2.1, AC-04.2.2, AC-04.2.3, AC-04.2.4 | F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, F-hr_followup-e8164e, F-hr_followup-ee7d68, G-01, G-10, D-003, D-005, D-008 |
++| US-04.3 Decide whether the employee is subject to source tax | AC-04.3.1, AC-04.3.2, AC-04.3.3, AC-04.3.4 | F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, F-hr_transcript-845204, F-hr_transcript-d7431e, F-hr_transcript-b84498, F-hr_followup-32873d, G-01, D-005, D-007, D-008, D-037, D-038 |
+ | US-05.3 State the denomination for the church-tax part of the tariff | AC-05.3.1, AC-05.3.2, AC-05.3.3 | F-zh_source_tax_calculator-208104, F-zh_source_tax_calculator-b7fea8, F-zh_source_tax_calculator-b05b44, F-zh_source_tax_calculator-2eab9a, F-zh_source_tax_calculator-c78e0c, F-hr_transcript-b84498, F-hr_transcript-563a9f, G-01, D-001, D-006 |
+ | US-05.4 State whether the spouse or registered partner works, for married employees and registered partners | AC-05.4.1, AC-05.4.2, AC-05.4.3 | F-zh_source_tax_calculator-7b637b, F-zh_source_tax_calculator-e740d1, F-zh_source_tax_calculator-0137bf, F-zh_source_tax_calculator-97139a, F-zh_source_tax_calculator-051bb9, F-hr_transcript-09b3fe, G-01, D-001, D-003 |
+ | US-05.6 Determine the tariff letter, including the cross-border letters | AC-05.6.1, AC-05.6.2 | F-zh_source_tax_calculator-97139a, F-zh_source_tax_calculator-c78e0c, F-zh_source_tax_calculator-96658b, F-zh_source_tax_calculator-c53a22, F-zh_source_tax_calculator-4d3ac0, F-zh_source_tax_calculator-89a9f1, F-zh_source_tax_calculator-b7154e, F-zh_source_tax_calculator-b948fd, F-zh_source_tax_calculator-bc1639, F-zh_source_tax_calculator-52b67a, F-zh_source_tax_calculator-051bb9, D-001, D-003, D-006, D-009, D-035 |
+ | US-05.7 Compute and record the source tax result for HR | AC-05.7.1, AC-05.7.2, AC-05.7.3, AC-05.7.4, AC-05.7.5 | F-hr_transcript-563a9f, F-hr_transcript-4e180e, F-hr_transcript-b6d9b3, F-zh_source_tax_calculator-ecef37, F-zh_source_tax_calculator-2eab9a, F-zh_source_tax_calculator-c78e0c, F-zh_source_tax_calculator-b7154e, F-zh_source_tax_calculator-e80d8f, F-zh_source_tax_calculator-ab4e1e, F-zh_source_tax_calculator-86d588, D-001, D-007, D-009, D-034, D-037 |
+-| US-06.1 Ask each child's age status and household, only where the tariff needs it | AC-06.1.1, AC-06.1.2, AC-06.1.3, AC-06.1.4 | F-zh_source_tax_calculator-103b19, F-zh_source_tax_calculator-ab8a06, F-zh_source_tax_calculator-a166c7, F-zh_source_tax_calculator-b62b85, F-zh_source_tax_calculator-052c98, F-zh_source_tax_calculator-09b06d, F-zh_source_tax_calculator-42d590, F-zh_source_tax_calculator-fd9a15, F-zh_source_tax_calculator-987091, F-zh_source_tax_calculator-5725a8, F-zh_source_tax_calculator-3a75cc, F-zh_source_tax_calculator-7c667f, F-hr_transcript-b84498, G-01, D-001, D-003, D-036 |
++| US-06.1 Ask each child's age status and household, only where the tariff needs it | AC-06.1.1, AC-06.1.2, AC-06.1.3, AC-06.1.4 | F-zh_source_tax_calculator-103b19, F-zh_source_tax_calculator-ab8a06, F-zh_source_tax_calculator-a166c7, F-zh_source_tax_calculator-b62b85, F-zh_source_tax_calculator-052c98, F-zh_source_tax_calculator-09b06d, F-zh_source_tax_calculator-42d590, F-zh_source_tax_calculator-fd9a15, F-zh_source_tax_calculator-987091, F-zh_source_tax_calculator-5725a8, F-zh_source_tax_calculator-3a75cc, F-zh_source_tax_calculator-7c667f, F-hr_transcript-b84498, G-01, D-001, D-003, D-005, D-008, D-036 |
+ | US-06.2 Ask custody and common household for a minor child living with the employee | AC-06.2.1, AC-06.2.2, AC-06.2.3, AC-06.2.4 | F-zh_source_tax_calculator-f7f3ea, F-zh_source_tax_calculator-c09dc1, F-zh_source_tax_calculator-509a7d, F-zh_source_tax_calculator-d79949, F-zh_source_tax_calculator-e72e42, F-zh_source_tax_calculator-6dcf5c, F-zh_source_tax_calculator-da19df, F-zh_source_tax_calculator-ebd7b3, F-zh_source_tax_calculator-64ac33, F-zh_source_tax_calculator-c53a22, F-zh_source_tax_calculator-3058a4, F-zh_source_tax_calculator-38dd4a, F-zh_source_tax_calculator-96658b, F-zh_source_tax_calculator-051bb9, D-001, D-003 |
+ | US-06.3 Ask custody and alternating care for a minor child not living with the employee | AC-06.3.1, AC-06.3.2, AC-06.3.3 | F-zh_source_tax_calculator-fe0305, F-zh_source_tax_calculator-d2e516, F-zh_source_tax_calculator-7dcce6, F-zh_source_tax_calculator-956f07, F-zh_source_tax_calculator-32fec9, F-zh_source_tax_calculator-fb4a56, F-zh_source_tax_calculator-da19df, F-zh_source_tax_calculator-ebd7b3, F-zh_source_tax_calculator-64ac33, F-zh_source_tax_calculator-56e79b, F-zh_source_tax_calculator-c2faa7, F-zh_source_tax_calculator-3058a4, F-zh_source_tax_calculator-051bb9, D-001, D-003, D-009 |
+ | US-06.4 Ask who contributes more to the child's maintenance | AC-06.4.1, AC-06.4.2, AC-06.4.3 | F-zh_source_tax_calculator-cdd0b6, F-zh_source_tax_calculator-939b3b, F-zh_source_tax_calculator-ad867a, F-zh_source_tax_calculator-3058a4, F-zh_source_tax_calculator-56e79b, F-zh_source_tax_calculator-38dd4a, F-zh_source_tax_calculator-96658b, F-zh_source_tax_calculator-c2faa7, F-zh_source_tax_calculator-051bb9, D-001, D-003, D-009 |
+@@ -34,7 +34,7 @@
+ | US-07.1 Derive the calculator's residence answers from the home address | AC-07.1.1, AC-07.1.2, AC-07.1.3 | F-zh_source_tax_calculator-f29009, F-zh_source_tax_calculator-4c65ae, F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-52b67a, F-hr_transcript-e505f8, G-01, D-001 |
+ | US-07.2 Decide the cross-border tariff for employees living in Germany | AC-07.2.1, AC-07.2.2, AC-07.2.3, AC-07.2.4, AC-07.2.5 | F-zh_source_tax_calculator-69edd5, F-zh_source_tax_calculator-64ac42, F-zh_source_tax_calculator-31d762, F-zh_source_tax_calculator-687e8b, F-zh_source_tax_calculator-823151, F-zh_source_tax_calculator-5f6820, F-zh_source_tax_calculator-d2b3cf, F-zh_source_tax_calculator-087ae5, F-zh_source_tax_calculator-aaece6, F-zh_source_tax_calculator-e8ffac, F-zh_source_tax_calculator-ea3cd8, F-zh_source_tax_calculator-33ef31, F-zh_source_tax_calculator-4d3ac0, F-zh_source_tax_calculator-bc1639, F-zh_source_tax_calculator-b948fd, F-zh_source_tax_calculator-89a9f1, F-zh_source_tax_calculator-b7154e, F-hr_transcript-ab8886, F-hr_transcript-1a20bb, D-001, D-006, D-035, D-037 |
+ | US-07.3 Determine the source tax outcome for employees living in Liechtenstein | AC-07.3.1, AC-07.3.2, AC-07.3.3, AC-07.3.4 | F-zh_source_tax_calculator-981b6b, F-zh_source_tax_calculator-a2041b, F-zh_source_tax_calculator-e22d17, F-zh_source_tax_calculator-e96210, F-zh_source_tax_calculator-0ff846, F-zh_source_tax_calculator-f4ece9, F-zh_source_tax_calculator-e80d8f, F-zh_source_tax_calculator-ab4e1e, F-hr_transcript-1a20bb, D-001, D-007, D-034, D-035, D-037 |
+-| US-08.1 Remind employees to bring their permit on the first working day | AC-08.1.1, AC-08.1.2, AC-08.1.3, AC-08.1.4 | F-hr_transcript-c53552, F-hr_transcript-1a20bb, F-hr_transcript-d7431e, G-01, D-010, D-038 |
++| US-08.1 Remind employees to bring their permit on the first working day | AC-08.1.1, AC-08.1.2, AC-08.1.3, AC-08.1.4 | F-hr_transcript-c53552, F-hr_transcript-1a20bb, F-hr_transcript-d7431e, F-hr_followup-8d9f77, G-01, D-010, D-038 |
+ | US-08.2 Discard answers that no longer apply on submission | AC-08.2.1, AC-08.2.2 | G-01, D-036 |
+ | US-08.3 Questionnaire is read-only for the employee after submission | AC-08.3.1, AC-08.3.2 | F-hr_transcript-872bd7, F-hr_transcript-1d5c07, D-033, D-034, D-037 |
+ | US-08.4 Step-by-step questionnaire flow | AC-08.4.1, AC-08.4.2, AC-08.4.3 | G-01, G-09, F-hr_transcript-b84498, D-002, D-005, D-007, D-010, D-036, D-037 |
+@@ -53,13 +53,13 @@
+ | Country (home address) | F-hr_transcript-ec57d3, F-hr_transcript-e505f8, F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, F-zh_source_tax_calculator-f29009, F-zh_source_tax_calculator-4c65ae, F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-52b67a, G-09, G-10, D-002 |
+ | Canton | F-pension_portal-587d3f, F-pension_portal-3432a9, F-pension_portal-44a27b, F-pension_portal-b359c3, D-002 |
+ | First working day | F-hr_transcript-872bd7, F-hr_transcript-e3721e, F-hr_transcript-1d5c07, F-hr_transcript-d7a23b, G-08, G-10, D-033, D-034, D-037 |
+-| Nationality | F-hr_transcript-35fae3, F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, G-01, G-10, D-008, D-010, D-038 |
+-| Holds a C permit (permanent residence) | F-hr_transcript-4ad146, F-hr_transcript-845204, F-hr_transcript-b6d9b3, G-01, D-005 |
++| Nationality | F-hr_transcript-35fae3, F-hr_transcript-b6d9b3, F-hr_transcript-1a20bb, F-hr_followup-e8164e, F-hr_followup-8d9f77, F-hr_followup-32873d, F-hr_followup-ee7d68, G-01, G-10, D-008, D-010, D-038 |
++| Holds a C permit (permanent residence) | F-hr_transcript-4ad146, F-hr_transcript-845204, F-hr_transcript-b6d9b3, F-hr_followup-8d9f77, G-01, D-005 |
+ | Civil status | F-hr_transcript-ce8ca4, F-hr_transcript-bd8c8e, F-hr_transcript-3907fe, F-hr_transcript-f197d6, F-pension_portal-ec4512, F-pension_portal-3d1ae4, F-pension_portal-44a27b, F-pension_portal-9b24c5, F-zh_source_tax_calculator-9007c3, F-zh_source_tax_calculator-051bb9, G-10, D-003 |
+ | Spouse's / registered partner's date of birth | F-hr_transcript-2334d8, F-pension_portal-a0065b, F-pension_portal-ef28c3, F-pension_portal-39bab1, F-pension_portal-0eed50, F-pension_portal-6d3630, D-003, D-004 |
+-| Spouse's / partner's country of residence | F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, G-01, G-10, D-003 |
+-| Spouse's / partner's nationality | F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, G-10, D-003, D-008 |
+-| Spouse / partner holds a C permit | F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, D-005 |
++| Spouse's / partner's country of residence | F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, F-hr_followup-8d9f77, G-01, G-10, D-003 |
++| Spouse's / partner's nationality | F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, F-hr_followup-e8164e, F-hr_followup-ee7d68, G-01, G-10, D-003, D-008 |
++| Spouse / partner holds a C permit | F-hr_transcript-f3ce84, F-hr_transcript-d7431e, F-hr_transcript-b6d9b3, F-hr_followup-8d9f77, D-005 |
+ | Denomination | F-zh_source_tax_calculator-208104, F-zh_source_tax_calculator-b7fea8, F-zh_source_tax_calculator-b05b44, F-zh_source_tax_calculator-2eab9a, F-hr_transcript-b84498, D-001, D-006 |
+ | Spouse / partner is gainfully employed or receives replacement income | F-zh_source_tax_calculator-7b637b, F-zh_source_tax_calculator-e740d1, F-zh_source_tax_calculator-0137bf, F-zh_source_tax_calculator-97139a, F-hr_transcript-09b3fe, D-001, D-003 |
+ | Has children | F-zh_source_tax_calculator-103b19, F-zh_source_tax_calculator-a166c7, F-zh_source_tax_calculator-a33b65, F-zh_source_tax_calculator-ab8a06, F-zh_source_tax_calculator-b62b85, F-zh_source_tax_calculator-75cd87, D-001 |
+@@ -81,8 +81,8 @@
+ | rule: Insurance start date | F-hr_transcript-1d5c07, F-hr_transcript-30d25c, F-hr_transcript-fdf50a, F-hr_transcript-d7a23b, F-pension_portal-509cbe, F-pension_portal-dd8126, F-pension_portal-3a97ab, G-08, D-033, D-037 |
+ | rule: Civil status for the pension fund | F-pension_portal-3d1ae4, F-pension_portal-9b24c5, F-hr_transcript-f197d6, D-003 |
+ | rule: Civil status for source tax | F-zh_source_tax_calculator-051bb9, D-003 |
+-| rule: Spouse exempts from source tax | F-hr_transcript-d7431e, F-hr_transcript-f3ce84, F-hr_transcript-b6d9b3, D-003, D-005, D-008 |
+-| rule: Subject to source tax | F-hr_transcript-b6d9b3, F-hr_transcript-b84498, F-hr_transcript-1a20bb, F-hr_transcript-845204, F-hr_transcript-d7431e, F-hr_transcript-4e180e, D-005, D-007, D-008 |
++| rule: Spouse exempts from source tax | F-hr_transcript-d7431e, F-hr_transcript-f3ce84, F-hr_transcript-b6d9b3, F-hr_followup-e8164e, D-003, D-005, D-008 |
++| rule: Subject to source tax | F-hr_transcript-b6d9b3, F-hr_transcript-b84498, F-hr_transcript-1a20bb, F-hr_transcript-845204, F-hr_transcript-d7431e, F-hr_transcript-4e180e, F-hr_followup-32873d, F-hr_followup-8d9f77, D-005, D-007, D-008 |
+ | rule: State of residence for source tax | F-zh_source_tax_calculator-f29009, F-zh_source_tax_calculator-4c65ae, F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-52b67a, F-hr_transcript-e505f8, G-01 |
+ | rule: Church-tax suffix | F-zh_source_tax_calculator-2eab9a, D-001 |
+ | rule: Base letter for married employees | F-zh_source_tax_calculator-97139a, D-001 |
+@@ -93,7 +93,7 @@
+ | rule: Liechtenstein: in principle no source tax liability | F-zh_source_tax_calculator-e80d8f, F-zh_source_tax_calculator-ab4e1e, D-007, D-034 |
+ | rule: Tariff letter | F-zh_source_tax_calculator-97139a, F-zh_source_tax_calculator-c78e0c, F-zh_source_tax_calculator-96658b, F-zh_source_tax_calculator-4d3ac0, F-zh_source_tax_calculator-b7154e, F-zh_source_tax_calculator-52b67a, D-001, D-006, D-009 |
+ | rule: Source tax result | F-zh_source_tax_calculator-ecef37, F-zh_source_tax_calculator-2eab9a, F-zh_source_tax_calculator-86d588, F-hr_transcript-563a9f, F-hr_transcript-4e180e, D-001, D-007, D-034, D-037 |
+-| rule: Permit reminder | F-hr_transcript-c53552, D-010, D-038 |
++| rule: Permit reminder | F-hr_transcript-c53552, F-hr_followup-8d9f77, D-010, D-038 |
+ | rule: Discard answers that no longer apply | G-01, D-036, D-037 |
+ 
+ ## Facts
+@@ -279,3 +279,12 @@
+ | F-zh_source_tax_calculator-332e2a | zh_source_tax_calculator | open | explicit | The full cross-product of child paths × residence paths × confession × civil status was not enumerated. | zh_source_tax_calculator/C-N06 |
+ | F-zh_source_tax_calculator-4957f6 | zh_source_tax_calculator | open | explicit | Not tested: more than 3 children (upper limit unknown), whether 'Kind löschen' recomputes correctly, and tariff D or other special tariffs. | zh_source_tax_calculator/C-N07 |
+ | F-zh_source_tax_calculator-3cdbd7 | zh_source_tax_calculator | open | explicit | A hidden 'Beispiele' area shows tags H3N and P3N, which were not explored as inputs. | zh_source_tax_calculator/C-N03 |
++| F-hr_followup-e8164e | hr_followup | decision | explicit | For nationality, HR (Muster AG) only needs to know whether the employee is Swiss or not; the actual country of nationality is not needed. | hr_followup/T-001, hr_followup/T-002 |
++| F-hr_followup-8d9f77 | hr_followup | option | explicit | The nationality question can be answered as Swiss yes or no (allowed values: yes / no). | hr_followup/T-002 |
++| F-hr_followup-32873d | hr_followup | rule | explicit | Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all. | hr_followup/T-002 |
++| F-hr_followup-ee7d68 | hr_followup | exclusion | inferred | The exact country of nationality should not be collected, since only Swiss yes/no is needed (data minimisation). | hr_followup/T-002 |
++| F-hr_followup-32873d-2 | hr_followup | rule | inferred | Being Swiss or not affects source tax eligibility; the stakeholder implies that source tax may not apply at all depending on Swiss nationality, but did not state explicitly that Swiss nationals are never subject to source tax. | hr_followup/T-002 |
++| F-hr_followup-35765d | hr_followup | context | explicit | Currently HR never asks employees who live in Liechtenstein and commute to Zurich anything about source tax. | hr_followup/T-003, hr_followup/T-004 |
++| F-hr_followup-664bcb | hr_followup | rule | explicit | Employees who live in Liechtenstein and commute to Zurich are not subject to source tax (per Muster AG HR). | hr_followup/T-003, hr_followup/T-004 |
++| F-hr_followup-edd03f | hr_followup | condition | explicit | All source tax questions must be skipped for employees who live in Liechtenstein and commute to Zurich. | hr_followup/T-004 |
++| F-hr_followup-ed14dd | hr_followup | condition | inferred | Since Liechtenstein residence decides whether source tax questions are skipped, the country of residence (address_country) must be known before the source tax questions are asked. | hr_followup/T-004 |

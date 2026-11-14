@@ -1,0 +1,372 @@
+{
+ "case": "B4",
+ "label": "before",
+ "ok": false,
+ "checks": [
+  {
+   "check": "no errors (other than expected flags)",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "all examples pass",
+   "ok": true,
+   "soft": false,
+   "detail": "219/219"
+  },
+  {
+   "check": "only expected stories changed",
+   "ok": false,
+   "soft": false,
+   "detail": "US-01.3, US-05.3, US-05.4, US-06.1, US-06.2, US-08.1, US-08.2, US-08.4"
+  },
+  {
+   "check": "0-0 stories added",
+   "ok": true,
+   "soft": false,
+   "detail": "none"
+  },
+  {
+   "check": "item.daily_return_liechtenstein still exists",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "item.non_return_days_45 still exists",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "rule.liechtenstein_no_source_tax_in_principle still exists",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "item.daily_return_liechtenstein unchanged in behaviour",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "item.non_return_days_45 unchanged in behaviour",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "item.nationality unchanged in behaviour",
+   "ok": false,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "one of: decision D-007 flagged for re-confirmation / new or changed open question mentions ['Liechtenstein']",
+   "ok": true,
+   "soft": true,
+   "detail": "decision D-007 flagged for re-confirmation"
+  },
+  {
+   "check": "no-op rerun calls no agent (B0)",
+   "ok": false,
+   "soft": false,
+   "detail": ""
+  }
+ ],
+ "metrics": {
+  "usage": {
+   "by_stage": {
+    "write_section": {
+     "calls": 6,
+     "turns": 12,
+     "input_tokens": 12,
+     "output_tokens": 70628,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 433083,
+     "total_tokens": 503723,
+     "cost_usd": 4.9166,
+     "seconds": 469.0
+    },
+    "dev_refinement": {
+     "calls": 1,
+     "turns": 40,
+     "input_tokens": 25,
+     "output_tokens": 13797,
+     "cache_read_input_tokens": 1176172,
+     "cache_creation_input_tokens": 191351,
+     "total_tokens": 1381345,
+     "cost_usd": 2.0423,
+     "seconds": 131.9
+    },
+    "judge_facts": {
+     "calls": 13,
+     "turns": 26,
+     "input_tokens": 26,
+     "output_tokens": 12513,
+     "cache_read_input_tokens": 16728,
+     "cache_creation_input_tokens": 153983,
+     "total_tokens": 183250,
+     "cost_usd": 0.7582,
+     "seconds": 99.2
+    },
+    "knowledge_delta": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 7579,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 47481,
+     "total_tokens": 55062,
+     "cost_usd": 0.5353,
+     "seconds": 58.6
+    },
+    "judge_trace": {
+     "calls": 4,
+     "turns": 8,
+     "input_tokens": 8,
+     "output_tokens": 5992,
+     "cache_read_input_tokens": 2172,
+     "cache_creation_input_tokens": 89500,
+     "total_tokens": 97672,
+     "cost_usd": 0.4269,
+     "seconds": 49.3
+    },
+    "review": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 2981,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 42918,
+     "total_tokens": 45901,
+     "cost_usd": 0.4072,
+     "seconds": 29.6
+    },
+    "flow": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 2109,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 17221,
+     "total_tokens": 19332,
+     "cost_usd": 0.1811,
+     "seconds": 15.6
+    },
+    "extract": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 1913,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 5696,
+     "total_tokens": 7611,
+     "cost_usd": 0.0841,
+     "seconds": 28.0
+    }
+   },
+   "total": {
+    "calls": 28,
+    "turns": 94,
+    "input_tokens": 79,
+    "output_tokens": 117512,
+    "cache_read_input_tokens": 1195072,
+    "cache_creation_input_tokens": 981233,
+    "total_tokens": 2293896,
+    "cost_usd": 9.3517,
+    "seconds": 881.2
+   }
+  },
+  "cost_usd": 9.35,
+  "stages_ran": [
+   "normalize/hr_followup",
+   "extract/hr_followup",
+   "judge_facts",
+   "knowledge.raw",
+   "feature.plan",
+   "sections/SEC-01-identity-and-address",
+   "sections/SEC-08-completion-and-submission",
+   "sections/SEC-07-living-abroad",
+   "sections/SEC-04-source-tax-liability",
+   "sections/SEC-05-tariff-basics",
+   "sections/SEC-06-children",
+   "feature.flow",
+   "judge_trace",
+   "dev_refinement",
+   "review"
+  ],
+  "counts": {
+   "units": 347,
+   "facts": 188,
+   "items": 35,
+   "rules": 17,
+   "sections": 8,
+   "stories": 30,
+   "acceptance_criteria": 100,
+   "open_questions": 5,
+   "exclusions": 12
+  },
+  "verdict": "not_ready",
+  "baseline_verdict": "ready_with_caveats",
+  "errors": [
+   {
+    "check": "decisions",
+    "target": "D-003",
+    "message": "new evidence since this decision (3 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-003`: F-hr_followup-8d9f77: The nationality question can be answered as Swiss yes or no (allowed values: yes / no).; F-hr_followup-e8164e: For nationality, HR (Muster AG) only needs to know w"
+   },
+   {
+    "check": "decisions",
+    "target": "D-005",
+    "message": "new evidence since this decision (3 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-005`: F-hr_followup-32873d: Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.; F-hr_followup-8d9f77: The nationality question can be "
+   },
+   {
+    "check": "decisions",
+    "target": "D-007",
+    "message": "new evidence since this decision (2 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-007`: F-hr_followup-32873d: Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.; F-hr_followup-8d9f77: The nationality question can be "
+   },
+   {
+    "check": "decisions",
+    "target": "D-008",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-008`: F-hr_followup-32873d: Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.; F-hr_followup-8d9f77: The nationality question can be "
+   },
+   {
+    "check": "decisions",
+    "target": "D-010",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-010`: F-hr_followup-32873d: Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.; F-hr_followup-8d9f77: The nationality question can be "
+   },
+   {
+    "check": "decisions",
+    "target": "D-011",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-011`: F-hr_followup-32873d: Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.; F-hr_followup-8d9f77: The nationality question can be "
+   },
+   {
+    "check": "decisions",
+    "target": "D-013",
+    "message": "new evidence since this decision (2 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-013`: F-hr_followup-32873d: Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.; F-hr_followup-8d9f77: The nationality question can be "
+   },
+   {
+    "check": "decisions",
+    "target": "D-030",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-030`: F-hr_followup-32873d: Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.; F-hr_followup-8d9f77: The nationality question can be "
+   },
+   {
+    "check": "decisions",
+    "target": "D-031",
+    "message": "new evidence since this decision (1 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-031`: F-hr_followup-8d9f77: The nationality question can be answered as Swiss yes or no (allowed values: yes / no)."
+   },
+   {
+    "check": "decisions",
+    "target": "D-038",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-038`: F-hr_followup-32873d: Nationality (Swiss or not) is needed only to determine whether source tax can apply to the employee at all.; F-hr_followup-8d9f77: The nationality question can be "
+   }
+  ],
+  "warnings": 59,
+  "examples": {
+   "pass": 219,
+   "total": 219
+  },
+  "dev_refinement": {
+   "questions": 14,
+   "by_severity": {
+    "blocker": 0,
+    "major": 7,
+    "minor": 7
+   },
+   "tech_leaks": 5
+  },
+  "review_findings": 10,
+  "stories": {
+   "added": [],
+   "removed": [],
+   "changed": [
+    "US-01.3",
+    "US-04.1",
+    "US-04.2",
+    "US-04.3",
+    "US-05.3",
+    "US-05.4",
+    "US-05.6",
+    "US-05.7",
+    "US-06.1",
+    "US-06.2",
+    "US-08.1",
+    "US-08.2",
+    "US-08.4"
+   ],
+   "unchanged": 17,
+   "added_sections": {}
+  },
+  "elements": {
+   "added": [],
+   "removed": [],
+   "changed_behaviour": [
+    "item.nationality",
+    "item.permit_type",
+    "item.spouse_nationality",
+    "item.spouse_permit_type",
+    "item.spouse_residence_country",
+    "open.OQ-nationality-wording",
+    "rule.permit_reminder",
+    "rule.spouse_exempts_source_tax",
+    "rule.subject_to_source_tax"
+   ]
+  },
+  "files_changed": [
+   "requirements/employee-onboarding/feature.md",
+   "requirements/employee-onboarding/information.md",
+   "requirements/employee-onboarding/open-questions.md",
+   "requirements/employee-onboarding/stories/US-01.3-home-address-country-is-the-country-of-residence-for-later.md",
+   "requirements/employee-onboarding/stories/US-04.1-ask-swiss-citizenship-and-c-permit-only-of-employees-living.md",
+   "requirements/employee-onboarding/stories/US-04.2-ask-spouse-details-only-when-the-spouse-could-exempt-the.md",
+   "requirements/employee-onboarding/stories/US-04.3-decide-whether-the-employee-is-subject-to-source-tax.md",
+   "requirements/employee-onboarding/stories/US-05.3-state-the-denomination-for-the-church-tax-part-of-the-tariff.md",
+   "requirements/employee-onboarding/stories/US-05.4-state-whether-the-spouse-or-registered-partner-works-for.md",
+   "requirements/employee-onboarding/stories/US-05.6-determine-the-tariff-letter-including-the-cross-border.md",
+   "requirements/employee-onboarding/stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md",
+   "requirements/employee-onboarding/stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md",
+   "requirements/employee-onboarding/stories/US-06.2-ask-custody-and-common-household-for-a-minor-child-living.md",
+   "requirements/employee-onboarding/stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md",
+   "requirements/employee-onboarding/stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md",
+   "requirements/employee-onboarding/stories/US-08.4-step-by-step-questionnaire-flow.md",
+   "requirements/employee-onboarding/traceability.md"
+  ],
+  "impact": {
+   "added": [],
+   "removed": [],
+   "changed": [
+    "US-01.3",
+    "US-04.1",
+    "US-04.2",
+    "US-04.3",
+    "US-05.3",
+    "US-05.4",
+    "US-05.6",
+    "US-05.7",
+    "US-06.1",
+    "US-06.2",
+    "US-08.1",
+    "US-08.2",
+    "US-08.4"
+   ],
+   "unchanged": 17,
+   "changed_without_cause": [],
+   "changed_elements": [
+    "OQ-nationality-wording",
+    "nationality",
+    "permit_reminder",
+    "permit_type",
+    "spouse_exempts_source_tax",
+    "spouse_nationality",
+    "spouse_permit_type",
+    "spouse_residence_country",
+    "subject_to_source_tax"
+   ],
+   "guard_reverted": []
+  },
+  "seconds": 460
+ },
+ "noop_after": false
+}
