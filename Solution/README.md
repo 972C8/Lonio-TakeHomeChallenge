@@ -282,14 +282,14 @@ type the name in Claude Code opened in this folder.
 
 | Skill | What it does |
 |---|---|
-| `/new-feature` | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions, examples) |
+| `/new-feature` | interviews you, then scaffolds `features/<name>/` (profile, guidance, decisions) |
 | `/new-adapter` | scaffolds an adapter (reader + extraction prompt) for a new kind of source |
 | `/run-pipeline` | checks which sources changed, runs the pipeline in the background, summarises the result |
 | `/review` | guided walk through `review.md`; records your answers as decisions |
 | `/decide` | turns a sentence into a `decisions.yaml` entry |
 | `/trace` | shows why a story, rule or fact says what it says, down to the quote |
 | `/publish-linear` | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
-| `/learn` | turns decisions you keep repeating into examples, guidance or checks |
+| `/learn` | turns decisions you keep repeating into guidance or checks |
 
 ### 1. Before the first run – `/new-feature`, `/new-adapter`, `/run-pipeline`
 
