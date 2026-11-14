@@ -123,27 +123,45 @@ async def stage_verify_facts(ctx, adapters, units, facts) -> tuple[list[Fact], l
     M.link_supersedes(facts)
     order = [u.id for u in units]
 
+    system = load_prompt(AGENTS / "fact_judge.md")
+
+    def item(f):
+        ctx_units = set()
+        for a in f.anchors:
+            if a.unit_id in unit_by_id:
+                i = order.index(a.unit_id)
+                ctx_units |= {order[j] for j in range(max(0, i - 1), min(len(order), i + 2))}
+        return {"id": f.id, "statement": f.statement, "basis": f.basis, "kind": f.kind,
+                "units": {u: {"text": unit_by_id[u].text, "meta": unit_by_id[u].meta} for u in sorted(ctx_units)}}
+
+    items = [item(f) for f in facts]
+
+    # Verdicts are kept per fact: a fact whose statement and source context did not change keeps its verdict,
+    # so a new source is judged on its own facts only (as the trace judge does for elements).
+    def key(x):
+        return sha(x, system)
+
     async def judge_all():
-        batches = [facts[i:i + 15] for i in range(0, len(facts), 15)]
-        system = load_prompt(AGENTS / "fact_judge.md")
+        known = _previous(ctx, "judge_facts.cache")
+        if known is None:        # first run with this cache: verdicts of the previous run, for facts of sources not re-read
+            prev_v = {v["id"]: v for v in (_previous(ctx, "judge_facts") or [])}
+            reread = {n.split("/", 1)[1] for n in ctx.ran if n.startswith(("normalize/", "extract/"))}
+            known = {key(x): prev_v[f.id] for f, x in zip(facts, items) if f.id in prev_v and f.source_id not in reread}
+        todo = [x for x in items if key(x) not in known]
+        batches = [todo[i:i + 15] for i in range(0, len(todo), 15)]
 
         async def judge(batch, n):
-            items = []
-            for f in batch:
-                ctx_units = set()
-                for a in f.anchors:
-                    if a.unit_id in unit_by_id:
-                        i = order.index(a.unit_id)
-                        ctx_units |= {order[j] for j in range(max(0, i - 1), min(len(order), i + 2))}
-                items.append({"id": f.id, "statement": f.statement, "basis": f.basis, "kind": f.kind,
-                              "units": {u: {"text": unit_by_id[u].text, "meta": unit_by_id[u].meta}
-                                        for u in sorted(ctx_units)}})
-            out = await run_agent(f"judge_facts/batch{n}", system, json.dumps(items, ensure_ascii=False, indent=1),
+            out = await run_agent(f"judge_facts/batch{n}", system, json.dumps(batch, ensure_ascii=False, indent=1),
                                   Verdicts, model=ctx.model("judge"))
             return out["verdicts"]
 
         res = await asyncio.gather(*[judge(b, n) for n, b in enumerate(batches)])
-        return [v for r in res for v in r]
+        fresh = {v["id"]: v for r in res for v in r}
+        ctx.log(f"  fact judge: {len(todo)} facts judged, {len(items) - len(todo)} verdicts reused")
+        cache = {key(x): fresh[x["id"]] for x in todo if x["id"] in fresh}
+        cache |= {key(x): known[key(x)] for x in items if key(x) in known}
+        ctx.write("judge_facts.cache", cache)
+        return [cache[key(x)] for x in items if key(x) in cache]
 
     verdicts = await ctx.stage("judge_facts", [[f.model_dump() for f in facts], AGENTS / "fact_judge.md"], judge_all)
     vmap = {v["id"]: v for v in verdicts}
