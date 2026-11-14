@@ -256,7 +256,7 @@ reruns. Only the affected steps run again.
 ### 8. Linear (optional) – send the specs to the team's tracker
 
 **What and why.** Only when the product owner asks for it
-(`pipeline publish --team <key>`). A Linear publisher agent
+(`pipeline publish --team <key>`, or the `/publish-linear` skill). A Linear publisher agent
 (`pipeline/agents/linear_publisher.md`) reads the rendered feature spec and
 sends it to Linear through the Linear MCP server:
 - the feature becomes one parent issue
@@ -291,6 +291,7 @@ name in Claude Code opened in this folder):
 | `/review` | after every run | guided walk through `review.md`; records your answers as decisions |
 | `/decide` | whenever you want to record one decision | turns a sentence into a `decisions.yaml` entry |
 | `/trace` | whenever you doubt something | shows why a story, rule or fact says what it says, down to the quote |
+| `/publish-linear` | before handing over to engineering (optional step 8) | previews, asks for your go, then sends the feature spec to Linear with the Linear publisher agent |
 | `/learn` | now and then | turns decisions you keep repeating into examples, gold entries, guidance or checks |
 
 ### 1. Before the first run (once per problem)
@@ -365,12 +366,14 @@ Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`,
 
 1. Publish only when the verdict is acceptable and you have answered what
    blocks the build. `/trace <story id>` is handy for a last spot-check of a
-   story. There is no skill for publishing itself: step 8 is the command
-   below.
-2. Set `LINEAR_API_KEY`, then run the read-only preview
-   `pipeline publish --team <key> --dry-run`, and read what it would create
-   or update.
-3. Publish: `pipeline publish --team <key>`. Change the **spec**, not the
+   story.
+2. **`/publish-linear`** does this for you: it checks the verdict and
+   `LINEAR_API_KEY`, runs the read-only preview, asks for your go, then
+   publishes. By hand: set `LINEAR_API_KEY`, run
+   `pipeline publish --team <key> --dry-run` and read what it would create or
+   update.
+3. Publish (`/publish-linear` after your go, or by hand
+   `pipeline publish --team <key>`). Change the **spec**, not the
    text of the Linear issues; the next publish overwrites the description of
    issues it owns. Status, assignee and estimate stay with engineering.
 
