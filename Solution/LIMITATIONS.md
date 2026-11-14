@@ -8,7 +8,7 @@ direction I would take to improve it. Ordered by impact.
 | 1 | **The Zurich source tax calculator is not explored yet.** The source tax tariff questions are an open question in the onboarding specs, so the specs only decide *who* is liable. | Time-boxed. The explorer (Playwright MCP agent), its prompt and `pipeline explore` exist, and a smoke test passed: the calculator sits on the page, is in German and reveals one question at a time. The full crawl has not been run. | Run the explorer. Then make branch enumeration deterministic: the agent maps the controls once, and a Playwright script walks every combination and records input→tariff vectors, which become examples in the acceptance criteria. |
 | 2 | **The knowledge model is still one large agent call and not deterministic.** Two runs can model the same thing differently (e.g. 5 vs 4 features, an item as a question vs a derived rule), and wording drifts, which makes diffs noisy. | One agent consolidates everything at once. Stabilisers: the id vocabulary in guidance, "reuse existing ids", per-feature writing. | Model incrementally per subject, against the previous model as a baseline, so the agent proposes *changes* rather than a fresh model. Freeze accepted elements via decisions. |
 | 3 | **The internal formalisation can diverge from the business text.** Examples are executed against expressions, but readers see the business-language conditions. If the two disagree, every example can pass while the text says something else. | Two representations of the same rule, both written by an agent. | Generate the business text *from* the decision tables (template) instead of in parallel, or add a deterministic check that every decision-table row is reproduced by the expression. The trace judge covers this partly today. |
-| 4 | **Examples are only as good as their authors.** Most acceptance-criterion examples come from the story writer; the named real cases come from a human (`examples.yaml`). A missing branch shows up neither as a failure nor in coverage. | No branch coverage over the conditions. | Measure branch coverage of every condition and rule over the executed examples, and ask the writer to fill uncovered branches. The address-change run showed the value of this: it exposed date-relative rules that the engine could not execute until the built-in `today` existed. |
+| 4 | **Examples are only as good as their authors.** Most acceptance-criterion examples come from the story writer; the named real cases come from a human (`examples.yaml`). A missing branch shows up neither as a failure nor in coverage. | No branch coverage over the conditions. | Measure branch coverage of every condition and rule over the executed examples, and ask the writer to fill uncovered branches. |
 | 5 | **LLM judges are noisy.** "Partial" verdicts are often about wording, not substance, and they inflate the warnings. | LLM-as-judge is the weakest verifier; its threshold lives in a prompt. | Calibrate on a small labelled set, auto-downgrade wording-only notes, and keep judges only for claims code cannot check. |
 | 6 | **The tech-leak boundary is a judgment call.** "The fund requires DD.MM.YYYY" is knowledge; "the form blocks the step" is design. The vocabulary scan is crude, and the dev-refinement agent sometimes disagrees with the writer. | The boundary rule is clear in principle but fuzzy at the edges. | Turn recurring leak findings into examples for the writer prompt (`/learn`) and into the profile's `tech_vocabulary`. |
 | 7 | **Screenshot evidence is text, not pixels.** Anchors point to a transcription, not an image region. | Vision agent, no OCR with coordinates. | OCR with bounding boxes, stored crops, crop links in the evidence. |
@@ -24,12 +24,10 @@ direction I would take to improve it. Ordered by impact.
   12 stories, 37 acceptance criteria. 0 errors, 58/58 executed examples pass,
   gold recall 1.0. Verdict "not ready" because of open product questions
   (calculator, fund canton, form lifecycle), not because of pipeline errors.
-- After that run, I made three generic fixes prompted by the address-change
-  problem: a built-in `today`, open questions no longer cited as sources, and
-  guidance conventions no longer extracted as facts. The onboarding outputs
-  were not regenerated afterwards. The next `pipeline run` refreshes them,
-  since the cache detects the changed prompts.
-- Address change (second problem, zero engine changes): 22 facts → 8 items, 3
-  rules → 4 features, 9 stories, 23 criteria, 23/23 examples pass. It
-  correctly flags a genuine ambiguity in its source: the new canton is only
-  needed "if it differs", which can only be known after asking.
+- After that run, three generic engine fixes followed (a built-in `today` for
+  date-relative rules, open questions no longer cited as sources, guidance
+  conventions no longer extracted as facts). The onboarding outputs were not
+  regenerated afterwards; the next `pipeline run` refreshes them (the cache
+  detects the changed prompts).
+- Genericity is by construction (nothing domain-specific in `pipeline/`), but
+  only one real problem has been run through it so far.

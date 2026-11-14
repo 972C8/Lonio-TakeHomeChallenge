@@ -25,8 +25,6 @@ Every stage is cached; a changed source or decision reruns only what depends on 
 Deliverables of this run:
 - Onboarding feature specs: [`requirements/employee-onboarding/`](requirements/employee-onboarding/README.md)
 - Review for the product owner: `build/employee-onboarding/review.md`
-- Proof of genericity: [`requirements/address-change/`](requirements/address-change/README.md), a second
-  problem that runs through the same engine with **zero code changes**.
 
 ## Principles
 
@@ -62,7 +60,7 @@ Deliverables of this run:
 ```bash
 python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -m pipeline run                              # onboarding (default problem)
-.venv/bin/python -m pipeline --problem address-change run     # any other problem profile
+.venv/bin/python -m pipeline --problem <name> run             # any other problem profile
 .venv/bin/python -m pipeline status                           # which sources changed since the last run
 .venv/bin/python -m pipeline run --fast                       # skip LLM checks while iterating on decisions
 .venv/bin/python -m pipeline explore zh_source_tax_calculator # crawl a live calculator (Playwright MCP)
@@ -272,7 +270,7 @@ reruns. Only the affected steps run again.
    the Linear dry run shows which issues would be updated.
 
 New source type → new adapter folder (`/new-adapter`) + one entry in
-`profile.yaml`. New process → new `problems/<name>/` folder (`/new-problem`);
-`problems/address-change/` is the minimal example.
+`profile.yaml`. New process → new `problems/<name>/` folder (`/new-problem`),
+with no change to `pipeline/`.
 
 See [LIMITATIONS.md](LIMITATIONS.md) for where the pipeline stands.

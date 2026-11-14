@@ -17,8 +17,7 @@ are reused.
    `decisions.yaml` (empty), `examples.yaml` (named cases taken from the
    sources) and `gold.yaml` (hand-labelled expectations; ask the user to
    write or confirm it – never generate it from pipeline output).
-   `problems/address-change/` is the minimal reference,
-   `problems/employee-onboarding/` the full one. Never change `pipeline/`
+   `problems/employee-onboarding/` is the reference. Never change `pipeline/`
    for a new problem; if you think you must, the change belongs in a profile
    or an adapter.
 3. Run `python -m pipeline --problem <name> run`.
