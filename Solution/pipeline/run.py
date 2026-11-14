@@ -157,13 +157,17 @@ async def stage_verify_facts(ctx, adapters, units, facts) -> tuple[list[Fact], l
     return facts, findings
 
 
+def _sources_text(sources: list[dict]) -> str:
+    return "\n".join(f"- `{s['id']}` ({s['type']}, precedence {s.get('precedence', 9)}): {s.get('authority', '')}"
+                     for s in sources)
+
+
 def _profile_ctx(ctx: Context) -> dict:
     p = ctx.profile
     return dict(
         goal=p["goal"],
         stakeholders="\n".join(f"- `{k}`: {v}" for k, v in p["stakeholders"].items()),
-        sources="\n".join(f"- `{s['id']}` ({s['type']}, precedence {s.get('precedence', 9)}): {s.get('authority', '')}"
-                          for s in p["sources"]),
+        sources=_sources_text(p["sources"]),
         guidance=(ctx.feature_dir / "guidance.md").read_text(),
         directives=D.directives_prompt(D.load(ctx)),
         conventions=COND_LANG.read_text(),
@@ -194,19 +198,32 @@ async def stage_knowledge(ctx, facts: list[Fact], known_before: set[str] | None 
     args = dict(**_profile_ctx(ctx))
     system = load_prompt(AGENTS / "knowledge_modeler.md", **args, existing_ids=_existing(existing))
     # The ids fed back are not an input of the cache fingerprint: otherwise the first rerun would always recompute.
-    fingerprint_system = load_prompt(AGENTS / "knowledge_modeler.md", **args, existing_ids="")
+    # Nor is the list of sources: a new or removed source is new or removed facts (delta path); only a changed
+    # trust level of an existing source (src_digest) forces a full rebuild.
+    fingerprint_system = load_prompt(AGENTS / "knowledge_modeler.md", **{**args, "sources": ""}, existing_ids="")
     payload = _fact_payload(usable)
 
     system_fp = sha(fingerprint_system)
     digest = I.fact_digest(payload)
     dir_digest = I.directive_digest(D.load(ctx))
+    src_digest = I.source_digest(ctx.profile["sources"])
+
+    def same_prompt(prev_in: dict | None) -> bool:
+        if prev_in is None:      # bootstrap: a model from before incremental runs; treat its prompt as unchanged
+            return True
+        if prev_in.get("system") == system_fp:
+            return not I.sources_changed(prev_in, src_digest)
+        if "sources" not in prev_in:   # recorded before sources were split out: rebuild the prompt it saw
+            legacy = I.sources_with_facts(ctx.profile["sources"], prev_in.get("facts", {}))
+            return prev_in.get("system") == sha(load_prompt(AGENTS / "knowledge_modeler.md",
+                                                            **{**args, "sources": _sources_text(legacy)}, existing_ids=""))
+        return False
 
     async def go():
         prev_in = _previous(ctx, "knowledge.input")
-        # bootstrap: a model from before incremental runs has no input record; treat its prompt as unchanged
-        same_system = prev_in is None or prev_in.get("system") == system_fp
+        ctx.write("knowledge.guard", {"reverted": []})
         # ...but never the directives: a new or changed one reshapes the model, not just the facts it cites
-        full = (not prev or not same_system or (prev_in is None and known_before is None)
+        full = (not prev or not same_prompt(prev_in) or (prev_in is None and known_before is None)
                 or I.directives_changed(prev_in, dir_digest) or "all" in ctx.force or "knowledge.raw" in ctx.force)
         if full:
             out = await run_agent("knowledge", system, "Facts (JSON):\n" + json.dumps(payload, ensure_ascii=False, indent=1)
@@ -221,18 +238,20 @@ async def stage_knowledge(ctx, facts: list[Fact], known_before: set[str] | None 
                 removed = sorted(known_before - set(digest))
             km = await _knowledge_delta(ctx, system, KnowledgeModel.model_validate(prev),
                                         [p for p in payload if p["id"] in set(new_ids)], removed)
-        ctx.write("knowledge.input", {"system": system_fp, "facts": digest, "directives": dir_digest})
+        ctx.write("knowledge.input", {"system": system_fp, "facts": digest, "directives": dir_digest, "sources": src_digest})
         return await _repair_tables(ctx, system, km)
 
-    return KnowledgeModel.model_validate(await ctx.stage("knowledge.raw", [payload, fingerprint_system], go))
+    return KnowledgeModel.model_validate(await ctx.stage("knowledge.raw", [payload, fingerprint_system, src_digest], go))
 
 
 async def _knowledge_delta(ctx, system: str, prev: KnowledgeModel, new_facts: list[dict],
                            removed: list[str]) -> KnowledgeModel:
     """Incremental modelling: the agent returns only what the new / removed facts change; code applies it."""
     ctx.log(f"  delta: {len(new_facts)} new or changed facts, {len(removed)} removed")
+    ctx.write("knowledge.guard", {"reverted": []})
     if not new_facts and not removed:
         return prev
+    system = system + "\n\n" + load_prompt(AGENTS / "knowledge_delta.md")
     prompt = ("Previous knowledge model (JSON) - it stays exactly as it is except for what you return:\n"
               + prev.model_dump_json(indent=1, exclude={"items": {"__all__": {"depends_on"}}, "rules": {"__all__": {"depends_on"}}})
               + "\n\nNew or changed facts (JSON):\n" + json.dumps(new_facts, ensure_ascii=False, indent=1)
@@ -244,7 +263,10 @@ async def _knowledge_delta(ctx, system: str, prev: KnowledgeModel, new_facts: li
                 "answer is removed or updated. Cite the new facts. Apply source precedence and corrections as usual. "
                 "Return nothing for elements the facts do not affect.")
     out = await run_agent("knowledge_delta", system, prompt, I.KnowledgeDelta, model=ctx.model("synthesize"), max_turns=6)
-    delta = I.KnowledgeDelta.model_validate(out)
+    delta, reverted = I.guard_delta(prev, I.KnowledgeDelta.model_validate(out), {p["id"] for p in new_facts}, set(removed))
+    for n in reverted:
+        ctx.log(f"  guard: {n}")
+    ctx.write("knowledge.guard", {"reverted": reverted})
     ctx.log(f"  delta: {len(delta.items)} items, {len(delta.rules)} rules, {len(delta.open_questions)} open questions "
             f"changed or added; {len(delta.remove)} removed")
     return I.apply_delta(prev, delta)
@@ -388,9 +410,9 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dic
             if prev_obj and incremental_write:
                 ctx.log(f"  updating sections/{sec.id}: {', '.join(sorted(touched)) or 'section changed'}")
                 upd = (prompt + "\n\nThis section was written before. Previous version (JSON):\n" + prev_obj.model_dump_json(indent=1)
+                       + "\n\n" + load_prompt(AGENTS / "section_update.md")
                        + "\n\nWhat changed in the knowledge model since then: " + (", ".join(sorted(touched)) or "the section's "
-                       "own scope") + ". Update the section for these changes only: keep every story, criterion and example "
-                       "they do not affect word for word (same ids), change or add only what they require.")
+                       "own scope") + ".")
                 out = await run_agent(f"write_section/{sec.id}", write_system, upd, Section,
                                       model=ctx.model("synthesize"), max_turns=6)
                 new = I.keep_untouched(prev_obj, Section.model_validate(out), touched or set())
@@ -411,7 +433,7 @@ async def stage_feature(ctx, km: KnowledgeModel, facts: list[Fact], prev_km: dic
                    stakeholders=planned.stakeholders, sections=sections)
 
 
-async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact]) -> tuple[dict, list[Finding]]:
+async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact], prev_spec: Spec | None = None) -> tuple[dict, list[Finding]]:
     fb = {f.id: f for f in facts}
     guidance = ctx.guidance_items()
     dec = {d.id: d for d in D.load(ctx)}
@@ -422,20 +444,39 @@ async def stage_trace_judge(ctx, spec: Spec, facts: list[Fact]) -> tuple[dict, l
                 else {"id": r, "statement": "product decision: " + (dec[r].statement or dec[r].rationale)} if r in dec
                 else {"id": r, "statement": "product decision"} for r in refs]
 
-    items = [{"id": f"item.{i.id}", "element": i.model_dump(exclude={"source_refs", "depends_on"}), "cited": cite(i.source_refs)}
-             for i in spec.knowledge.items]
-    items += [{"id": f"rule.{r.id}", "element": r.model_dump(exclude={"source_refs", "depends_on"}), "cited": cite(r.source_refs)}
-              for r in spec.knowledge.rules]
-    for s in spec.stories():
-        refs = sorted(set(s.source_refs) | {r for ac in s.acceptance_criteria for r in ac.source_refs})
-        items.append({"id": f"story.{s.id}", "element": s.model_dump(exclude={"source_refs"}), "cited": cite(refs)})
+    def elements(spec):
+        items = [{"id": f"item.{i.id}", "element": i.model_dump(exclude={"source_refs", "depends_on"}), "cited": cite(i.source_refs)}
+                 for i in spec.knowledge.items]
+        items += [{"id": f"rule.{r.id}", "element": r.model_dump(exclude={"source_refs", "depends_on"}), "cited": cite(r.source_refs)}
+                  for r in spec.knowledge.rules]
+        for s in spec.stories():
+            refs = sorted(set(s.source_refs) | {r for ac in s.acceptance_criteria for r in ac.source_refs})
+            items.append({"id": f"story.{s.id}", "element": s.model_dump(exclude={"source_refs"}), "cited": cite(refs)})
+        return items
+
+    items = elements(spec)
     system = load_prompt(AGENTS / "requirement_judge.md")
 
+    # Verdicts are kept per element: an element whose content and cited evidence did not change keeps its
+    # previous verdict, so an unchanged story does not get a different trace note by chance.
+    def key(x):
+        return sha(x["element"], x["cited"], system)
+
     async def go():
-        batches = [items[i:i + 6] for i in range(0, len(items), 6)]
+        known = _previous(ctx, "judge_trace.cache")
+        if known is None:        # bootstrap: verdicts of the previous run, for elements that did not change since
+            prev_v = {v["id"]: v for v in (_previous(ctx, "judge_trace") or [])}
+            known = {key(x): prev_v[x["id"]] for x in (elements(prev_spec) if prev_spec else []) if x["id"] in prev_v}
+        todo = [x for x in items if key(x) not in known]
+        batches = [todo[i:i + 6] for i in range(0, len(todo), 6)]
         res = await asyncio.gather(*[run_agent(f"judge_trace/batch{n}", system, json.dumps(b, ensure_ascii=False, indent=1),
                                                Verdicts, model=ctx.model("judge")) for n, b in enumerate(batches)])
-        return [v for r in res for v in r["verdicts"]]
+        fresh = {v["id"]: v for r in res for v in r["verdicts"]}
+        ctx.log(f"  trace judge: {len(todo)} elements judged, {len(items) - len(todo)} verdicts reused")
+        cache = {key(x): fresh[x["id"]] for x in todo if x["id"] in fresh}
+        cache |= {key(x): known[key(x)] for x in items if key(x) in known}
+        ctx.write("judge_trace.cache", cache)
+        return [cache[key(x)] for x in items if key(x) in cache]
 
     verdicts = await ctx.stage("judge_trace", [items, system], go)
     vmap = {v["id"]: v for v in verdicts}
@@ -511,6 +552,16 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
     M.compute_depends_on(spec.knowledge)
     ctx.write("spec", spec.model_dump())
 
+    # impact: what this run changed compared to the previous one, and whether each change has a cause
+    impact = None
+    if prev_spec:
+        impact = I.story_impact(prev_spec.stories(), spec.stories(), I.changed_ids(prev_spec.knowledge, spec.knowledge) or set())
+        impact["guard_reverted"] = (_previous(ctx, "knowledge.guard") or {}).get("reverted", []) if "knowledge.raw" in ctx.ran else []
+        findings += [Finding(check="impact", severity="warning", target=f"story.{i}",
+                             message="changed although no element it uses changed") for i in impact["changed_without_cause"]]
+        findings += [Finding(check="impact", severity="warning", target=n.split(":")[0], message=n.split(": ", 1)[-1])
+                     for n in impact["guard_reverted"]]
+
     ctx.log("[7] checks")
     guidance = ctx.guidance_items()
     valid = {f.id for f in facts if f.anchor_ok and f.judge != "unsupported"} | {d.id for d in decisions} | set(guidance)
@@ -524,7 +575,7 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
     findings += ef
     judge = {}
     if not skip_llm_checks:
-        judge, jf = await stage_trace_judge(ctx, spec, facts)
+        judge, jf = await stage_trace_judge(ctx, spec, facts, prev_spec)
         findings += jf
 
     ctx.log("[8] render feature specs")
@@ -551,6 +602,7 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
                           [f"rule.{r.id}" for r in km.rules if r.status == "inferred"] +
                           [f"story.{s.id}" for s in stories if s.status == "inferred"],
         "dev_refinement": refinement,
+        "impact": impact,
         "skipped_sources": [s["id"] for s in ctx.profile["sources"] if not any(u.source_id == s["id"] for u in units)],
     }
     review = None
@@ -582,6 +634,17 @@ def write_review_md(ctx: Context, r: dict, facts: list[Fact]) -> None:
           f"{c['acceptance_criteria']} acceptance criteria; {c['open_questions']} open questions, {c['exclusions']} exclusions.", ""]
     if r["skipped_sources"]:
         L += [f"⚠ Sources without data (not explored / empty): {', '.join(r['skipped_sources'])}", ""]
+    imp = r.get("impact")
+    if imp:
+        L += ["## Impact of this run", "",
+              f"Stories added: {', '.join(imp['added']) or '-'}; changed: {', '.join(imp['changed']) or '-'}; "
+              f"removed: {', '.join(imp['removed']) or '-'}; unchanged: {imp['unchanged']}.", "",
+              f"Knowledge elements changed: {', '.join(imp['changed_elements']) or '-'}", ""]
+        if imp["changed_without_cause"]:
+            L += [f"⚠ Changed although nothing they use changed: {', '.join(imp['changed_without_cause'])}", ""]
+        if imp["guard_reverted"]:
+            L += ["Changes the update guard reverted (force with `--force knowledge.raw` if they are wanted):", ""] + \
+                 [f"- {n}" for n in imp["guard_reverted"]] + [""]
     errs = r["findings"]["error"]
     L += [f"## Errors ({len(errs)})", ""] + [f"- [{f['check']}] `{f['target']}` {f['message']}" for f in errs] + [""]
     ex = r["examples"]

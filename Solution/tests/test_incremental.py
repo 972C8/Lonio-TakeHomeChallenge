@@ -177,5 +177,73 @@ class DirectivesForceFullRebuild(unittest.TestCase):
         self.assertFalse(I.directives_changed(rec, I.directive_digest([self.directive(), patch])))
 
 
+class NewSourceTakesTheDeltaPath(unittest.TestCase):
+    SRC = [{"id": "hr", "type": "transcript", "precedence": 2, "authority": "policy"},
+           {"id": "fund", "type": "screenshots", "precedence": 1, "authority": "fields"}]
+
+    def test_added_or_removed_source_is_not_a_change(self):
+        rec = {"sources": I.source_digest(self.SRC[:1])}
+        self.assertFalse(I.sources_changed(rec, I.source_digest(self.SRC)))       # added
+        rec = {"sources": I.source_digest(self.SRC)}
+        self.assertFalse(I.sources_changed(rec, I.source_digest(self.SRC[:1])))   # removed
+
+    def test_changed_trust_level_rebuilds(self):
+        rec = {"sources": I.source_digest(self.SRC)}
+        changed = [dict(self.SRC[0], precedence=0), self.SRC[1]]
+        self.assertTrue(I.sources_changed(rec, I.source_digest(changed)))
+
+    def test_previous_sources_from_fact_ids(self):
+        self.assertEqual([s["id"] for s in I.sources_with_facts(self.SRC, ["F-hr-1a2b3c", "D-001"])], ["hr"])
+
+
+class DeltaGuard(unittest.TestCase):
+    def guard(self, delta, new=("F-new",), removed=()):
+        prev = km([item("a"), item("b", refs=("F-old",))])
+        return I.guard_delta(prev, delta, set(new), set(removed))
+
+    def test_change_citing_a_new_fact_is_kept(self):
+        d, notes = self.guard(I.KnowledgeDelta(items=[I.InfoItem.model_validate(item("a", refs=("F-a", "F-new")))]))
+        self.assertEqual([i.id for i in d.items], ["a"])
+        self.assertEqual(notes, [])
+
+    def test_change_without_cause_is_reverted(self):
+        changed = dict(item("a"), description="reworded")
+        d, notes = self.guard(I.KnowledgeDelta(items=[I.InfoItem.model_validate(changed)]))
+        self.assertEqual(d.items, [])
+        self.assertIn("item.a", notes[0])
+
+    def test_rename_is_reverted_but_change_kept(self):
+        changed = dict(item("a", refs=("F-a", "F-new")), name="New label")
+        d, notes = self.guard(I.KnowledgeDelta(items=[I.InfoItem.model_validate(changed)]))
+        self.assertEqual(d.items[0].name, "a")
+        self.assertIn("rename", notes[0])
+
+    def test_addition_must_cite_a_new_fact(self):
+        d, notes = self.guard(I.KnowledgeDelta(items=[I.InfoItem.model_validate(item("c")),
+                                                      I.InfoItem.model_validate(item("e", refs=("F-new",)))]))
+        self.assertEqual([i.id for i in d.items], ["e"])
+        self.assertEqual(len(notes), 1)
+
+    def test_removal_only_of_elements_citing_a_removed_fact(self):
+        d, notes = self.guard(I.KnowledgeDelta(remove=["item.a", "item.b"]), removed=("F-old",))
+        self.assertEqual(d.remove, ["item.b"])
+        self.assertIn("item.a", notes[0])
+
+
+class StoryImpact(unittest.TestCase):
+    def test_changed_story_without_changed_element_is_flagged(self):
+        a = Section.model_validate({"id": "S", "order": 1, "title": "t", "purpose": "p",
+                                    "stories": [story("US-1", ["item_a"]), story("US-2", ["item_b"])]})
+        b = a.model_copy(deep=True)
+        b.stories[0].title = "changed"
+        b.stories[1].title = "changed too"
+        b.stories.append(Section.model_validate({"id": "S", "order": 1, "title": "t", "purpose": "p",
+                                                 "stories": [story("US-3", ["item_c"])]}).stories[0])
+        imp = I.story_impact(a.stories, b.stories, {"item_a", "item_c"})
+        self.assertEqual(imp["added"], ["US-3"])
+        self.assertEqual(imp["changed"], ["US-1", "US-2"])
+        self.assertEqual(imp["changed_without_cause"], ["US-2"])
+
+
 if __name__ == "__main__":
     unittest.main()

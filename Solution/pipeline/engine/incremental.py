@@ -196,3 +196,88 @@ def keep_untouched(prev: Section, new: Section, changed: set[str]) -> Section:
     order = {s.id: n for n, s in enumerate(prev.stories)}
     stories.sort(key=lambda s: (order.get(s.id, len(order)), s.id))
     return new.model_copy(update={"stories": stories})
+
+
+# ------------------------------------------------------------ sources --
+# Which sources exist is NOT part of the modeler's prompt fingerprint: a new source arrives as new
+# facts, a removed one as removed facts, and both take the delta path. Only a changed trust level
+# (type, precedence, authority) of a source that is still there forces a full rebuild, because it
+# can change who wins every conflict.
+
+def source_digest(sources: list[dict]) -> dict[str, str]:
+    import hashlib
+    return {s["id"]: hashlib.sha256(json.dumps([s.get("type"), s.get("precedence", 9), s.get("authority", "")],
+                                               ensure_ascii=False).encode()).hexdigest()[:16] for s in sources}
+
+
+def sources_changed(prev_record: dict | None, digest: dict[str, str]) -> bool:
+    """True when a source present in both runs changed its trust level. Added or removed sources do not count."""
+    prev = (prev_record or {}).get("sources") or {}
+    return any(k in prev and prev[k] != v for k, v in digest.items())
+
+
+def sources_with_facts(sources: list[dict], fact_ids) -> list[dict]:
+    """The sources that had facts in a previous run (fact ids are F-<source id>-<hash>)."""
+    ids = list(fact_ids)
+    return [s for s in sources if any(f.startswith(f"F-{s['id']}-") for f in ids)]
+
+
+# -------------------------------------------------------- delta guard --
+# The delta agent is asked to change only what the new facts force. Code enforces it: an existing
+# element may change only if it now cites a new or changed fact, or cited a removed one; a new element
+# must cite a new fact; an element may be removed only if it cited a removed fact. Existing items and
+# rules keep their names (a rename ripples into every story that shows the label). Everything the
+# guard reverts is reported, so the product owner can still force it (--force knowledge.raw).
+
+_KINDS = (("items", "item"), ("rules", "rule"), ("open_questions", "open"), ("exclusions", "exclusion"))
+
+
+def _mentions(obj, ids: set[str]) -> bool:
+    text = json.dumps(obj.model_dump() if hasattr(obj, "model_dump") else obj, ensure_ascii=False)
+    return any(i in text for i in ids)
+
+
+def guard_delta(prev: KnowledgeModel, delta: KnowledgeDelta, new_ids: set[str], removed: set[str]) -> tuple[KnowledgeDelta, list[str]]:
+    notes: list[str] = []
+    out = delta.model_copy(deep=True)
+    for attr, kind in _KINDS:
+        old = {x.id: x for x in getattr(prev, attr)}
+        keep = []
+        for x in getattr(out, attr):
+            if x.id in old:
+                if not (_mentions(x, new_ids) or _mentions(old[x.id], removed)):
+                    notes.append(f"{kind}.{x.id}: change reverted - it cites no new, changed or removed fact")
+                    continue
+                if hasattr(x, "name") and x.name != old[x.id].name:
+                    notes.append(f"{kind}.{x.id}: rename to '{x.name}' reverted - kept '{old[x.id].name}'")
+                    x = x.model_copy(update={"name": old[x.id].name})
+            elif not _mentions(x, new_ids):
+                notes.append(f"{kind}.{x.id}: addition rejected - it cites no new or changed fact")
+                continue
+            keep.append(x)
+        setattr(out, attr, keep)
+    rm = []
+    for r in out.remove:
+        kind, _, rid = r.partition(".")
+        attr = next((a for a, k in _KINDS if k == kind), None)
+        old = {x.id: x for x in getattr(prev, attr)} if attr else {}
+        if rid in old and not _mentions(old[rid], removed):
+            notes.append(f"{r}: removal reverted - it cites no removed fact")
+            continue
+        rm.append(r)
+    out.remove = rm
+    return out, notes
+
+
+# ------------------------------------------------------------- impact --
+
+def story_impact(prev: list, cur: list, changed_elements: set[str]) -> dict:
+    """Which stories a run added, changed, removed or left alone, and which changed stories use no changed
+    element (those changed although nothing they depend on did)."""
+    a = {s.id: s for s in prev}
+    b = {s.id: s for s in cur}
+    changed = sorted(i for i in a.keys() & b.keys() if a[i].model_dump() != b[i].model_dump())
+    unexplained = [i for i in changed if not story_touches(a[i], changed_elements) and not story_touches(b[i], changed_elements)]
+    return {"added": sorted(b.keys() - a.keys()), "removed": sorted(a.keys() - b.keys()), "changed": changed,
+            "unchanged": len(a.keys() & b.keys()) - len(changed), "changed_without_cause": unexplained,
+            "changed_elements": sorted(changed_elements)}
