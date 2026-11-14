@@ -79,5 +79,9 @@ models:
   synthesize: claude-opus-5-5
   judge: claude-sonnet-5-5
   builder: claude-opus-5-5
-  review: claude-opus-5-5
+  # smaller jobs on Sonnet: the review summarises a report of checks, the flow orders asked items into steps,
+  # assign puts a new element into an existing section (tokens weigh less against usage limits)
+  review: claude-sonnet-5-5
+  flow: claude-sonnet-5-5
+  assign: claude-sonnet-5-5
   explore: claude-opus-5-5

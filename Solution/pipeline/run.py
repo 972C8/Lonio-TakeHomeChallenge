@@ -347,7 +347,7 @@ async def _plan_delta(ctx, system: str, prev: FeaturePlan, km: KnowledgeModel) -
                                                                            for s in plan.sections], ensure_ascii=False, indent=1)
                               + "\n\nNew elements to assign (id: name):\n" + "\n".join(f"- {i}: {names.get(i, '')}" for i in unassigned)
                               + "\n\nAssign each new element to the ONE existing section whose goal needs it most. "
-                                "Do not create sections.", I.Assignments, model=ctx.model("synthesize"), max_turns=3)
+                                "Do not create sections.", I.Assignments, model=ctx.model("assign", "synthesize"), max_turns=3)
         plan = I.assign(plan, km, I.Assignments.model_validate(out).assignments)
     return plan.model_dump()
 
@@ -502,14 +502,14 @@ async def stage_flow(ctx, km: KnowledgeModel, feature: Feature) -> tuple[Flow | 
         if update and not changed:
             flow = Flow.model_validate(prev)
         else:
-            flow = Flow.model_validate(await run_agent("flow", system, prompt, Flow, model=ctx.model("synthesize"), max_turns=4))
+            flow = Flow.model_validate(await run_agent("flow", system, prompt, Flow, model=ctx.model("flow", "synthesize"), max_turns=4))
             missing = item_ids - {i for st in flow.steps for i in st.items}
             if missing:
                 ctx.log(f"  flow: placing {len(missing)} items it left out ...")
                 flow = Flow.model_validate(await run_agent(
                     "flow_repair", system, prompt + "\n\nYour flow:\n" + flow.model_dump_json(indent=1)
                     + "\n\nThese asked items are in no step: " + ", ".join(sorted(missing))
-                    + ". Return the Flow with each of them in exactly one step.", Flow, model=ctx.model("synthesize"), max_turns=4))
+                    + ". Return the Flow with each of them in exactly one step.", Flow, model=ctx.model("flow", "synthesize"), max_turns=4))
             if update:                     # code keeps every step the changes do not touch
                 before = {tuple(sorted(st["items"] + st["rules"])): st for st in prev["steps"]}
                 steps = []

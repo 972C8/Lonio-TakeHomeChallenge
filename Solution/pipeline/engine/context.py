@@ -52,9 +52,12 @@ class Context:
         self.reused: list[str] = []
 
     # ------------------------------------------------------------ helpers --
-    def model(self, role: str) -> str:
+    def model(self, role: str, fallback: str | None = None) -> str:
+        """Model for a role from profile.yaml `models`; else the fallback role's model; else `default`."""
         models = self.profile.get("models", {})
-        return models.get(role, models.get("default", "claude-opus-5-5"))
+        if role in models:
+            return models[role]
+        return self.model(fallback) if fallback else models.get("default", "claude-opus-5-5")
 
     def guidance_items(self) -> dict[str, str]:
         """Product-owner statements tagged [G-nn] in guidance.md (citable like facts)."""
