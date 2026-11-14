@@ -1,0 +1,25 @@
+# B3: the pension fund answers an open question and announces a new 2027 rule.
+id: B3
+title: Pension fund email - 2027 insurance start rule and canton for employees abroad
+source:
+  id: fund_email
+  type: transcript
+  file: fund_email.md
+  speakers: [Fund]
+  description: >
+    Fictional email from the employer service of Pensionskasse Muster to Leo
+    (Lonio product), answering questions about the registration screen.
+  authority: Pension fund data - fields, formats, options and rules it applies.
+  precedence: 1
+expect:
+  stories_must_change: ["US-02.2"]
+  stories_may_change: ["US-01.*", "US-02.*"]
+  stories_added: {min: 0, max: 1}
+  elements_must_mention:
+    - {element: rule.insurance_start_date, any: ["2027"]}
+  # the fund answers OQ-canton-abroad; D-002 kept it open "until the fund answers", so either the
+  # question closes or D-002 is flagged for re-confirmation - never silence
+  any_of:
+    - {open_question_removed: OQ-canton-abroad}
+    - {decision_flagged: D-002}
+  allowed_error_checks: [decisions]     # "new evidence since this decision" is the expected flag

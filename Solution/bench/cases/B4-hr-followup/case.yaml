@@ -1,0 +1,25 @@
+# B4: an HR follow-up confirms one point (Swiss yes/no) and contradicts decision D-007 (Liechtenstein).
+id: B4
+title: HR follow-up call - Swiss yes/no and Liechtenstein commuters
+source:
+  id: hr_followup
+  type: transcript
+  file: hr_followup.md
+  speakers: [Leo, Anna]
+  description: >
+    Fictional notes of a short follow-up call between Leo (Lonio product) and
+    Anna (HR manager at Muster AG), after the HR meeting.
+  authority: Policy and scope - same as the HR meeting transcript.
+  precedence: 2
+expect:
+  # D-007 (product owner: Liechtenstein residents are asked and get the calculator's result) stays in force
+  elements_must_exist: [item.daily_return_liechtenstein, item.non_return_days_45, rule.liechtenstein_no_source_tax_in_principle]
+  elements_unchanged_behaviour: [item.daily_return_liechtenstein, item.non_return_days_45, item.nationality]
+  stories_may_change: ["US-04.*", "US-07.*", "US-05.6", "US-05.7"]
+  stories_added: {min: 0, max: 0}
+  # soft: the contradiction should surface (D-007 flagged or an open question on Liechtenstein);
+  # gated as "not worse than before"
+  soft_any_of:
+    - {decision_flagged: D-007}
+    - {open_question_mentions: ["Liechtenstein"]}
+  allowed_error_checks: [decisions]

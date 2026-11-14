@@ -1,0 +1,19 @@
+# B2: a new short HR email asks for a new, optional function at submission.
+id: B2
+title: HR email - copy of the answers by email
+source:
+  id: hr_email_copy
+  type: transcript
+  file: hr_email_copy.md
+  speakers: [Anna]
+  description: >
+    Fictional follow-up email from Anna (HR manager at Muster AG) to Leo
+    (Lonio product), sent after the HR meeting.
+  authority: Policy and scope - same as the HR meeting transcript.
+  precedence: 2
+expect:
+  # new behaviour lands at submission (and possibly a new email item near the identity data)
+  stories_may_change: ["US-01.*", "US-08.*"]
+  stories_added: {min: 1, max: 2}
+  added_stories_mention_any: ["email", "e-mail"]
+  allowed_error_checks: []
