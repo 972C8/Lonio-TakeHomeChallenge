@@ -88,7 +88,7 @@ problems/<name>/             EVERYTHING SPECIFIC to one investigation
   decisions.yaml             product decisions (the override layer)
   examples.yaml              named real cases from the sources, executed every run
   gold.yaml                  hand-labelled expectations for the eval
-.claude/skills/              /run-pipeline · /decide · /trace · /new-adapter · /new-problem · /learn
+.claude/skills/              /run-pipeline · /review · /decide · /trace · /new-adapter · /new-problem · /learn
 build/<problem>/             every intermediate result (units, facts, verdicts, knowledge, feature plan, sections, report, review.md)
 requirements/<problem>/      the deliverable: feature.md + shared files
 ```
@@ -302,9 +302,13 @@ inputs (profile, guidance, decisions, sources) and rerun.
    run). Output is created, not committed: `build/<p>/` and
    `requirements/<p>/`.
 
-### 2. After every run (read `build/<p>/review.md`, nothing else)
+### 2. After every run (`/review`, or read `build/<p>/review.md` yourself)
 
-Go through it from the top:
+The **`/review` skill** does this for you. It reads `review.md`, gives the
+verdict in one line, then walks you through the items below one at a time,
+each with context, the source quote and a recommendation. It records your
+answers in `decisions.yaml` (after you confirm) and offers to rerun at the end.
+By hand, go through `review.md` from the top:
 1. **Verdict and errors** – ready / ready with caveats / not ready, and what
    blocks it.
 2. **Failing examples** – decide who is wrong: the source (fix or replace it),

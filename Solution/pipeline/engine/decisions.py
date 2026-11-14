@@ -106,6 +106,9 @@ def apply_to_spec(decisions: list[Decision], spec: Spec) -> tuple[Spec, list[Fin
                                                source_refs=[d.id]))
             elif d.action == "resolve":
                 coll.remove(item)
+                if kind == "open":                      # no dangling references in the sections
+                    for sec in feat.sections:
+                        sec.open_questions = [q for q in sec.open_questions if q != item_id]
         except Exception as e:  # noqa: BLE001
             findings.append(Finding(check="decisions", severity="error", target=d.id, message=f"could not apply: {e}"))
     return spec, findings
