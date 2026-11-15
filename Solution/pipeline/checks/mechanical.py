@@ -207,6 +207,8 @@ def simulate(km: KnowledgeModel, given: dict) -> dict:
 
 
 def _norm(v):
+    if isinstance(v, (list, tuple)):    # a code built from parts (e.g. ['N', 1, 'Y']) reads as its joined text 'N1Y'
+        return "".join(str(_norm(x)) if isinstance(x, bool) else str(x) for x in v).strip().lower()
     if isinstance(v, bool):
         return "yes" if v else "no"
     if isinstance(v, dt.date):
