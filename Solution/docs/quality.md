@@ -73,16 +73,3 @@ cannot, and the **product owner decides** the rest.
   the same mistake does not come back.
 - **Linear publishing** finds issues by their US/OQ id prefix and updates them;
   republishing never duplicates.
-
-## Limits (see [LIMITATIONS.md](../LIMITATIONS.md))
-- Examples can only check asked / required / rule results. Workflows,
-  notifications and permissions cannot be executed.
-- Directives are followed by agents: only their citation is guaranteed, not
-  that everything they imply was written.
-- LLM judges can be wrong. Their findings go to a human, never straight into
-  the spec.
-- **Decisions are not binding during a rerun.** In a test, a newer HR statement
-  overrode decision D-007: it was flagged, but the spec had already changed.
-  The flags are based on citations, so they are coarse. See
-  [improvements.md](improvements.md) for the fix (approved baseline +
-  classifying new facts).
