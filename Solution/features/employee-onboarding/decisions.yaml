@@ -35,9 +35,9 @@ decisions:
 - id: D-002
   action: direct
   target: ''
-  statement: Ask for the canton (pension fund 'Canton' field) only from employees living in Switzerland.
-    Provisional - keep OQ-canton-abroad open as non-blocking, to be verified by a domain expert and Pensionskasse
-    Muster (what to enter for employees living abroad, and whether 'Canton' means residence or work).
+  statement: Ask for the canton (pension fund 'Canton' field) from every employee. Employees living in Switzerland
+    choose their canton of residence; for employees living abroad the canton of the place of work is entered
+    (Zurich for Muster AG) and not asked. This closes OQ-canton-abroad. Assumption - to be verified by a domain expert; state this assumption in the user story.
   value: null
   rationale: Employees abroad have no valid canton to choose; asking only residents unblocks the spec
     until the fund answers.
@@ -52,9 +52,8 @@ decisions:
   target: ''
   statement: Civil status offers Single, Married, Divorced, Widowed, Registered partnership and Separated.
     For source tax, registered partnership counts as married (including the spouse exemption) and separated
-    counts as single, as in the calculator. For the pension fund, provisionally, registered partnership
-    is entered as Married with the partner's date of birth, and separated as Married. Keep OQ-civil-status-partnership
-    open as non-blocking, to be verified by a domain expert.
+    counts as single, as in the calculator. For the pension fund, registered partnership is entered as
+    Married with the partner's date of birth, and separated as Married. This closes OQ-civil-status-partnership. Assumption - to be verified by a domain expert; state this assumption in the user story.
   value: null
   rationale: The calculator settles the source tax side; a provisional fund mapping unblocks the spec.
   by: Product owner
@@ -68,9 +67,8 @@ decisions:
   target: ''
   statement: The spouse's (or registered partner's) date of birth is asked from married employees, registered
     partners and separated employees (all entered at the fund as Married, see D-003), not from divorced
-    or widowed employees. Keep OQ-spouse-dob-other-status open as non-blocking, to be verified by a domain
-    expert (screenshot of the fund's screen). This closes OQ-separated-spouse-dob; the separated case
-    is verified together with OQ-civil-status-partnership.
+    or widowed employees; no spouse data is sent to the fund for them. This closes OQ-spouse-dob-other-status
+    and OQ-separated-spouse-dob. Assumption - to be verified by a domain expert; state this assumption in the user story.
   value: null
   rationale: HR states it for married employees; separated employees go to the fund as Married, which
     requires it.
@@ -484,3 +482,67 @@ decisions:
   - hr_transcript/T-042
   - hr_transcript/T-048
   evidence_hash: 742d1eb0415c
+- id: D-039
+  action: direct
+  target: ''
+  statement: The first working day is the contractual start date, even when it falls on a weekend or public holiday.
+    The insurance start date is derived from this date only. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  value: null
+  rationale: "Review finding: insurance start was tied sometimes to the contract and sometimes to the first working day."
+  by: Product owner
+- id: D-040
+  action: direct
+  target: ''
+  statement: For employees living in Liechtenstein, the questions on daily return and on more than 45 days abroad come
+    before denomination, spouse and children. When the answers mean 'in principle no source tax liability',
+    the tariff questions are skipped. When the employee stays abroad more than 45 days, the normal tariff
+    is recorded with the note 'subject to the double taxation agreement' and flagged for HR. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  value: null
+  rationale: "Review finding: question order and the DTA reservation were unclear (B4 HR follow-up)."
+  by: Product owner
+- id: D-041
+  action: direct
+  target: ''
+  statement: The residence country and address asked are those that apply on the first working day. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  value: null
+  rationale: "Review finding: timing of residence country was not stated."
+  by: Product owner
+- id: D-042
+  action: direct
+  target: ''
+  statement: The house number is required, as HR wants the address complete including the house number; an explicit
+    'no house number' option covers addresses without one. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  value: null
+  rationale: "Review finding: house number required without a cited source; HR transcript states a complete address."
+  by: Product owner
+- id: D-043
+  action: direct
+  target: ''
+  statement: Apply HR's consolidated source tax rule as stated; 'here' in HR's wording means Switzerland. This closes
+    OQ-source-tax-rule-confirmation. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  value: null
+  rationale: "Review finding: HR's rule was hedged."
+  by: Product owner
+- id: D-044
+  action: direct
+  target: ''
+  statement: There is no maximum number of children. A child's age is judged on the first working day. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  value: null
+  rationale: "Review finding: acceptance criteria were ambiguous about the reference date and limits."
+  by: Product owner
+- id: D-045
+  action: direct
+  target: ''
+  statement: Business text (stories, acceptance criteria, notices) uses no internal snake_case ids and does not speak
+    of 'expressions'. Any behaviour that has no cited fact or decision is stated in the story as an assumption. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  value: null
+  rationale: "Review findings: internal ids in prose and behaviour without backing."
+  by: Product owner
+- id: D-046
+  action: direct
+  target: ''
+  statement: For the per-child source tax result, observed calculator table rows win over the derived expression.
+    Inferred rows stay under the D-009 go-live check. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  value: null
+  rationale: "Review finding: per-child result inferred and inconsistent with observed rows."
+  by: Product owner
