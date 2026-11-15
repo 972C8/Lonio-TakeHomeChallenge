@@ -8,7 +8,7 @@ Submission for the Product Builder take-home challenge. Everything lives in [`So
 | Pipeline and README | [`Solution/README.md`](Solution/README.md): what each stage does and why, what goes in and out, and how completeness and correctness are checked. Code in [`Solution/pipeline/`](Solution/pipeline/) |
 | Limitations | [`Solution/LIMITATIONS.md`](Solution/LIMITATIONS.md) |
 | Prototype | [`Solution/prototype/`](Solution/prototype/README.md): clickable questionnaire built from the spec; its tests run every spec example |
-| Video (about 5 minutes) | `Lonio_TakeHomeChallenge.mp4` |
+| Video (about 5 minutes) | `Lonio_TakeHomeChallenge.mp4` or https://vimeo.com/1247002061?share=copy&fl=sv&fe=ci |
 
 [`Instructions/`](Instructions/) holds the brief and the source files as received (HR transcript, pension portal
 screenshots). The Zurich source tax calculator was explored live; its recorded tree is in
