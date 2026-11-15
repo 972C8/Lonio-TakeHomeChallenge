@@ -2,64 +2,63 @@
 
 **Verdict: NOT READY**
 
-All 300+ examples pass and traceability is mostly sound, but there is 1 blocker from dev refinement (the insurance start date from 2027 contradicts the fund portal rule). Four decisions (D-002, D-012, D-033, D-037) are stale against the new fund email, so they must be re-confirmed. Several major open questions and some technical leaks remain.
+All 300+ examples pass and no open question is blocking. However, four decisions (D-002, D-012, D-033, D-037) are stale against the 14.11.2026 fund email and must be reconfirmed. Several major dev-refinement questions are unresolved, including a tariff-letter conflict (H vs A) and a possible rejection of all mid-month 2027 registrations. Tech identifiers leak into the spec prose, and several trace claims are unbacked.
 
 ## Reviewer findings
 
-1. **Insurance start date from 2027 contradicts the portal's 'must be the 1st of a month' rule** – AC-02.2.5 records a mid-month start (e.g. 15.03.2027) that the fund's portal would reject, so registration could fail. AC-02.2.2 cites the same portal fact.  
-   Evidence: dev_refinement blocker on US-02.2; F-pension_portal-dd8126; AC-02.2.5; F-fund_email-0f18b5 and -b0c39e  
-   Action: Ask Pensionskasse Muster to confirm that its portal accepts mid-month dates from 01.01.2027, or to give an alternative. Record the answer in decisions.yaml and update AC-02.2.5 and AC-02.2.2.
-2. **Decisions stale after the new fund email** – The new evidence may change what these decisions say. Building on unconfirmed decisions risks wrong insurance start date and canton behaviour.  
-   Evidence: decisions errors D-002, D-012, D-033, D-037 (new facts F-fund_email-*)  
-   Action: Review each decision against the email, update or keep it, then run `pipeline reconfirm` for D-002, D-012, D-033 and D-037.
-3. **OQ-canton-abroad is out of date and its status is unclear** – The email says the abroad canton is Zurich and that nothing is asked, yet the question still says registrations 'may be blocked'. The email leaves open whether Swiss residents must give a canton (F-fund_email-69a7dd). The pipeline reverted the removal of the question because it cites no removed fact. Whether to ask Swiss residents decides how US-01.4 is built.  
-   Evidence: OQ-canton-abroad; impact guard_reverted; F-fund_email-67b8b3 and -69a7dd; dev_refinement on US-01.4  
-   Action: Rewrite OQ-canton-abroad to cover only the Swiss-resident question and cite the email facts. Ask the fund to confirm whether Swiss residents must give their canton. Confirm that all Muster AG employees work in Zurich.
-4. **Contradictory tariff rule for a non-household child (H vs A)** – The rule and AC-06.4.3 say a minor child outside the household counts with H, but the calculator note says H applies only when the child lives in the household. This changes the tariff letter and so the recorded source tax.  
-   Evidence: dev_refinement on feature.md (row 22); F-zh_source_tax_calculator-96658b; AC-06.4.3; rule.child_tariff_result (inferred); OQ-calculator-coverage  
-   Action: Decide H or A with a domain expert, record it in decisions.yaml, and fix the rule and AC-06.4.3. Several H-tariff items also lack cited support in the trace judge.
-5. **Employees without a house number cannot submit** – The house number is required for everyone, but rural addresses, building names and some foreign addresses have none. These employees are blocked.  
-   Evidence: dev_refinement major on US-01.2  
-   Action: Decide whether the house number is optional or has a 'none' option, and update the ACs.
-6. **Which home address counts (current or at the first working day) is unspecified** – Source tax liability, canton, cross-border questions and tariff code all depend on the country of residence. Movers get different results depending on the date.  
-   Evidence: dev_refinement major on feature.md  
-   Action: Add a decision on the reference date for the home address and the wording of the question.
-7. **Liechtenstein double taxation agreement note and flag may be missing** – For Liechtenstein residents with more than 45 non-return days, the calculator adds 'Unter Vorbehalt des DBA' to the tariff code. The spec records only the code, so HR may miss the reservation.  
-   Evidence: US-07.3; F-zh_source_tax_calculator-ab4e1e; fact_judge note on the same fact  
-   Action: Decide whether to record the reservation and flag it for HR in this case. Update US-07.3 and AC-05.7.3.
-8. **Unneeded questions asked of Liechtenstein residents who get no tariff code** – Denomination, spouse work and children answers are collected but never used. This conflicts with data minimisation (G-01). The same applies to the question of what the employee sees.  
-   Evidence: dev_refinement on feature.md; US-05.7 (employee visibility of derived results); US-02.1 (does HR pre-fill the first working day)  
-   Action: Decide the question order or discard unused answers for these employees. State whether derived results are shown to the employee. State whether the first working day is pre-filled by HR.
-9. **Technical identifiers and implementation behaviour leak into the spec** – Rule ids and field-id prefixes appear in business prose. The ACs also prescribe repeatable child blocks with add/remove controls and mandatory draft retention. D-036 only says answers 'may be kept'.  
-   Evidence: tech_leak: US-06.1, US-08.2, feature.md (child_*, permit_reminder, pension_fund_canton, 'formal expression'), information.md  
-   Action: Replace the ids with business names. Remove the 'formal expression' remark. Reword AC-08.2.1 to match D-036, or record a decision that makes retention a requirement.
-10. **Weak traceability on several items and stories** – Some claims cite facts that are not in the cited set: the 'H tariff' purposes, the Tomás example F-hr_transcript-d7431e, F-zh_source_tax_calculator-52b67a and F-hr_transcript-b6d9b3. The nine-step order in AC-08.4.1 and the reason for US-08.3 have no cited support. Several judged facts are only partially supported.  
-   Evidence: trace_judge warnings on item.child_*, rule.cross_border_tariff_applies, rule.source_tax_result, US-01.2 to US-01.4, US-05.4, US-08.3, US-08.4; fact_judge warnings  
-   Action: Add the missing citations or remove the unbacked claims. Mark the step order as a product decision. Add ranges for dates and a minimum number of children (minor items).
+1. **Decisions stale after fund email** – New evidence from the fund email may change or confirm D-002 (canton), D-012, D-033 and D-037 (insurance start / first working day). Engineering would build on unconfirmed decisions. The checker reports these as errors.  
+   Evidence: decisions check: D-002, D-012, D-033, D-037; facts F-fund_email-90df7e, -a03d8c, -be1403, -0b09ba, -0f18b5, -a3d31e  
+   Action: Review each decision against the email, update or confirm it in decisions.yaml, then run `pipeline reconfirm <id>` for all four.
+2. **OQ-canton-abroad status unclear and inconsistent** – The fund email answers the question (canton of residence; Zurich for residents abroad), yet the open question and D-002 still say 'provisional'. US-01.5 and the Canton item are marked 'confirmed'. The impact guard also reverted the removal of the question.  
+   Evidence: OQ-canton-abroad; impact guard_reverted; dev_refinement US-01.4  
+   Action: Close OQ-canton-abroad by citing the email facts, or state what remains open. Update D-002 accordingly. Decide whether Zurich is the only place of work (US-01.5).
+3. **Mid-month insurance start from 2027 vs portal rule** – AC-02.2.5 yields mid-month start dates from 01.01.2027. The portal says 'Must be the 1st of a month' (F-pension_portal-dd8126). If the fund has not confirmed the change, every mid-month 2027 registration is rejected.  
+   Evidence: US-02.2, AC-02.2.5, F-pension_portal-dd8126  
+   Action: Get the fund to confirm the portal will accept non-1st dates from 2027, or add a fallback. Record this in decisions.yaml.
+4. **Tariff letter conflict for a non-household child (H vs A)** – Child result row 22 and AC-06.4.3 say a minor child outside the household counts with H. Calculator note F-zh_source_tax_calculator-96658b says H applies only to a child in the household. The tariff letter would be wrong. The row is marked inferred.  
+   Evidence: dev_refinement feature.md (row 22); AC-06.4.3; rule.child_tariff_result (inferred); trace_judge: 'H tariff' purpose unbacked on many child items  
+   Action: Decide H or A with a domain expert, record it in decisions.yaml, and run the calculator for that path (OQ-calculator-coverage).
+5. **Required house number blocks some employees** – The house number is required for every employee. Rural, building-name and some foreign addresses have none, so those employees cannot submit.  
+   Evidence: US-01.2 dev_refinement; the trace_judge warning on US-01.2  
+   Action: Decide whether the house number is optional or has a 'none' option, and add the rule.
+6. **Employee's view of results, and the first-working-day starting value** – The spec does not say whether the employee sees the derived results. It also does not say whether HR's agreed first working day is prefilled for the employee to confirm. Both change the UI scope.  
+   Evidence: US-05.7 and US-02.1 dev_refinement (major)  
+   Action: Decide: derived results HR-only or visible; questionnaire empty or prefilled with the HR date.
+7. **Home address date and Liechtenstein question order** – It is unclear whether the home address is the current one or the one from the first working day. This drives liability, canton and tariff. Liechtenstein residents with no tariff code are still asked tariff questions whose answers go unused, which conflicts with data minimisation (G-01).  
+   Evidence: dev_refinement feature.md (2 major); G-01  
+   Action: Decide which address counts, and whether to reorder the steps for Liechtenstein residents or discard the unused answers. Record both in decisions.yaml.
+8. **Liechtenstein >45 days: double-taxation reservation not captured** – The calculator returns the tariff code plus 'Unter Vorbehalt des DBA'. The spec records only the code and no HR flag, so HR could miss the reservation.  
+   Evidence: US-07.3; F-zh_source_tax_calculator-ab4e1e  
+   Action: Decide whether the reservation note and an HR flag accompany the code, and update the AC.
+9. **Unbacked trace claims and unsupported example sources** – Several rules and stories rest on facts not cited: rows citing F-zh_source_tax_calculator-52b67a and F-hr_transcript-b6d9b3, the Tomás example (F-hr_transcript-d7431e), the nine-step order (US-08.4), and the 'first working day often moves' claim (US-08.3).  
+   Evidence: trace_judge: rule.cross_border_tariff_applies, rule.liechtenstein_no_source_tax_in_principle, rule.source_tax_result, story.US-01.2, US-03.4, US-05.4, US-08.3, US-08.4  
+   Action: Add the missing citations or remove the claims. Record the step order as a decision.
+10. **Technical identifiers and implementation prescriptions in spec prose** – The spec shows rule ids (subject_to_source_tax, permit_reminder, pension_fund_canton), child_*, priority_reason and source_refs, and 'formal expression'. It also prescribes add/remove child blocks and mandates draft retention (D-036 only says 'may be kept').  
+   Evidence: tech_leak: US-06.1, US-08.2, US-08.3, US-01.2, feature.md, information.md  
+   Action: Rewrite using business names. Decide whether keeping inapplicable answers is required or optional, and state it neutrally.
 
 ## Numbers
 
-346 source units → 188 facts → 35 information items, 18 business rules → one feature with 8 sections, 30 stories, 102 acceptance criteria; 5 open questions, 12 exclusions.
+346 source units → 189 facts → 35 information items, 18 business rules → one feature with 8 sections, 31 stories, 104 acceptance criteria; 6 open questions, 12 exclusions.
 
 ## Impact of this run
 
-Stories added: -; changed: US-01.3, US-01.4, US-02.2, US-08.3; removed: -; unchanged: 26.
+Stories added: US-01.5; changed: US-01.4, US-02.2, US-08.3; removed: -; unchanged: 27.
 
-Knowledge elements changed: address_country, insurance_start_date, pension_fund_canton, residence_canton
+Knowledge elements changed: OQ-canton-derivation, insurance_start_date, pension_fund_canton, residence_canton
 
 Changes the update guard reverted (force with `--force knowledge.raw` if they are wanted):
 
 - open.OQ-canton-abroad: removal reverted - it cites no removed fact
 
-## Errors (5)
+## Errors (4)
 
-- [decisions] `D-002` new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-002`: F-fund_email-67b8b3: The employee does not have to provide anything for the place-of-work canton used for employees living abroad (it is Zurich for Muster AG), s; F-fund_email-69a7dd: Inferred reading: the canton of residence only needs to be asked of employees whose home address is in Switzerland; for employees living abr; F-fund_email-90df7e: The pension fund registration screen has a field "Canton", which means the employee's canton of residence. ...
-- [decisions] `D-012` new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-012`: F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working day is on or after 1 January 2027, the insurance starts on the first working day itself, even if that is n; F-fund_email-b0c39e: Consolidated rule: the insurance start date is derived from the first working day. If the first working day is on or before 31.12.2026: the  ...
-- [decisions] `D-033` new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-033`: F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working day is on or after 1 January 2027, the insurance starts on the first working day itself, even if that is n; F-fund_email-b0c39e: Consolidated rule: the insurance start date is derived from the first working day. If the first working day is on or before 31.12.2026: the  ...
-- [decisions] `D-037` new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-037`: F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working day is on or after 1 January 2027, the insurance starts on the first working day itself, even if that is n; F-fund_email-b0c39e: Consolidated rule: the insurance start date is derived from the first working day. If the first working day is on or before 31.12.2026: the  ...
-- [dev_refinement] `stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md` From 01.01.2027 the insurance starts on the first working day even if it is not the 1st of a month (AC-02.2.5, e.g. 15.03.2027). But the fund's portal says the insurance start date 'Must be the 1st of a month' (F-pension_portal-dd8126), and AC-02.2.2 cites that same fact. Will the fund change its portal by then, so a mid-month date is accepted? If not, which date should be recorded, given that the registration would be rejected?
+- [decisions] `D-002` new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-002`: F-fund_email-90df7e: The pension fund registration field "Canton" means the employee's canton of residence.; F-fund_email-a03d8c: For employees living abroad, the employee does not have to provide anything for the pension fund's Canton field (it is set to the place-of-w; F-fund_email-be1403: The canton of residence is only meaningful for employees living in Switzerland; it should only be asked/derived from the employee when the h ...
+- [decisions] `D-012` new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-012`: F-fund_email-0b09ba: The employee's first working day is needed by the pension fund because the insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working day is on or after 1 January 2027, the pension insurance starts on the first working day itself, even if t; F-fund_email-a3d31e: Consolidated rule: insurance_start_date is derived from first_working_day. If first_working_day is on or after 01.01.2027, insurance start = ...
+- [decisions] `D-033` new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-033`: F-fund_email-0b09ba: The employee's first working day is needed by the pension fund because the insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working day is on or after 1 January 2027, the pension insurance starts on the first working day itself, even if t; F-fund_email-a3d31e: Consolidated rule: insurance_start_date is derived from first_working_day. If first_working_day is on or after 01.01.2027, insurance start = ...
+- [decisions] `D-037` new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-037`: F-fund_email-0b09ba: The employee's first working day is needed by the pension fund because the insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working day is on or after 1 January 2027, the pension insurance starts on the first working day itself, even if t; F-fund_email-a3d31e: Consolidated rule: insurance_start_date is derived from first_working_day. If first_working_day is on or after 01.01.2027, insurance start = ...
 
-## Examples executed against the knowledge model (227/227 pass)
+## Examples executed against the knowledge model (228/228 pass)
 
 - ✅ AC-01.1.1 / Any employee, regardless of later answers (spec)
 - ✅ AC-01.2.1 / Tomás, living in Winterthur (hr_transcript/F-hr_transcript-d7431e) (spec)
@@ -74,9 +73,11 @@ Changes the update guard reverted (force with `--force knowledge.raw` if they ar
 - ✅ AC-01.4.1 / Employee living in Germany (e.g. Konstanz) (spec)
 - ✅ AC-01.4.1 / Employee living in Liechtenstein (spec)
 - ✅ AC-01.4.3 / Employee who first entered Switzerland, then corrected to Germany (spec)
-- ✅ AC-01.4.4 / Employee living in Switzerland, canton Bern (spec)
-- ✅ AC-01.4.4 / Employee living in Germany (e.g. Konstanz) (spec)
-- ✅ AC-01.4.4 / Employee living in Liechtenstein (spec)
+- ✅ AC-01.5.1 / Employee living in Switzerland who chose Bern (spec)
+- ✅ AC-01.5.1 / Employee living in Switzerland who chose Zurich (spec)
+- ✅ AC-01.5.2 / Employee living in Germany (e.g. Konstanz) (spec)
+- ✅ AC-01.5.2 / Employee living in Liechtenstein (spec)
+- ✅ AC-01.5.2 / Employee living in another country (spec)
 - ✅ AC-02.1.1 / Employee living in Switzerland (spec)
 - ✅ AC-02.1.1 / Employee living abroad (spec)
 - ✅ AC-02.2.2 / Start on the 1st of a month (spec)
@@ -84,12 +85,11 @@ Changes the update guard reverted (force with `--force knowledge.raw` if they ar
 - ✅ AC-02.2.3 / Julia (hr_transcript/F-hr_transcript-d7a23b), first working day 15 March (year illustrative) (spec)
 - ✅ AC-02.2.3 / Start on the last day of a month (spec)
 - ✅ AC-02.2.3 / Start in mid-December (spec)
-- ✅ AC-02.2.3 / Start on the last day of 2026 (spec)
 - ✅ AC-02.2.4 / Julia (hr_transcript/F-hr_transcript-d7a23b), moved to 15 March (year illustrative) (spec)
 - ✅ AC-02.2.4 / Earlier exit agreed, start moved to the 1st (spec)
-- ✅ AC-02.2.5 / Mid-month start in 2027 (spec)
+- ✅ AC-02.2.5 / Start mid-month in 2027 (spec)
 - ✅ AC-02.2.5 / Start on the last day of a month in 2027 (spec)
-- ✅ AC-02.2.5 / Start on the 2nd of January 2027 (spec)
+- ✅ AC-02.2.5 / Last day before the change (31.12.2026) (spec)
 - ✅ AC-03.1.1 / Employee living in Switzerland, Single (spec)
 - ✅ AC-03.1.1 / Employee living in Germany, Married (spec)
 - ✅ AC-03.1.2 / Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe) (spec)
@@ -285,7 +285,7 @@ Changes the update guard reverted (force with `--force knowledge.raw` if they ar
 - ✅ AC-08.2.2 / Changed nationality to Switzerland after answering the C permit question and the source tax questions (spec)
 - ✅ AC-08.3.2 / First working day moved from the 15th to the 1st of a month (spec)
 - ✅ AC-08.3.2 / First working day in the middle of a month (spec)
-- ✅ AC-08.3.2 / First working day moved into 2027, in the middle of a month (spec)
+- ✅ AC-08.3.2 / First working day moved to the middle of a month on or after 01.01.2027 (spec)
 - ✅ AC-08.4.2 / Swiss employee living in Switzerland, single (spec)
 - ✅ AC-08.4.2 / Employee living in Germany, single (spec)
 
@@ -296,6 +296,7 @@ Changes the update guard reverted (force with `--force knowledge.raw` if they ar
 - **OQ-spouse-dob-other-status**: Does the fund's screen require the spouse's (or former spouse's) date of birth or other fields for Divorced or Widowed? → recommended: Domain expert obtains a screenshot of the fund screen for Divorced and Widowed.
 - **OQ-calculator-coverage**: Does Lonio's computed tariff code match the Zurich calculator on the paths not explored: the residence block for A/B/H tariffs, more than 3 children, H3N/P3N, and the child rows marked inferred? → recommended: Go-live condition per D-009; non-blocking for the spec.
 - **OQ-nationality-wording**: Should the questionnaire ask for the nationality as a country, or only whether the employee (and the spouse) holds Swiss citizenship? And does the dual-citizenship rule (D-008) also apply to the spouse? → recommended: Keep the current model and confirm with the product owner; apply D-008 to the spouse unless a domain expert says otherwise.
+- **OQ-canton-derivation**: For employees living in Switzerland, must the employee state the canton of residence, or can it be derived from the home address (postcode and town)? → recommended: Keep asking residents of Switzerland; revisit if a reliable derivation is confirmed.
 
 ## Inferred items to confirm
 
@@ -312,16 +313,16 @@ Changes the update guard reverted (force with `--force knowledge.raw` if they ar
 - fact F-pension_portal-9b24c5: The civil status list has no option for registered partnership or separated; it is unclear how such employees are to be registered.
 - fact F-pension_portal-b359c3: The label 'Canton' does not state whether it is the canton of residence or of work, and the list only contains Swiss cantons; it is unclear what to enter for an employee living abroad (e.g. a cross-border commuter).
 - fact F-pension_portal-3a97ab: The portal requires an insurance start date on the 1st of a month but does not say how it relates to the employee's first working day (e.g. which 1st of a month to use when work starts mid-month).
-- fact F-fund_email-69a7dd: Inferred reading: the canton of residence only needs to be asked of employees whose home address is in Switzerland; for employees living abroad the pension fund canton is derived as Zurich (Muster AG's place of work). The email does not say if 'this' in 'does not have to provide anything for this' covers only the abroad case or the canton field in general, so whether Swiss residents must provide their canton remains to be confirmed.
-- fact F-fund_email-b0c39e: Consolidated rule: the insurance start date is derived from the first working day. If the first working day is on or before 31.12.2026: the first working day when it is the 1st of a month, otherwise the 1st of the following month. If the first working day is on or after 01.01.2027: the first working day itself.
-- fact F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.
+- fact F-fund_email-be1403: The canton of residence is only meaningful for employees living in Switzerland; it should only be asked/derived from the employee when the home address country is Switzerland (for residents abroad, the Canton field is filled with Zurich without asking).
+- fact F-fund_email-5f64bd: The email does not say whether, for employees living in Switzerland, the employee must state the canton of residence or whether it can be derived from the home address.
+- fact F-fund_email-a3d31e: Consolidated rule: insurance_start_date is derived from first_working_day. If first_working_day is on or after 01.01.2027, insurance start = first_working_day. If first_working_day is on or before 31.12.2026, insurance start = first_working_day when it is the 1st of a month, otherwise the 1st of the following month.
+- fact F-fund_email-0b09ba: The employee's first working day is needed by the pension fund because the insurance start date depends on it.
 
 ## Dev refinement questions (16)
 
 - [major] `stories/US-02.1-employee-enters-the-first-working-day.md` Does the questionnaire start empty, or does it show the first working day HR already agreed, for the employee to confirm or correct? HR says 'I ask them to confirm it', which suggests HR already has a date. The spec only says the employee 'enters' it. This decides whether HR provides a value that is shown at the start.
 - [major] `stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md` Should the employee ever see the derived results (insurance start date, civil status as the fund will receive it, whether they are subject to source tax, the tariff code or the Liechtenstein result), for example before submitting or in the read-only view? Or are these recorded only for HR? The spec says 'recorded for HR' but never says what the employee sees.
 - [major] `stories/US-07.3-determine-the-source-tax-outcome-for-employees-living-in.md` For Liechtenstein residents with more than 45 non-return days, the calculator gives the normal tariff code together with 'Unter Vorbehalt des Doppelbesteuerungsabkommens' (subject to the double taxation agreement) (F-zh_source_tax_calculator-ab4e1e, C1Y / Unter Vorbehalt…). The spec records only the normal tariff code and flags only the 'no liability' case. Should the 'subject to the double taxation agreement' note and the HR flag also go with the tariff code in this case?
-- [major] `stories/US-01.2-complete-home-address-for-posting-documents.md` The house number is required for every employee, but the notes say the sources do not cover addresses without one (rural addresses, building names, some foreign addresses). Can the employee submit without a house number, and if so how? As written, these employees cannot submit at all.
 - [minor] `stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md` If the employee answers 'yes' to having children, must they add at least one child block before they can submit? And is there a maximum number of children? Today an employee could say 'yes' and add no child at all.
 - [minor] `stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md` D-036 says inapplicable answers 'may be kept' until submission. AC-08.2.1 says they are kept and reappear when the earlier answer is changed back. Is keeping them a requirement or only allowed? Does it also apply if the employee leaves and comes back later in a new session, before submitting?
 - [minor] `stories/US-02.1-employee-enters-the-first-working-day.md` What are the valid ranges for dates? For example: can the first working day be in the past or far in the future, and must the date of birth (employee and spouse) be in the past or show a minimum age? Without this there are no rejection criteria to test.
@@ -331,11 +332,12 @@ Changes the update guard reverted (force with `--force knowledge.raw` if they ar
 - [major] `feature.md` Which home address should the employee give: the current one, or the one that applies from the first working day? A new hire who is moving from abroad to Switzerland, or the other way, gets a different source tax liability, canton, cross-border questions and tariff code depending on which address counts. The spec treats the home address country as the country of residence without saying for which date.
 - [major] `feature.md` Liechtenstein residents who return daily, or expect at most 45 non-return days, get no tariff code. Yet they are asked the denomination, whether the spouse works, and all the children questions before the cross-border step, and none of those answers is used. Is that intended, given data minimisation (G-01)? Or should the cross-border questions come first for Liechtenstein residents so the tariff questions can be skipped, and should those answers be discarded on submission?
 - [major] `feature.md` Child result row 22, and AC-06.4.3 with it: a minor child of a non-married employee who does NOT live in the household (parental custody, alternating care, employee pays more) 'counts with H'. The calculator note F-zh_source_tax_calculator-96658b says a child counts with H only when it lives in the household. Which is right: H or counted without H (A)? The answer changes the tariff letter.
-- [blocker] `stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md` From 01.01.2027 the insurance starts on the first working day even if it is not the 1st of a month (AC-02.2.5, e.g. 15.03.2027). But the fund's portal says the insurance start date 'Must be the 1st of a month' (F-pension_portal-dd8126), and AC-02.2.2 cites that same fact. Will the fund change its portal by then, so a mid-month date is accepted? If not, which date should be recorded, given that the registration would be rejected?
-- [minor] `stories/US-01.4-canton-of-residence-for-employees-living-in-switzerland.md` The fund's email now says what goes in the Canton field for employees living abroad (Zurich, nothing asked) and that 'Canton' means canton of residence. Yet D-002 and OQ-canton-abroad are still open, and OQ-canton-abroad still warns that these registrations 'may be blocked'. Is OQ-canton-abroad closed? Or does the expert check still cover only whether Swiss residents really must give their canton (F-fund_email-69a7dd)? If that check could end with Swiss residents not being asked, we would build the canton question differently.
-- [minor] `stories/US-01.4-canton-of-residence-for-employees-living-in-switzerland.md` For every employee living abroad the canton for the fund is fixed as Zurich. Do all Muster AG employees work in Zurich? Or can the place of work be another canton, and if so, where would that canton come from (it is not asked)?
+- [major] `stories/US-01.2-complete-home-address-for-posting-documents.md` The house number is required for every employee, but the notes say the sources do not cover addresses without one (rural addresses, building names, some foreign addresses). Can the employee submit without a house number, and if so how? As written, these employees cannot submit at all.
+- [major] `stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md` From 01.01.2027 the insurance start date can fall mid-month (AC-02.2.5, e.g. 15.01.2027). The fund's portal still says 'Must be the 1st of a month' (F-pension_portal-dd8126). Has the fund confirmed that the portal will accept dates that are not the 1st of a month from 2027? If not, every mid-month registration in 2027 would be rejected. Should Lonio still record the first working day itself, or does this need a fallback?
+- [minor] `stories/US-01.4-canton-of-residence-for-employees-living-in-switzerland.md` The fund's email (14.11.2026) now says 'Canton' means the canton of residence and that employees abroad get Zurich. US-01.5 and the Canton item are marked 'confirmed'. But D-002 and OQ-canton-abroad still call this provisional and say it still has to be verified with Pensionskasse Muster. Is OQ-canton-abroad closed by the email? If not, what is still open?
+- [minor] `stories/US-01.5-canton-for-the-pension-fund-for-every-employee.md` Zurich is hard-set as the place-of-work canton for every employee living abroad. Does Muster AG have only one place of work? If employees can work in another canton (another office, remote work), should the canton of their place of work be used instead? Where would that information come from?
 
-## Technical vocabulary found in the spec (8)
+## Technical vocabulary found in the spec (10)
 
 - `stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md` "When Lonio has decided whether the employee is subject to source tax (rule subject_to_source_tax)" - Uses an internal rule identifier in an acceptance criterion. That is an implementation artifact, not business language.
 - `stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md` "the employee goes through one block of questions per child and can add another child or remove one" - Prescribes the interaction (repeatable blocks with add and remove controls, copied from the calculator UI). The need is only to capture each child's answers.
@@ -343,12 +345,14 @@ Changes the update guard reverted (force with `--force knowledge.raw` if they ar
 - `feature.md` "Step 7 'Children' – one block per child, repeated for each child the employee adds; all child_* conditions refer to the same child." - 'child_*' is an internal field-id prefix used in prose. Business readers should not see identifier naming.
 - `feature.md` "Afterwards Step 9 'Finish': permit reminder (rule permit_reminder), then submission" - Uses an internal rule id ('permit_reminder') in prose instead of the business name of the rule.
 - `feature.md` "(The formal expression covers one child block; the digit is the sum over all children.)" - Refers to how the rule is encoded (a 'formal expression' per child block). That is an implementation detail of the rule engine, not a business statement.
-- `feature.md` "is used without asking them (rule pension_fund_canton)" - Uses an internal rule id ('pension_fund_canton') in prose instead of the business name 'Canton for the pension fund'.
-- `information.md` "(The formal expression covers one child block; the digit is the sum over all children.)" - Describes how the rule is encoded in the rule engine, not a business rule.
+- `feature.md` "the fund's field is then the canton of the place of work, see rule pension_fund_canton" - Uses an internal rule id ('pension_fund_canton') in prose instead of the rule's business name, 'Canton for the pension fund'.
+- `information.md` "the fund's field is then the canton of the place of work, see rule pension_fund_canton" - Uses an internal rule id in business prose instead of the rule's business name.
+- `stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md` "but the priority_reason claim that HR reports the first working day often moves is not in any cited fact or quote" - 'priority_reason' is an internal field name of the spec tooling, shown in story prose.
+- `stories/US-01.2-complete-home-address-for-posting-documents.md` "which is not among the cited facts and has no source_refs on the example" - 'source_refs' is an internal field name of the spec tooling, shown in story prose.
 
 ## Coverage
 
-169/346 source units cited; 155/188 facts used.
+169/346 source units cited; 156/189 facts used.
 
 Uncited units (confirm they are irrelevant):
 
@@ -530,7 +534,7 @@ Uncited units (confirm they are irrelevant):
 - fund_email/T-001: Dear Leo, thank you for your questions about the registration screen in our employer portal. Here are our two answers.
 - fund_email/T-004: Kind regards, Pensionskasse Muster, employer service
 
-## Other warnings (46)
+## Other warnings (44)
 
 - [fact_judge] `F-hr_transcript-5518ad` partial: Address is needed, but 'home' address is not explicitly stated, though it is implied. | HR needs the employee's home address.
 - [fact_judge] `F-hr_transcript-872bd7` partial: First working day and 'number one thing' are stated, but T-024 doesn't tie it specifically to the pension fund, though context (T-023) implies it. | The employee's first working day is needed for the pension fund; it is the most important item.
@@ -547,10 +551,9 @@ Uncited units (confirm they are irrelevant):
 - [fact_judge] `F-zh_source_tax_calculator-ab4e1e` partial: Q23 help says Nein gives only 'Grundsätzlich keine Quellensteuerpflicht', but vector V41 shows Nein also yields the DBA reservation text, so the 'otherwise' phrasing is mostly right but the Ja case is fine; the minor inconsistency is in the sources. | More than 45 non-return days (Ja) gives the normal tariff plus 'Unter Vorbehalt des Doppelbesteuerungsabkommens'; otherwise (Nein) 'Grundsätzlich keine Quellensteuerpflicht'.
 - [fact_judge] `F-zh_source_tax_calculator-3058a4` partial: Vectors give C1Y for common household and C0Y for the no-household cases, but the statement is garbled (unfinished 'only if...') and the units never label Q11 as 'alternating care'. | Married person, minor child in same household, shared custody: common household with the other parent counts the child (C1Y); no common household counts the child only if... observed: alternating care with other parent as main contributor -> 0 (C0Y), no alternating care -> 0 (C0Y).
 - [fact_judge] `F-zh_source_tax_calculator-56e79b` partial: Vectors V12/V13 show B1N vs B0N, but the units never label Q13 as shared custody or Q11 as alternating care, so those labels are assumed. | Married person, minor child not in household: shared custody + alternating care + person is main contributor counts the child (B1N); no shared custody does not count it (B0N).
-- [fact_judge] `F-fund_email-67b8b3` partial: Email says the employee need not provide anything; 'Lonio need not ask them' is a reasonable implication, but the scope of 'this' is ambiguous. | The employee does not have to provide anything for the place-of-work canton used for employees living abroad (it is Zurich for Muster AG), so Lonio need not ask them for a canton.
-- [fact_judge] `F-fund_email-69a7dd` partial: Abroad case is supported, but 'only needs to be asked of employees with Swiss address' is an overreach, though the statement itself flags the ambiguity. | Inferred reading: the canton of residence only needs to be asked of employees whose home address is in Switzerland; for employees living abroad the pension fund canton is derived as Zurich (Muster AG's place of work). The email does not say if 'this' in 'does not have to provide anything for this' covers only the abroad case or the canton field in general, so whether Swiss residents must provide their canton remains to be confirmed.
+- [fact_judge] `F-fund_email-be1403` partial: Residents abroad getting Zurich without asking is supported, but the 'home address country is Switzerland' condition and deriving from the employee is an extrapolation. | The canton of residence is only meaningful for employees living in Switzerland; it should only be asked/derived from the employee when the home address country is Switzerland (for residents abroad, the Canton field is filled with Zurich without asking).
 - [impact] `open.OQ-canton-abroad` removal reverted - it cites no removed fact
-- [trace_judge] `item.address_country` partial: The claim that the country decides whether the permit reminder is shown is not backed by any cited fact (D-038 is not cited), and 'asked always' is only implied by the address-completeness fact.
+- [trace_judge] `item.address_country` partial: The claim that the country decides whether the permit reminder is shown is not backed by the cited facts (D-010 and D-038 are not cited).
 - [trace_judge] `item.first_working_day` partial: The claim that HR 'runs the onboarding around the start date' is not backed, since D-034 leaves who starts the onboarding to a later spec.
 - [trace_judge] `item.has_children` partial: The 'H tariff' purpose is not backed by any cited fact; the rest (question, options, wording, condition) is backed.
 - [trace_judge] `item.child_same_household` partial: Question, options and condition are backed, but the 'H tariff' purpose is not in the cited facts.
@@ -565,19 +568,18 @@ Uncited units (confirm they are irrelevant):
 - [trace_judge] `rule.liechtenstein_no_source_tax_in_principle` partial: The 'Not Liechtenstein → no' row cites F-zh_source_tax_calculator-52b67a, which is not among the cited facts, so that row is not backed.
 - [trace_judge] `rule.source_tax_result` partial: The 'not subject → no tariff code' row cites F-hr_transcript-b6d9b3, which is not among the cited facts, and the Liechtenstein row's F-zh_source_tax_calculator-e80d8f and -ab4e1e are also not provided (though D-007 covers the Liechtenstein row).
 - [trace_judge] `story.US-01.2` partial: The non-illustrative Tomás/Winterthur example (country Switzerland) relies on F-hr_transcript-d7431e, which is not among the cited facts and has no source_refs on the example.
-- [trace_judge] `story.US-01.3` partial: The non-illustrative Tomás/Winterthur examples cite F-hr_transcript-d7431e, which is not among the cited facts, so they are unbacked; the rest is supported.
-- [trace_judge] `story.US-01.4` partial: The non-illustrative Tomás/Winterthur example relies on F-hr_transcript-d7431e, which is not among the cited facts; the other criteria are backed.
 - [trace_judge] `story.US-03.4` partial: The priority reason's tariff letters (A/B/C/H) are not backed by any cited fact; the criteria themselves are supported.
 - [trace_judge] `story.US-05.4` partial: The non-illustrative Tomás example cites F-hr_transcript-d7431e and the 'not subject to source tax' condition rests on a rule (F-hr_transcript-b6d9b3), and neither is among the cited facts.
-- [trace_judge] `story.US-08.3` partial: The priority reason's claim that HR reports the first working day often moves is not backed by any cited fact; the ACs themselves are backed by D-033/D-034/D-037 and the fund rules.
+- [trace_judge] `story.US-08.3` partial: The goal and both acceptance criteria are backed by D-033, D-034, D-037 and the fund facts, but the priority_reason claim that HR reports the first working day often moves is not in any cited fact or quote.
 - [trace_judge] `story.US-08.4` partial: No cited fact sets the nine-step order in AC-08.4.1; only English (G-09), canton for Swiss residents (D-002) and the reminder at the end (D-010) are backed.
 - [dev_refinement] `stories/US-02.1-employee-enters-the-first-working-day.md` Does the questionnaire start empty, or does it show the first working day HR already agreed, for the employee to confirm or correct? HR says 'I ask them to confirm it', which suggests HR already has a date. The spec only says the employee 'enters' it. This decides whether HR provides a value that is shown at the start.
 - [dev_refinement] `stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md` Should the employee ever see the derived results (insurance start date, civil status as the fund will receive it, whether they are subject to source tax, the tariff code or the Liechtenstein result), for example before submitting or in the read-only view? Or are these recorded only for HR? The spec says 'recorded for HR' but never says what the employee sees.
 - [dev_refinement] `stories/US-07.3-determine-the-source-tax-outcome-for-employees-living-in.md` For Liechtenstein residents with more than 45 non-return days, the calculator gives the normal tariff code together with 'Unter Vorbehalt des Doppelbesteuerungsabkommens' (subject to the double taxation agreement) (F-zh_source_tax_calculator-ab4e1e, C1Y / Unter Vorbehalt…). The spec records only the normal tariff code and flags only the 'no liability' case. Should the 'subject to the double taxation agreement' note and the HR flag also go with the tariff code in this case?
-- [dev_refinement] `stories/US-01.2-complete-home-address-for-posting-documents.md` The house number is required for every employee, but the notes say the sources do not cover addresses without one (rural addresses, building names, some foreign addresses). Can the employee submit without a house number, and if so how? As written, these employees cannot submit at all.
 - [dev_refinement] `feature.md` Which home address should the employee give: the current one, or the one that applies from the first working day? A new hire who is moving from abroad to Switzerland, or the other way, gets a different source tax liability, canton, cross-border questions and tariff code depending on which address counts. The spec treats the home address country as the country of residence without saying for which date.
 - [dev_refinement] `feature.md` Liechtenstein residents who return daily, or expect at most 45 non-return days, get no tariff code. Yet they are asked the denomination, whether the spouse works, and all the children questions before the cross-border step, and none of those answers is used. Is that intended, given data minimisation (G-01)? Or should the cross-border questions come first for Liechtenstein residents so the tariff questions can be skipped, and should those answers be discarded on submission?
 - [dev_refinement] `feature.md` Child result row 22, and AC-06.4.3 with it: a minor child of a non-married employee who does NOT live in the household (parental custody, alternating care, employee pays more) 'counts with H'. The calculator note F-zh_source_tax_calculator-96658b says a child counts with H only when it lives in the household. Which is right: H or counted without H (A)? The answer changes the tariff letter.
+- [dev_refinement] `stories/US-01.2-complete-home-address-for-posting-documents.md` The house number is required for every employee, but the notes say the sources do not cover addresses without one (rural addresses, building names, some foreign addresses). Can the employee submit without a house number, and if so how? As written, these employees cannot submit at all.
+- [dev_refinement] `stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md` From 01.01.2027 the insurance start date can fall mid-month (AC-02.2.5, e.g. 15.01.2027). The fund's portal still says 'Must be the 1st of a month' (F-pension_portal-dd8126). Has the fund confirmed that the portal will accept dates that are not the 1st of a month from 2027? If not, every mid-month registration in 2027 would be rejected. Should Lonio still record the first working day itself, or does this need a fallback?
 
 ## Run
 
@@ -585,6 +587,6 @@ Stages run: normalize/fund_email, extract/fund_email, judge_facts, knowledge.raw
 
 Stages reused from cache: normalize/hr_transcript, extract/hr_transcript, normalize/pension_portal, extract/pension_portal, normalize/zh_source_tax_calculator, extract/zh_source_tax_calculator
 
-LLM cost this run: $2.84
+LLM cost this run: $2.71
 
-Tokens this run: 390,191 in 12 agent calls (24 input, 41,197 cache read, 313,630 cache write, 35,340 output)
+Tokens this run: 389,817 in 12 agent calls (24 input, 59,831 cache read, 295,276 cache write, 34,686 output)

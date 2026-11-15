@@ -6,10 +6,10 @@ Tokens are the SDK's counts summed over all agent calls of the run (input + outp
 
 | Case | Tokens before | Tokens after | Change | Cost before | Cost after | Verdict | Gate |
 |---|---:|---:|---:|---:|---:|---|---|
-| B0 | 0 | 0 | - | $0.00 | $0.00 | - → - | FAIL: not run |
-| B1 | 2,352,621 | 0 | -100% | $11.34 | $0.00 | ready_with_caveats → - | FAIL: not run |
+| B0 | 0 | 0 | - | $0.00 | $0.00 | - → - | - (not run in after) |
+| B1 | 2,352,621 | 0 | - | $11.34 | $0.00 | ready_with_caveats → - | - (not run in after) |
 | B2 | 1,685,896 | 285,105 | -83% | $3.66 | $2.08 | not_ready → not_ready | PASS |
-| B3 | 1,875,015 | 390,191 | -79% | $4.97 | $2.84 | not_ready → not_ready | FAIL: regressed: no errors (other than expected flags) |
+| B3 | 1,875,015 | 389,817 | -79% | $4.97 | $2.71 | not_ready → not_ready | PASS |
 | B4 | 2,293,896 | 768,120 | -67% | $9.35 | $6.12 | not_ready → not_ready | PASS |
 
 ## B0
@@ -75,15 +75,15 @@ Tokens are the SDK's counts summed over all agent calls of the run (input + outp
 
 | Stage | Calls | Tokens before | Tokens after | Cost before | Cost after |
 |---|---:|---:|---:|---:|---:|
-| dev_refinement | 1 → 1 | 1,334,793 | 97,362 | $1.92 | $0.81 |
-| write_section | 3 → 3 | 199,306 | 122,111 | $1.66 | $1.09 |
-| knowledge_delta | 1 → 1 | 51,233 | 51,994 | $0.44 | $0.46 |
-| review | 1 → 1 | 44,911 | 45,026 | $0.39 | $0.19 |
-| judge_facts | 13 → 1 | 184,492 | 7,721 | $0.23 | $0.03 |
-| flow | 1 → 1 | 19,645 | 19,691 | $0.14 | $0.07 |
-| judge_trace | 2 → 2 | 25,282 | 30,910 | $0.10 | $0.12 |
-| extract | 1 → 1 | 7,393 | 7,412 | $0.07 | $0.07 |
-| plan_assign | 1 → 1 | 7,960 | 7,964 | $0.02 | $0.01 |
+| dev_refinement | 1 → 1 | 1,334,793 | 101,610 | $1.92 | $0.85 |
+| write_section | 3 → 3 | 199,306 | 122,407 | $1.66 | $1.05 |
+| knowledge_delta | 1 → 1 | 51,233 | 51,429 | $0.44 | $0.39 |
+| review | 1 → 1 | 44,911 | 45,314 | $0.39 | $0.19 |
+| judge_facts | 13 → 1 | 184,492 | 8,261 | $0.23 | $0.03 |
+| flow | 1 → 1 | 19,645 | 19,748 | $0.14 | $0.07 |
+| judge_trace | 2 → 2 | 25,282 | 25,503 | $0.10 | $0.10 |
+| extract | 1 → 1 | 7,393 | 7,494 | $0.07 | $0.04 |
+| plan_assign | 1 → 1 | 7,960 | 8,051 | $0.02 | $0.01 |
 
 **before**: stories changed US-01.4, US-02.2, US-08.3; added US-01.5; errors 4; examples 227/227; open questions 5; dev questions 14; verdict not_ready; 322 s
 
@@ -96,16 +96,16 @@ Tokens are the SDK's counts summed over all agent calls of the run (input + outp
 - ✅ one of: open question OQ-canton-abroad closed / decision D-002 flagged for re-confirmation: decision D-002 flagged for re-confirmation
 - ❌ no-op rerun calls no agent (B0)
 
-**after**: stories changed US-01.3, US-01.4, US-02.2, US-08.3; added -; errors 5; examples 227/227; open questions 5; dev questions 16; verdict not_ready; 194 s
+**after**: stories changed US-01.4, US-02.2, US-08.3; added US-01.5; errors 4; examples 228/228; open questions 6; dev questions 16; verdict not_ready; 189 s
 
-- ❌ no errors (other than expected flags): dev_refinement stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md
-- ✅ all examples pass: 227/227
+- ✅ no errors (other than expected flags)
+- ✅ all examples pass: 228/228
 - ❌ only expected stories changed: US-08.3
 - ✅ story US-02.2 changed
-- ✅ 0-1 stories added: none
+- ✅ 0-1 stories added: US-01.5
 - ✅ rule.insurance_start_date mentions ['2027']
 - ✅ one of: open question OQ-canton-abroad closed / decision D-002 flagged for re-confirmation: decision D-002 flagged for re-confirmation
-- ❌ no-op rerun calls no agent (B0)
+- ✅ no-op rerun calls no agent (B0)
 
 
 ## B4

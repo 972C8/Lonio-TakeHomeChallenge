@@ -4,17 +4,17 @@ Pipeline for feature 'employee-onboarding'
   running extract/fund_email ...
 [3] verify facts
   running judge_facts ...
-  fact judge: 9 facts judged, 179 verdicts reused
+  fact judge: 10 facts judged, 179 verdicts reused
 [4] knowledge model
   running knowledge.raw ...
-  delta: 9 new or changed facts, 0 removed
+  delta: 10 new or changed facts, 0 removed
   guard: open.OQ-canton-abroad: removal reverted - it cites no removed fact
-  delta: 2 items, 2 rules, 0 open questions changed or added; 0 removed
+  delta: 1 items, 2 rules, 1 open questions changed or added; 0 removed
 [5] feature: sections and stories
   running feature.plan ...
-  plan: keeping 8 sections, assigning pension_fund_canton
+  plan: keeping 8 sections, assigning OQ-canton-derivation, pension_fund_canton
   running sections/SEC-01-identity-and-address ...
-  updating sections/SEC-01-identity-and-address: address_country, pension_fund_canton, residence_canton
+  updating sections/SEC-01-identity-and-address: OQ-canton-derivation, pension_fund_canton, residence_canton
   running sections/SEC-02-start-date-insurance ...
   updating sections/SEC-02-start-date-insurance: insurance_start_date
   reusing sections/SEC-03-civil-status-spouse (nothing it depends on changed)
@@ -28,16 +28,16 @@ Pipeline for feature 'employee-onboarding'
 [6] apply decisions
 [7] checks
   running judge_trace ...
-  trace judge: 8 elements judged, 75 verdicts reused
+  trace judge: 7 elements judged, 77 verdicts reused
 [8] render feature specs
 [9] dev refinement
   running dev_refinement ...
-  dev refinement (incremental): 6 changed, 0 removed, 5 context files
+  dev refinement (incremental): 10 changed, 0 removed, 3 context files
 [10] review
   running review ...
 
-188 facts -> 35 information items, 18 rules -> 1 feature with 8 sections, 30 stories, 102 acceptance criteria; 5 open questions
-errors 5, warnings 54, examples 227/227 pass, dev refinement questions 16, tech leaks 8
+189 facts -> 35 information items, 18 rules -> 1 feature with 8 sections, 31 stories, 104 acceptance criteria; 6 open questions
+errors 4, warnings 54, examples 228/228 pass, dev refinement questions 16, tech leaks 10
 verdict: not_ready
-cost this run: $2.84
+cost this run: $2.71
 review: build/employee-onboarding/review.md   requirements: requirements/employee-onboarding/

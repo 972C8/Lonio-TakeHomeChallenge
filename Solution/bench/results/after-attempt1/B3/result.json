@@ -1,0 +1,294 @@
+{
+ "case": "B3",
+ "label": "after",
+ "ok": false,
+ "checks": [
+  {
+   "check": "no errors (other than expected flags)",
+   "ok": false,
+   "soft": false,
+   "detail": "dev_refinement stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md"
+  },
+  {
+   "check": "all examples pass",
+   "ok": true,
+   "soft": false,
+   "detail": "227/227"
+  },
+  {
+   "check": "only expected stories changed",
+   "ok": false,
+   "soft": false,
+   "detail": "US-08.3"
+  },
+  {
+   "check": "story US-02.2 changed",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "0-1 stories added",
+   "ok": true,
+   "soft": false,
+   "detail": "none"
+  },
+  {
+   "check": "rule.insurance_start_date mentions ['2027']",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "one of: open question OQ-canton-abroad closed / decision D-002 flagged for re-confirmation",
+   "ok": true,
+   "soft": false,
+   "detail": "decision D-002 flagged for re-confirmation"
+  },
+  {
+   "check": "no-op rerun calls no agent (B0)",
+   "ok": false,
+   "soft": false,
+   "detail": ""
+  }
+ ],
+ "metrics": {
+  "usage": {
+   "by_stage": {
+    "write_section": {
+     "calls": 3,
+     "turns": 6,
+     "input_tokens": 6,
+     "output_tokens": 18769,
+     "cache_read_input_tokens": 15956,
+     "cache_creation_input_tokens": 87380,
+     "total_tokens": 122111,
+     "cost_usd": 1.0859,
+     "seconds": 132.5
+    },
+    "dev_refinement": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 3222,
+     "cache_read_input_tokens": 2375,
+     "cache_creation_input_tokens": 91763,
+     "total_tokens": 97362,
+     "cost_usd": 0.8083,
+     "seconds": 29.9
+    },
+    "knowledge_delta": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 4259,
+     "cache_read_input_tokens": 1515,
+     "cache_creation_input_tokens": 46218,
+     "total_tokens": 51994,
+     "cost_usd": 0.4591,
+     "seconds": 35.8
+    },
+    "review": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 2303,
+     "cache_read_input_tokens": 2116,
+     "cache_creation_input_tokens": 40605,
+     "total_tokens": 45026,
+     "cost_usd": 0.1899,
+     "seconds": 17.9
+    },
+    "judge_trace": {
+     "calls": 2,
+     "turns": 4,
+     "input_tokens": 4,
+     "output_tokens": 2172,
+     "cache_read_input_tokens": 4120,
+     "cache_creation_input_tokens": 24614,
+     "total_tokens": 30910,
+     "cost_usd": 0.1232,
+     "seconds": 18.3
+    },
+    "extract": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 1695,
+     "cache_read_input_tokens": 882,
+     "cache_creation_input_tokens": 4833,
+     "total_tokens": 7412,
+     "cost_usd": 0.073,
+     "seconds": 14.3
+    },
+    "flow": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 2267,
+     "cache_read_input_tokens": 6124,
+     "cache_creation_input_tokens": 11298,
+     "total_tokens": 19691,
+     "cost_usd": 0.0697,
+     "seconds": 13.2
+    },
+    "judge_facts": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 568,
+     "cache_read_input_tokens": 2091,
+     "cache_creation_input_tokens": 5060,
+     "total_tokens": 7721,
+     "cost_usd": 0.0267,
+     "seconds": 5.0
+    },
+    "plan_assign": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 85,
+     "cache_read_input_tokens": 6018,
+     "cache_creation_input_tokens": 1859,
+     "total_tokens": 7964,
+     "cost_usd": 0.0089,
+     "seconds": 2.2
+    }
+   },
+   "total": {
+    "calls": 12,
+    "turns": 24,
+    "input_tokens": 24,
+    "output_tokens": 35340,
+    "cache_read_input_tokens": 41197,
+    "cache_creation_input_tokens": 313630,
+    "total_tokens": 390191,
+    "cost_usd": 2.8447,
+    "seconds": 269.1
+   }
+  },
+  "cost_usd": 2.84,
+  "stages_ran": [
+   "normalize/fund_email",
+   "extract/fund_email",
+   "judge_facts",
+   "knowledge.raw",
+   "feature.plan",
+   "sections/SEC-02-start-date-insurance",
+   "sections/SEC-08-completion-and-submission",
+   "sections/SEC-01-identity-and-address",
+   "feature.flow",
+   "judge_trace",
+   "dev_refinement",
+   "review"
+  ],
+  "counts": {
+   "units": 346,
+   "facts": 188,
+   "items": 35,
+   "rules": 18,
+   "sections": 8,
+   "stories": 30,
+   "acceptance_criteria": 102,
+   "open_questions": 5,
+   "exclusions": 12
+  },
+  "verdict": "not_ready",
+  "baseline_verdict": "ready_with_caveats",
+  "errors": [
+   {
+    "check": "decisions",
+    "target": "D-002",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-002`: F-fund_email-67b8b3: The employee does not have to provide anything for the place-of-work canton used for employees living abroad (it is Zurich for Muster AG), s; F-fund_email-69a7dd: I"
+   },
+   {
+    "check": "decisions",
+    "target": "D-012",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-012`: F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working da"
+   },
+   {
+    "check": "decisions",
+    "target": "D-033",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-033`: F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working da"
+   },
+   {
+    "check": "decisions",
+    "target": "D-037",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-037`: F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working da"
+   },
+   {
+    "check": "dev_refinement",
+    "target": "stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md",
+    "message": "From 01.01.2027 the insurance starts on the first working day even if it is not the 1st of a month (AC-02.2.5, e.g. 15.03.2027). But the fund's portal says the insurance start date 'Must be the 1st of a month' (F-pension_portal-dd8126), and AC-02.2.2 cites that same fact. Will the fund change its po"
+   }
+  ],
+  "warnings": 54,
+  "examples": {
+   "pass": 227,
+   "total": 227
+  },
+  "dev_refinement": {
+   "questions": 16,
+   "by_severity": {
+    "blocker": 1,
+    "major": 7,
+    "minor": 8
+   },
+   "tech_leaks": 8
+  },
+  "review_findings": 10,
+  "stories": {
+   "added": [],
+   "removed": [],
+   "changed": [
+    "US-01.3",
+    "US-01.4",
+    "US-02.2",
+    "US-08.3"
+   ],
+   "unchanged": 26,
+   "added_sections": {}
+  },
+  "elements": {
+   "added": [
+    "rule.pension_fund_canton"
+   ],
+   "removed": [],
+   "changed_behaviour": [
+    "rule.insurance_start_date"
+   ]
+  },
+  "files_changed": [
+   "requirements/employee-onboarding/feature.md",
+   "requirements/employee-onboarding/information.md",
+   "requirements/employee-onboarding/stories/US-01.3-home-address-country-is-the-country-of-residence-for-later.md",
+   "requirements/employee-onboarding/stories/US-01.4-canton-of-residence-for-employees-living-in-switzerland.md",
+   "requirements/employee-onboarding/stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md",
+   "requirements/employee-onboarding/stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md",
+   "requirements/employee-onboarding/traceability.md"
+  ],
+  "impact": {
+   "added": [],
+   "removed": [],
+   "changed": [
+    "US-01.3",
+    "US-01.4",
+    "US-02.2",
+    "US-08.3"
+   ],
+   "unchanged": 26,
+   "changed_without_cause": [],
+   "changed_elements": [
+    "address_country",
+    "insurance_start_date",
+    "pension_fund_canton",
+    "residence_canton"
+   ],
+   "guard_reverted": [
+    "open.OQ-canton-abroad: removal reverted - it cites no removed fact"
+   ]
+  },
+  "seconds": 194
+ },
+ "noop_after": false
+}

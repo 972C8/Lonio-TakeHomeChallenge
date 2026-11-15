@@ -56,12 +56,12 @@ def write_report(results: Path, ref_label: str, new_label: str, path: Path) -> s
     for case in sorted(set(ref) | set(new)):
         r, n = ref.get(case, {}), new.get(case, {})
         tr, tn = _tok(r), _tok(n)
-        ok, why = gate(r, n) if r and n else (n.get("ok", False), ["no reference"] if n else ["not run"])
+        ok, why = gate(r, n) if r and n else (n.get("ok", False), ["no reference"] if n else [f"not run in {new_label}"])
         vr = (r.get("metrics") or {}).get("verdict", "-")
         vn = (n.get("metrics") or {}).get("verdict", "-")
         L.append(f"| {case} | {tr.get('total_tokens', 0):,} | {tn.get('total_tokens', 0):,} | "
-                 f"{_pct(tr.get('total_tokens', 0), tn.get('total_tokens', 0))} | ${tr.get('cost_usd', 0):.2f} | "
-                 f"${tn.get('cost_usd', 0):.2f} | {vr} → {vn} | {'PASS' if ok else 'FAIL: ' + '; '.join(why)} |")
+                 f"{_pct(tr.get('total_tokens', 0), tn.get('total_tokens', 0)) if n else '-'} | ${tr.get('cost_usd', 0):.2f} | "
+                 f"${tn.get('cost_usd', 0):.2f} | {vr} → {vn} | {'PASS' if ok else ('- (' + why[0] + ')' if not n else 'FAIL: ' + '; '.join(why))} |")
     for case in sorted(set(ref) | set(new)):
         r, n = ref.get(case, {}), new.get(case, {})
         L += ["", f"## {case}", ""]
