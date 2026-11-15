@@ -12,92 +12,7 @@
     "exclusions": 11
   },
   "findings": {
-    "error": [
-      {
-        "check": "lint",
-        "severity": "error",
-        "target": "rule.tariff_code",
-        "message": "expression: construct BinOp not allowed in 'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.7.3 / Employee answers no",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'A0N'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.1 / Calculator case C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'C1Y'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.1 / Calculator case N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'N1Y'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.1 / Cross-border commuter L0Y (example from D-001)",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'L0Y'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.1 / Calculator case H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72)",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'H1Y'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.1 / Calculator case A0N, other country (zh_source_tax_calculator/F-zh_source_tax_calculator-f86c6b)",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'A0N'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.1 / Calculator case B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'B0Y'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.2 / Maria (hr_transcript/F-hr_transcript-845204): Portuguese, C permit",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'no tariff code'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9): Swiss wife, living in Winterthur",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'no tariff code'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.2 / Swiss national living in Switzerland",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'no tariff code'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.3 / Liechtenstein resident who returns daily",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'in principle no source tax liability, subject to the double taxation agreement'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.3 / Liechtenstein resident, at most 45 non-return days",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'in principle no source tax liability, subject to the double taxation agreement'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.3 / Liechtenstein resident, more than 45 non-return days",
-        "message": "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'C0Y'"
-      }
-    ],
+    "error": [],
     "warning": [
       {
         "check": "fact_judge",
@@ -289,7 +204,7 @@
         "check": "trace_judge",
         "severity": "warning",
         "target": "rule.tariff_code",
-        "message": "partial: The expression gives no 'subject to the double taxation agreement' note or flag for the more-than-45-days case, and no 'incomplete' result, although the statement and table say so; rows also cite fb87f1 and cc19c7, which are not among the cited facts."
+        "message": "partial: The statement and table are backed by D-001/D-007/D-040/D-048/D-051/D-037 and the calculator facts, but the `expression` does not produce the 'subject to the double taxation agreement' note and flag for the >45-day row, so it does not match the business-language condition."
       },
       {
         "check": "trace_judge",
@@ -354,14 +269,20 @@
       {
         "check": "dev_refinement",
         "severity": "warning",
-        "target": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
-        "message": "Every example in AC-06.6.1, AC-06.6.2 and AC-06.6.3 is marked ❌ under 'Checked', while all other stories show ✅. Are these expected tariff codes (N1Y, C1Y, L0Y, A0N, B0N, 'no tariff code', C1Y with the double taxation agreement note) known to be wrong, or just not checked yet? They are the main acceptance tests for the computed code."
+        "target": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
+        "message": "AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?"
       },
       {
         "check": "dev_refinement",
         "severity": "warning",
-        "target": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
-        "message": "AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?"
+        "target": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
+        "message": "For a Liechtenstein resident with more than 45 non-return days, AC-06.6.3 and the tariff code rule say the code is recorded 'with the note subject to the double taxation agreement', but the example expects just 'C0Y' and D-051 says the code is one single text. Is the note part of the recorded result text (e.g. 'C0Y, subject to the double taxation agreement'), or is the code 'C0Y' recorded alone with the note and HR flag kept separately? This changes what is recorded and what the acceptance test checks."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "information.md",
+        "message": "\"(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)\" - Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
       },
       {
         "check": "tech_leak",
@@ -372,17 +293,11 @@
       {
         "check": "tech_leak",
         "severity": "warning",
-        "target": "information.md",
-        "message": "\"(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)\" - Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
+        "target": "feature.md",
+        "message": "\"using only the constructs the condition language allows; the child digit is 1 when the child counts, otherwise 0.\" - D-052 (in the Evidence list) refers to the constraints of an internal rule/condition language. That is an implementation detail, not a business rule."
       }
     ],
     "info": [
-      {
-        "check": "dev_refinement",
-        "severity": "info",
-        "target": "stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md",
-        "message": "In AC-06.7.3 the example 'Employee answers no' (France, Single, None or other, no children → A0N) is marked ❌, while the 'yes' example is ✅. Is A0N the wrong expected code for this case, or has it simply not been checked yet?"
-      },
       {
         "check": "dev_refinement",
         "severity": "info",
@@ -406,6 +321,18 @@
         "severity": "info",
         "target": "stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md",
         "message": "Expected results for the same question differ between stories. US-01.2 marks spouse's nationality, spouse lives in Switzerland and nationality as 'asked' (AC-01.2.4, AC-01.2.5). US-05.1 and US-05.2 mark the same cases as 'required'. Several rows also show '–' for questions that always apply, for example civil status for the married C-permit holder in AC-01.2.5, or postcode and town for Stefan in AC-01.2.3. Is there a real difference between 'asked' and 'required' (can any of these answers be left empty?), and does '–' mean 'not checked in this example'?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
+        "message": "In the AC-06.6.3 example table, the columns for whether denomination, spouse gainfully employed and has children were asked show '–' for the 'at most 45 non-return days' and 'more than 45 non-return days' rows, rather than 'not asked' or 'asked' as in the 'returns daily' row. Should the expected values be 'not asked' for the second row and 'asked' for the third, so these examples can be tested?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "feature.md",
+        "message": "D-052 (cited for the source tax tariff code rule) says 'the child digit is 1 when the child counts, otherwise 0'. The child digit rule and F-zh_source_tax_calculator-4c53e3 say the digit is the number of counted children (e.g. C3Y). Can you confirm that D-052 means the per-child contribution and that the code's digit is the total count, with no upper limit (D-044)?"
       }
     ]
   },
@@ -2227,10 +2154,8 @@
     {
       "case": "AC-06.7.3 / Employee answers no",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'A0N'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.7.3 / Employee answers yes",
@@ -2355,98 +2280,74 @@
     {
       "case": "AC-06.6.1 / Calculator case C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'C1Y'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.1 / Calculator case N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'N1Y'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.1 / Cross-border commuter L0Y (example from D-001)",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'L0Y'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.1 / Calculator case H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72)",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'H1Y'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.1 / Calculator case A0N, other country (zh_source_tax_calculator/F-zh_source_tax_calculator-f86c6b)",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'A0N'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.1 / Calculator case B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'B0Y'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.2 / Maria (hr_transcript/F-hr_transcript-845204): Portuguese, C permit",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'no tariff code'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9): Swiss wife, living in Winterthur",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'no tariff code'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.2 / Swiss national living in Switzerland",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'no tariff code'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.3 / Liechtenstein resident who returns daily",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'in principle no source tax liability, subject to the double taxation agreement'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.3 / Liechtenstein resident, at most 45 non-return days",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'in principle no source tax liability, subject to the double taxation agreement'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.3 / Liechtenstein resident, more than 45 non-return days",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = 'ERROR: construct BinOp not allowed in \\'if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", tariff_letter + child_count + church_tax_suffix))\\'', expected 'C0Y'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-07.1.1 / Employee living in Germany with children",
@@ -2876,19 +2777,9 @@
   "dev_refinement": {
     "questions": [
       {
-        "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
-        "question": "Every example in AC-06.6.1, AC-06.6.2 and AC-06.6.3 is marked ❌ under 'Checked', while all other stories show ✅. Are these expected tariff codes (N1Y, C1Y, L0Y, A0N, B0N, 'no tariff code', C1Y with the double taxation agreement note) known to be wrong, or just not checked yet? They are the main acceptance tests for the computed code.",
-        "severity": "major"
-      },
-      {
         "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
         "question": "AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?",
         "severity": "major"
-      },
-      {
-        "file": "stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md",
-        "question": "In AC-06.7.3 the example 'Employee answers no' (France, Single, None or other, no children → A0N) is marked ❌, while the 'yes' example is ✅. Is A0N the wrong expected code for this case, or has it simply not been checked yet?",
-        "severity": "minor"
       },
       {
         "file": "stories/US-03.1-employee-confirms-the-first-working-day.md",
@@ -2909,6 +2800,21 @@
         "file": "stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md",
         "question": "Expected results for the same question differ between stories. US-01.2 marks spouse's nationality, spouse lives in Switzerland and nationality as 'asked' (AC-01.2.4, AC-01.2.5). US-05.1 and US-05.2 mark the same cases as 'required'. Several rows also show '–' for questions that always apply, for example civil status for the married C-permit holder in AC-01.2.5, or postcode and town for Stefan in AC-01.2.3. Is there a real difference between 'asked' and 'required' (can any of these answers be left empty?), and does '–' mean 'not checked in this example'?",
         "severity": "minor"
+      },
+      {
+        "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
+        "question": "For a Liechtenstein resident with more than 45 non-return days, AC-06.6.3 and the tariff code rule say the code is recorded 'with the note subject to the double taxation agreement', but the example expects just 'C0Y' and D-051 says the code is one single text. Is the note part of the recorded result text (e.g. 'C0Y, subject to the double taxation agreement'), or is the code 'C0Y' recorded alone with the note and HR flag kept separately? This changes what is recorded and what the acceptance test checks.",
+        "severity": "major"
+      },
+      {
+        "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
+        "question": "In the AC-06.6.3 example table, the columns for whether denomination, spouse gainfully employed and has children were asked show '–' for the 'at most 45 non-return days' and 'more than 45 non-return days' rows, rather than 'not asked' or 'asked' as in the 'returns daily' row. Should the expected values be 'not asked' for the second row and 'asked' for the third, so these examples can be tested?",
+        "severity": "minor"
+      },
+      {
+        "file": "feature.md",
+        "question": "D-052 (cited for the source tax tariff code rule) says 'the child digit is 1 when the child counts, otherwise 0'. The child digit rule and F-zh_source_tax_calculator-4c53e3 say the digit is the number of counted children (e.g. C3Y). Can you confirm that D-052 means the per-child contribution and that the code's digit is the total count, with no upper limit (D-044)?",
+        "severity": "minor"
       }
     ],
     "already_flagged": [
@@ -2917,204 +2823,100 @@
     ],
     "tech_leaks": [
       {
+        "file": "information.md",
+        "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
+        "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
+      },
+      {
         "file": "feature.md",
         "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
         "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
       },
       {
-        "file": "information.md",
-        "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
-        "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
+        "file": "feature.md",
+        "quote": "using only the constructs the condition language allows; the child digit is 1 when the child counts, otherwise 0.",
+        "why": "D-052 (in the Evidence list) refers to the constraints of an internal rule/condition language. That is an implementation detail, not a business rule."
       }
     ]
   },
   "impact": {
-    "added": [
-      "US-01.7",
-      "US-01.8",
-      "US-06.7"
-    ],
+    "added": [],
     "removed": [],
-    "changed": [
-      "US-01.1",
-      "US-01.2",
-      "US-01.3",
-      "US-01.4",
-      "US-01.5",
-      "US-01.6",
-      "US-02.1",
-      "US-02.2",
-      "US-02.3",
-      "US-02.4",
-      "US-03.1",
-      "US-03.2",
-      "US-03.3",
-      "US-04.1",
-      "US-04.2",
-      "US-04.3",
-      "US-04.4",
-      "US-05.1",
-      "US-05.2",
-      "US-05.3",
-      "US-05.4",
-      "US-06.2",
-      "US-06.3",
-      "US-06.4",
-      "US-06.5",
-      "US-06.6",
-      "US-07.1",
-      "US-07.2",
-      "US-07.3",
-      "US-07.4",
-      "US-07.5",
-      "US-07.6",
-      "US-08.1",
-      "US-08.2",
-      "US-08.3",
-      "US-08.4"
-    ],
-    "unchanged": 0,
+    "changed": [],
+    "unchanged": 39,
     "changed_without_cause": [],
-    "changed_elements": [
-      "OQ-calculator-coverage",
-      "OQ-fund-divorced-widowed",
-      "OQ-hr-side-follow-ups",
-      "address_country",
-      "address_house_number",
-      "address_postcode",
-      "address_street",
-      "address_town",
-      "base_tariff_letter",
-      "calculator_civil_status",
-      "calculator_residence",
-      "child_age_status",
-      "child_alternating_custody",
-      "child_common_household_other_parent",
-      "child_count",
-      "child_custody",
-      "child_main_financial_contributor",
-      "child_maintenance_over_50",
-      "child_parental_care",
-      "child_result",
-      "child_same_household",
-      "child_shared_custody",
-      "church_tax_suffix",
-      "civil_status",
-      "confession",
-      "cross_border_tariff",
-      "daily_return_germany",
-      "daily_return_liechtenstein",
-      "daily_return_reasonable",
-      "date_of_birth",
-      "discard_inapplicable_answers",
-      "first_name",
-      "first_working_day",
-      "has_children",
-      "holds_c_permit",
-      "insurance_start_date",
-      "last_name",
-      "liechtenstein_no_source_tax",
-      "nationality",
-      "non_return_days_45",
-      "non_return_days_60",
-      "pension_fund_canton",
-      "pension_fund_civil_status",
-      "permit_reminder",
-      "questionnaire_flow",
-      "read_only_after_submission",
-      "residence_canton",
-      "residence_certificate",
-      "spouse_date_of_birth",
-      "spouse_gainful_employment",
-      "spouse_holds_c_permit",
-      "spouse_nationality",
-      "spouse_residence_country",
-      "subject_to_source_tax",
-      "tariff_code",
-      "tariff_letter"
-    ],
+    "changed_elements": [],
     "guard_reverted": []
   },
   "skipped_sources": [],
   "review": {
     "verdict": "not_ready",
-    "summary": "Not ready. The tariff_code rule fails lint because its expression uses a `+` (BinOp) that the expression language doesn't allow. That one error makes 14 examples fail (all of AC-06.6.x and AC-06.7.3), including the main acceptance tests for the computed tariff code. A US-01.6 contradiction and a technical-vocabulary leak are also open. The other items are caveats: weak traceability on several items, two non-blocking open questions, and inconsistent 'asked' and 'required' wording.",
+    "summary": "All 300+ examples pass and there are no errors. Two major dev-refinement questions are open (AC-01.6.2 vs AC-01.6.3, and the Liechtenstein tariff-code note), and implementation vocabulary leaks into the spec (D-045 and D-052 'expression' / 'condition language', ISO 3166). Many trace-judge partials also point to non-cited or unbacked claims. Resolve the blockers, then it should be ready_with_caveats.",
     "findings": [
       {
-        "title": "tariff_code rule does not evaluate (lint error); 14 examples fail",
-        "why": "The tariff code is the core output of the feature. The expression concatenates tariff_letter + child_count + church_tax_suffix with `+`, which the expression language rejects. No tariff code can be computed, and the 14 examples that expect one all fail.",
-        "evidence": "lint rule.tariff_code; examples AC-06.6.1 (7 cases), AC-06.6.2 (3), AC-06.6.3 (3), AC-06.7.3 'Employee answers no'. All show 'construct BinOp not allowed'.",
-        "action": "Rewrite the rule using the allowed constructs, e.g. a concat/format function, or one if_else branch per letter/digit/suffix. If concatenation is needed, add it to the expression language. Re-run the examples; there should be no expectation changes."
+        "title": "AC-01.6.2 contradicts AC-01.6.3 after submission",
+        "why": "The example expects Denomination 'asked' after HR records a change, but the questionnaire is read-only after submission and the tariff code should show 'incomplete - HR must complete'. Devs cannot tell whether the questionnaire reopens.",
+        "evidence": "dev_refinement (major) US-01.6; AC-01.6.1/2/3; D-048; example 'AC-01.6.2 / Tomás after HR records...'",
+        "action": "Add a decision: after submission HR completes the missing answers and the tariff shows incomplete (no reopen), or the questionnaire reopens for the employee. Fix the AC-01.6.2 expected value to match."
       },
       {
-        "title": "The tariff rule does not implement the statement or table for the Liechtenstein >45 days and incomplete cases",
-        "why": "The statement says the more-than-45-days case carries a 'subject to the double taxation agreement' note and that an incomplete questionnaire gives 'incomplete - HR must complete' (D-048). The expression yields neither. Fixing the BinOp alone would still leave the rule short of its own spec.",
-        "evidence": "trace_judge rule.tariff_code; AC-06.6.3 'more than 45 non-return days' expects C0Y; AC-01.6.3 / D-048",
-        "action": "Decide in decisions.yaml how the DTA note and the incomplete result are represented (extra output field or text), and add both to the rule. Cite fb87f1 and cc19c7 in the rule."
+        "title": "Liechtenstein >45 days: is the DTA note part of the recorded code?",
+        "why": "The recorded result changes. The example expects 'C0Y' alone, the rule says 'with the note', and D-051 says the code is one single text. The acceptance test is ambiguous.",
+        "evidence": "dev_refinement (major) US-06.6; AC-06.6.3; rule.tariff_code trace_judge (expression lacks the note/flag); D-051",
+        "action": "Decide in decisions.yaml: code 'C0Y' with the note and HR flag stored separately, or one text including the note. Align the rule expression, the AC and the examples."
       },
       {
-        "title": "AC-01.6.2 contradicts AC-01.6.3",
-        "why": "After submission the questionnaire is read-only. The example nevertheless expects 'Denomination: asked' once HR records a change, while D-048 says the result becomes 'incomplete - HR must complete'. Engineering cannot tell whether the questionnaire reopens for the employee.",
-        "evidence": "dev_refinement US-01.6 (major); AC-01.6.1, AC-01.6.2, AC-01.6.3, D-048",
-        "action": "Decide whether HR completes the missing answer or the employee is asked again. Then fix the example, or AC-01.6.3, accordingly."
+        "title": "Technical vocabulary leaks into the spec",
+        "why": "The spec must stay in business language. D-045 forbids 'expression', and D-052 refers to the 'condition language'.",
+        "evidence": "tech_leak: information.md and feature.md ('The expression gives, per child...'; D-052 'constructs the condition language allows'); ISO 3166 in item.address_country, item.nationality, item.spouse_nationality, AC-02.3.1",
+        "action": "Reword to business language, e.g. 'the digit is the number of counted children' and 'country list (all countries, plus stateless)'. Reword D-052 and remove the ISO standard name unless the PO wants it as a requirement."
       },
       {
-        "title": "Implementation vocabulary leaks into the spec",
-        "why": "D-045 forbids the word 'expression' in business text, and the 'ISO 3166' list name is implementation vocabulary. Engineering decisions should not be fixed in the spec.",
-        "evidence": "tech_leak feature.md and information.md ('The expression gives, per child…'); item.address_country, item.nationality, item.spouse_nationality, AC-02.3.1 ('ISO 3166')",
-        "action": "Reword the child-count note in business terms, e.g. 'the digit is the number of counted children'. Replace 'ISO 3166 country list' with 'list of countries'. Leave the standard to engineering."
+        "title": "Child digit wording in D-052 conflicts with the rule",
+        "why": "D-052 says the digit is 1 or 0, but the rule and calculator say the digit is the count of counted children (C3Y), with no upper limit (D-044).",
+        "evidence": "dev_refinement info feature.md; F-zh_source_tax_calculator-4c53e3; D-044",
+        "action": "Confirm that D-052 means the per-child contribution and reword it. State the total count and no upper limit."
       },
       {
-        "title": "Facts cited by examples and conditions are not in the cited-fact lists",
-        "why": "Several story examples, items and rules rely on facts that are not in their cited sets. Most of these are the Maria and Tomás examples. This weakens traceability. Two claims are unbacked: Liechtenstein never gets the cross-border tariff, and Swiss nationals are exempt.",
-        "evidence": "trace_judge US-01.2, US-01.4, US-06.2, US-06.3, US-06.5, US-06.6, US-06.7, US-08.2 (AC-08.2.4), rule.cross_border_tariff, rule.questionnaire_flow, item.spouse_gainful_employment, item.has_children",
-        "action": "Add the missing source_refs (845204, b90bd9, 3f2c2a, cc19c7, d75286, 300c72, 97139a). Then confirm in decisions.yaml the Liechtenstein cross-border rule and the Swiss-national exemption, which no source states."
+        "title": "Rules and ACs rest on uncited or unbacked claims",
+        "why": "Traceability is partial. Several claims have no cited fact: the Liechtenstein 'never cross-border' claim, Swiss nationals being exempt, the spouse-employment and children conditions for Liechtenstein, the Maria/Tomás example refs, and the partner date of birth for Separated.",
+        "evidence": "trace_judge: rule.cross_border_tariff, US-08.2, US-06.5, US-06.6, US-06.2/06.3/06.7, US-01.2/01.4, rule.pension_fund_civil_status, item.spouse_gainful_employment, item.has_children",
+        "action": "Add the missing fact citations (F-hr_transcript-845204, -b90bd9, -3f2c2a, F-...-cc19c7) or record decisions. Confirm the partner date of birth for Separated and Married, and the Liechtenstein daily-return case."
       },
       {
-        "title": "Purpose claims and one rule row are unsupported or overstated",
-        "why": "Several purposes are stated as business rules without a source, and one rule row contradicts its source. Engineers will take them as confirmed.",
-        "evidence": "trace_judge item.child_main_financial_contributor ('H tariff'), item.non_return_days_60, item.daily_return_reasonable, item.first_working_day (age reference date), AC-03.1.4 ('HR plans the start'), US-06.2 (denomination not part of fund registration), rule.pension_fund_civil_status (partner date of birth also for Separated and Married, but D-003 covers registered partnership only)",
-        "action": "Either back each claim with a decision or source, or soften or remove it. For pension_fund_civil_status, confirm in decisions.yaml which civil statuses need the partner's date of birth."
+        "title": "Required vs asked, and '–' in example tables are inconsistent",
+        "why": "The same cases are marked 'asked' in US-01.2 and 'required' in US-05.x. '–' is used for questions that always apply. The AC-06.6.3 rows are untestable as written.",
+        "evidence": "dev_refinement info US-01.2, US-06.6",
+        "action": "Define 'asked' vs 'required' in guidance. Fill in the '–' cells with explicit expected values (not asked / asked)."
       },
       {
-        "title": "Inconsistent blocking behaviour and 'asked' versus 'required'",
-        "why": "The stories disagree on whether a missing required answer blocks the next step or only submission. The expected-result vocabulary also differs between stories, and '–' is undefined. Test cases will be ambiguous.",
-        "evidence": "dev_refinement US-01.8 (US-02.1/02.2 vs AC-01.8.3/US-04.1); US-01.2 vs US-05.1/05.2",
-        "action": "Decide on one rule: block only submission, which fits the save-and-resume in US-01.7. Define 'asked' versus 'required' and the meaning of '–', then align the stories."
+        "title": "Missing-answer behaviour: blocks the step or only the submit?",
+        "why": "US-02.x says the employee cannot continue. US-04.1 and AC-01.8.3 say only submit is blocked. This conflicts with the save-and-resume in US-01.7.",
+        "evidence": "dev_refinement info US-01.8",
+        "action": "Decide: block only submit (recommended, matches US-01.7) and update US-02.1 and US-02.2."
       },
       {
-        "title": "Certificate-of-residence semantics are unclear",
-        "why": "The item is named 'handed in' and the calculator asks 'beigebracht', but the story asks whether the employee 'has' a certificate. This changes the meaning of yes/no/not yet, and what HR expects afterwards.",
-        "evidence": "dev_refinement US-08.2; trace_judge item.residence_certificate",
-        "action": "Decide in decisions.yaml what 'yes', 'no' and 'not yet' mean, and when HR expects a certificate."
+        "title": "Certificate of residence semantics unclear",
+        "why": "The item says 'handed in', the calculator says provided ('beigebracht'), and the story says the employee 'has' one. HR's follow-up for 'no' vs 'not yet' is undefined.",
+        "evidence": "dev_refinement info US-08.2; trace_judge item.residence_certificate",
+        "action": "Decide what 'yes' means and whether HR expects a certificate for 'no' or only for 'not yet'."
       },
       {
-        "title": "Non-blocking open questions need owners before go-live",
-        "why": "The tariff code may differ from the Zurich calculator on unexplored paths. Several facts are only partly verified, and the pension portal form for Divorced and Widowed is unknown. The portal facts for the start date and canton are unused or unverified. The Germany questions for people living abroad are not specified.",
-        "evidence": "OQ-calculator-coverage, OQ-fund-divorced-widowed; fact_judge F-pension_portal-39bab1, -6d3630, -b359c3, -e45e5b; coverage F-pension_portal-3a97ab, F-hr_transcript-8595fb; US-03.1 date window",
-        "action": "Assign a domain expert to compare computed codes with the calculator before go-live. Ask the fund or HR to check the portal. Clarify how the insurance start date derives from the first working day, and what happens when the first working day is in the past."
+        "title": "Open go-live and source gaps (non-blocking)",
+        "why": "The tariff code is unverified on unexplored calculator paths. The pension portal's Divorced/Widowed fields and its insurance start-date derivation are unknown. Several judged facts rest on inferred labels (Q16, Q14, Q19). Calculator checks and the portal's start-date validation are not yet specced.",
+        "evidence": "OQ-calculator-coverage; OQ-fund-divorced-widowed; coverage F-pension_portal-3a97ab, -e45e5b, F-hr_transcript-8595fb; fact_judge partials",
+        "action": "Keep the domain-expert check as a go-live condition. Ask the fund or HR to check the portal. Decide how the insurance start date (1st of month) derives from the first working day."
       },
       {
-        "title": "Inferred items remain unconfirmed",
-        "why": "Several rules and stories are inferred and rely on 'inferred, go-live check' examples. They also carry gaps such as Q14 being read as parental care, and Q16 being read as residence in Switzerland.",
-        "evidence": "inferred_items (spouse_nationality, church_tax_suffix, child_result, base_tariff_letter, US-05.2, US-07.3 to 07.5 and others); fact_judge F-zh_source_tax_calculator-64ac33, -037b1c, -dc0ae9, -2754e8",
-        "action": "Have HR or a domain expert confirm the inferred items and the calculator-question meanings, and record them in decisions.yaml."
+        "title": "First working day: date-range and reference-date rules unspecified",
+        "why": "It is unclear whether past dates are allowed, which date counts as 'sent', and whether the first working day is the reference date for children's ages (no cited fact says so).",
+        "evidence": "dev_refinement info US-03.1; trace_judge item.first_working_day, US-03.1 (AC-03.1.4)",
+        "action": "Decide the allowed range and the reference date for children's age. Remove or source the AC-03.1.4 claim that HR 'keeps the fund registration up to date'."
       }
     ]
   },
   "stages": {
     "ran": [
-      "knowledge.raw",
-      "feature.plan",
-      "sections/SEC-03-employment-start",
-      "sections/SEC-04-civil-status-spouse",
-      "sections/SEC-02-personal-details-address",
-      "sections/SEC-08-cross-border-residence",
-      "sections/SEC-05-source-tax-liability",
-      "sections/SEC-01-questionnaire-flow",
-      "sections/SEC-07-source-tax-children",
-      "sections/SEC-06-source-tax-tariff-basics",
-      "feature.flow",
       "judge_trace",
       "dev_refinement",
       "review"
@@ -3126,111 +2928,59 @@
       "extract/pension_portal",
       "normalize/zh_source_tax_calculator",
       "extract/zh_source_tax_calculator",
-      "judge_facts"
+      "judge_facts",
+      "knowledge.raw",
+      "feature.plan",
+      "feature.flow"
     ]
   },
-  "cost_usd_this_run": 9.8,
+  "cost_usd_this_run": 1.04,
   "usage_this_run": {
     "by_stage": {
-      "write_section": {
-        "calls": 8,
-        "turns": 16,
-        "input_tokens": 16,
-        "output_tokens": 119374,
-        "cache_read_input_tokens": 10272,
-        "cache_creation_input_tokens": 251176,
-        "total_tokens": 380838,
-        "cost_usd": 4.4181,
-        "seconds": 895.8
-      },
       "dev_refinement": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 5800,
+        "output_tokens": 3277,
         "cache_read_input_tokens": 2375,
-        "cache_creation_input_tokens": 214663,
-        "total_tokens": 222840,
-        "cost_usd": 1.9414,
-        "seconds": 55.8
-      },
-      "judge_trace": {
-        "calls": 16,
-        "turns": 32,
-        "input_tokens": 32,
-        "output_tokens": 19377,
-        "cache_read_input_tokens": 32960,
-        "cache_creation_input_tokens": 259614,
-        "total_tokens": 311983,
-        "cost_usd": 1.2624,
-        "seconds": 156.4
-      },
-      "knowledge": {
-        "calls": 1,
-        "turns": 2,
-        "input_tokens": 2,
-        "output_tokens": 41630,
-        "cache_read_input_tokens": 1484,
-        "cache_creation_input_tokens": 46657,
-        "total_tokens": 89773,
-        "cost_usd": 1.21,
-        "seconds": 317.7
-      },
-      "plan_feature": {
-        "calls": 1,
-        "turns": 2,
-        "input_tokens": 2,
-        "output_tokens": 4100,
-        "cache_read_input_tokens": 1416,
-        "cache_creation_input_tokens": 37549,
-        "total_tokens": 43067,
-        "cost_usd": 0.3857,
-        "seconds": 32.3
-      },
-      "write_section_repair": {
-        "calls": 1,
-        "turns": 2,
-        "input_tokens": 2,
-        "output_tokens": 5287,
-        "cache_read_input_tokens": 814,
-        "cache_creation_input_tokens": 21924,
-        "total_tokens": 28027,
-        "cost_usd": 0.2827,
-        "seconds": 39.3
+        "cache_creation_input_tokens": 93867,
+        "total_tokens": 99521,
+        "cost_usd": 0.8264,
+        "seconds": 32.5
       },
       "review": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 2846,
+        "output_tokens": 2353,
         "cache_read_input_tokens": 2116,
-        "cache_creation_input_tokens": 45543,
-        "total_tokens": 50507,
-        "cost_usd": 0.2154,
-        "seconds": 21.6
+        "cache_creation_input_tokens": 40704,
+        "total_tokens": 45175,
+        "cost_usd": 0.1908,
+        "seconds": 17.5
       },
-      "flow": {
+      "judge_trace": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 1632,
-        "cache_read_input_tokens": 671,
-        "cache_creation_input_tokens": 17123,
-        "total_tokens": 19428,
-        "cost_usd": 0.0859,
-        "seconds": 10.7
+        "output_tokens": 791,
+        "cache_read_input_tokens": 2060,
+        "cache_creation_input_tokens": 3289,
+        "total_tokens": 6142,
+        "cost_usd": 0.0216,
+        "seconds": 7.5
       }
     },
     "total": {
-      "calls": 30,
-      "turns": 60,
-      "input_tokens": 60,
-      "output_tokens": 200046,
-      "cache_read_input_tokens": 52108,
-      "cache_creation_input_tokens": 894249,
-      "total_tokens": 1146463,
-      "cost_usd": 9.8016,
-      "seconds": 1529.6
+      "calls": 3,
+      "turns": 6,
+      "input_tokens": 6,
+      "output_tokens": 6421,
+      "cache_read_input_tokens": 6551,
+      "cache_creation_input_tokens": 137860,
+      "total_tokens": 150838,
+      "cost_usd": 1.0388,
+      "seconds": 57.5
     }
   }
 }

@@ -101,7 +101,7 @@ sources.
 | rule: Base tariff letter | F-zh_source_tax_calculator-97139a, F-zh_source_tax_calculator-037b1c, F-zh_source_tax_calculator-300c72, F-zh_source_tax_calculator-f86c6b, D-006, D-001 |
 | rule: Cross-border tariff applies (Germany) | F-zh_source_tax_calculator-993db3, F-zh_source_tax_calculator-c8aa5e, D-035, D-001 |
 | rule: Tariff letter | F-zh_source_tax_calculator-993db3, F-zh_source_tax_calculator-c8aa5e, D-051, D-006 |
-| rule: Source tax tariff code | D-001, D-007, D-040, D-048, D-051, D-037, F-hr_transcript-34494f, F-zh_source_tax_calculator-86d588, F-zh_source_tax_calculator-4c53e3 |
+| rule: Source tax tariff code | D-001, D-007, D-037, D-040, D-048, D-051, D-052, F-hr_transcript-34494f, F-zh_source_tax_calculator-4c53e3, F-zh_source_tax_calculator-86d588 |
 | rule: Permit reminder | F-hr_transcript-c53552, D-010, D-038, D-050 |
 | rule: Discard answers that no longer apply | D-036, D-048, D-050, G-01 |
 | rule: Read-only after submission | D-037, D-033, D-034 |

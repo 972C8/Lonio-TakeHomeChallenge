@@ -647,3 +647,16 @@ decisions:
   by: Product owner
   evidence: []
   evidence_hash: e3b0c44298fc
+- id: D-052
+  action: override
+  target: rule.tariff_code.expression
+  statement: The tariff code joins tariff letter, child digit and church-tax suffix into one code (D-051),
+    using only the constructs the condition language allows; the child digit is 1 when the child counts, otherwise 0.
+  value: if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in
+    principle no source tax liability, subject to the double taxation agreement", [tariff_letter, if_else(child_count,
+    1, 0), church_tax_suffix]))
+  rationale: 'Review finding: the written expression used ''+'', which the condition language rejects,
+    so no example could compute a code.'
+  by: Product owner
+  evidence: []
+  evidence_hash: e3b0c44298fc

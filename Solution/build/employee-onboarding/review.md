@@ -2,40 +2,40 @@
 
 **Verdict: NOT READY**
 
-Not ready. The tariff_code rule fails lint because its expression uses a `+` (BinOp) that the expression language doesn't allow. That one error makes 14 examples fail (all of AC-06.6.x and AC-06.7.3), including the main acceptance tests for the computed tariff code. A US-01.6 contradiction and a technical-vocabulary leak are also open. The other items are caveats: weak traceability on several items, two non-blocking open questions, and inconsistent 'asked' and 'required' wording.
+All 300+ examples pass and there are no errors. Two major dev-refinement questions are open (AC-01.6.2 vs AC-01.6.3, and the Liechtenstein tariff-code note), and implementation vocabulary leaks into the spec (D-045 and D-052 'expression' / 'condition language', ISO 3166). Many trace-judge partials also point to non-cited or unbacked claims. Resolve the blockers, then it should be ready_with_caveats.
 
 ## Reviewer findings
 
-1. **tariff_code rule does not evaluate (lint error); 14 examples fail** – The tariff code is the core output of the feature. The expression concatenates tariff_letter + child_count + church_tax_suffix with `+`, which the expression language rejects. No tariff code can be computed, and the 14 examples that expect one all fail.  
-   Evidence: lint rule.tariff_code; examples AC-06.6.1 (7 cases), AC-06.6.2 (3), AC-06.6.3 (3), AC-06.7.3 'Employee answers no'. All show 'construct BinOp not allowed'.  
-   Action: Rewrite the rule using the allowed constructs, e.g. a concat/format function, or one if_else branch per letter/digit/suffix. If concatenation is needed, add it to the expression language. Re-run the examples; there should be no expectation changes.
-2. **The tariff rule does not implement the statement or table for the Liechtenstein >45 days and incomplete cases** – The statement says the more-than-45-days case carries a 'subject to the double taxation agreement' note and that an incomplete questionnaire gives 'incomplete - HR must complete' (D-048). The expression yields neither. Fixing the BinOp alone would still leave the rule short of its own spec.  
-   Evidence: trace_judge rule.tariff_code; AC-06.6.3 'more than 45 non-return days' expects C0Y; AC-01.6.3 / D-048  
-   Action: Decide in decisions.yaml how the DTA note and the incomplete result are represented (extra output field or text), and add both to the rule. Cite fb87f1 and cc19c7 in the rule.
-3. **AC-01.6.2 contradicts AC-01.6.3** – After submission the questionnaire is read-only. The example nevertheless expects 'Denomination: asked' once HR records a change, while D-048 says the result becomes 'incomplete - HR must complete'. Engineering cannot tell whether the questionnaire reopens for the employee.  
-   Evidence: dev_refinement US-01.6 (major); AC-01.6.1, AC-01.6.2, AC-01.6.3, D-048  
-   Action: Decide whether HR completes the missing answer or the employee is asked again. Then fix the example, or AC-01.6.3, accordingly.
-4. **Implementation vocabulary leaks into the spec** – D-045 forbids the word 'expression' in business text, and the 'ISO 3166' list name is implementation vocabulary. Engineering decisions should not be fixed in the spec.  
-   Evidence: tech_leak feature.md and information.md ('The expression gives, per child…'); item.address_country, item.nationality, item.spouse_nationality, AC-02.3.1 ('ISO 3166')  
-   Action: Reword the child-count note in business terms, e.g. 'the digit is the number of counted children'. Replace 'ISO 3166 country list' with 'list of countries'. Leave the standard to engineering.
-5. **Facts cited by examples and conditions are not in the cited-fact lists** – Several story examples, items and rules rely on facts that are not in their cited sets. Most of these are the Maria and Tomás examples. This weakens traceability. Two claims are unbacked: Liechtenstein never gets the cross-border tariff, and Swiss nationals are exempt.  
-   Evidence: trace_judge US-01.2, US-01.4, US-06.2, US-06.3, US-06.5, US-06.6, US-06.7, US-08.2 (AC-08.2.4), rule.cross_border_tariff, rule.questionnaire_flow, item.spouse_gainful_employment, item.has_children  
-   Action: Add the missing source_refs (845204, b90bd9, 3f2c2a, cc19c7, d75286, 300c72, 97139a). Then confirm in decisions.yaml the Liechtenstein cross-border rule and the Swiss-national exemption, which no source states.
-6. **Purpose claims and one rule row are unsupported or overstated** – Several purposes are stated as business rules without a source, and one rule row contradicts its source. Engineers will take them as confirmed.  
-   Evidence: trace_judge item.child_main_financial_contributor ('H tariff'), item.non_return_days_60, item.daily_return_reasonable, item.first_working_day (age reference date), AC-03.1.4 ('HR plans the start'), US-06.2 (denomination not part of fund registration), rule.pension_fund_civil_status (partner date of birth also for Separated and Married, but D-003 covers registered partnership only)  
-   Action: Either back each claim with a decision or source, or soften or remove it. For pension_fund_civil_status, confirm in decisions.yaml which civil statuses need the partner's date of birth.
-7. **Inconsistent blocking behaviour and 'asked' versus 'required'** – The stories disagree on whether a missing required answer blocks the next step or only submission. The expected-result vocabulary also differs between stories, and '–' is undefined. Test cases will be ambiguous.  
-   Evidence: dev_refinement US-01.8 (US-02.1/02.2 vs AC-01.8.3/US-04.1); US-01.2 vs US-05.1/05.2  
-   Action: Decide on one rule: block only submission, which fits the save-and-resume in US-01.7. Define 'asked' versus 'required' and the meaning of '–', then align the stories.
-8. **Certificate-of-residence semantics are unclear** – The item is named 'handed in' and the calculator asks 'beigebracht', but the story asks whether the employee 'has' a certificate. This changes the meaning of yes/no/not yet, and what HR expects afterwards.  
-   Evidence: dev_refinement US-08.2; trace_judge item.residence_certificate  
-   Action: Decide in decisions.yaml what 'yes', 'no' and 'not yet' mean, and when HR expects a certificate.
-9. **Non-blocking open questions need owners before go-live** – The tariff code may differ from the Zurich calculator on unexplored paths. Several facts are only partly verified, and the pension portal form for Divorced and Widowed is unknown. The portal facts for the start date and canton are unused or unverified. The Germany questions for people living abroad are not specified.  
-   Evidence: OQ-calculator-coverage, OQ-fund-divorced-widowed; fact_judge F-pension_portal-39bab1, -6d3630, -b359c3, -e45e5b; coverage F-pension_portal-3a97ab, F-hr_transcript-8595fb; US-03.1 date window  
-   Action: Assign a domain expert to compare computed codes with the calculator before go-live. Ask the fund or HR to check the portal. Clarify how the insurance start date derives from the first working day, and what happens when the first working day is in the past.
-10. **Inferred items remain unconfirmed** – Several rules and stories are inferred and rely on 'inferred, go-live check' examples. They also carry gaps such as Q14 being read as parental care, and Q16 being read as residence in Switzerland.  
-   Evidence: inferred_items (spouse_nationality, church_tax_suffix, child_result, base_tariff_letter, US-05.2, US-07.3 to 07.5 and others); fact_judge F-zh_source_tax_calculator-64ac33, -037b1c, -dc0ae9, -2754e8  
-   Action: Have HR or a domain expert confirm the inferred items and the calculator-question meanings, and record them in decisions.yaml.
+1. **AC-01.6.2 contradicts AC-01.6.3 after submission** – The example expects Denomination 'asked' after HR records a change, but the questionnaire is read-only after submission and the tariff code should show 'incomplete - HR must complete'. Devs cannot tell whether the questionnaire reopens.  
+   Evidence: dev_refinement (major) US-01.6; AC-01.6.1/2/3; D-048; example 'AC-01.6.2 / Tomás after HR records...'  
+   Action: Add a decision: after submission HR completes the missing answers and the tariff shows incomplete (no reopen), or the questionnaire reopens for the employee. Fix the AC-01.6.2 expected value to match.
+2. **Liechtenstein >45 days: is the DTA note part of the recorded code?** – The recorded result changes. The example expects 'C0Y' alone, the rule says 'with the note', and D-051 says the code is one single text. The acceptance test is ambiguous.  
+   Evidence: dev_refinement (major) US-06.6; AC-06.6.3; rule.tariff_code trace_judge (expression lacks the note/flag); D-051  
+   Action: Decide in decisions.yaml: code 'C0Y' with the note and HR flag stored separately, or one text including the note. Align the rule expression, the AC and the examples.
+3. **Technical vocabulary leaks into the spec** – The spec must stay in business language. D-045 forbids 'expression', and D-052 refers to the 'condition language'.  
+   Evidence: tech_leak: information.md and feature.md ('The expression gives, per child...'; D-052 'constructs the condition language allows'); ISO 3166 in item.address_country, item.nationality, item.spouse_nationality, AC-02.3.1  
+   Action: Reword to business language, e.g. 'the digit is the number of counted children' and 'country list (all countries, plus stateless)'. Reword D-052 and remove the ISO standard name unless the PO wants it as a requirement.
+4. **Child digit wording in D-052 conflicts with the rule** – D-052 says the digit is 1 or 0, but the rule and calculator say the digit is the count of counted children (C3Y), with no upper limit (D-044).  
+   Evidence: dev_refinement info feature.md; F-zh_source_tax_calculator-4c53e3; D-044  
+   Action: Confirm that D-052 means the per-child contribution and reword it. State the total count and no upper limit.
+5. **Rules and ACs rest on uncited or unbacked claims** – Traceability is partial. Several claims have no cited fact: the Liechtenstein 'never cross-border' claim, Swiss nationals being exempt, the spouse-employment and children conditions for Liechtenstein, the Maria/Tomás example refs, and the partner date of birth for Separated.  
+   Evidence: trace_judge: rule.cross_border_tariff, US-08.2, US-06.5, US-06.6, US-06.2/06.3/06.7, US-01.2/01.4, rule.pension_fund_civil_status, item.spouse_gainful_employment, item.has_children  
+   Action: Add the missing fact citations (F-hr_transcript-845204, -b90bd9, -3f2c2a, F-...-cc19c7) or record decisions. Confirm the partner date of birth for Separated and Married, and the Liechtenstein daily-return case.
+6. **Required vs asked, and '–' in example tables are inconsistent** – The same cases are marked 'asked' in US-01.2 and 'required' in US-05.x. '–' is used for questions that always apply. The AC-06.6.3 rows are untestable as written.  
+   Evidence: dev_refinement info US-01.2, US-06.6  
+   Action: Define 'asked' vs 'required' in guidance. Fill in the '–' cells with explicit expected values (not asked / asked).
+7. **Missing-answer behaviour: blocks the step or only the submit?** – US-02.x says the employee cannot continue. US-04.1 and AC-01.8.3 say only submit is blocked. This conflicts with the save-and-resume in US-01.7.  
+   Evidence: dev_refinement info US-01.8  
+   Action: Decide: block only submit (recommended, matches US-01.7) and update US-02.1 and US-02.2.
+8. **Certificate of residence semantics unclear** – The item says 'handed in', the calculator says provided ('beigebracht'), and the story says the employee 'has' one. HR's follow-up for 'no' vs 'not yet' is undefined.  
+   Evidence: dev_refinement info US-08.2; trace_judge item.residence_certificate  
+   Action: Decide what 'yes' means and whether HR expects a certificate for 'no' or only for 'not yet'.
+9. **Open go-live and source gaps (non-blocking)** – The tariff code is unverified on unexplored calculator paths. The pension portal's Divorced/Widowed fields and its insurance start-date derivation are unknown. Several judged facts rest on inferred labels (Q16, Q14, Q19). Calculator checks and the portal's start-date validation are not yet specced.  
+   Evidence: OQ-calculator-coverage; OQ-fund-divorced-widowed; coverage F-pension_portal-3a97ab, -e45e5b, F-hr_transcript-8595fb; fact_judge partials  
+   Action: Keep the domain-expert check as a go-live condition. Ask the fund or HR to check the portal. Decide how the insurance start date (1st of month) derives from the first working day.
+10. **First working day: date-range and reference-date rules unspecified** – It is unclear whether past dates are allowed, which date counts as 'sent', and whether the first working day is the reference date for children's ages (no cited fact says so).  
+   Evidence: dev_refinement info US-03.1; trace_judge item.first_working_day, US-03.1 (AC-03.1.4)  
+   Action: Decide the allowed range and the reference date for children's age. Remove or source the AC-03.1.4 claim that HR 'keeps the fund registration up to date'.
 
 ## Numbers
 
@@ -43,28 +43,14 @@ Not ready. The tariff_code rule fails lint because its expression uses a `+` (Bi
 
 ## Impact of this run
 
-Stories added: US-01.7, US-01.8, US-06.7; changed: US-01.1, US-01.2, US-01.3, US-01.4, US-01.5, US-01.6, US-02.1, US-02.2, US-02.3, US-02.4, US-03.1, US-03.2, US-03.3, US-04.1, US-04.2, US-04.3, US-04.4, US-05.1, US-05.2, US-05.3, US-05.4, US-06.2, US-06.3, US-06.4, US-06.5, US-06.6, US-07.1, US-07.2, US-07.3, US-07.4, US-07.5, US-07.6, US-08.1, US-08.2, US-08.3, US-08.4; removed: -; unchanged: 0.
+Stories added: -; changed: -; removed: -; unchanged: 39.
 
-Knowledge elements changed: OQ-calculator-coverage, OQ-fund-divorced-widowed, OQ-hr-side-follow-ups, address_country, address_house_number, address_postcode, address_street, address_town, base_tariff_letter, calculator_civil_status, calculator_residence, child_age_status, child_alternating_custody, child_common_household_other_parent, child_count, child_custody, child_main_financial_contributor, child_maintenance_over_50, child_parental_care, child_result, child_same_household, child_shared_custody, church_tax_suffix, civil_status, confession, cross_border_tariff, daily_return_germany, daily_return_liechtenstein, daily_return_reasonable, date_of_birth, discard_inapplicable_answers, first_name, first_working_day, has_children, holds_c_permit, insurance_start_date, last_name, liechtenstein_no_source_tax, nationality, non_return_days_45, non_return_days_60, pension_fund_canton, pension_fund_civil_status, permit_reminder, questionnaire_flow, read_only_after_submission, residence_canton, residence_certificate, spouse_date_of_birth, spouse_gainful_employment, spouse_holds_c_permit, spouse_nationality, spouse_residence_country, subject_to_source_tax, tariff_code, tariff_letter
+Knowledge elements changed: -
 
-## Errors (14)
+## Errors (0)
 
-- [lint] `rule.tariff_code` expression: construct BinOp not allowed in 'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))'
-- [examples] `AC-06.7.3 / Employee answers no` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'A0N'
-- [examples] `AC-06.6.1 / Calculator case C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'C1Y'
-- [examples] `AC-06.6.1 / Calculator case N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'N1Y'
-- [examples] `AC-06.6.1 / Cross-border commuter L0Y (example from D-001)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'L0Y'
-- [examples] `AC-06.6.1 / Calculator case H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'H1Y'
-- [examples] `AC-06.6.1 / Calculator case A0N, other country (zh_source_tax_calculator/F-zh_source_tax_calculator-f86c6b)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'A0N'
-- [examples] `AC-06.6.1 / Calculator case B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'B0Y'
-- [examples] `AC-06.6.2 / Maria (hr_transcript/F-hr_transcript-845204): Portuguese, C permit` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
-- [examples] `AC-06.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9): Swiss wife, living in Winterthur` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
-- [examples] `AC-06.6.2 / Swiss national living in Switzerland` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
-- [examples] `AC-06.6.3 / Liechtenstein resident who returns daily` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'in principle no source tax liability, subject to the double taxation agreement'
-- [examples] `AC-06.6.3 / Liechtenstein resident, at most 45 non-return days` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'in principle no source tax liability, subject to the double taxation agreement'
-- [examples] `AC-06.6.3 / Liechtenstein resident, more than 45 non-return days` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'C0Y'
 
-## Examples executed against the knowledge model (257/270 pass)
+## Examples executed against the knowledge model (270/270 pass)
 
 - ✅ AC-01.1.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
 - ✅ AC-01.1.1 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
@@ -243,7 +229,7 @@ Knowledge elements changed: OQ-calculator-coverage, OQ-fund-divorced-widowed, OQ
 - ✅ AC-06.7.1 / Married employee subject to source tax (spec)
 - ✅ AC-06.7.1 / Liechtenstein resident with at most 45 non-return days (spec)
 - ✅ AC-06.7.1 / Liechtenstein resident with more than 45 non-return days (spec)
-- ❌ AC-06.7.3 / Employee answers no (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'A0N'
+- ✅ AC-06.7.3 / Employee answers no (spec)
 - ✅ AC-06.7.3 / Employee answers yes (spec)
 - ✅ AC-06.4.1 / Calculator case C0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) (spec)
 - ✅ AC-06.4.1 / Calculator case B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) (spec)
@@ -264,18 +250,18 @@ Knowledge elements changed: OQ-calculator-coverage, OQ-fund-divorced-widowed, OQ
 - ✅ AC-06.5.2 / Single cross-border commuter: A becomes L (spec)
 - ✅ AC-06.5.2 / Married, spouse not working: B becomes M (spec)
 - ✅ AC-06.5.2 / Single parent: H becomes P (spec)
-- ❌ AC-06.6.1 / Calculator case C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'C1Y'
-- ❌ AC-06.6.1 / Calculator case N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'N1Y'
-- ❌ AC-06.6.1 / Cross-border commuter L0Y (example from D-001) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'L0Y'
-- ❌ AC-06.6.1 / Calculator case H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'H1Y'
-- ❌ AC-06.6.1 / Calculator case A0N, other country (zh_source_tax_calculator/F-zh_source_tax_calculator-f86c6b) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'A0N'
-- ❌ AC-06.6.1 / Calculator case B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'B0Y'
-- ❌ AC-06.6.2 / Maria (hr_transcript/F-hr_transcript-845204): Portuguese, C permit (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
-- ❌ AC-06.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9): Swiss wife, living in Winterthur (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
-- ❌ AC-06.6.2 / Swiss national living in Switzerland (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
-- ❌ AC-06.6.3 / Liechtenstein resident who returns daily (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'in principle no source tax liability, subject to the double taxation agreement'
-- ❌ AC-06.6.3 / Liechtenstein resident, at most 45 non-return days (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'in principle no source tax liability, subject to the double taxation agreement'
-- ❌ AC-06.6.3 / Liechtenstein resident, more than 45 non-return days (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'C0Y'
+- ✅ AC-06.6.1 / Calculator case C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286) (spec)
+- ✅ AC-06.6.1 / Calculator case N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3) (spec)
+- ✅ AC-06.6.1 / Cross-border commuter L0Y (example from D-001) (spec)
+- ✅ AC-06.6.1 / Calculator case H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72) (spec)
+- ✅ AC-06.6.1 / Calculator case A0N, other country (zh_source_tax_calculator/F-zh_source_tax_calculator-f86c6b) (spec)
+- ✅ AC-06.6.1 / Calculator case B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) (spec)
+- ✅ AC-06.6.2 / Maria (hr_transcript/F-hr_transcript-845204): Portuguese, C permit (spec)
+- ✅ AC-06.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9): Swiss wife, living in Winterthur (spec)
+- ✅ AC-06.6.2 / Swiss national living in Switzerland (spec)
+- ✅ AC-06.6.3 / Liechtenstein resident who returns daily (spec)
+- ✅ AC-06.6.3 / Liechtenstein resident, at most 45 non-return days (spec)
+- ✅ AC-06.6.3 / Liechtenstein resident, more than 45 non-return days (spec)
 - ✅ AC-07.1.1 / Employee living in Germany with children (spec)
 - ✅ AC-07.1.1 / Employee living in Germany without children (spec)
 - ✅ AC-07.1.1 / Swiss employee living in Switzerland (spec)
@@ -372,24 +358,26 @@ Knowledge elements changed: OQ-calculator-coverage, OQ-fund-divorced-widowed, OQ
 - fact F-zh_source_tax_calculator-dc0ae9: Single, minor child in household, shared custody, no common household and no alternating custody gives H1N (child counted with H).
 - fact F-zh_source_tax_calculator-cc19c7: Liechtenstein residents without daily return and more than 45 non-return days get the normal tariff plus 'Unter Vorbehalt des Doppelbesteuerungsabkommens'.
 
-## Dev refinement questions (7)
+## Dev refinement questions (8)
 
-- [major] `stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md` Every example in AC-06.6.1, AC-06.6.2 and AC-06.6.3 is marked ❌ under 'Checked', while all other stories show ✅. Are these expected tariff codes (N1Y, C1Y, L0Y, A0N, B0N, 'no tariff code', C1Y with the double taxation agreement note) known to be wrong, or just not checked yet? They are the main acceptance tests for the computed code.
 - [major] `stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md` AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?
-- [minor] `stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md` In AC-06.7.3 the example 'Employee answers no' (France, Single, None or other, no children → A0N) is marked ❌, while the 'yes' example is ✅. Is A0N the wrong expected code for this case, or has it simply not been checked yet?
 - [minor] `stories/US-03.1-employee-confirms-the-first-working-day.md` The first working day 'must lie within one year after the questionnaire is sent'. Can it also be before the send date or in the past, for example when the employee has already started or fills in the questionnaire late? Sending the questionnaire is part of the later HR-side spec, so which date counts as 'sent' for this check? Is there also any plausibility check on the spouse's date of birth?
 - [minor] `stories/US-01.8-review-a-summary-and-submit-with-one-confirmation.md` The stories disagree on when a missing required answer blocks the employee. US-02.1 and US-02.2 say the employee 'cannot continue' to the next step. US-04.1 and AC-01.8.3 say the employee only cannot submit, and is then shown what is missing. Should a missing required answer stop the employee from moving to the next step, or only from submitting (so a partly filled step can be saved and left, as US-01.7 allows)?
 - [minor] `stories/US-08.2-germany-daily-return-and-certificate-of-residence.md` The item is called 'Certificate of residence handed in', and the calculator asks whether it has been provided ('beigebracht'). The story instead asks whether the employee 'has a certificate of residence for HR'. Does 'yes' mean the certificate has already been given to HR, or only that the employee has one? Should HR expect a certificate later for 'no' as well as for 'not yet', or only for 'not yet'?
 - [minor] `stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md` Expected results for the same question differ between stories. US-01.2 marks spouse's nationality, spouse lives in Switzerland and nationality as 'asked' (AC-01.2.4, AC-01.2.5). US-05.1 and US-05.2 mark the same cases as 'required'. Several rows also show '–' for questions that always apply, for example civil status for the married C-permit holder in AC-01.2.5, or postcode and town for Stefan in AC-01.2.3. Is there a real difference between 'asked' and 'required' (can any of these answers be left empty?), and does '–' mean 'not checked in this example'?
+- [major] `stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md` For a Liechtenstein resident with more than 45 non-return days, AC-06.6.3 and the tariff code rule say the code is recorded 'with the note subject to the double taxation agreement', but the example expects just 'C0Y' and D-051 says the code is one single text. Is the note part of the recorded result text (e.g. 'C0Y, subject to the double taxation agreement'), or is the code 'C0Y' recorded alone with the note and HR flag kept separately? This changes what is recorded and what the acceptance test checks.
+- [minor] `stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md` In the AC-06.6.3 example table, the columns for whether denomination, spouse gainfully employed and has children were asked show '–' for the 'at most 45 non-return days' and 'more than 45 non-return days' rows, rather than 'not asked' or 'asked' as in the 'returns daily' row. Should the expected values be 'not asked' for the second row and 'asked' for the third, so these examples can be tested?
+- [minor] `feature.md` D-052 (cited for the source tax tariff code rule) says 'the child digit is 1 when the child counts, otherwise 0'. The child digit rule and F-zh_source_tax_calculator-4c53e3 say the digit is the number of counted children (e.g. C3Y). Can you confirm that D-052 means the per-child contribution and that the code's digit is the total count, with no upper limit (D-044)?
 
-## Technical vocabulary found in the spec (6)
+## Technical vocabulary found in the spec (7)
 
 - `item.address_country` implementation vocabulary ['iso 3166']: Country chosen from the ISO 3166 country list, by English name (e.g. Switzerland, Germany, Liechtenstein).
 - `item.nationality` implementation vocabulary ['iso 3166']: Country chosen from the ISO 3166 country list, plus 'stateless'.
 - `item.spouse_nationality` implementation vocabulary ['iso 3166']: Country chosen from the ISO 3166 country list, plus 'stateless'.
 - `ac.AC-02.3.1` implementation vocabulary ['iso 3166']: the country is required and is chosen from the ISO 3166 country list, shown by English name (e.g. Switzerland, Germany, Liechtenstein). This
-- `feature.md` "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)" - Refers to an internal formula ('expression') rather than business language. D-045 forbids this.
 - `information.md` "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)" - Refers to an internal formula ('expression') rather than business language. D-045 forbids this.
+- `feature.md` "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)" - Refers to an internal formula ('expression') rather than business language. D-045 forbids this.
+- `feature.md` "using only the constructs the condition language allows; the child digit is 1 when the child counts, otherwise 0." - D-052 (in the Evidence list) refers to the constraints of an internal rule/condition language. That is an implementation detail, not a business rule.
 
 ## Coverage
 
@@ -613,7 +601,7 @@ Uncited units (confirm they are irrelevant):
 - [trace_judge] `rule.questionnaire_flow` partial: The step list, ordering, saving/resume, back-and-change and single confirmation are backed, but the row details (German certificate of residence, permit reminder only for non-Swiss or living abroad, C permit only if not Swiss, spouse questions) rely on facts and decisions that are not among the cited ones.
 - [trace_judge] `rule.pension_fund_civil_status` partial: D-003 gives the partner's date of birth only for registered partnership, but the statement attaches it to Separated (and Married) too, which no cited fact backs.
 - [trace_judge] `rule.cross_border_tariff` partial: The 'not Germany' row cites F-zh_source_tax_calculator-cc19c7, which is not among the cited facts, and the cited facts do not show that Liechtenstein never gets the cross-border tariff (only Switzerland and 'Anderes Land' are covered).
-- [trace_judge] `rule.tariff_code` partial: The expression gives no 'subject to the double taxation agreement' note or flag for the more-than-45-days case, and no 'incomplete' result, although the statement and table say so; rows also cite fb87f1 and cc19c7, which are not among the cited facts.
+- [trace_judge] `rule.tariff_code` partial: The statement and table are backed by D-001/D-007/D-040/D-048/D-051/D-037 and the calculator facts, but the `expression` does not produce the 'subject to the double taxation agreement' note and flag for the >45-day row, so it does not match the business-language condition.
 - [trace_judge] `story.US-01.2` partial: AC-01.2.7 limits 'spouse gainfully employed' to married and registered partners, which no cited fact states, and the non-illustrative Maria example in AC-01.2.4 rests on F-hr_transcript-845204, which is not cited.
 - [trace_judge] `story.US-01.4` partial: The non-illustrative Maria example cites F-hr_transcript-845204, which is not among the cited facts, so her C-permit and Portugal details are unbacked.
 - [trace_judge] `story.US-03.1` partial: AC-03.1.4 says HR 'plans the start and keeps the fund registration up to date', which no cited fact states (the facts only say the pension fund needs the first working day).
@@ -624,15 +612,15 @@ Uncited units (confirm they are irrelevant):
 - [trace_judge] `story.US-06.7` partial: The non-illustrative Maria example cites F-hr_transcript-845204, which is not among the cited facts. Everything else is backed.
 - [trace_judge] `story.US-06.5` partial: The claim that Liechtenstein residents never get a cross-border letter is not backed by the cited facts (the Liechtenstein fact is not cited), and the priority reason relies on F-hr_transcript-3f2c2a, which is not among the cited facts.
 - [trace_judge] `story.US-06.6` partial: AC-06.6.2 names Swiss nationals as exempt, but no cited fact says so (only C-permit holders and Swiss/C-permit spouses are covered), and several example source_refs (d75286, 300c72, 97139a) are not among the cited facts.
-- [dev_refinement] `stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md` Every example in AC-06.6.1, AC-06.6.2 and AC-06.6.3 is marked ❌ under 'Checked', while all other stories show ✅. Are these expected tariff codes (N1Y, C1Y, L0Y, A0N, B0N, 'no tariff code', C1Y with the double taxation agreement note) known to be wrong, or just not checked yet? They are the main acceptance tests for the computed code.
 - [dev_refinement] `stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md` AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?
+- [dev_refinement] `stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md` For a Liechtenstein resident with more than 45 non-return days, AC-06.6.3 and the tariff code rule say the code is recorded 'with the note subject to the double taxation agreement', but the example expects just 'C0Y' and D-051 says the code is one single text. Is the note part of the recorded result text (e.g. 'C0Y, subject to the double taxation agreement'), or is the code 'C0Y' recorded alone with the note and HR flag kept separately? This changes what is recorded and what the acceptance test checks.
 
 ## Run
 
-Stages run: knowledge.raw, feature.plan, sections/SEC-03-employment-start, sections/SEC-04-civil-status-spouse, sections/SEC-02-personal-details-address, sections/SEC-08-cross-border-residence, sections/SEC-05-source-tax-liability, sections/SEC-01-questionnaire-flow, sections/SEC-07-source-tax-children, sections/SEC-06-source-tax-tariff-basics, feature.flow, judge_trace, dev_refinement, review
+Stages run: judge_trace, dev_refinement, review
 
-Stages reused from cache: normalize/hr_transcript, extract/hr_transcript, normalize/pension_portal, extract/pension_portal, normalize/zh_source_tax_calculator, extract/zh_source_tax_calculator, judge_facts
+Stages reused from cache: normalize/hr_transcript, extract/hr_transcript, normalize/pension_portal, extract/pension_portal, normalize/zh_source_tax_calculator, extract/zh_source_tax_calculator, judge_facts, knowledge.raw, feature.plan, feature.flow
 
-LLM cost this run: $9.8
+LLM cost this run: $1.04
 
-Tokens this run: 1,146,463 in 30 agent calls (60 input, 52,108 cache read, 894,249 cache write, 200,046 output)
+Tokens this run: 150,838 in 3 agent calls (6 input, 6,551 cache read, 137,860 cache write, 6,421 output)

@@ -647,7 +647,7 @@ Lonio computes the full Zurich tariff code for every employee subject to source 
 | 3 | yes | yes | no | Full tariff code with note 'subject to the double taxation agreement', flagged for HR | D-040, F-zh_source_tax_calculator-cc19c7 |
 | 4 | yes | no | - | Full tariff code (letter + child digit + church-tax suffix) | D-001, D-051, F-zh_source_tax_calculator-4c53e3 |
 
-_Status: decision · Sources: D-001, D-007, D-040, D-048, D-051, D-037, F-hr_transcript-34494f, F-zh_source_tax_calculator-86d588, F-zh_source_tax_calculator-4c53e3_
+_Status: decision · Sources: D-001, D-007, D-037, D-040, D-048, D-051, D-052, F-hr_transcript-34494f, F-zh_source_tax_calculator-4c53e3, F-zh_source_tax_calculator-86d588_
 
 <a id="SEC-07-source-tax-children"></a>
 
@@ -849,6 +849,7 @@ _Status: confirmed · Sources: F-zh_source_tax_calculator-4c53e3, D-001, D-044_
 - **D-049** (product decision (Product owner)): Every home address field (street, house number, postcode, town, country) is required; the only exception is the explicit 'no house number' option. Examples and acceptance criteria use the term 'required' for these fields, never 'asked'. Assumption - to be verified by a domain expert; state this assumption in the user story.
 - **D-050** (product decision (Product owner)): Build-time values. HR provides the permit reminder wording before go-live. Country of residence and nationality are chosen from the ISO 3166 country list; nationality also offers 'stateless'. The date of birth must make the employee at least 14 and at most 100 years old on the first working day; the first working day must lie within one year after the questionnaire is sent. Answers are saved as the employee goes and they can resume until they submit; submitting needs one confirmation on a summary page. Answers are kept when the employee goes back and changes an earlier answer (until submission), and this is testable. The spouse's residence is asked as 'Does your spouse live in Switzerland? yes/no', not as a country. Assumption - to be verified by a domain expert; state this assumption in the user story.
 - **D-051** (product decision (Product owner)): The full tariff code is one text such as 'N1Y' (letter, child digit, church-tax suffix). When no tariff code is needed the result is the text 'no tariff code'. The cross-border letter mapping follows the calculator fact in full, including G to Q where the calculator shows it. Assumption - to be verified by a domain expert; state this assumption in the user story.
+- **D-052** (product decision (Product owner)): The tariff code joins tariff letter, child digit and church-tax suffix into one code (D-051), using only the constructs the condition language allows; the child digit is 1 when the child counts, otherwise 0.
 - **F-hr_transcript-1d5c07** (hr_transcript): Consolidated rule: the insurance start date is derived from the first working day. If the first working day is the 1st of a month, insurance starts that day. Otherwise it starts on the 1st of the following month.
   - "because insurance starts on the first of the following month." — hr_transcript/T-026, Anna
   - "Unless somebody starts exactly on the first, of course, then it's just that day." — hr_transcript/T-028, Anna

@@ -1,19 +1,9 @@
 {
   "questions": [
     {
-      "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
-      "question": "Every example in AC-06.6.1, AC-06.6.2 and AC-06.6.3 is marked ❌ under 'Checked', while all other stories show ✅. Are these expected tariff codes (N1Y, C1Y, L0Y, A0N, B0N, 'no tariff code', C1Y with the double taxation agreement note) known to be wrong, or just not checked yet? They are the main acceptance tests for the computed code.",
-      "severity": "major"
-    },
-    {
       "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
       "question": "AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?",
       "severity": "major"
-    },
-    {
-      "file": "stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md",
-      "question": "In AC-06.7.3 the example 'Employee answers no' (France, Single, None or other, no children → A0N) is marked ❌, while the 'yes' example is ✅. Is A0N the wrong expected code for this case, or has it simply not been checked yet?",
-      "severity": "minor"
     },
     {
       "file": "stories/US-03.1-employee-confirms-the-first-working-day.md",
@@ -34,6 +24,21 @@
       "file": "stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md",
       "question": "Expected results for the same question differ between stories. US-01.2 marks spouse's nationality, spouse lives in Switzerland and nationality as 'asked' (AC-01.2.4, AC-01.2.5). US-05.1 and US-05.2 mark the same cases as 'required'. Several rows also show '–' for questions that always apply, for example civil status for the married C-permit holder in AC-01.2.5, or postcode and town for Stefan in AC-01.2.3. Is there a real difference between 'asked' and 'required' (can any of these answers be left empty?), and does '–' mean 'not checked in this example'?",
       "severity": "minor"
+    },
+    {
+      "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
+      "question": "For a Liechtenstein resident with more than 45 non-return days, AC-06.6.3 and the tariff code rule say the code is recorded 'with the note subject to the double taxation agreement', but the example expects just 'C0Y' and D-051 says the code is one single text. Is the note part of the recorded result text (e.g. 'C0Y, subject to the double taxation agreement'), or is the code 'C0Y' recorded alone with the note and HR flag kept separately? This changes what is recorded and what the acceptance test checks.",
+      "severity": "major"
+    },
+    {
+      "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
+      "question": "In the AC-06.6.3 example table, the columns for whether denomination, spouse gainfully employed and has children were asked show '–' for the 'at most 45 non-return days' and 'more than 45 non-return days' rows, rather than 'not asked' or 'asked' as in the 'returns daily' row. Should the expected values be 'not asked' for the second row and 'asked' for the third, so these examples can be tested?",
+      "severity": "minor"
+    },
+    {
+      "file": "feature.md",
+      "question": "D-052 (cited for the source tax tariff code rule) says 'the child digit is 1 when the child counts, otherwise 0'. The child digit rule and F-zh_source_tax_calculator-4c53e3 say the digit is the number of counted children (e.g. C3Y). Can you confirm that D-052 means the per-child contribution and that the code's digit is the total count, with no upper limit (D-044)?",
+      "severity": "minor"
     }
   ],
   "already_flagged": [
@@ -42,14 +47,19 @@
   ],
   "tech_leaks": [
     {
+      "file": "information.md",
+      "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
+      "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
+    },
+    {
       "file": "feature.md",
       "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
       "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
     },
     {
-      "file": "information.md",
-      "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
-      "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
+      "file": "feature.md",
+      "quote": "using only the constructs the condition language allows; the child digit is 1 when the child counts, otherwise 0.",
+      "why": "D-052 (in the Evidence list) refers to the constraints of an internal rule/condition language. That is an implementation detail, not a business rule."
     }
   ]
 }

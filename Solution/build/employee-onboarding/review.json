@@ -1,66 +1,66 @@
 {
   "verdict": "not_ready",
-  "summary": "Not ready. The tariff_code rule fails lint because its expression uses a `+` (BinOp) that the expression language doesn't allow. That one error makes 14 examples fail (all of AC-06.6.x and AC-06.7.3), including the main acceptance tests for the computed tariff code. A US-01.6 contradiction and a technical-vocabulary leak are also open. The other items are caveats: weak traceability on several items, two non-blocking open questions, and inconsistent 'asked' and 'required' wording.",
+  "summary": "All 300+ examples pass and there are no errors. Two major dev-refinement questions are open (AC-01.6.2 vs AC-01.6.3, and the Liechtenstein tariff-code note), and implementation vocabulary leaks into the spec (D-045 and D-052 'expression' / 'condition language', ISO 3166). Many trace-judge partials also point to non-cited or unbacked claims. Resolve the blockers, then it should be ready_with_caveats.",
   "findings": [
     {
-      "title": "tariff_code rule does not evaluate (lint error); 14 examples fail",
-      "why": "The tariff code is the core output of the feature. The expression concatenates tariff_letter + child_count + church_tax_suffix with `+`, which the expression language rejects. No tariff code can be computed, and the 14 examples that expect one all fail.",
-      "evidence": "lint rule.tariff_code; examples AC-06.6.1 (7 cases), AC-06.6.2 (3), AC-06.6.3 (3), AC-06.7.3 'Employee answers no'. All show 'construct BinOp not allowed'.",
-      "action": "Rewrite the rule using the allowed constructs, e.g. a concat/format function, or one if_else branch per letter/digit/suffix. If concatenation is needed, add it to the expression language. Re-run the examples; there should be no expectation changes."
+      "title": "AC-01.6.2 contradicts AC-01.6.3 after submission",
+      "why": "The example expects Denomination 'asked' after HR records a change, but the questionnaire is read-only after submission and the tariff code should show 'incomplete - HR must complete'. Devs cannot tell whether the questionnaire reopens.",
+      "evidence": "dev_refinement (major) US-01.6; AC-01.6.1/2/3; D-048; example 'AC-01.6.2 / Tomás after HR records...'",
+      "action": "Add a decision: after submission HR completes the missing answers and the tariff shows incomplete (no reopen), or the questionnaire reopens for the employee. Fix the AC-01.6.2 expected value to match."
     },
     {
-      "title": "The tariff rule does not implement the statement or table for the Liechtenstein >45 days and incomplete cases",
-      "why": "The statement says the more-than-45-days case carries a 'subject to the double taxation agreement' note and that an incomplete questionnaire gives 'incomplete - HR must complete' (D-048). The expression yields neither. Fixing the BinOp alone would still leave the rule short of its own spec.",
-      "evidence": "trace_judge rule.tariff_code; AC-06.6.3 'more than 45 non-return days' expects C0Y; AC-01.6.3 / D-048",
-      "action": "Decide in decisions.yaml how the DTA note and the incomplete result are represented (extra output field or text), and add both to the rule. Cite fb87f1 and cc19c7 in the rule."
+      "title": "Liechtenstein >45 days: is the DTA note part of the recorded code?",
+      "why": "The recorded result changes. The example expects 'C0Y' alone, the rule says 'with the note', and D-051 says the code is one single text. The acceptance test is ambiguous.",
+      "evidence": "dev_refinement (major) US-06.6; AC-06.6.3; rule.tariff_code trace_judge (expression lacks the note/flag); D-051",
+      "action": "Decide in decisions.yaml: code 'C0Y' with the note and HR flag stored separately, or one text including the note. Align the rule expression, the AC and the examples."
     },
     {
-      "title": "AC-01.6.2 contradicts AC-01.6.3",
-      "why": "After submission the questionnaire is read-only. The example nevertheless expects 'Denomination: asked' once HR records a change, while D-048 says the result becomes 'incomplete - HR must complete'. Engineering cannot tell whether the questionnaire reopens for the employee.",
-      "evidence": "dev_refinement US-01.6 (major); AC-01.6.1, AC-01.6.2, AC-01.6.3, D-048",
-      "action": "Decide whether HR completes the missing answer or the employee is asked again. Then fix the example, or AC-01.6.3, accordingly."
+      "title": "Technical vocabulary leaks into the spec",
+      "why": "The spec must stay in business language. D-045 forbids 'expression', and D-052 refers to the 'condition language'.",
+      "evidence": "tech_leak: information.md and feature.md ('The expression gives, per child...'; D-052 'constructs the condition language allows'); ISO 3166 in item.address_country, item.nationality, item.spouse_nationality, AC-02.3.1",
+      "action": "Reword to business language, e.g. 'the digit is the number of counted children' and 'country list (all countries, plus stateless)'. Reword D-052 and remove the ISO standard name unless the PO wants it as a requirement."
     },
     {
-      "title": "Implementation vocabulary leaks into the spec",
-      "why": "D-045 forbids the word 'expression' in business text, and the 'ISO 3166' list name is implementation vocabulary. Engineering decisions should not be fixed in the spec.",
-      "evidence": "tech_leak feature.md and information.md ('The expression gives, per child…'); item.address_country, item.nationality, item.spouse_nationality, AC-02.3.1 ('ISO 3166')",
-      "action": "Reword the child-count note in business terms, e.g. 'the digit is the number of counted children'. Replace 'ISO 3166 country list' with 'list of countries'. Leave the standard to engineering."
+      "title": "Child digit wording in D-052 conflicts with the rule",
+      "why": "D-052 says the digit is 1 or 0, but the rule and calculator say the digit is the count of counted children (C3Y), with no upper limit (D-044).",
+      "evidence": "dev_refinement info feature.md; F-zh_source_tax_calculator-4c53e3; D-044",
+      "action": "Confirm that D-052 means the per-child contribution and reword it. State the total count and no upper limit."
     },
     {
-      "title": "Facts cited by examples and conditions are not in the cited-fact lists",
-      "why": "Several story examples, items and rules rely on facts that are not in their cited sets. Most of these are the Maria and Tomás examples. This weakens traceability. Two claims are unbacked: Liechtenstein never gets the cross-border tariff, and Swiss nationals are exempt.",
-      "evidence": "trace_judge US-01.2, US-01.4, US-06.2, US-06.3, US-06.5, US-06.6, US-06.7, US-08.2 (AC-08.2.4), rule.cross_border_tariff, rule.questionnaire_flow, item.spouse_gainful_employment, item.has_children",
-      "action": "Add the missing source_refs (845204, b90bd9, 3f2c2a, cc19c7, d75286, 300c72, 97139a). Then confirm in decisions.yaml the Liechtenstein cross-border rule and the Swiss-national exemption, which no source states."
+      "title": "Rules and ACs rest on uncited or unbacked claims",
+      "why": "Traceability is partial. Several claims have no cited fact: the Liechtenstein 'never cross-border' claim, Swiss nationals being exempt, the spouse-employment and children conditions for Liechtenstein, the Maria/Tomás example refs, and the partner date of birth for Separated.",
+      "evidence": "trace_judge: rule.cross_border_tariff, US-08.2, US-06.5, US-06.6, US-06.2/06.3/06.7, US-01.2/01.4, rule.pension_fund_civil_status, item.spouse_gainful_employment, item.has_children",
+      "action": "Add the missing fact citations (F-hr_transcript-845204, -b90bd9, -3f2c2a, F-...-cc19c7) or record decisions. Confirm the partner date of birth for Separated and Married, and the Liechtenstein daily-return case."
     },
     {
-      "title": "Purpose claims and one rule row are unsupported or overstated",
-      "why": "Several purposes are stated as business rules without a source, and one rule row contradicts its source. Engineers will take them as confirmed.",
-      "evidence": "trace_judge item.child_main_financial_contributor ('H tariff'), item.non_return_days_60, item.daily_return_reasonable, item.first_working_day (age reference date), AC-03.1.4 ('HR plans the start'), US-06.2 (denomination not part of fund registration), rule.pension_fund_civil_status (partner date of birth also for Separated and Married, but D-003 covers registered partnership only)",
-      "action": "Either back each claim with a decision or source, or soften or remove it. For pension_fund_civil_status, confirm in decisions.yaml which civil statuses need the partner's date of birth."
+      "title": "Required vs asked, and '–' in example tables are inconsistent",
+      "why": "The same cases are marked 'asked' in US-01.2 and 'required' in US-05.x. '–' is used for questions that always apply. The AC-06.6.3 rows are untestable as written.",
+      "evidence": "dev_refinement info US-01.2, US-06.6",
+      "action": "Define 'asked' vs 'required' in guidance. Fill in the '–' cells with explicit expected values (not asked / asked)."
     },
     {
-      "title": "Inconsistent blocking behaviour and 'asked' versus 'required'",
-      "why": "The stories disagree on whether a missing required answer blocks the next step or only submission. The expected-result vocabulary also differs between stories, and '–' is undefined. Test cases will be ambiguous.",
-      "evidence": "dev_refinement US-01.8 (US-02.1/02.2 vs AC-01.8.3/US-04.1); US-01.2 vs US-05.1/05.2",
-      "action": "Decide on one rule: block only submission, which fits the save-and-resume in US-01.7. Define 'asked' versus 'required' and the meaning of '–', then align the stories."
+      "title": "Missing-answer behaviour: blocks the step or only the submit?",
+      "why": "US-02.x says the employee cannot continue. US-04.1 and AC-01.8.3 say only submit is blocked. This conflicts with the save-and-resume in US-01.7.",
+      "evidence": "dev_refinement info US-01.8",
+      "action": "Decide: block only submit (recommended, matches US-01.7) and update US-02.1 and US-02.2."
     },
     {
-      "title": "Certificate-of-residence semantics are unclear",
-      "why": "The item is named 'handed in' and the calculator asks 'beigebracht', but the story asks whether the employee 'has' a certificate. This changes the meaning of yes/no/not yet, and what HR expects afterwards.",
-      "evidence": "dev_refinement US-08.2; trace_judge item.residence_certificate",
-      "action": "Decide in decisions.yaml what 'yes', 'no' and 'not yet' mean, and when HR expects a certificate."
+      "title": "Certificate of residence semantics unclear",
+      "why": "The item says 'handed in', the calculator says provided ('beigebracht'), and the story says the employee 'has' one. HR's follow-up for 'no' vs 'not yet' is undefined.",
+      "evidence": "dev_refinement info US-08.2; trace_judge item.residence_certificate",
+      "action": "Decide what 'yes' means and whether HR expects a certificate for 'no' or only for 'not yet'."
     },
     {
-      "title": "Non-blocking open questions need owners before go-live",
-      "why": "The tariff code may differ from the Zurich calculator on unexplored paths. Several facts are only partly verified, and the pension portal form for Divorced and Widowed is unknown. The portal facts for the start date and canton are unused or unverified. The Germany questions for people living abroad are not specified.",
-      "evidence": "OQ-calculator-coverage, OQ-fund-divorced-widowed; fact_judge F-pension_portal-39bab1, -6d3630, -b359c3, -e45e5b; coverage F-pension_portal-3a97ab, F-hr_transcript-8595fb; US-03.1 date window",
-      "action": "Assign a domain expert to compare computed codes with the calculator before go-live. Ask the fund or HR to check the portal. Clarify how the insurance start date derives from the first working day, and what happens when the first working day is in the past."
+      "title": "Open go-live and source gaps (non-blocking)",
+      "why": "The tariff code is unverified on unexplored calculator paths. The pension portal's Divorced/Widowed fields and its insurance start-date derivation are unknown. Several judged facts rest on inferred labels (Q16, Q14, Q19). Calculator checks and the portal's start-date validation are not yet specced.",
+      "evidence": "OQ-calculator-coverage; OQ-fund-divorced-widowed; coverage F-pension_portal-3a97ab, -e45e5b, F-hr_transcript-8595fb; fact_judge partials",
+      "action": "Keep the domain-expert check as a go-live condition. Ask the fund or HR to check the portal. Decide how the insurance start date (1st of month) derives from the first working day."
     },
     {
-      "title": "Inferred items remain unconfirmed",
-      "why": "Several rules and stories are inferred and rely on 'inferred, go-live check' examples. They also carry gaps such as Q14 being read as parental care, and Q16 being read as residence in Switzerland.",
-      "evidence": "inferred_items (spouse_nationality, church_tax_suffix, child_result, base_tariff_letter, US-05.2, US-07.3 to 07.5 and others); fact_judge F-zh_source_tax_calculator-64ac33, -037b1c, -dc0ae9, -2754e8",
-      "action": "Have HR or a domain expert confirm the inferred items and the calculator-question meanings, and record them in decisions.yaml."
+      "title": "First working day: date-range and reference-date rules unspecified",
+      "why": "It is unclear whether past dates are allowed, which date counts as 'sent', and whether the first working day is the reference date for children's ages (no cited fact says so).",
+      "evidence": "dev_refinement info US-03.1; trace_judge item.first_working_day, US-03.1 (AC-03.1.4)",
+      "action": "Decide the allowed range and the reference date for children's age. Remove or source the AC-03.1.4 claim that HR 'keeps the fund registration up to date'."
     }
   ]
 }
