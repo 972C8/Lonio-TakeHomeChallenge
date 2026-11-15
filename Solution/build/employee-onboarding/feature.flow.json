@@ -1,22 +1,23 @@
 {
-  "intro": "The questionnaire has 7 steps, in English. Only applicable questions are shown, and a step with no applicable question is skipped (e.g. steps 5 and 6 for employees not subject to source tax). Each piece of information is asked once and reused for every receiving party. The order follows dependencies: the home country and civil status come first, because they decide who is asked about nationality, C permit, spouse, source tax details and cross-border questions. Answers that no longer apply after a change are discarded on submission (D-036).",
+  "intro": "The questionnaire has 8 steps, in English. Only applicable questions are shown, and a step where no question applies to the employee is skipped. The order follows dependencies: identity and address first, because residence decides what is asked next. Nationality and civil status follow, because they decide whether source tax applies. Cross-border questions come before denomination, spouse and children, because for Liechtenstein residents they can make the tariff questions unnecessary. Each piece of information is asked once and reused for every receiving party. Swiss residents with Swiss citizenship or a C permit never see the source tax steps.",
   "steps": [
     {
       "order": 1,
-      "title": "Personal details",
-      "asks": "First name, last name and date of birth.",
+      "title": "About you",
+      "asks": "First name, last name, date of birth and the first working day.",
       "shown_to": "Everyone",
       "items": [
         "first_name",
         "last_name",
-        "date_of_birth"
+        "date_of_birth",
+        "first_working_day"
       ],
       "rules": []
     },
     {
       "order": 2,
       "title": "Home address",
-      "asks": "Street, house number, postcode, town and country of residence; the canton only if the country is Switzerland.",
+      "asks": "Street, house number, postcode, town and country of the home address that applies on the first working day; the canton of residence only if the country is Switzerland.",
       "shown_to": "Everyone",
       "items": [
         "address_street",
@@ -26,56 +27,68 @@
         "address_country",
         "residence_canton"
       ],
-      "rules": [
-        "questionnaire_flow"
-      ]
+      "rules": []
     },
     {
       "order": 3,
-      "title": "Start",
-      "asks": "The first working day.",
-      "shown_to": "Everyone",
+      "title": "Nationality and C permit",
+      "asks": "Nationality; whether the employee holds a C permit only if not Swiss.",
+      "shown_to": "Employees living in Switzerland",
       "items": [
-        "first_working_day"
+        "nationality",
+        "holds_c_permit"
       ],
       "rules": []
     },
     {
       "order": 4,
-      "title": "Civil status",
-      "asks": "Civil status (Single, Married, Divorced, Widowed, Registered partnership, Separated); the spouse's or partner's date of birth only if married, in a registered partnership or separated.",
-      "shown_to": "Everyone",
+      "title": "Civil status and spouse",
+      "asks": "Civil status; the spouse's or registered partner's date of birth if Married, Registered partnership or Separated; the spouse's nationality only if the employee is not Swiss, has no C permit and is married or in a registered partnership; whether the spouse holds a C permit if the spouse is not Swiss; the spouse's country of residence if the spouse is Swiss or holds a C permit.",
+      "shown_to": "Everyone (spouse questions only where their conditions apply)",
       "items": [
         "civil_status",
-        "spouse_date_of_birth"
+        "spouse_date_of_birth",
+        "spouse_nationality",
+        "spouse_holds_c_permit",
+        "spouse_residence_country"
       ],
       "rules": []
     },
     {
       "order": 5,
-      "title": "Source tax status",
-      "asks": "Nationality; whether the employee holds a C permit, only if not Swiss. If not Swiss, without a C permit, and married or in a registered partnership: the spouse's or partner's nationality, whether they hold a C permit (only if not Swiss), and their country of residence (only if Swiss or C permit holder).",
-      "shown_to": "Employees living in Switzerland",
+      "title": "Cross-border commuting",
+      "asks": "For Liechtenstein residents: daily return, then, if not daily, whether more than 45 non-return days are expected. For Germany residents: daily return; certificate of residence if daily return (\"not yet\" is allowed); if not daily, whether daily return is reasonable (under 100 km) and, if reasonable but not done, whether more than 60 non-return days are expected.",
+      "shown_to": "Employees subject to source tax who live in Germany or Liechtenstein",
       "items": [
-        "nationality",
-        "holds_c_permit",
-        "spouse_nationality",
-        "spouse_holds_c_permit",
-        "spouse_residence_country"
+        "daily_return_liechtenstein",
+        "non_return_days_45",
+        "daily_return_germany",
+        "residence_certificate",
+        "daily_return_reasonable",
+        "non_return_days_60"
       ],
       "rules": [
-        "subject_to_source_tax"
+        "liechtenstein_no_source_tax"
       ]
     },
     {
       "order": 6,
       "title": "Source tax details",
-      "asks": "Religious denomination; whether the spouse or partner works or receives replacement income (only if married or in a registered partnership); whether the employee has children, then for each child the age status, household, custody, care, maintenance and contribution questions that apply to that child; then cross-border questions: for residents of Germany, daily return, certificate of residence (if returning daily; 'not yet' is valid), whether daily return is reasonable and more than 60 non-return days expected (if not returning daily); for residents of Liechtenstein, daily return and more than 45 non-return days expected (if not returning daily).",
-      "shown_to": "Employees subject to source tax (residents of Liechtenstein are included)",
+      "asks": "Denomination; whether the spouse or partner is gainfully employed (only if married or in a registered partnership); whether the employee has children.",
+      "shown_to": "Employees subject to source tax who need a tariff code (Liechtenstein residents only with more than 45 non-return days)",
       "items": [
         "confession",
         "spouse_gainful_employment",
-        "has_children",
+        "has_children"
+      ],
+      "rules": []
+    },
+    {
+      "order": 7,
+      "title": "Children",
+      "asks": "For each child: minor or adult in first education; whether the child lives in the same household; then, depending on the answers, custody, common household with the other parent, shared custody, parental care, alternating custody, main financial contributor and whether more than 50% of maintenance is provided.",
+      "shown_to": "Employees who need a tariff code and have children",
+      "items": [
         "child_age_status",
         "child_same_household",
         "child_custody",
@@ -84,26 +97,20 @@
         "child_parental_care",
         "child_alternating_custody",
         "child_main_financial_contributor",
-        "child_maintenance_over_50",
-        "daily_return_germany",
-        "residence_certificate",
-        "daily_return_reasonable",
-        "non_return_days_60",
-        "daily_return_liechtenstein",
-        "non_return_days_45"
+        "child_maintenance_over_50"
       ],
       "rules": []
     },
     {
-      "order": 7,
-      "title": "End",
+      "order": 8,
+      "title": "Permit reminder",
       "asks": "Nothing is asked; the employee is reminded to bring their permit on the first working day.",
-      "shown_to": "Non-Swiss employees and everyone living abroad (the reminder is worded so that a Swiss citizen living abroad sees it does not apply)",
+      "shown_to": "Every non-Swiss employee and every employee living abroad",
       "items": [],
       "rules": [
         "permit_reminder"
       ]
     }
   ],
-  "closing": "On submission, answers that no longer apply are discarded and the questionnaire becomes read-only for the employee. The answers are recorded for HR. The insurance start date, civil status for the fund and for source tax, subject to source tax and the tariff code (or the Liechtenstein 'in principle no source tax liability' result, flagged for HR) are derived from the latest answers. Later changes are made by HR."
+  "closing": "After the last step the employee submits the questionnaire. Answers to questions that no longer apply are discarded on submission (discard_inapplicable_answers), and the questionnaire becomes read-only for the employee (read_only_after_submission). Later changes are made by HR, and all derived results are derived again from the latest answers."
 }

@@ -2,113 +2,49 @@
   "id": "SEC-08-cross-border-residence",
   "order": 8,
   "title": "Source tax: residence abroad and cross-border questions",
-  "purpose": "Derive the calculator's residence answer from the home address. Germany residents are asked the cross-border questions (daily return, certificate of residence, reasonable return, more than 60 non-return days), which decide the cross-border tariff. Liechtenstein residents are asked about daily return and more than 45 non-return days, which can lead to 'in principle no source tax liability' flagged for HR.",
+  "purpose": "Ask Liechtenstein and Germany residents the cross-border questions (their expectation for the year). Decide whether there is in principle no liability (Liechtenstein, flagged for HR), or whether the cross-border or the normal tariff applies.",
   "stories": [
     {
       "id": "US-08.1",
-      "title": "Derive the calculator's residence answers from the home address",
-      "as_a": "hr",
-      "i_want": "Lonio to derive the source tax calculator's residence answers (main residence in Switzerland, and otherwise Germany, Liechtenstein or another country) from the country of the employee's home address, without asking the employee a separate residence question",
-      "so_that": "the employee is asked where they live only once. Lonio can then pick the right cross-border follow-up questions and compute the tariff code, and I no longer have to work through the calculator's residence block by hand",
-      "priority": "P1",
-      "priority_reason": "Every other residence-dependent question and the computed tariff code (D-001) depend on this. HR finds the questions for employees living abroad hard to keep track of today (F-hr_transcript-8595fb).",
+      "title": "Derive the calculator's residence answers from the home address and ask cross-border questions only of Germany and Liechtenstein residents",
+      "as_a": "employee",
+      "i_want": "Lonio to take my country of residence from my home address and to ask me cross-border questions only if I live in Germany or Liechtenstein",
+      "so_that": "I give my country of residence only once and am not asked questions that no receiving party needs for me, while the source tax side still gets the residence answers the Zurich calculator needs",
+      "priority": "P2",
+      "priority_reason": "Avoids double questions and unneeded data (G-01, G-08); the cross-border results themselves are covered by the Germany and Liechtenstein stories.",
       "acceptance_criteria": [
         {
           "id": "AC-08.1.1",
-          "title": "Residence for source tax is derived from the country of the home address",
-          "given": "an employee has entered the country of their home address (the address is asked of everyone and owned by the address section)",
-          "when": "Lonio determines the residence answer that the source tax calculator would ask for",
-          "then": "The residence is 'Switzerland' if the country is Switzerland, 'Germany' if it is Germany, 'Liechtenstein' if it is Liechtenstein, and 'Other country' for any other country. The employee is not asked a separate residence or country-of-residence question for source tax.",
-          "examples": [
-            {
-              "name": "Tomás, lives in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "calculator_residence",
-                  "expect": "Switzerland"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                }
-              ],
-              "then": [
-                {
-                  "target": "calculator_residence",
-                  "expect": "Germany"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Employee living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                }
-              ],
-              "then": [
-                {
-                  "target": "calculator_residence",
-                  "expect": "Liechtenstein"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Employee living in France",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "France"
-                }
-              ],
-              "then": [
-                {
-                  "target": "calculator_residence",
-                  "expect": "Other country"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
+          "title": "Residence for source tax is not asked separately",
+          "given": "the employee has entered the country of their home address that applies on the first working day (assumption to be verified by a domain expert, D-041)",
+          "when": "Lonio determines the calculator's residence answers",
+          "then": "the calculator's 'main residence in Switzerland' and 'country of residence' answers (Germany, Liechtenstein or other country) are taken from that country; the employee is not asked a separate residence question",
+          "examples": [],
           "source_refs": [
             "F-zh_source_tax_calculator-aedb40",
             "F-zh_source_tax_calculator-4c65ae",
             "F-zh_source_tax_calculator-d62dd4",
+            "G-01",
             "G-08",
-            "D-001"
+            "D-041"
           ]
         },
         {
           "id": "AC-08.1.2",
-          "title": "Switzerland and other countries get no cross-border questions",
-          "given": "an employee lives in Switzerland or in a country other than Germany or Liechtenstein",
-          "when": "the employee goes through the source tax part of the questionnaire",
-          "then": "None of the Germany questions (daily return, certificate of residence, reasonable return, more than 60 non-return days) and none of the Liechtenstein questions (daily return, more than 45 non-return days) are asked. The tariff code is computed from the base tariff, as in the calculator.",
+          "title": "No cross-border questions outside Germany and Liechtenstein",
+          "given": "the employee lives in Switzerland or in a country other than Germany or Liechtenstein",
+          "when": "the employee goes through the questionnaire",
+          "then": "none of the questions on daily return, certificate of residence, reasonableness of daily return or non-return days is asked; an employee living in another country is subject to source tax and gets the normal (not the cross-border) tariff",
           "examples": [
             {
-              "name": "Tomás, lives in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
+              "name": "Employee living in Switzerland (Swiss)",
               "given": [
                 {
                   "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
                   "value": "Switzerland"
                 }
               ],
@@ -118,32 +54,7 @@
                   "expect": "not asked"
                 },
                 {
-                  "target": "daily_return_liechtenstein",
-                  "expect": "not asked"
-                },
-                {
                   "target": "residence_certificate",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "non_return_days_45",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Employee living in France",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "France"
-                }
-              ],
-              "then": [
-                {
-                  "target": "daily_return_germany",
                   "expect": "not asked"
                 },
                 {
@@ -156,6 +67,43 @@
                 },
                 {
                   "target": "daily_return_liechtenstein",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "non_return_days_45",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "cross_border_tariff",
+                  "expect": "no"
+                },
+                {
+                  "target": "liechtenstein_no_source_tax",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee living in France (other country)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "France"
+                }
+              ],
+              "then": [
+                {
+                  "target": "daily_return_germany",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "daily_return_liechtenstein",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "non_return_days_45",
                   "expect": "not asked"
                 },
                 {
@@ -172,24 +120,75 @@
             }
           ],
           "source_refs": [
+            "F-zh_source_tax_calculator-31d762",
+            "F-zh_source_tax_calculator-e22d17",
             "F-zh_source_tax_calculator-f86c6b",
-            "G-01",
-            "D-001"
+            "F-hr_transcript-3f2c2a",
+            "G-01"
           ]
-        },
+        }
+      ],
+      "items": [],
+      "rules": [
+        "cross_border_tariff"
+      ],
+      "source_refs": [
+        "F-zh_source_tax_calculator-aedb40",
+        "F-zh_source_tax_calculator-4c65ae",
+        "F-zh_source_tax_calculator-d62dd4",
+        "F-zh_source_tax_calculator-f86c6b",
+        "F-zh_source_tax_calculator-31d762",
+        "F-zh_source_tax_calculator-e22d17",
+        "F-hr_transcript-8595fb",
+        "F-hr_transcript-3f2c2a",
+        "F-hr_transcript-5af8d0",
+        "G-01",
+        "G-08",
+        "D-001",
+        "D-041",
+        "D-045"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "US-08.2",
+      "title": "Germany: daily return and certificate of residence",
+      "as_a": "source_tax",
+      "i_want": "every employee living in Germany to state whether they expect to return daily to their main residence in Germany and, if so, whether they have a certificate of residence",
+      "so_that": "Lonio can decide, as the Zurich calculator does, whether the cross-border tariff or the normal tariff applies and compute the correct tariff code",
+      "priority": "P1",
+      "priority_reason": "Lonio now computes the tariff code instead of HR (D-001); without these answers the tariff for Germany residents is wrong, and HR finds the cross-border cases the most complicated (F-hr_transcript-8595fb).",
+      "acceptance_criteria": [
         {
-          "id": "AC-08.1.3",
-          "title": "Changing the country of residence removes the cross-border answers on submission",
-          "given": "an employee answered the Germany or Liechtenstein questions and then changes the country of their home address to another country",
-          "when": "the employee submits the questionnaire",
-          "then": "Answers to cross-border questions that no longer apply are not kept. Until submission they may be kept, so that going back and forth loses no input.",
+          "id": "AC-08.2.1",
+          "title": "Daily return to Germany is asked of every Germany resident",
+          "given": "the employee's home address on the first working day is in Germany (so they are subject to source tax whatever their nationality)",
+          "when": "the employee reaches the source tax questions",
+          "then": "the employee is asked whether they expect to return daily to their main residence in Germany, answered 'yes' or 'no'; the answer is required; it is not asked of anyone living elsewhere. The answer is used for the source tax tariff code and recorded for HR",
           "examples": [
             {
-              "name": "Employee moves the address from Germany to Switzerland before submitting",
+              "name": "Employee living in Germany",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "daily_return_germany",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee living in Liechtenstein",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
                 }
               ],
               "then": [
@@ -207,101 +206,24 @@
             }
           ],
           "source_refs": [
-            "D-036",
-            "G-01"
-          ]
-        }
-      ],
-      "items": [
-        "address_country"
-      ],
-      "rules": [
-        "calculator_residence"
-      ],
-      "source_refs": [
-        "F-zh_source_tax_calculator-aedb40",
-        "F-zh_source_tax_calculator-4c65ae",
-        "F-zh_source_tax_calculator-d62dd4",
-        "F-zh_source_tax_calculator-f86c6b",
-        "F-hr_transcript-8595fb",
-        "G-01",
-        "G-08",
-        "D-001",
-        "D-036"
-      ],
-      "status": "confirmed"
-    },
-    {
-      "id": "US-08.2",
-      "title": "Germany: daily return and certificate of residence",
-      "as_a": "source_tax",
-      "i_want": "employees living in Germany to be asked whether they return daily to their main residence in Germany and, if they do, whether they have handed in a certificate of residence",
-      "so_that": "the cross-border (Grenzgänger) tariff is applied only when the calculator's conditions are met, and the normal tariff is applied otherwise",
-      "priority": "P1",
-      "priority_reason": "Without these answers Lonio cannot compute the tariff code for employees living in Germany (D-001). HR cannot remember these questions today (F-hr_transcript-8595fb).",
-      "acceptance_criteria": [
-        {
-          "id": "AC-08.2.1",
-          "title": "Daily return to Germany is asked only of employees living in Germany",
-          "given": "an employee is subject to source tax (everyone living abroad is)",
-          "when": "the country of their home address is Germany",
-          "then": "The employee is asked whether they return daily to their main residence in Germany, answered 'yes' or 'no'. The answer is required. Employees living in any other country are not asked. The answer is recorded for source tax (the cross-border tariff decision).",
-          "examples": [
-            {
-              "name": "Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                }
-              ],
-              "then": [
-                {
-                  "target": "daily_return_germany",
-                  "expect": "required"
-                },
-                {
-                  "target": "daily_return_liechtenstein",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Employee living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                }
-              ],
-              "then": [
-                {
-                  "target": "daily_return_germany",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            }
-          ],
-          "source_refs": [
             "F-zh_source_tax_calculator-69edd5",
             "F-zh_source_tax_calculator-64ac42",
             "F-zh_source_tax_calculator-31d762",
-            "D-001"
+            "F-hr_transcript-3f2c2a",
+            "D-006",
+            "D-034",
+            "D-035"
           ]
         },
         {
           "id": "AC-08.2.2",
-          "title": "Certificate of residence is asked only after a daily return",
-          "given": "an employee living in Germany is subject to source tax",
-          "when": "they answer that they return daily to their main residence in Germany",
-          "then": "They are asked whether they have handed in a certificate of residence, answered 'yes', 'no' or 'not yet'. The answer is required. Employees who do not return daily are not asked. The certificate itself goes to HR outside Lonio; nothing is uploaded.",
+          "title": "Certificate of residence is asked only with daily return",
+          "given": "the employee lives in Germany",
+          "when": "the employee answers the daily return question",
+          "then": "only with 'yes' is the employee asked whether they have a certificate of residence, answered 'yes', 'no' or 'not yet'; the answer is required when asked. 'not yet' is a valid answer for a new hire. The certificate itself is handed to HR outside Lonio; Lonio offers no upload",
           "examples": [
             {
-              "name": "Germany resident returning daily",
+              "name": "Daily return to Germany",
               "given": [
                 {
                   "item": "address_country",
@@ -320,13 +242,17 @@
                 {
                   "target": "daily_return_reasonable",
                   "expect": "not asked"
+                },
+                {
+                  "target": "non_return_days_60",
+                  "expect": "not asked"
                 }
               ],
               "source_refs": [],
               "illustrative": true
             },
             {
-              "name": "Germany resident not returning daily",
+              "name": "No daily return to Germany",
               "given": [
                 {
                   "item": "address_country",
@@ -356,13 +282,13 @@
         },
         {
           "id": "AC-08.2.3",
-          "title": "Daily return with a certificate gives the cross-border tariff; without one, the normal tariff",
-          "given": "an employee living in Germany who is subject to source tax returns daily to their main residence in Germany",
-          "when": "Lonio computes the tariff code",
-          "then": "If the certificate of residence has been handed in ('yes'), the cross-border tariff applies. If the answer is 'no' or 'not yet', the normal tariff applies. Employees living outside Germany always get the normal tariff from this rule. The cross-border result changes the tariff letter (A to L, B to M, C to N, H to P; see the tariff letter rule). The A/B/H paths are verified before go-live (see OQ-calculator-coverage).",
+          "title": "Daily return with certificate gives the cross-border tariff",
+          "given": "the employee lives in Germany and expects to return daily",
+          "when": "Lonio decides between cross-border and normal tariff",
+          "then": "with a certificate of residence ('yes') the cross-border tariff applies (A becomes L, B becomes M, C becomes N, H becomes P); with 'no' or 'not yet' the normal tariff applies. The result is always derived again from the latest answers. Cross-border results for tariffs A, B and H were only spot-checked in the calculator and are part of the go-live comparison (see OQ-calculator-coverage)",
           "examples": [
             {
-              "name": "Calculator run: daily return, certificate handed in, result N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
+              "name": "Calculator: daily return with certificate gives N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
               "given": [
                 {
                   "item": "address_country",
@@ -387,7 +313,7 @@
               "illustrative": false
             },
             {
-              "name": "Calculator run: daily return, no certificate, result C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
+              "name": "Calculator: daily return without certificate gives C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
               "given": [
                 {
                   "item": "address_country",
@@ -412,7 +338,7 @@
               "illustrative": false
             },
             {
-              "name": "New hire without a certificate yet",
+              "name": "Certificate not yet available counts as no",
               "given": [
                 {
                   "item": "address_country",
@@ -435,70 +361,15 @@
               ],
               "source_refs": [],
               "illustrative": true
-            },
-            {
-              "name": "Tomás, lives in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "cross_border_tariff",
-                  "expect": "no"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-993db3",
-            "F-zh_source_tax_calculator-f86c6b",
             "F-zh_source_tax_calculator-66732c",
             "D-001",
-            "D-035"
-          ]
-        },
-        {
-          "id": "AC-08.2.4",
-          "title": "A certificate handed in later is reflected in the tariff code",
-          "given": "an employee answered 'not yet' for the certificate of residence and submitted the questionnaire",
-          "when": "the answer is later changed to 'yes' (a change made by HR, specified in the later HR-side spec)",
-          "then": "The cross-border tariff decision and the tariff code are derived again from the latest answers. The employee cannot change the answer after submission.",
-          "examples": [
-            {
-              "name": "Certificate later recorded as handed in",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "daily_return_germany",
-                  "value": "yes"
-                },
-                {
-                  "item": "residence_certificate",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "cross_border_tariff",
-                  "expect": "yes"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
+            "D-009",
             "D-035",
-            "D-037",
-            "D-034"
+            "D-037"
           ]
         }
       ],
@@ -517,12 +388,15 @@
         "F-zh_source_tax_calculator-823151",
         "F-zh_source_tax_calculator-5f6820",
         "F-zh_source_tax_calculator-993db3",
-        "F-zh_source_tax_calculator-f86c6b",
         "F-zh_source_tax_calculator-66732c",
         "F-hr_transcript-8595fb",
+        "F-hr_transcript-3f2c2a",
         "D-001",
+        "D-006",
+        "D-009",
+        "D-034",
         "D-035",
-        "D-037"
+        "D-045"
       ],
       "status": "decision"
     },
@@ -530,20 +404,20 @@
       "id": "US-08.3",
       "title": "Germany: no daily return - reasonableness and more than 60 non-return days",
       "as_a": "source_tax",
-      "i_want": "employees living in Germany who do not return daily to be asked whether a daily return would basically be reasonable (less than 100 km driving distance) and, if so, whether they expect more than 60 work-related non-return days in the calendar year",
-      "so_that": "the cross-border tariff or the normal tariff is applied as the calculator would apply it",
+      "i_want": "an employee living in Germany who does not expect to return daily to state whether daily return would basically be reasonable (less than 100 km driving distance) and, if so, whether they expect more than 60 work-related non-return days in the calendar year",
+      "so_that": "Lonio can decide, as the Zurich calculator does, whether the cross-border tariff or the normal tariff applies",
       "priority": "P1",
-      "priority_reason": "Without these answers Lonio cannot compute the tariff code for Germany residents who do not return daily (D-001).",
+      "priority_reason": "Lonio computes the tariff code itself (D-001); a missing or wrong answer leads to a wrong tariff for Germany residents.",
       "acceptance_criteria": [
         {
           "id": "AC-08.3.1",
-          "title": "Reasonableness of a daily return is asked only when the employee does not return daily",
-          "given": "an employee living in Germany is subject to source tax (everyone living abroad is)",
-          "when": "they answer that they do not return daily to their main residence in Germany",
-          "then": "They are asked whether a daily return would basically be reasonable (less than 100 km driving distance), answered 'yes' or 'no'. The answer is required. Employees who return daily, or who live outside Germany, are not asked. The answer is recorded for source tax.",
+          "title": "Reasonableness of daily return is asked without daily return",
+          "given": "the employee lives in Germany and answered that they do not expect to return daily",
+          "when": "the employee continues with the source tax questions",
+          "then": "the employee is asked whether daily return would basically be reasonable (less than 100 km driving distance), answered 'yes' or 'no'; the answer is required; it is not asked of employees who return daily or live elsewhere. The answer is used for the tariff code and recorded for HR",
           "examples": [
             {
-              "name": "Germany resident not returning daily",
+              "name": "Germany, no daily return",
               "given": [
                 {
                   "item": "address_country",
@@ -564,7 +438,7 @@
               "illustrative": true
             },
             {
-              "name": "Germany resident returning daily",
+              "name": "Germany, daily return",
               "given": [
                 {
                   "item": "address_country",
@@ -592,18 +466,19 @@
           "source_refs": [
             "F-zh_source_tax_calculator-d2b3cf",
             "F-zh_source_tax_calculator-087ae5",
-            "F-zh_source_tax_calculator-aaece6"
+            "F-zh_source_tax_calculator-aaece6",
+            "D-034"
           ]
         },
         {
           "id": "AC-08.3.2",
-          "title": "More than 60 non-return days is asked only when a daily return is reasonable",
-          "given": "an employee living in Germany who is subject to source tax does not return daily",
-          "when": "they answer that a daily return would be reasonable",
-          "then": "They are asked whether they expect more than 60 work-related non-return days in the calendar year, answered 'yes' or 'no'. The answer is required. The employee states what they expect for the year; no proof is collected in Lonio. If a daily return is not reasonable, the question is not asked.",
+          "title": "More than 60 non-return days is asked only when daily return is reasonable",
+          "given": "the employee lives in Germany, does not expect to return daily, and daily return would be reasonable",
+          "when": "the employee answers the reasonableness question with 'yes'",
+          "then": "the employee is asked whether they expect more than 60 work-related non-return days in the calendar year, answered 'yes' or 'no'; the answer is required when asked. The employee states their expectation for the year rather than proof as in the calculator; any proof goes to HR outside Lonio, with no upload. With 'no' to reasonableness the question is not asked",
           "examples": [
             {
-              "name": "Return reasonable",
+              "name": "Daily return reasonable",
               "given": [
                 {
                   "item": "address_country",
@@ -628,7 +503,7 @@
               "illustrative": true
             },
             {
-              "name": "Return not reasonable",
+              "name": "Daily return not reasonable",
               "given": [
                 {
                   "item": "address_country",
@@ -662,67 +537,13 @@
         },
         {
           "id": "AC-08.3.3",
-          "title": "Tariff decision for Germany residents who do not return daily",
-          "given": "an employee living in Germany who is subject to source tax does not return daily",
-          "when": "Lonio computes the tariff code",
-          "then": "If a daily return is not reasonable, the normal tariff applies. If it is reasonable and the employee expects more than 60 non-return days, the normal tariff applies. If it is reasonable and they do not expect more than 60, the cross-border tariff applies, which changes the tariff letter (see the tariff letter rule). The A/B/H paths are verified before go-live (see OQ-calculator-coverage).",
+          "title": "Tariff without daily return",
+          "given": "the employee lives in Germany and does not expect to return daily",
+          "when": "Lonio decides between cross-border and normal tariff",
+          "then": "if daily return is not reasonable, the normal tariff applies; if it is reasonable and more than 60 non-return days are expected, the normal tariff applies; if it is reasonable and no more than 60 non-return days are expected, the cross-border tariff applies (A becomes L, B becomes M, C becomes N, H becomes P). The result is always derived again from the latest answers. Cross-border results for tariffs A, B and H are part of the go-live comparison (see OQ-calculator-coverage)",
           "examples": [
             {
-              "name": "Calculator run: return not reasonable, result C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "daily_return_germany",
-                  "value": "no"
-                },
-                {
-                  "item": "daily_return_reasonable",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "cross_border_tariff",
-                  "expect": "no"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Calculator run: reasonable, more than 60 days, result C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "daily_return_germany",
-                  "value": "no"
-                },
-                {
-                  "item": "daily_return_reasonable",
-                  "value": "yes"
-                },
-                {
-                  "item": "non_return_days_60",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "cross_border_tariff",
-                  "expect": "no"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Calculator run: reasonable, not more than 60 days, result N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
+              "name": "Calculator: reasonable, not more than 60 days gives N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
               "given": [
                 {
                   "item": "address_country",
@@ -749,13 +570,70 @@
               ],
               "source_refs": [],
               "illustrative": false
+            },
+            {
+              "name": "Calculator: reasonable, more than 60 days gives C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "daily_return_germany",
+                  "value": "no"
+                },
+                {
+                  "item": "daily_return_reasonable",
+                  "value": "yes"
+                },
+                {
+                  "item": "non_return_days_60",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "cross_border_tariff",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
+            {
+              "name": "Calculator: daily return not reasonable gives C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "daily_return_germany",
+                  "value": "no"
+                },
+                {
+                  "item": "daily_return_reasonable",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "cross_border_tariff",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-c8aa5e",
+            "F-zh_source_tax_calculator-993db3",
             "F-zh_source_tax_calculator-66732c",
             "D-001",
-            "D-035"
+            "D-009",
+            "D-035",
+            "D-037"
           ]
         }
       ],
@@ -775,29 +653,34 @@
         "F-zh_source_tax_calculator-33ef31",
         "F-zh_source_tax_calculator-c8aa5e",
         "F-zh_source_tax_calculator-66732c",
+        "F-hr_transcript-8595fb",
         "D-001",
-        "D-035"
+        "D-006",
+        "D-009",
+        "D-034",
+        "D-035",
+        "D-045"
       ],
       "status": "decision"
     },
     {
       "id": "US-08.4",
       "title": "Liechtenstein: daily return and more than 45 non-return days",
-      "as_a": "hr",
-      "i_want": "employees living in Liechtenstein to be asked whether they return daily to their main residence in Liechtenstein and, if not, whether they expect more than 45 work-related non-return days in the calendar year",
-      "so_that": "Lonio records, as the calculator would, either 'in principle no source tax liability, subject to the double taxation agreement' (flagged for me) or the normal tariff code",
+      "as_a": "source_tax",
+      "i_want": "every employee living in Liechtenstein to state first whether they expect to return daily to their main residence in Liechtenstein and, if not, whether they expect more than 45 work-related non-return days in the calendar year",
+      "so_that": "Lonio records, as the Zurich calculator does, either 'in principle no source tax liability, subject to the double taxation agreement' or the normal tariff code with the double taxation agreement reservation, and flags the case for HR",
       "priority": "P1",
-      "priority_reason": "HR names Liechtenstein residents among the employees living abroad (F-hr_transcript-3f2c2a). Without these answers there is no source tax result for them (D-001, D-007).",
+      "priority_reason": "Liechtenstein residents work at Muster AG (F-hr_transcript-3f2c2a); Lonio now owns the tariff result (D-001) and must not ask needless tariff questions when there is in principle no liability (G-01).",
       "acceptance_criteria": [
         {
           "id": "AC-08.4.1",
-          "title": "Daily return to Liechtenstein is asked only of employees living in Liechtenstein",
-          "given": "an employee lives in Liechtenstein and therefore counts as subject to source tax, so they are asked the source tax questions",
-          "when": "they reach the residence questions for source tax",
-          "then": "They are asked whether they return daily to their main residence in Liechtenstein, answered 'yes' or 'no'. The answer is required. Employees living in any other country are not asked. The answer is recorded for source tax.",
+          "title": "Liechtenstein residents are asked about daily return first",
+          "given": "the employee's home address on the first working day is in Liechtenstein (so HR's rule makes them subject to source tax whatever their nationality)",
+          "when": "the employee reaches the source tax questions",
+          "then": "before denomination, spouse and children questions, the employee is asked whether they expect to return daily to their main residence in Liechtenstein, answered 'yes' or 'no'; the answer is required. With 'no' they are then asked whether they expect more than 45 work-related non-return days in the calendar year, answered 'yes' or 'no' and required. The employee states their expectation for the year. Asking before the tariff questions is an assumption to be verified by a domain expert (D-040)",
           "examples": [
             {
-              "name": "Employee living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a)",
+              "name": "Liechtenstein resident",
               "given": [
                 {
                   "item": "address_country",
@@ -808,17 +691,55 @@
                 {
                   "target": "daily_return_liechtenstein",
                   "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Liechtenstein, no daily return",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
                 },
                 {
-                  "target": "daily_return_germany",
+                  "item": "daily_return_liechtenstein",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "non_return_days_45",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Liechtenstein, daily return",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "daily_return_liechtenstein",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "non_return_days_45",
                   "expect": "not asked"
                 }
               ],
               "source_refs": [],
-              "illustrative": false
+              "illustrative": true
             },
             {
-              "name": "Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a)",
+              "name": "Employee living in Germany",
               "given": [
                 {
                   "item": "address_country",
@@ -829,49 +750,38 @@
                 {
                   "target": "daily_return_liechtenstein",
                   "expect": "not asked"
+                },
+                {
+                  "target": "non_return_days_45",
+                  "expect": "not asked"
                 }
               ],
               "source_refs": [],
-              "illustrative": false
+              "illustrative": true
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-981b6b",
             "F-zh_source_tax_calculator-a2041b",
             "F-zh_source_tax_calculator-e22d17",
-            "D-007"
+            "F-zh_source_tax_calculator-e96210",
+            "F-zh_source_tax_calculator-0ff846",
+            "F-zh_source_tax_calculator-f4ece9",
+            "F-hr_transcript-3f2c2a",
+            "D-007",
+            "D-035",
+            "D-040"
           ]
         },
         {
           "id": "AC-08.4.2",
-          "title": "More than 45 non-return days is asked only when the employee does not return daily",
-          "given": "an employee living in Liechtenstein is asked the source tax questions",
-          "when": "they answer that they do not return daily to their main residence in Liechtenstein",
-          "then": "They are asked whether they expect more than 45 work-related non-return days in the calendar year, answered 'yes' or 'no'. The answer is required. The employee states what they expect for the year; no proof is collected in Lonio. Employees who return daily are not asked.",
+          "title": "In principle no source tax liability: tariff questions skipped",
+          "given": "the employee lives in Liechtenstein and either expects to return daily, or does not return daily and expects at most 45 non-return days",
+          "when": "Lonio determines the source tax result",
+          "then": "Lonio records 'in principle no source tax liability, subject to the double taxation agreement' instead of a tariff code, flags it for HR, and does not ask the denomination, spouse and children questions for source tax. How HR sees the flag is specified in the later HR-side spec (see OQ-hr-side-follow-ups). This follows the calculator; asking these residents at all is a decision to be verified by a domain expert (D-007)",
           "examples": [
             {
-              "name": "Liechtenstein resident not returning daily",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "daily_return_liechtenstein",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "non_return_days_45",
-                  "expect": "required"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Liechtenstein resident returning daily",
+              "name": "Calculator: daily return to Liechtenstein (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1)",
               "given": [
                 {
                   "item": "address_country",
@@ -884,51 +794,19 @@
               ],
               "then": [
                 {
-                  "target": "non_return_days_45",
+                  "target": "liechtenstein_no_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "confession",
                   "expect": "not asked"
                 }
               ],
               "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-e96210",
-            "F-zh_source_tax_calculator-0ff846",
-            "F-zh_source_tax_calculator-f4ece9",
-            "D-035"
-          ]
-        },
-        {
-          "id": "AC-08.4.3",
-          "title": "'In principle no source tax liability' or the normal tariff code for Liechtenstein residents",
-          "given": "an employee living in Liechtenstein has answered the Liechtenstein questions",
-          "when": "Lonio determines the source tax result",
-          "then": "If the employee returns daily, or does not return daily and expects at most 45 non-return days, the result is 'in principle no source tax liability, subject to the double taxation agreement' instead of a tariff code, and it is recorded for HR as a flag. If they expect more than 45 non-return days, the normal tariff code applies. For employees living outside Liechtenstein the rule does not apply and the tariff code is computed as usual. How HR sees and handles the flag is part of the later HR-side spec.",
-          "examples": [
-            {
-              "name": "Calculator run: daily return to Liechtenstein (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "daily_return_liechtenstein",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "liechtenstein_no_source_tax",
-                  "expect": "yes"
-                }
-              ],
-              "source_refs": [],
               "illustrative": false
             },
             {
-              "name": "Calculator run: no daily return, not more than 45 days (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1)",
+              "name": "Calculator: no daily return, at most 45 days (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1)",
               "given": [
                 {
                   "item": "address_country",
@@ -947,48 +825,10 @@
                 {
                   "target": "liechtenstein_no_source_tax",
                   "expect": "yes"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Calculator run: more than 45 days, result C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-cc19c7)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
                 },
                 {
-                  "item": "daily_return_liechtenstein",
-                  "value": "no"
-                },
-                {
-                  "item": "non_return_days_45",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "liechtenstein_no_source_tax",
-                  "expect": "no"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                }
-              ],
-              "then": [
-                {
-                  "target": "liechtenstein_no_source_tax",
-                  "expect": "no"
+                  "target": "confession",
+                  "expect": "not asked"
                 }
               ],
               "source_refs": [],
@@ -997,10 +837,60 @@
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-fb87f1",
-            "F-zh_source_tax_calculator-cc19c7",
-            "F-zh_source_tax_calculator-f86c6b",
+            "G-01",
             "D-007",
-            "D-034"
+            "D-034",
+            "D-040"
+          ]
+        },
+        {
+          "id": "AC-08.4.3",
+          "title": "More than 45 non-return days: normal tariff with DTA reservation",
+          "given": "the employee lives in Liechtenstein, does not expect to return daily and expects more than 45 non-return days",
+          "when": "Lonio determines the source tax result",
+          "then": "the tariff questions (denomination, spouse, children) are asked, the normal tariff code is computed (never the cross-border tariff, which applies only to Germany residents) and recorded with the note 'subject to the double taxation agreement', flagged for HR. The result is always derived again from the latest answers. Recording the note and the flag is an assumption to be verified by a domain expert (D-040)",
+          "examples": [
+            {
+              "name": "Calculator: more than 45 days gives C1Y with DTA reservation (zh_source_tax_calculator/F-zh_source_tax_calculator-cc19c7)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "daily_return_liechtenstein",
+                  "value": "no"
+                },
+                {
+                  "item": "non_return_days_45",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "liechtenstein_no_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "cross_border_tariff",
+                  "expect": "no"
+                },
+                {
+                  "target": "confession",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-cc19c7",
+            "F-zh_source_tax_calculator-993db3",
+            "D-007",
+            "D-034",
+            "D-037",
+            "D-040"
           ]
         }
       ],
@@ -1009,7 +899,8 @@
         "non_return_days_45"
       ],
       "rules": [
-        "liechtenstein_no_source_tax"
+        "liechtenstein_no_source_tax",
+        "cross_border_tariff"
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-981b6b",
@@ -1020,52 +911,50 @@
         "F-zh_source_tax_calculator-f4ece9",
         "F-zh_source_tax_calculator-fb87f1",
         "F-zh_source_tax_calculator-cc19c7",
-        "F-zh_source_tax_calculator-f86c6b",
         "F-hr_transcript-3f2c2a",
+        "F-hr_transcript-5af8d0",
+        "G-01",
         "D-001",
+        "D-006",
         "D-007",
         "D-034",
-        "D-035"
+        "D-035",
+        "D-040",
+        "D-045"
       ],
       "status": "decision"
     }
   ],
   "items": [
+    "daily_return_liechtenstein",
+    "non_return_days_45",
     "daily_return_germany",
     "residence_certificate",
     "daily_return_reasonable",
-    "non_return_days_60",
-    "daily_return_liechtenstein",
-    "non_return_days_45"
+    "non_return_days_60"
   ],
   "rules": [
-    "calculator_residence",
-    "cross_border_tariff",
-    "liechtenstein_no_source_tax"
+    "liechtenstein_no_source_tax",
+    "cross_border_tariff"
   ],
   "open_questions": [],
   "source_refs": [
-    "F-zh_source_tax_calculator-aedb40",
-    "F-zh_source_tax_calculator-4c65ae",
-    "F-zh_source_tax_calculator-d62dd4",
-    "F-zh_source_tax_calculator-f86c6b",
-    "F-zh_source_tax_calculator-69edd5",
-    "F-zh_source_tax_calculator-687e8b",
-    "F-zh_source_tax_calculator-993db3",
-    "F-zh_source_tax_calculator-d2b3cf",
-    "F-zh_source_tax_calculator-e8ffac",
-    "F-zh_source_tax_calculator-c8aa5e",
-    "F-zh_source_tax_calculator-66732c",
     "F-zh_source_tax_calculator-981b6b",
-    "F-zh_source_tax_calculator-fb87f1",
     "F-zh_source_tax_calculator-e96210",
+    "F-zh_source_tax_calculator-fb87f1",
     "F-zh_source_tax_calculator-cc19c7",
+    "F-zh_source_tax_calculator-31d762",
+    "F-zh_source_tax_calculator-5f6820",
+    "F-zh_source_tax_calculator-993db3",
+    "F-zh_source_tax_calculator-aaece6",
+    "F-zh_source_tax_calculator-33ef31",
+    "F-zh_source_tax_calculator-c8aa5e",
     "F-hr_transcript-8595fb",
-    "G-08",
-    "D-001",
+    "D-006",
     "D-007",
     "D-034",
     "D-035",
-    "D-037"
+    "D-040",
+    "D-045"
   ]
 }
