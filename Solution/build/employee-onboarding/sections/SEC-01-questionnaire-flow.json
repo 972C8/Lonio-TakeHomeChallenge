@@ -1,0 +1,694 @@
+{
+  "id": "SEC-01-questionnaire-flow",
+  "order": 1,
+  "title": "Questionnaire flow overview",
+  "purpose": "Set the steps of the questionnaire, their order and the conditions for showing each step, so every employee sees only the questions that apply to them and answers each one once.",
+  "stories": [
+    {
+      "id": "US-01.1",
+      "title": "Show the source tax step only to employees who are subject to source tax",
+      "as_a": "employee",
+      "i_want": "to see the source tax questions only if I am actually subject to source tax",
+      "so_that": "I am not asked for sensitive data (for example my religious denomination) that nobody needs from me, and HR no longer has to send the whole source tax questionnaire to everybody",
+      "priority": "P1",
+      "priority_reason": "HR calls source tax its biggest time sink: it sends the whole questionnaire to everybody because it cannot tell up front who must answer, and Swiss employees get annoyed and call HR. Data minimisation also forbids asking sensitive source tax questions of people who are not subject.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.1.1",
+          "title": "Employees who are not subject to source tax finish after the Family step",
+          "given": "an employee whose answers in steps 1 to 5 show that they are not subject to source tax (rule subject_to_source_tax), for example a Swiss national living in Switzerland, a non-Swiss employee with a C permit living in Switzerland, or an employee married to a Swiss or C-permit spouse who lives in Switzerland",
+          "when": "the employee completes the Family step (step 5)",
+          "then": "the questionnaire ends after step 5; the employee sees none of the source tax questions (type of income, denomination, spouse works, children, cross-border questions)",
+          "examples": [
+            {
+              "name": "Maria, Portuguese with a C permit (hr_transcript/F-hr_transcript-845204)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Portugal"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "C permit"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "questionnaire_flow",
+                  "expect": "Steps 1-5"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
+            {
+              "name": "Tomás, Brazilian with a B permit, Swiss wife, living in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Brazil"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "questionnaire_flow",
+                  "expect": "Steps 1-5"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
+            {
+              "name": "Swiss employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "questionnaire_flow",
+                  "expect": "Steps 1-5"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-b84498",
+            "F-hr_transcript-51c17d",
+            "F-hr_transcript-5af8d0",
+            "F-hr_transcript-845204",
+            "F-hr_transcript-b90bd9",
+            "G-01"
+          ]
+        },
+        {
+          "id": "AC-01.1.2",
+          "title": "Employees who are subject to source tax continue with the Source tax step",
+          "given": "an employee whose answers in steps 1 to 5 show that they are subject to source tax (rule subject_to_source_tax), for example anybody living outside Switzerland, or a non-Swiss employee in Switzerland without a C permit who is not married to a Swiss or C-permit spouse living in Switzerland",
+          "when": "the employee completes the Family step (step 5)",
+          "then": "the questionnaire continues with step 6 Source tax, showing only the source tax questions that apply to this employee; the rule itself is still to be confirmed by HR (see OQ-source-tax-rule), and for Liechtenstein residents see OQ-liechtenstein",
+          "examples": [
+            {
+              "name": "Stefan, Swiss national living abroad (hr_transcript/F-hr_transcript-3f2c2a), country of residence assumed Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "questionnaire_flow",
+                  "expect": "Steps 1-6"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee living in Liechtenstein",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "questionnaire_flow",
+                  "expect": "Steps 1-6"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Single non-Swiss employee with a B permit living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Germany"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "questionnaire_flow",
+                  "expect": "Steps 1-6"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Married B-permit employee whose spouse is not Swiss and has a B permit",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "spouse_permit_type",
+                  "value": "B permit"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "questionnaire_flow",
+                  "expect": "Steps 1-6"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Married B-permit employee whose Swiss spouse lives in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Brazil"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "questionnaire_flow",
+                  "expect": "Steps 1-6"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-b84498",
+            "F-hr_transcript-5af8d0",
+            "F-hr_transcript-3f2c2a",
+            "F-hr_transcript-b90bd9",
+            "G-01"
+          ]
+        }
+      ],
+      "items": [],
+      "rules": [
+        "questionnaire_flow"
+      ],
+      "source_refs": [
+        "F-hr_transcript-51c17d",
+        "F-hr_transcript-b84498",
+        "F-hr_transcript-5af8d0",
+        "F-hr_transcript-3f2c2a",
+        "F-hr_transcript-845204",
+        "F-hr_transcript-b90bd9",
+        "G-01"
+      ],
+      "status": "inferred"
+    },
+    {
+      "id": "US-01.2",
+      "title": "Ask the steps in an order that avoids unneeded questions",
+      "as_a": "employee",
+      "i_want": "to go through the questionnaire in a fixed order of steps, where earlier answers decide which later questions I see",
+      "so_that": "I am never asked a question whose answer nobody needs for me, such as my nationality when I live abroad or my spouse's details when I am not married",
+      "priority": "P2",
+      "priority_reason": "Enables data minimisation and avoids annoying employees with irrelevant questions; it structures the questionnaire rather than unblocking a registration on its own.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.2.1",
+          "title": "The steps follow a fixed order in English",
+          "given": "any new employee of Muster AG",
+          "when": "they open the onboarding questionnaire",
+          "then": "the questionnaire is in English and the steps come in this order: 1 Personal details (first name, last name, date of birth); 2 Home address (street, house number, postcode, town, country, and the canton if the employee lives in Switzerland); 3 Employment start (the first working day); 4 Nationality and permit; 5 Family (civil status and, where they apply, spouse questions); 6 Source tax. Steps 4 and 6 and the spouse questions in step 5 appear only under the conditions in the other criteria of this story and in US-01.1's rule",
+          "examples": [],
+          "source_refs": [
+            "G-09",
+            "G-01",
+            "F-hr_transcript-5af8d0"
+          ]
+        },
+        {
+          "id": "AC-01.2.2",
+          "title": "Home address comes before nationality; employees living abroad skip step 4",
+          "given": "the employee has entered their home address in step 2",
+          "when": "the country of the home address is not Switzerland",
+          "then": "step 4 Nationality and permit is skipped entirely, because employees living abroad are subject to source tax whatever their nationality; if the country is Switzerland, the nationality is asked, and the permit only if the employee is not Swiss (for employees with several nationalities see OQ-dual-nationality)",
+          "examples": [
+            {
+              "name": "Employee living in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "permit_type",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Swiss employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "asked"
+                },
+                {
+                  "target": "permit_type",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Maria, Portuguese living in Switzerland (hr_transcript/F-hr_transcript-845204)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Portugal"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "asked"
+                },
+                {
+                  "target": "permit_type",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-3f2c2a",
+            "F-hr_transcript-5af8d0",
+            "F-hr_transcript-c9d9b9",
+            "G-01"
+          ]
+        },
+        {
+          "id": "AC-01.2.3",
+          "title": "Civil status comes before the spouse questions",
+          "given": "the employee is in step 5 Family",
+          "when": "they have answered their civil status",
+          "then": "the spouse's nationality, permit and residence are asked only if the employee is married and would otherwise be subject to source tax (lives in Switzerland, is not Swiss and has no C permit); the spouse's residence is asked only if the spouse is Swiss or holds a C permit; otherwise none of these spouse questions appear",
+          "examples": [
+            {
+              "name": "Tomás, Brazilian with a B permit, married to a Swiss wife (hr_transcript/F-hr_transcript-b90bd9)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Brazil"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_nationality",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_permit_type",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_residence_country",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
+            {
+              "name": "Single B-permit employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Brazil"
+                },
+                {
+                  "item": "permit_type",
+                  "value": "B permit"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_permit_type",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_residence_country",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Married Swiss employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_residence_country",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Married employee living in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_permit_type",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-54d011",
+            "F-hr_transcript-b90bd9",
+            "F-hr_transcript-5af8d0",
+            "G-01"
+          ]
+        },
+        {
+          "id": "AC-01.2.4",
+          "title": "The employee confirms the first working day; the insurance start date is derived",
+          "given": "the employee is in step 3 Employment start",
+          "when": "the step is shown",
+          "then": "the employee is asked to confirm their first working day and is not asked for the pension insurance start date; that date is derived from the first working day (rule insurance_start_date)",
+          "examples": [],
+          "source_refs": [
+            "G-08"
+          ]
+        }
+      ],
+      "items": [],
+      "rules": [
+        "questionnaire_flow"
+      ],
+      "source_refs": [
+        "G-01",
+        "G-08",
+        "G-09",
+        "F-hr_transcript-5af8d0",
+        "F-hr_transcript-3f2c2a",
+        "F-hr_transcript-54d011",
+        "F-hr_transcript-b84498"
+      ],
+      "status": "inferred"
+    },
+    {
+      "id": "US-01.3",
+      "title": "Ask each piece of information once and reuse it for every receiving party",
+      "as_a": "hr",
+      "i_want": "every piece of information to be asked of the employee only once in the questionnaire, even when several receiving parties need it",
+      "so_that": "the answers are enough for the pension registration, the source tax tariff and HR onboarding without asking the same thing twice or sending follow-up emails",
+      "priority": "P1",
+      "priority_reason": "This is the core promise of the feature: asking too little blocks a registration, asking twice or too much annoys employees and collects data we must not have. Today HR collects the same data by hand for several parties and asks spouse details by email, which takes forever.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.3.1",
+          "title": "Information needed by several parties is asked once",
+          "given": "an information item needed by more than one receiving party, for example the civil status (pension fund and source tax) or the country of the home address (HR's postal address and source tax residence)",
+          "when": "the employee goes through the questionnaire",
+          "then": "the item is asked exactly once, in its step, and the same answer serves every party that needs it; the source tax step does not ask again for civil status or country of residence",
+          "examples": [],
+          "source_refs": [
+            "G-01",
+            "F-hr_transcript-ce8ca4",
+            "F-zh_source_tax_calculator-9007c3",
+            "F-hr_transcript-ab3cba",
+            "F-hr_transcript-c0fe95"
+          ]
+        },
+        {
+          "id": "AC-01.3.2",
+          "title": "Spouse details are collected in the questionnaire, not by email",
+          "given": "a married employee who would otherwise be subject to source tax",
+          "when": "they complete step 5 Family",
+          "then": "the spouse details HR needs for the source tax check are already answered in the questionnaire, so HR does not need to ask for them by email",
+          "examples": [],
+          "source_refs": [
+            "F-hr_transcript-a45422",
+            "F-hr_transcript-54d011",
+            "G-01"
+          ]
+        },
+        {
+          "id": "AC-01.3.3",
+          "title": "No question without a receiving party",
+          "given": "any question in the questionnaire",
+          "when": "it is shown to an employee",
+          "then": "at least one receiving party in scope (Pensionskasse Muster, the Zurich source tax calculator or Muster AG's HR) needs the answer for this employee; out-of-scope data such as AHV data, IT equipment or badge photos is not asked",
+          "examples": [],
+          "source_refs": [
+            "G-01",
+            "G-02",
+            "G-03",
+            "G-04"
+          ]
+        }
+      ],
+      "items": [],
+      "rules": [
+        "questionnaire_flow"
+      ],
+      "source_refs": [
+        "G-01",
+        "G-02",
+        "G-04",
+        "F-hr_transcript-a45422",
+        "F-hr_transcript-ce8ca4",
+        "F-zh_source_tax_calculator-9007c3",
+        "F-hr_transcript-ab3cba",
+        "F-hr_transcript-c0fe95"
+      ],
+      "status": "inferred"
+    }
+  ],
+  "items": [],
+  "rules": [
+    "questionnaire_flow"
+  ],
+  "open_questions": [],
+  "source_refs": [
+    "G-01",
+    "G-04",
+    "G-08",
+    "G-09",
+    "F-hr_transcript-b84498",
+    "F-hr_transcript-51c17d",
+    "F-hr_transcript-5af8d0"
+  ]
+}

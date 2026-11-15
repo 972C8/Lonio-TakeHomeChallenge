@@ -1,6 +1,6 @@
 {
-  "goal": "A new employee of Muster AG answers one short questionnaire in Lonio. It asks each piece of information once, and only when a receiving party needs it for this person. From the answers Lonio records everything the pension fund registration, the source tax tariff code and HR need, without further questions.",
-  "context": "Today HR at Muster AG (the customer company) collects the onboarding data from each new employee. HR posts many documents to employees, so a complete postal address matters (F-hr_transcript-5518ad, F-hr_transcript-66fe15). The first working day often moves, for example after an earlier exit is agreed with the old employer. The pension fund insurance start date depends on it (F-hr_transcript-872bd7, F-hr_transcript-1d5c07). Pensionskasse Muster rejects a registration with missing required fields, such as the spouse's date of birth for married employees (F-pension_portal-ef28c3). To find the source tax tariff, HR clicks through the Canton of Zurich calculator (F-hr_transcript-4e180e). Lonio will compute the full tariff code itself (D-001).\n\nLonio must ask every question at most once and reuse the answer for every receiving party. Asking too little blocks a registration. Asking too much collects personal data no party may have (G-01, data minimisation). Wherever possible Lonio asks for primary facts and derives values from them (G-08).\n\nQuestionnaire flow overview:\n1. Personal details: first name, last name, date of birth. Always asked.\n2. Home address: street, house number, postcode, town, country. Then the canton, only for employees living in Switzerland (D-002).\n3. Start of employment: the first working day. The insurance start date is derived from it.\n4. Nationality and permit: only for employees living in Switzerland. They give their nationality; non-Swiss employees also say whether they hold a C permit (D-005, D-008).\n5. Civil status and spouse: civil status is always asked. The spouse's or registered partner's date of birth is asked of married, registered and separated employees (D-003, D-004). The spouse's country of residence, nationality and C permit are asked only when they can decide source tax liability.\n6. Source tax: only for employees subject to source tax. Denomination, whether the spouse or partner is employed, and whether the employee has children.\n7. Children: one block per child, following the calculator's child logic.\n8. Cross-border commuting: only for employees living in Germany or Liechtenstein (D-007, D-035).\n9. Finish: a permit reminder for non-Swiss employees and employees living abroad (D-010, D-038), then submission. After submission the questionnaire is read-only (D-036, D-037).\n\nOnly the employee side is in scope. Out of scope are:\n- transmission of data to the receiving parties (G-04)\n- AHV data and IT equipment (G-03)\n- HR screens and any HR changes after submission (D-034).",
+  "goal": "A new employee of Muster AG answers one English questionnaire that asks each piece of information once, and only when Pensionskasse Muster, the Zurich source tax calculator or HR needs it for this person. The answers are enough to complete the pension registration, find the source tax tariff and run HR onboarding without follow-up emails.",
+  "context": "Today Muster AG's HR runs onboarding by hand and collects the same data for several receiving parties: the pension fund (Pensionskasse Muster), source tax (Zurich tariff calculator) and HR itself [G-01, G-02]. The sources name these pain points:\n- **The first working day is HR's \"number one\" item and often moves.** The pension insurance start date depends on it and must always be the 1st of a month. When the start day changes, the pension fund's date must be corrected [F-hr_transcript-872bd7, F-hr_transcript-1d5c07, F-hr_transcript-e18e66, F-pension_portal-509cbe].\n- **HR cannot tell up front who must answer the source tax questions.** Whether someone is subject to source tax depends on residence, nationality, permit and the spouse's situation. HR collects the spouse details through manual email follow-ups [F-hr_transcript-5af8d0, F-hr_transcript-b84498, F-hr_transcript-b90bd9, F-hr_transcript-a45422].\n- **Missing required fields block the pension registration.** For example, the spouse's date of birth is required when the employee is married [F-pension_portal-44a27b, F-pension_portal-c5ee15].\n- **Data minimisation forbids asking more than needed.** Sensitive data such as religious denomination must only be asked of employees who are subject to source tax [G-01].\n- **The Zurich calculator has a deep tree of questions.** These cover income type, denomination, the spouse, children and cross-border situations for Germany and Liechtenstein, and only a subset applies to each person [F-zh_source_tax_calculator-e06ffd, F-zh_source_tax_calculator-103b19, F-zh_source_tax_calculator-69edd5].\n\n**Scope:** which information is asked, in which order, under which conditions and whether it is required, plus the business rules derived from the answers [G-04].\n\n**Out of scope** [G-03, G-04, F-hr_transcript-7668e6, F-hr_transcript-f23d48]:\n- how the data is sent to each party\n- AHV data\n- IT equipment\n- employee badge photos\n\n**Simplifications** [G-05]: Switzerland has exactly one source tax system (Zurich's) and exactly one pension fund (Pensionskasse Muster).",
   "stakeholders": [
     "employee",
     "hr",
@@ -9,10 +9,31 @@
   ],
   "sections": [
     {
-      "id": "SEC-01-identity-and-address",
+      "id": "SEC-01-questionnaire-flow",
       "order": 1,
+      "title": "Questionnaire flow overview",
+      "purpose": "Set the steps of the questionnaire, their order and the conditions for showing each step, so every employee sees only the questions that apply to them and answers each one once.",
+      "items": [],
+      "rules": [
+        "questionnaire_flow"
+      ],
+      "open_questions": [],
+      "source_refs": [
+        "G-01",
+        "G-04",
+        "G-08",
+        "G-09",
+        "F-hr_transcript-b84498",
+        "F-hr_transcript-51c17d",
+        "F-hr_transcript-5af8d0"
+      ],
+      "stories": []
+    },
+    {
+      "id": "SEC-02-personal-details-address",
+      "order": 2,
       "title": "Personal details and home address",
-      "purpose": "Collect the employee's name, date of birth and full postal address, plus the canton for residents of Switzerland. The pension fund needs these to register the employee, HR needs them to post documents, and the address country decides most later conditions.",
+      "purpose": "Collect the employee's identity and complete postal address. The pension registration needs these, HR posts documents to the address, and the country of the address decides which later questions apply.",
       "items": [
         "first_name",
         "last_name",
@@ -26,29 +47,25 @@
       ],
       "rules": [],
       "open_questions": [
-        "OQ-canton-abroad"
+        "OQ-canton"
       ],
       "source_refs": [
         "F-pension_portal-44a27b",
-        "F-pension_portal-3cfe89",
-        "F-pension_portal-587d3f",
         "F-pension_portal-b359c3",
-        "F-hr_transcript-5518ad",
-        "F-hr_transcript-ec57d3",
+        "F-hr_transcript-3edf89",
+        "F-hr_transcript-3beee8",
+        "F-hr_transcript-c0fe95",
         "F-hr_transcript-66fe15",
-        "F-hr_transcript-e505f8",
-        "G-01",
-        "G-09",
-        "G-10",
-        "D-002"
+        "G-07",
+        "G-10"
       ],
       "stories": []
     },
     {
-      "id": "SEC-02-start-date-insurance",
-      "order": 2,
+      "id": "SEC-03-employment-start",
+      "order": 3,
       "title": "First working day and insurance start date",
-      "purpose": "The employee enters and thereby confirms the first working day. Lonio derives the pension fund insurance start date from it, always from the latest date.",
+      "purpose": "Have the employee confirm the first working day and derive the pension insurance start date from it, so a moved start date never leaves a wrong date at the pension fund.",
       "items": [
         "first_working_day"
       ],
@@ -62,171 +79,158 @@
         "F-hr_transcript-1d5c07",
         "F-hr_transcript-30d25c",
         "F-hr_transcript-fdf50a",
-        "F-hr_transcript-d7a23b",
+        "F-hr_transcript-e18e66",
         "F-pension_portal-509cbe",
         "F-pension_portal-dd8126",
-        "G-08",
-        "D-033",
-        "D-034",
-        "D-037"
+        "F-pension_portal-3a97ab",
+        "G-08"
       ],
       "stories": []
     },
     {
-      "id": "SEC-03-civil-status-spouse",
-      "order": 3,
-      "title": "Civil status and spouse for the pension fund",
-      "purpose": "Ask the civil status once. Map it to the pension fund's list and to the source tax view, and ask the spouse's or registered partner's date of birth when the fund registers the employee as Married.",
+      "id": "SEC-04-civil-status-spouse",
+      "order": 4,
+      "title": "Civil status and spouse data for the pension fund",
+      "purpose": "Ask the civil status once, using the pension fund's list, and the spouse's date of birth when the employee is married. The source tax calculator's civil status question is answered from the same answer, not asked again.",
       "items": [
         "civil_status",
         "spouse_date_of_birth"
       ],
       "rules": [
-        "pension_fund_civil_status",
-        "source_tax_civil_status"
+        "calculator_civil_status"
       ],
       "open_questions": [
-        "OQ-civil-status-partnership",
-        "OQ-spouse-dob-other-status"
+        "OQ-registered-partnership",
+        "OQ-separated",
+        "OQ-divorced-widowed"
       ],
       "source_refs": [
-        "F-hr_transcript-ce8ca4",
-        "F-hr_transcript-f197d6",
-        "F-hr_transcript-2334d8",
+        "F-pension_portal-8664f4",
         "F-pension_portal-3d1ae4",
-        "F-pension_portal-9b24c5",
-        "F-pension_portal-ef28c3",
-        "F-pension_portal-6d3630",
+        "F-pension_portal-a0065b",
+        "F-pension_portal-c5ee15",
+        "F-hr_transcript-ce8ca4",
+        "F-hr_transcript-2334d8",
+        "F-zh_source_tax_calculator-9007c3",
         "F-zh_source_tax_calculator-051bb9",
-        "G-10",
-        "D-003",
-        "D-004"
+        "G-07",
+        "G-10"
       ],
       "stories": []
     },
     {
-      "id": "SEC-04-source-tax-liability",
-      "order": 4,
-      "title": "Source tax liability check",
-      "purpose": "Decide whether the employee is subject to source tax with as few questions as possible: home country, then nationality and C permit for residents of Switzerland, then the spouse's residence, nationality and C permit. Only employees subject to source tax get the tariff questions.",
+      "id": "SEC-05-source-tax-liability",
+      "order": 5,
+      "title": "Who is subject to source tax",
+      "purpose": "Ask only the nationality, permit and spouse questions needed to decide whether the employee is subject to source tax. This tells HR up front who must answer the source tax questions and replaces the manual email follow-up about the spouse.",
       "items": [
         "nationality",
         "permit_type",
-        "spouse_residence_country",
         "spouse_nationality",
-        "spouse_permit_type"
+        "spouse_permit_type",
+        "spouse_residence_country"
       ],
       "rules": [
-        "subject_to_source_tax",
-        "spouse_exempts_source_tax"
+        "subject_to_source_tax"
       ],
       "open_questions": [
-        "OQ-nationality-wording"
+        "OQ-source-tax-rule",
+        "OQ-permit-list",
+        "OQ-dual-nationality",
+        "OQ-spouse-residence-form",
+        "OQ-permit-reminder"
       ],
       "source_refs": [
-        "F-hr_transcript-b6d9b3",
-        "F-hr_transcript-1a20bb",
+        "F-hr_transcript-5af8d0",
         "F-hr_transcript-35fae3",
-        "F-hr_transcript-4ad146",
+        "F-hr_transcript-b0527c",
         "F-hr_transcript-845204",
+        "F-hr_transcript-c9d9b9",
+        "F-hr_transcript-3f2c2a",
+        "F-hr_transcript-b90bd9",
         "F-hr_transcript-f3ce84",
-        "F-hr_transcript-d7431e",
+        "F-hr_transcript-76eacc",
+        "F-hr_transcript-e5337d",
+        "F-hr_transcript-a45422",
+        "F-hr_transcript-550840",
         "F-hr_transcript-b84498",
-        "G-01",
-        "D-003",
-        "D-005",
-        "D-007",
-        "D-008",
-        "D-038"
+        "G-01"
       ],
       "stories": []
     },
     {
-      "id": "SEC-05-tariff-basics",
-      "order": 5,
-      "title": "Source tax tariff basics and computed result",
-      "purpose": "For employees subject to source tax, ask the denomination and whether the spouse or partner is employed. Combine these with the child and cross-border results into the full Zurich tariff code (or the Liechtenstein result), so HR no longer uses the calculator.",
+      "id": "SEC-06-source-tax-tariff-basics",
+      "order": 6,
+      "title": "Source tax tariff: income, denomination and spouse employment",
+      "purpose": "For employees subject to source tax only, ask the calculator's income type, denomination and spouse employment questions that set the base tariff letter and the church-tax suffix.",
       "items": [
+        "income_type",
         "confession",
-        "spouse_employed"
+        "spouse_gainful_employment"
       ],
       "rules": [
         "church_tax_suffix",
-        "married_tariff_letter",
-        "source_tax_tariff_letter",
-        "source_tax_result"
+        "base_tariff_letter"
       ],
       "open_questions": [
-        "OQ-calculator-coverage"
+        "OQ-income-type"
       ],
       "source_refs": [
+        "F-zh_source_tax_calculator-e06ffd",
+        "F-zh_source_tax_calculator-351289",
         "F-zh_source_tax_calculator-208104",
         "F-zh_source_tax_calculator-2eab9a",
+        "F-zh_source_tax_calculator-2d4dda",
         "F-zh_source_tax_calculator-7b637b",
         "F-zh_source_tax_calculator-97139a",
-        "F-zh_source_tax_calculator-c78e0c",
-        "F-zh_source_tax_calculator-b7154e",
-        "F-zh_source_tax_calculator-ecef37",
-        "F-zh_source_tax_calculator-86d588",
-        "F-hr_transcript-4e180e",
-        "F-hr_transcript-563a9f",
-        "D-001",
-        "D-003",
-        "D-006",
-        "D-007",
-        "D-009",
-        "D-034",
-        "D-037"
+        "F-zh_source_tax_calculator-037b1c",
+        "F-hr_transcript-34494f",
+        "F-hr_transcript-6a0a40",
+        "G-01"
       ],
       "stories": []
     },
     {
-      "id": "SEC-06-children",
-      "order": 6,
-      "title": "Children for the source tax tariff",
-      "purpose": "For employees subject to source tax, ask whether they have children and go through one block per child. This decides whether each child counts (and whether it counts towards an H tariff), which gives the child digit and the H tariff.",
+      "id": "SEC-07-source-tax-children",
+      "order": 7,
+      "title": "Source tax tariff: children",
+      "purpose": "For employees subject to source tax only, ask whether there are children, then one block of questions per child. Each block asks only what is needed to decide whether that child counts towards the tariff digit or leads to tariff H.",
       "items": [
         "has_children",
         "child_age_status",
         "child_same_household",
-        "child_parental_custody",
+        "child_custody",
         "child_common_household_other_parent",
-        "child_shared_custody_not_in_household",
-        "child_parental_care_not_in_household",
+        "child_shared_custody",
+        "child_parental_care",
         "child_alternating_custody",
         "child_main_financial_contributor",
-        "child_main_maintenance"
+        "child_maintenance_over_50"
       ],
-      "rules": [
-        "child_tariff_result",
-        "source_tax_child_digit",
-        "single_parent_h_tariff"
+      "rules": [],
+      "open_questions": [
+        "OQ-calculator-coverage"
       ],
-      "open_questions": [],
       "source_refs": [
         "F-zh_source_tax_calculator-103b19",
-        "F-zh_source_tax_calculator-052c98",
-        "F-zh_source_tax_calculator-987091",
-        "F-zh_source_tax_calculator-c53a22",
-        "F-zh_source_tax_calculator-3058a4",
-        "F-zh_source_tax_calculator-56e79b",
-        "F-zh_source_tax_calculator-50f74a",
-        "F-zh_source_tax_calculator-38dd4a",
-        "F-zh_source_tax_calculator-c2faa7",
-        "F-zh_source_tax_calculator-562299",
-        "F-zh_source_tax_calculator-96658b",
-        "F-zh_source_tax_calculator-ecef37",
-        "D-001",
-        "D-003",
-        "D-009"
+        "F-zh_source_tax_calculator-640429",
+        "F-zh_source_tax_calculator-5725a8",
+        "F-zh_source_tax_calculator-4b7063",
+        "F-zh_source_tax_calculator-d79949",
+        "F-zh_source_tax_calculator-fe0305",
+        "F-zh_source_tax_calculator-956f07",
+        "F-zh_source_tax_calculator-da19df",
+        "F-zh_source_tax_calculator-cdd0b6",
+        "F-zh_source_tax_calculator-b008fe",
+        "F-zh_source_tax_calculator-300c72"
       ],
       "stories": []
     },
     {
-      "id": "SEC-07-living-abroad",
-      "order": 7,
-      "title": "Employees living abroad (Germany, Liechtenstein)",
-      "purpose": "Derive the state of residence from the home address. Ask cross-border commuters in Germany or Liechtenstein about daily return, the certificate of residence and the non-return days they expect, to decide between the cross-border tariff, the normal tariff and the Liechtenstein 'in principle no liability' result.",
+      "id": "SEC-08-cross-border-residence",
+      "order": 8,
+      "title": "Source tax: residence abroad and cross-border questions",
+      "purpose": "Answer the calculator's residence questions from the home address. Ask employees living in Germany or Liechtenstein only the daily-return and non-return-day questions that decide between the cross-border tariff and the normal tariff.",
       "items": [
         "daily_return_germany",
         "residence_certificate",
@@ -236,53 +240,27 @@
         "non_return_days_45"
       ],
       "rules": [
-        "source_tax_residence",
-        "cross_border_tariff_applies",
-        "liechtenstein_no_source_tax_in_principle"
+        "calculator_residence"
       ],
-      "open_questions": [],
+      "open_questions": [
+        "OQ-liechtenstein",
+        "OQ-proof-documents"
+      ],
       "source_refs": [
-        "F-zh_source_tax_calculator-f29009",
+        "F-zh_source_tax_calculator-aedb40",
+        "F-zh_source_tax_calculator-4c65ae",
         "F-zh_source_tax_calculator-d62dd4",
-        "F-zh_source_tax_calculator-52b67a",
+        "F-zh_source_tax_calculator-f86c6b",
         "F-zh_source_tax_calculator-69edd5",
-        "F-zh_source_tax_calculator-4d3ac0",
-        "F-zh_source_tax_calculator-bc1639",
-        "F-zh_source_tax_calculator-b948fd",
-        "F-zh_source_tax_calculator-89a9f1",
-        "F-zh_source_tax_calculator-e80d8f",
-        "F-zh_source_tax_calculator-ab4e1e",
-        "F-hr_transcript-ab8886",
-        "F-hr_transcript-e505f8",
-        "D-001",
-        "D-007",
-        "D-034",
-        "D-035",
-        "D-037"
-      ],
-      "stories": []
-    },
-    {
-      "id": "SEC-08-completion-and-submission",
-      "order": 8,
-      "title": "Completing and submitting the questionnaire",
-      "purpose": "Give the employee the step-by-step questionnaire flow. Show the permit reminder at the end, discard answers that no longer apply on submission, and make the questionnaire read-only afterwards, with every derived result always taken from the latest answers.",
-      "items": [],
-      "rules": [
-        "permit_reminder",
-        "discard_inapplicable_answers"
-      ],
-      "open_questions": [],
-      "source_refs": [
-        "F-hr_transcript-c53552",
-        "G-01",
-        "G-04",
-        "G-09",
-        "D-010",
-        "D-034",
-        "D-036",
-        "D-037",
-        "D-038"
+        "F-zh_source_tax_calculator-687e8b",
+        "F-zh_source_tax_calculator-d2b3cf",
+        "F-zh_source_tax_calculator-e8ffac",
+        "F-zh_source_tax_calculator-981b6b",
+        "F-zh_source_tax_calculator-e96210",
+        "F-zh_source_tax_calculator-fb87f1",
+        "F-hr_transcript-8595fb",
+        "F-hr_transcript-3f2c2a",
+        "G-08"
       ],
       "stories": []
     }

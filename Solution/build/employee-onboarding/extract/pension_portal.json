@@ -1,26 +1,22 @@
 [
   {
-    "id": "F-pension_portal-c8bc73",
+    "id": "F-pension_portal-db702a",
     "source_id": "pension_portal",
-    "kind": "context",
-    "subject": "pension_portal",
-    "statement": "The source is the 'Register new employee' page in the Pensionskasse Muster employer portal, used by employer Muster AG to register a new employee as an insured person.",
+    "kind": "field",
+    "subject": "first_name",
+    "statement": "The pension fund registration form has a text field 'First name', marked required.",
     "anchors": [
       {
-        "unit_id": "pension_portal/S01-E01",
-        "quote": "Pensionskasse Muster"
+        "unit_id": "pension_portal/S01-E06",
+        "quote": "First name"
       },
       {
-        "unit_id": "pension_portal/S01-E02",
-        "quote": "Employer portal · Muster AG · Log out"
-      },
-      {
-        "unit_id": "pension_portal/S01-E03",
-        "quote": "Home > Insured persons > Register new employee"
+        "unit_id": "pension_portal/S01-E19",
+        "quote": "Fields marked * are required."
       }
     ],
     "basis": "explicit",
-    "temporality": "current_state",
+    "temporality": "desired",
     "supersedes": [],
     "local_id": "f1",
     "anchor_ok": null,
@@ -29,15 +25,15 @@
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-b5c835",
+    "id": "F-pension_portal-c688e4",
     "source_id": "pension_portal",
     "kind": "field",
-    "subject": "first_name",
-    "statement": "The pension fund registration form has a required 'First name' text field.",
+    "subject": "last_name",
+    "statement": "The pension fund registration form has a text field 'Last name', marked required.",
     "anchors": [
       {
-        "unit_id": "pension_portal/S01-E06",
-        "quote": "First name"
+        "unit_id": "pension_portal/S01-E07",
+        "quote": "Last name"
       }
     ],
     "basis": "explicit",
@@ -50,15 +46,15 @@
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-c688e4",
+    "id": "F-pension_portal-88b436",
     "source_id": "pension_portal",
     "kind": "field",
-    "subject": "last_name",
-    "statement": "The pension fund registration form has a required 'Last name' text field.",
+    "subject": "date_of_birth",
+    "statement": "The pension fund registration form has a text field 'Date of birth' (employee), marked required.",
     "anchors": [
       {
-        "unit_id": "pension_portal/S01-E07",
-        "quote": "Last name"
+        "unit_id": "pension_portal/S01-E08",
+        "quote": "Date of birth"
       }
     ],
     "basis": "explicit",
@@ -71,15 +67,19 @@
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-88b436",
+    "id": "F-pension_portal-6c621f",
     "source_id": "pension_portal",
     "kind": "field",
-    "subject": "date_of_birth",
-    "statement": "The pension fund registration form has a required 'Date of birth' field for the employee.",
+    "subject": "residence_canton",
+    "statement": "The pension fund registration form has a dropdown 'Canton' in the Employee section, marked required, with placeholder 'Please select'.",
     "anchors": [
       {
-        "unit_id": "pension_portal/S01-E08",
-        "quote": "Date of birth"
+        "unit_id": "pension_portal/S01-E10",
+        "quote": "Canton"
+      },
+      {
+        "unit_id": "pension_portal/S01-E11",
+        "quote": "Please select"
       }
     ],
     "basis": "explicit",
@@ -92,36 +92,11 @@
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-587d3f",
-    "source_id": "pension_portal",
-    "kind": "field",
-    "subject": "residence_canton",
-    "statement": "The pension fund registration form has a required 'Canton' dropdown field (in the Employee section).",
-    "anchors": [
-      {
-        "unit_id": "pension_portal/S01-E10",
-        "quote": "Canton"
-      },
-      {
-        "unit_id": "pension_portal/S01-E05",
-        "quote": "Employee"
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f5",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
     "id": "F-pension_portal-509cbe",
     "source_id": "pension_portal",
     "kind": "field",
     "subject": "insurance_start_date",
-    "statement": "The pension fund registration form has a required 'Insurance start date' field (in the Insurance section).",
+    "statement": "The pension fund registration form has a text field 'Insurance start date' in the Insurance section, marked required.",
     "anchors": [
       {
         "unit_id": "pension_portal/S01-E13",
@@ -135,6 +110,31 @@
     "basis": "explicit",
     "temporality": "desired",
     "supersedes": [],
+    "local_id": "f5",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-pension_portal-8664f4",
+    "source_id": "pension_portal",
+    "kind": "field",
+    "subject": "civil_status",
+    "statement": "The pension fund registration form has a dropdown 'Civil status' in the Insurance section, marked required, with placeholder 'Please select'.",
+    "anchors": [
+      {
+        "unit_id": "pension_portal/S01-E15",
+        "quote": "Civil status"
+      },
+      {
+        "unit_id": "pension_portal/S01-E16",
+        "quote": "Please select"
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
     "local_id": "f6",
     "anchor_ok": null,
     "judge": null,
@@ -142,15 +142,15 @@
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-ec4512",
+    "id": "F-pension_portal-a0065b",
     "source_id": "pension_portal",
     "kind": "field",
-    "subject": "civil_status",
-    "statement": "The pension fund registration form has a required 'Civil status' dropdown field.",
+    "subject": "spouse_date_of_birth",
+    "statement": "The pension fund registration form has a text field 'Spouse's date of birth', marked required when shown.",
     "anchors": [
       {
-        "unit_id": "pension_portal/S01-E15",
-        "quote": "Civil status"
+        "unit_id": "pension_portal/S05-E21",
+        "quote": "Spouse's date of birth"
       }
     ],
     "basis": "explicit",
@@ -163,32 +163,11 @@
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-a0065b",
-    "source_id": "pension_portal",
-    "kind": "field",
-    "subject": "spouse_date_of_birth",
-    "statement": "The pension fund registration form has a required (when shown) 'Spouse's date of birth' field.",
-    "anchors": [
-      {
-        "unit_id": "pension_portal/S05-E21",
-        "quote": "Spouse's date of birth"
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f8",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
     "id": "F-pension_portal-3432a9",
     "source_id": "pension_portal",
     "kind": "option",
     "subject": "residence_canton",
-    "statement": "The Canton dropdown offers exactly the 26 Swiss cantons: Aargau, Appenzell Ausserrhoden, Appenzell Innerrhoden, Basel-Landschaft, Basel-Stadt, Bern, Fribourg, Geneva, Glarus, Graubünden, Jura, Lucerne, Neuchâtel, Nidwalden, Obwalden, Schaffhausen, Schwyz, Solothurn, St. Gallen, Thurgau, Ticino, Uri, Valais, Vaud, Zug, Zurich. There is no option for living outside Switzerland.",
+    "statement": "The Canton dropdown offers exactly these 26 options: Aargau, Appenzell Ausserrhoden, Appenzell Innerrhoden, Basel-Landschaft, Basel-Stadt, Bern, Fribourg, Geneva, Glarus, Graubünden, Jura, Lucerne, Neuchâtel, Nidwalden, Obwalden, Schaffhausen, Schwyz, Solothurn, St. Gallen, Thurgau, Ticino, Uri, Valais, Vaud, Zug, Zurich. There is no option for a residence outside Switzerland.",
     "anchors": [
       {
         "unit_id": "pension_portal/S02-E10",
@@ -302,7 +281,7 @@
     "basis": "explicit",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f9",
+    "local_id": "f8",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
@@ -313,7 +292,7 @@
     "source_id": "pension_portal",
     "kind": "option",
     "subject": "civil_status",
-    "statement": "The Civil status dropdown offers exactly: Single, Married, Divorced, Widowed.",
+    "statement": "The Civil status dropdown offers exactly these options: Single, Married, Divorced, Widowed.",
     "anchors": [
       {
         "unit_id": "pension_portal/S03-E19",
@@ -339,7 +318,7 @@
     "basis": "explicit",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f10",
+    "local_id": "f9",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
@@ -350,11 +329,32 @@
     "source_id": "pension_portal",
     "kind": "format",
     "subject": "date_of_birth",
-    "statement": "The employee's date of birth is entered in the format DD.MM.YYYY.",
+    "statement": "Date of birth must be entered in the format DD.MM.YYYY.",
     "anchors": [
       {
         "unit_id": "pension_portal/S01-E09",
         "quote": "DD.MM.YYYY"
+      }
+    ],
+    "basis": "explicit",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f10",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-pension_portal-dd8126",
+    "source_id": "pension_portal",
+    "kind": "format",
+    "subject": "insurance_start_date",
+    "statement": "Insurance start date must be in the format DD.MM.YYYY and must be the 1st of a month.",
+    "anchors": [
+      {
+        "unit_id": "pension_portal/S01-E14",
+        "quote": "DD.MM.YYYY. Must be the 1st of a month."
       }
     ],
     "basis": "explicit",
@@ -367,15 +367,15 @@
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-dd8126",
+    "id": "F-pension_portal-ef28c3",
     "source_id": "pension_portal",
     "kind": "format",
-    "subject": "insurance_start_date",
-    "statement": "The insurance start date is entered as DD.MM.YYYY and must be the 1st of a month.",
+    "subject": "spouse_date_of_birth",
+    "statement": "Spouse's date of birth must be entered in the format DD.MM.YYYY.",
     "anchors": [
       {
-        "unit_id": "pension_portal/S01-E14",
-        "quote": "DD.MM.YYYY. Must be the 1st of a month."
+        "unit_id": "pension_portal/S05-E23",
+        "quote": "DD.MM.YYYY"
       }
     ],
     "basis": "explicit",
@@ -388,15 +388,31 @@
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-ef28c3",
+    "id": "F-pension_portal-39bab1",
     "source_id": "pension_portal",
-    "kind": "format",
+    "kind": "condition",
     "subject": "spouse_date_of_birth",
-    "statement": "The spouse's date of birth is entered in the format DD.MM.YYYY.",
+    "statement": "The 'Spouse's date of birth' field appears only when Civil status is 'Married' (shown in screenshots 05 and 07, both with Married); it is absent in screenshot 04 (Civil status 'Single') and in screenshots 01, 02, 03 and 06 (Civil status not selected).",
     "anchors": [
       {
-        "unit_id": "pension_portal/S05-E23",
-        "quote": "DD.MM.YYYY"
+        "unit_id": "pension_portal/S05-E20",
+        "quote": "Married"
+      },
+      {
+        "unit_id": "pension_portal/S05-E21",
+        "quote": "Spouse's date of birth"
+      },
+      {
+        "unit_id": "pension_portal/S07-E20",
+        "quote": "Married"
+      },
+      {
+        "unit_id": "pension_portal/S07-E21",
+        "quote": "Spouse's date of birth"
+      },
+      {
+        "unit_id": "pension_portal/S04-E20",
+        "quote": "Single"
       }
     ],
     "basis": "explicit",
@@ -409,48 +425,11 @@
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-39bab1",
-    "source_id": "pension_portal",
-    "kind": "condition",
-    "subject": "spouse_date_of_birth",
-    "statement": "The 'Spouse's date of birth' field appears only when Civil status is 'Married': it is shown in screenshots 05 and 07 (civil status Married) and absent in screenshot 04 (civil status Single) and in screenshots 01, 02, 03 and 06 (civil status not selected).",
-    "anchors": [
-      {
-        "unit_id": "pension_portal/S05-E21",
-        "quote": "Spouse's date of birth"
-      },
-      {
-        "unit_id": "pension_portal/S05-E20",
-        "quote": "Married"
-      },
-      {
-        "unit_id": "pension_portal/S07-E21",
-        "quote": "Spouse's date of birth"
-      },
-      {
-        "unit_id": "pension_portal/S07-E20",
-        "quote": "Married"
-      },
-      {
-        "unit_id": "pension_portal/S04-E20",
-        "quote": "Single"
-      }
-    ],
-    "basis": "inferred",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f14",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
     "id": "F-pension_portal-44a27b",
     "source_id": "pension_portal",
     "kind": "rule",
-    "subject": "required_fields",
-    "statement": "Submitting the form with required fields empty shows the banner 'Please correct the highlighted fields.' and highlights each missing field with the message '<Field> is required.' (First name, Last name, Date of birth, Canton, Insurance start date, Civil status).",
+    "subject": "required_field_validation",
+    "statement": "Submitting the form with empty required fields shows the banner 'Please correct the highlighted fields.' and a per-field error of the form '<Field> is required.' for First name, Last name, Date of birth, Canton, Insurance start date and Civil status.",
     "anchors": [
       {
         "unit_id": "pension_portal/S06-E05",
@@ -484,53 +463,32 @@
     "basis": "explicit",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f15",
+    "local_id": "f14",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
     "superseded_by": []
   },
   {
-    "id": "F-pension_portal-0eed50",
+    "id": "F-pension_portal-c5ee15",
     "source_id": "pension_portal",
     "kind": "rule",
     "subject": "spouse_date_of_birth",
-    "statement": "When Civil status is Married and the spouse's date of birth is left empty, registration is rejected with 'Spouse's date of birth is required.'",
+    "statement": "When Civil status is 'Married', registration is blocked if Spouse's date of birth is empty, with the error 'Spouse's date of birth is required.'",
     "anchors": [
       {
         "unit_id": "pension_portal/S07-E20",
         "quote": "Married"
       },
       {
-        "unit_id": "pension_portal/S07-E23",
+        "unit_id": "pension_portal/S07-E24",
         "quote": "Spouse's date of birth is required."
       }
     ],
     "basis": "explicit",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f16",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-pension_portal-3cfe89",
-    "source_id": "pension_portal",
-    "kind": "rule",
-    "subject": "required_fields",
-    "statement": "Fields marked with an asterisk are required; all visible fields on the form carry the marker.",
-    "anchors": [
-      {
-        "unit_id": "pension_portal/S01-E19",
-        "quote": "Fields marked * are required."
-      }
-    ],
-    "basis": "explicit",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f17",
+    "local_id": "f15",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
@@ -540,8 +498,8 @@
     "id": "F-pension_portal-6d3630",
     "source_id": "pension_portal",
     "kind": "open",
-    "subject": "civil_status",
-    "statement": "Screenshots do not show whether the spouse's date of birth (or other fields) appears for 'Divorced' or 'Widowed'; only Single (no) and Married (yes) are shown.",
+    "subject": "spouse_date_of_birth",
+    "statement": "No screenshot shows the form with Civil status 'Divorced' or 'Widowed'; it is unknown whether Spouse's date of birth (or any other field) appears for those values.",
     "anchors": [
       {
         "unit_id": "pension_portal/S03-E23",
@@ -555,32 +513,7 @@
     "basis": "inferred",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f18",
-    "anchor_ok": null,
-    "judge": null,
-    "judge_note": "",
-    "superseded_by": []
-  },
-  {
-    "id": "F-pension_portal-9b24c5",
-    "source_id": "pension_portal",
-    "kind": "open",
-    "subject": "civil_status",
-    "statement": "The civil status list has no option for registered partnership or separated; it is unclear how such employees are to be registered.",
-    "anchors": [
-      {
-        "unit_id": "pension_portal/S03-E19",
-        "quote": "Civil status"
-      },
-      {
-        "unit_id": "pension_portal/S03-E24",
-        "quote": "Widowed"
-      }
-    ],
-    "basis": "inferred",
-    "temporality": "desired",
-    "supersedes": [],
-    "local_id": "f19",
+    "local_id": "f16",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
@@ -591,7 +524,7 @@
     "source_id": "pension_portal",
     "kind": "open",
     "subject": "residence_canton",
-    "statement": "The label 'Canton' does not state whether it is the canton of residence or of work, and the list only contains Swiss cantons; it is unclear what to enter for an employee living abroad (e.g. a cross-border commuter).",
+    "statement": "The portal does not say whether 'Canton' means canton of residence or of work, and the list offers no option for employees living outside Switzerland; how to register such employees is unknown.",
     "anchors": [
       {
         "unit_id": "pension_portal/S01-E10",
@@ -605,7 +538,7 @@
     "basis": "inferred",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f20",
+    "local_id": "f17",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",
@@ -616,7 +549,7 @@
     "source_id": "pension_portal",
     "kind": "open",
     "subject": "insurance_start_date",
-    "statement": "The portal requires an insurance start date on the 1st of a month but does not say how it relates to the employee's first working day (e.g. which 1st of a month to use when work starts mid-month).",
+    "statement": "The portal requires an insurance start date on the 1st of a month but does not show how it relates to the employee's first working day (e.g. which 1st of a month to choose when work starts mid-month); the derivation rule is unknown.",
     "anchors": [
       {
         "unit_id": "pension_portal/S01-E14",
@@ -626,7 +559,28 @@
     "basis": "inferred",
     "temporality": "desired",
     "supersedes": [],
-    "local_id": "f21",
+    "local_id": "f18",
+    "anchor_ok": null,
+    "judge": null,
+    "judge_note": "",
+    "superseded_by": []
+  },
+  {
+    "id": "F-pension_portal-e45e5b",
+    "source_id": "pension_portal",
+    "kind": "open",
+    "subject": "insurance_start_date",
+    "statement": "No screenshot shows the validation error for an insurance start date that is not the 1st of a month or for a malformed date; its behaviour and wording are unknown.",
+    "anchors": [
+      {
+        "unit_id": "pension_portal/S06-E19",
+        "quote": "DD.MM.YYYY. Must be the 1st of a month."
+      }
+    ],
+    "basis": "inferred",
+    "temporality": "desired",
+    "supersedes": [],
+    "local_id": "f19",
     "anchor_ok": null,
     "judge": null,
     "judge_note": "",

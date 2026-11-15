@@ -1,66 +1,66 @@
 {
-  "verdict": "ready_with_caveats",
-  "summary": "Buildable: no errors, all 188 spec examples pass, all 5 open questions are non-blocking and no dev refinement question is a blocker. Before build, the product owner must decide 7 major dev refinement questions that change the tariff code, who is subject to source tax, or whether an employee can submit. The main one is the H-vs-A conflict on child row 22. Six technical leaks need wording fixes; some trace links are missing, and 8 items are inferred and need confirmation.",
+  "verdict": "not_ready",
+  "summary": "Not ready. One example fails (AC-06.2.3 replacement income, 'null' vs None). Two open questions are blocking (OQ-registered-partnership, OQ-canton). The tariff-letter rule contradicts the spec's own evidence. Several major dev-refinement questions have no answer: scope of the tariff result and HR view, post-submission edits, and HR pre-fill. Internal identifiers leak into business prose. Many items and stories are inferred, and some trace judgements are only partial.",
   "findings": [
     {
-      "title": "Child row 22 contradicts the calculator: H or counted without H (A)?",
-      "why": "For a non-married employee's minor child who does not live in the household, the spec gives letter H. The calculator note says H applies only when the child lives in the household. This changes the tariff letter. The examples pass only because they test what the spec says.",
-      "evidence": "dev_refinement (major) on feature.md; AC-06.4.3; F-zh_source_tax_calculator-96658b; several AC-06.4.x/06.5.x examples marked '(to be verified)'; OQ-calculator-coverage",
-      "action": "Add a decision to decisions.yaml: row 22 gives 'counted without H' unless a domain expert confirms H with a calculator run. Fix AC-06.4.3 to match."
+      "title": "Failing example: replacement-income church tax suffix",
+      "why": "The example is the only failed simulation. It expects the programming value 'null' where the business meaning is 'no suffix'. The row is also marked ❌ and repeats the denomination column.",
+      "evidence": "examples AC-06.2.3 / Replacement income: church_tax_suffix = None, expected 'null'. tech_leak and dev_refinement on US-06.2.",
+      "action": "Rewrite the expected result as 'no suffix' and define it unambiguously, e.g. empty. Remove the duplicate column and the ❌, then re-run the examples."
     },
     {
-      "title": "Address reference date not defined",
-      "why": "For someone moving into or out of Switzerland, the address country decides whether they are subject to source tax, the canton, the cross-border questions and the tariff. The spec doesn't say whether the current address or the address from the first working day counts.",
-      "evidence": "dev_refinement (major) on feature.md; item.address_country",
-      "action": "Decide in decisions.yaml which address counts (recommended: the address from the first working day). Reword the home address question to match."
+      "title": "Base tariff H vs A rule contradicts its own evidence",
+      "why": "AC-06.4.3 and rule.base_tariff_letter say H requires the child in the household plus sole custody or main contributor. Three cited facts give H1N in cases that rule excludes. The derivation and its tests cannot be written until this is settled.",
+      "evidence": "dev_refinement US-06.4 (major). Facts F-zh_source_tax_calculator-dc0ae9, -dc6ace, -3eb561. trace_judge on rule.base_tariff_letter. The widowed adult-child example omits the '>50% maintenance' answer.",
+      "action": "Add a decision in decisions.yaml on the exact H vs A conditions. This could be 'counted child' rather than household plus custody. Fix AC-06.4.3 and its examples to match, including the digit 0 or 1."
     },
     {
-      "title": "Liechtenstein, more than 45 non-return days: double taxation note is missing",
-      "why": "The calculator returns the normal tariff code plus 'Unter Vorbehalt des Doppelbesteuerungsabkommens' (subject to the double taxation agreement). The spec records only the code, so HR loses this reservation.",
-      "evidence": "dev_refinement (major) on US-07.3; F-zh_source_tax_calculator-ab4e1e; rule.source_tax_result",
-      "action": "Decide that the tariff code is recorded together with the reservation note and an HR flag. Add an acceptance criterion to US-07.3/US-05.7."
+      "title": "Blocking open question: registered partnership",
+      "why": "Employees in a registered partnership (e.g. Daniel) cannot be registered correctly. The pension fund list has no such status, and the question affects the spouse data and the source-tax exemption.",
+      "evidence": "OQ-registered-partnership (blocking: true). It affects civil_status, the spouse items, subject_to_source_tax and calculator_civil_status. OQ-separated is related.",
+      "action": "Ask Pensionskasse Muster through HR. Record a decision. The interim recommendation is to treat registered partners as Married, with OQ-separated resolved consistently."
     },
     {
-      "title": "Required house number blocks some employees from submitting",
-      "why": "Addresses without a house number (rural addresses, building names, some foreign addresses) can't be submitted as written.",
-      "evidence": "dev_refinement (major) on US-01.2; item.address_house_number",
-      "action": "Decide that the house number is optional, or allow an explicit 'no house number' choice. Update US-01.2."
+      "title": "Blocking open question: pension fund 'Canton' meaning",
+      "why": "It is unknown whether the canton means residence or work, and what to enter for cross-border employees. The field is required and the list has only Swiss cantons. residence_canton is also named and described as the canton of residence without backing.",
+      "evidence": "OQ-canton (blocking: true). fact_judge on F-pension_portal-b359c3. trace_judge on item.residence_canton. US-02.4.",
+      "action": "Get the fund's answer and decide what is entered for residents of Germany and Liechtenstein. Rename or reword the item to match."
     },
     {
-      "title": "Liechtenstein residents are asked tariff questions whose answers are never used",
-      "why": "Residents who return daily, or have at most 45 non-return days, get no tariff code. They still answer the denomination, spouse and children questions, which goes against data minimisation (G-01).",
-      "evidence": "dev_refinement (major) on feature.md; G-01; US-08.4 step order (inferred, no cited fact)",
-      "action": "Decide whether the cross-border step comes first for Liechtenstein residents. Otherwise discard these answers on submission (extend D-036). Update the step order in US-08.4."
+      "title": "Scope of the tariff output and HR visibility undefined",
+      "why": "The spec derives only the tariff letter. It also defines the suffix, the digit and the cross-border swap, and says HR can see results. It never says what is computed, who sees it, or when. Engineering cannot size the feature without this.",
+      "evidence": "dev_refinement US-06.4 (major) and US-05.3 AC-05.3.5 (major). US-01.1 (minor, submit and notify flow).",
+      "action": "Add a decision on the output. Is it the full code, only the letter or nothing? Who sees it? What are the submit and notify semantics? Update the stories or move HR visibility out of scope explicitly."
     },
     {
-      "title": "Unclear who provides the first working day and what the employee sees",
-      "why": "HR says 'I ask them to confirm it', so a date set in advance by HR is likely. It is also undefined whether the employee sees derived results (insurance start date, fund civil status, tariff code). Both change the UI and the data flow.",
-      "evidence": "dev_refinement (major) on US-02.1 and US-05.7; trace_judge item.first_working_day (D-034)",
-      "action": "Add two decisions: (a) the date HR enters is shown at the start for the employee to confirm, or the employee enters it; (b) derived results are only for HR, or are shown to the employee before submitting."
+      "title": "Post-submission changes and answer invalidation unspecified",
+      "why": "US-03.3 assumes the first working day changes later, but no actor or mechanism is defined. Going back and changing earlier answers can orphan data that data minimisation forbids keeping.",
+      "evidence": "dev_refinement US-03.3 (major) and US-01.2 (major). AC-03.3.1.",
+      "action": "Decide who can edit and until when. Decide whether dependent answers are discarded when upstream answers change. Add ACs for both."
     },
     {
-      "title": "Technical leaks in the spec",
-      "why": "The text shows internal ids, rule-engine wording and interaction choices. Building them in limits engineering, and business readers can't follow the ids.",
-      "evidence": "tech_leak: feature.md ('child_*', 'rule permit_reminder', 'formal expression'); US-06.1 ('rule subject_to_source_tax', add/remove child blocks); US-08.2 (D-036 'may be kept' turned into a required re-display)",
-      "action": "Replace the ids with business names. State the need behind the child blocks ('capture answers for each child'). Reword AC-08.2.1 to match D-036 ('may be kept'), or record a decision that keeping them is required."
+      "title": "First working day inputs and start-date rule ambiguous",
+      "why": "No story covers HR pre-filling the date. Using the actual first working day instead of the contractual start can push the insurance start to the wrong month. The residence-address timing (current vs at start) changes which questions are asked.",
+      "evidence": "dev_refinement US-03.1 (major), feature.md insurance rule (major), US-02.3 (major). AC-03.1.2 is untestable as written.",
+      "action": "Decide whether the date is pre-filled by HR. Decide whether the rule uses the contract start or the first working day, and whether the address is current or as at the start date. Add testable wording."
     },
     {
-      "title": "Traceability gaps: claims or rows cite facts outside the cited set",
-      "why": "Unbacked statements weaken the cited knowledge model and can hide errors.",
-      "evidence": "trace_judge: 'H tariff' purpose on 8 child_* items; rows citing F-zh-52b67a, F-hr-b6d9b3, F-zh-e80d8f/ab4e1e (cross_border_tariff_applies, liechtenstein_no_source_tax_in_principle, source_tax_result); F-hr-d7431e (US-01.2, US-05.4); US-03.4 tariff letters; US-08.3 'date often moves'; US-08.4 nine-step order; item.address_country (D-010/D-038 not cited); fact_judge: F-zh-3058a4 garbled statement",
-      "action": "Add the missing fact or decision citations. Fix or remove the unbacked claims (for example, cite a fact for the H tariff purpose). Rewrite fact F-zh-3058a4."
+      "title": "Item expressions and business text do not match their trace",
+      "why": "Several required_when and asked_when expressions contradict their own business text. Some claims have no cited fact: the 'only if subject' condition, the step order, the Germany/Liechtenstein rows citing missing facts, and the 'sensitive data' note. A developer would build from the expressions.",
+      "evidence": "trace_judge: spouse_permit_type, has_children, confession, income_type, civil_status, calculator_residence, questionnaire_flow, US-01.2, US-02.4, US-06.1 to US-06.3.",
+      "action": "Align each expression with its text. Cite the missing hr_transcript facts, or mark the items as decisions. Drop or confirm the unbacked claims."
     },
     {
-      "title": "Non-blocking open questions and inferred items need sign-off before go-live",
-      "why": "The fund mapping, the canton for residents abroad and unverified calculator paths could produce wrong registrations or tariff codes.",
-      "evidence": "OQ-canton-abroad, OQ-civil-status-partnership, OQ-spouse-dob-other-status, OQ-calculator-coverage (D-009 go-live condition), OQ-nationality-wording; inferred: spouse_residence_country, spouse_nationality, child_tariff_result, US-04.2, US-06.3–06.5, US-08.4",
-      "action": "Assign a domain expert to check with Pensionskasse Muster and the Zurich calculator. Record the outcomes in decisions.yaml and mark the inferred items as confirmed."
+      "title": "Source-tax rule only partly confirmed",
+      "why": "The rule decides who sees the whole source-tax section. Anna hedged, and 'here' meaning Switzerland is an assumption. The Liechtenstein result conflicts with HR's 'always subject'. Income type is still modelled as asked.",
+      "evidence": "OQ-source-tax-rule, OQ-liechtenstein, OQ-income-type. fact_judge on F-hr_transcript-550840 and -5af8d0.",
+      "action": "Have HR confirm the decision table. Record the product decisions on income type (fixed to earned income) and on which Liechtenstein result counts."
     },
     {
-      "title": "Smaller refinement gaps",
-      "why": "Without these there are no tests for rejected input, and some examples can't be tested as written.",
-      "evidence": "dev_refinement (minor): same item used as input and output (AC-08.4.2, AC-05.4.3); valid date ranges; 'has children = yes' with no child added, and a maximum number of children; mid-year estimate for the 60/45-day questions; country list, stateless people, several nationalities",
-      "action": "Fix the example tables. Add decisions on date ranges, at least one child when the answer is yes, the year basis for the day counts and the country list."
+      "title": "Technical identifiers leak into business prose",
+      "why": "Field and rule ids and UI mechanics appear in acceptance criteria and notes, which turns engineering choices into spec content.",
+      "evidence": "tech_leak: US-08.1 (address_country), feature.md (insurance_start_date, calculator_civil_status), US-07.2 (Child 1/2 blocks with add/remove).",
+      "action": "Replace the ids with business terms. State only the need that each child is described separately."
     }
   ]
 }
