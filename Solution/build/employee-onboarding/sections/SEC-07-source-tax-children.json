@@ -2,59 +2,26 @@
   "id": "SEC-07-source-tax-children",
   "order": 7,
   "title": "Source tax tariff: children",
-  "purpose": "For employees subject to source tax only, ask whether there are children, then one block of questions per child. Each block asks only what is needed to decide whether that child counts towards the tariff digit or leads to tariff H.",
+  "purpose": "Ask employees subject to source tax whether they have children, then ask the calculator's questions once per child. Each child's answers decide whether that child counts toward the child digit, and whether it makes the tariff letter H for single employees. Before go-live, a domain expert checks the paths that were not observed in the calculator.",
   "stories": [
     {
       "id": "US-07.1",
       "title": "Ask about children only of employees who need a source tax tariff",
       "as_a": "source_tax",
-      "i_want": "the employee to say whether they (or, if married, they or their spouse) have biological or adopted children, asked only when the employee is subject to source tax and has earned income",
-      "so_that": "the Zurich tariff calculator's children questions can be answered without follow-up emails, while employees who are not subject to source tax are not asked about their family (data minimisation)",
+      "i_want": "Lonio to ask whether the employee has biological or adopted children, but only when the employee is subject to source tax",
+      "so_that": "the child digit of the tariff code can be worked out, and no data about children is collected from employees who do not need a tariff",
       "priority": "P1",
-      "priority_reason": "Without this answer the source tax tariff cannot be determined; HR today cannot tell up front who must answer source tax questions, and data minimisation forbids asking everyone (G-01).",
+      "priority_reason": "Without this answer Lonio cannot compute the tariff code (D-001). Today HR has to click through the calculator by hand. Asking everyone would collect personal data that no party needs (G-01).",
       "acceptance_criteria": [
         {
           "id": "AC-07.1.1",
-          "title": "Asked only of employees subject to source tax",
-          "given": "the employee's answers on residence, nationality, permit and spouse decide whether they are subject to source tax (rule subject_to_source_tax, owned by another section) and they have earned income",
+          "title": "The children question is asked only of employees subject to source tax",
+          "given": "The employee has answered the questions that decide whether they are subject to source tax (rule subject_to_source_tax: country of residence and, for residents of Switzerland, Swiss citizenship, C permit, civil status and spouse details)",
           "when": "the questionnaire reaches the source tax questions",
-          "then": "the children question is asked, and must be answered, only if the employee is subject to source tax; employees who are not subject never see it",
+          "then": "Employees subject to source tax are asked whether they have children and must answer it. This includes everyone living abroad, Liechtenstein residents among them. Employees who are not subject to source tax are not asked.",
           "examples": [
             {
-              "name": "Single employee living abroad",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                }
-              ],
-              "then": [
-                {
-                  "target": "has_children",
-                  "expect": "asked"
-                },
-                {
-                  "target": "has_children",
-                  "expect": "required"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Married B-permit holder with a non-Swiss spouse",
+              "name": "Maria (hr_transcript/F-hr_transcript-845204)",
               "given": [
                 {
                   "item": "address_country",
@@ -62,45 +29,31 @@
                 },
                 {
                   "item": "nationality",
-                  "value": "Italy"
+                  "value": "Portugal"
                 },
                 {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "item": "holds_c_permit",
+                  "value": "yes"
                 },
                 {
                   "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
-                  "item": "spouse_gainful_employment",
-                  "value": "no"
+                  "value": "Single"
                 }
               ],
               "then": [
                 {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
                   "target": "has_children",
-                  "expect": "asked"
+                  "expect": "not asked"
                 }
               ],
-              "source_refs": [],
-              "illustrative": true
+              "source_refs": [
+                "F-hr_transcript-845204"
+              ],
+              "illustrative": false
             },
             {
               "name": "Tomás (hr_transcript/F-hr_transcript-b90bd9)",
@@ -114,8 +67,8 @@
                   "value": "Brazil"
                 },
                 {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "item": "holds_c_permit",
+                  "value": "no"
                 },
                 {
                   "item": "civil_status",
@@ -132,40 +85,21 @@
               ],
               "then": [
                 {
-                  "target": "has_children",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Maria (hr_transcript/F-hr_transcript-845204)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
                 },
-                {
-                  "item": "nationality",
-                  "value": "Portugal"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "C permit"
-                }
-              ],
-              "then": [
                 {
                   "target": "has_children",
                   "expect": "not asked"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-hr_transcript-b90bd9"
+              ],
               "illustrative": false
             },
             {
-              "name": "Swiss national living in Switzerland",
+              "name": "Swiss citizen living in Switzerland",
               "given": [
                 {
                   "item": "address_country",
@@ -182,31 +116,52 @@
               ],
               "then": [
                 {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
                   "target": "has_children",
                   "expect": "not asked"
                 }
               ],
               "source_refs": [],
               "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-hr_transcript-b84498",
-            "F-hr_transcript-5af8d0",
-            "F-hr_transcript-b90bd9",
-            "F-hr_transcript-845204",
-            "G-01"
-          ]
-        },
-        {
-          "id": "AC-07.1.2",
-          "title": "Not asked for replacement income",
-          "given": "an employee subject to source tax whose income type is replacement income",
-          "when": "the source tax questions are asked",
-          "then": "the children question is not asked, because the calculator skips all personal and child questions for replacement income (see OQ-income-type on whether a new employee can have replacement income at all)",
-          "examples": [
+            },
             {
-              "name": "Replacement income",
+              "name": "Non-Swiss without C permit living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "holds_c_permit",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Employee living in Germany",
               "given": [
                 {
                   "item": "address_country",
@@ -214,47 +169,82 @@
                 },
                 {
                   "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Replacement income"
+                  "value": "Divorced"
                 }
               ],
               "then": [
                 {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
                   "target": "has_children",
-                  "expect": "not asked"
+                  "expect": "required"
                 }
               ],
               "source_refs": [],
               "illustrative": true
+            },
+            {
+              "name": "Employee living in Liechtenstein",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [
+                "D-007"
+              ],
+              "illustrative": true
             }
           ],
           "source_refs": [
-            "F-zh_source_tax_calculator-351289"
+            "F-hr_transcript-b84498",
+            "F-hr_transcript-5af8d0",
+            "F-hr_transcript-845204",
+            "F-hr_transcript-b90bd9",
+            "G-01",
+            "D-001",
+            "D-007"
           ]
         },
         {
-          "id": "AC-07.1.3",
-          "title": "Position and scope of the question depend on civil status",
-          "given": "an employee subject to source tax with earned income",
-          "when": "the children question is asked",
-          "then": "for a married employee it comes after the question whether the spouse works and covers biological or adopted children of the employee or the spouse; for an employee who is not married it comes after the denomination question and covers the employee's own biological or adopted children",
+          "id": "AC-07.1.2",
+          "title": "The question covers the spouse's or partner's children for married employees and registered partners",
+          "given": "An employee subject to source tax is asked whether they have children",
+          "when": "the employee's civil status is Married or Registered partnership",
+          "then": "The question asks about biological or adopted children of the employee or of the spouse / registered partner. For Single, Divorced, Widowed and Separated employees it asks only about the employee's own biological or adopted children. The answer is \"yes\" or \"no\".",
           "examples": [],
           "source_refs": [
             "F-zh_source_tax_calculator-103b19",
             "F-zh_source_tax_calculator-ab8a06",
-            "F-zh_source_tax_calculator-a33b65",
-            "F-zh_source_tax_calculator-75cd87"
+            "F-zh_source_tax_calculator-a166c7",
+            "F-zh_source_tax_calculator-b62b85",
+            "F-zh_source_tax_calculator-051bb9",
+            "D-003"
           ]
         },
         {
-          "id": "AC-07.1.4",
-          "title": "Answer yes or no; yes opens the per-child questions",
-          "given": "the children question is asked",
-          "when": "the employee answers",
-          "then": "the answer is \"yes\" or \"no\" and cannot be left empty; only \"yes\" leads to the per-child questions, \"no\" asks nothing about children; the answer is needed by the source tax office (Zurich calculator)",
+          "id": "AC-07.1.3",
+          "title": "No children: no child questions and child digit 0",
+          "given": "An employee subject to source tax",
+          "when": "they answer \"no\" to having children",
+          "then": "No per-child questions are asked and the child digit of the tariff code is 0. When they answer \"yes\", the questions for the first child start.",
           "examples": [
             {
               "name": "No children",
@@ -268,14 +258,6 @@
                   "value": "Single"
                 },
                 {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
                   "item": "has_children",
                   "value": "no"
                 }
@@ -284,6 +266,10 @@
                 {
                   "target": "child_age_status",
                   "expect": "not asked"
+                },
+                {
+                  "target": "child_count",
+                  "expect": "0"
                 }
               ],
               "source_refs": [],
@@ -298,110 +284,7 @@
                 },
                 {
                   "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
-                  "item": "has_children",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "child_age_status",
-                  "expect": "asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-a166c7",
-            "F-zh_source_tax_calculator-b62b85",
-            "F-zh_source_tax_calculator-6bed1f"
-          ]
-        }
-      ],
-      "items": [
-        "has_children"
-      ],
-      "rules": [],
-      "source_refs": [
-        "F-zh_source_tax_calculator-103b19",
-        "F-zh_source_tax_calculator-ab8a06",
-        "F-zh_source_tax_calculator-a166c7",
-        "F-zh_source_tax_calculator-b62b85",
-        "F-zh_source_tax_calculator-a33b65",
-        "F-zh_source_tax_calculator-75cd87",
-        "F-zh_source_tax_calculator-351289",
-        "F-hr_transcript-b84498",
-        "F-hr_transcript-5af8d0",
-        "G-01"
-      ],
-      "status": "inferred"
-    },
-    {
-      "id": "US-07.2",
-      "title": "One block per child: age status and household",
-      "as_a": "source_tax",
-      "i_want": "for every child the employee declares, to know whether the child is a minor, an adult in first education or neither, and (for the first two) whether the child lives in the employee's household",
-      "so_that": "children who cannot count towards the tariff are dropped right away and the remaining questions for each child can be narrowed down",
-      "priority": "P1",
-      "priority_reason": "These answers decide for every child whether it counts towards the source tax tariff; without them the tariff cannot be determined.",
-      "acceptance_criteria": [
-        {
-          "id": "AC-07.2.1",
-          "title": "A block of questions for each child",
-          "given": "an employee subject to source tax has answered \"yes\" to having biological or adopted children (US-07.1)",
-          "when": "the child questions are asked",
-          "then": "the employee can describe each child in its own block (Child 1, Child 2, ...) and can add or remove a child; every question of this section is answered per child. How the calculator behaves with more than three children or after removing a child was not checked (see OQ-calculator-coverage)",
-          "examples": [],
-          "source_refs": [
-            "F-zh_source_tax_calculator-6bed1f",
-            "F-zh_source_tax_calculator-fd9a15"
-          ]
-        },
-        {
-          "id": "AC-07.2.2",
-          "title": "Age status asked for every child",
-          "given": "a child block",
-          "when": "the employee describes the child",
-          "then": "the employee must say whether the child is \"Minor\", \"Adult in first education\" or \"Neither\"; the question cannot be left empty and is needed by the source tax office",
-          "examples": [
-            {
-              "name": "Employee with children",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
+                  "value": "Married"
                 },
                 {
                   "item": "has_children",
@@ -419,55 +302,125 @@
             }
           ],
           "source_refs": [
-            "F-zh_source_tax_calculator-640429",
-            "F-zh_source_tax_calculator-09b06d"
+            "F-zh_source_tax_calculator-037b1c",
+            "F-zh_source_tax_calculator-6bed1f",
+            "D-001"
+          ]
+        }
+      ],
+      "items": [
+        "has_children"
+      ],
+      "rules": [
+        "child_count"
+      ],
+      "source_refs": [
+        "F-zh_source_tax_calculator-103b19",
+        "F-zh_source_tax_calculator-ab8a06",
+        "F-zh_source_tax_calculator-a166c7",
+        "F-zh_source_tax_calculator-b62b85",
+        "F-zh_source_tax_calculator-a33b65",
+        "F-zh_source_tax_calculator-75cd87",
+        "F-zh_source_tax_calculator-037b1c",
+        "F-hr_transcript-b84498",
+        "G-01",
+        "D-001",
+        "D-003"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "id": "US-07.2",
+      "title": "One block per child: age status and household",
+      "as_a": "employee",
+      "i_want": "to describe each of my children separately, starting with whether the child is a minor or an adult in first education and whether the child lives in my household",
+      "so_that": "each child is assessed on its own facts, and I am not asked further questions about a child who cannot count for the tariff",
+      "priority": "P1",
+      "priority_reason": "Each child's answers feed the computed tariff code (D-001). These are the entry questions of every child block.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-07.2.1",
+          "title": "Child questions are answered once per child",
+          "given": "An employee subject to source tax has answered \"yes\" to having children",
+          "when": "they fill in the children part",
+          "then": "They answer the child questions separately for each child. They can add another child and remove a child entered by mistake. Each child gets its own result (counts, counts with H, or does not count). The questionnaire sets no maximum number of children; whether more than 3 children are handled like the calculator is still to be verified (see OQ-calculator-coverage).",
+          "examples": [],
+          "source_refs": [
+            "F-zh_source_tax_calculator-6bed1f",
+            "F-zh_source_tax_calculator-fd9a15",
+            "F-zh_source_tax_calculator-4957f6",
+            "D-001",
+            "D-009"
           ]
         },
         {
-          "id": "AC-07.2.3",
-          "title": "A child who is neither ends its block",
-          "given": "a child described as \"Neither\" (not a minor and not an adult in first education)",
-          "when": "the block is answered",
-          "then": "no further question is asked for that child, and the child does not count towards the tariff",
+          "id": "AC-07.2.2",
+          "title": "Age status of each child",
+          "given": "An employee subject to source tax who has children",
+          "when": "they describe a child",
+          "then": "They must state whether the child is \"Minor\", \"Adult in first education\" or \"Neither\". With \"Neither\" no further questions are asked about that child, and the child does not count for the tariff code.",
           "examples": [
             {
-              "name": "Married, child neither (zh_source_tax_calculator/F-zh_source_tax_calculator-abe889)",
+              "name": "Calculator path 'weder noch' -> B0N (zh_source_tax_calculator/F-zh_source_tax_calculator-abe889)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
+                  "item": "spouse_gainful_employment",
+                  "value": "no"
                 },
                 {
                   "item": "confession",
                   "value": "None or other"
                 },
                 {
-                  "item": "spouse_gainful_employment",
-                  "value": "no"
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Neither"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_age_status",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_same_household",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                },
+                {
+                  "target": "child_count",
+                  "expect": "0"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-abe889"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Single employee, child neither minor nor in first education",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
                 },
                 {
                   "item": "has_children",
@@ -484,55 +437,37 @@
                   "expect": "not asked"
                 },
                 {
-                  "target": "child_custody",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "child_maintenance_over_50",
-                  "expect": "not asked"
+                  "target": "child_result",
+                  "expect": "does not count"
                 }
               ],
               "source_refs": [],
-              "illustrative": false
+              "illustrative": true
             }
           ],
           "source_refs": [
+            "F-zh_source_tax_calculator-640429",
+            "F-zh_source_tax_calculator-09b06d",
             "F-zh_source_tax_calculator-abe889"
           ]
         },
         {
-          "id": "AC-07.2.4",
-          "title": "Same household asked for minors and adults in first education",
-          "given": "a child described as \"Minor\" or \"Adult in first education\"",
-          "when": "the block continues",
-          "then": "the employee must answer \"yes\" or \"no\" to whether the child lives in the same household; it is needed by the source tax office to decide whether and how the child counts",
+          "id": "AC-07.2.3",
+          "title": "Same household is asked for minors and adults in first education",
+          "given": "An employee subject to source tax has described a child as \"Minor\" or \"Adult in first education\"",
+          "when": "they continue with that child",
+          "then": "They must answer \"yes\" or \"no\" to whether the child lives in their household. The answer is used for the source tax tariff code.",
           "examples": [
             {
               "name": "Minor child",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
+                  "value": "Married"
                 },
                 {
                   "item": "has_children",
@@ -546,10 +481,6 @@
               "then": [
                 {
                   "target": "child_same_household",
-                  "expect": "asked"
-                },
-                {
-                  "target": "child_same_household",
                   "expect": "required"
                 }
               ],
@@ -561,23 +492,11 @@
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Germany"
+                  "value": "Liechtenstein"
                 },
                 {
                   "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
-                  "item": "spouse_gainful_employment",
-                  "value": "yes"
+                  "value": "Separated"
                 },
                 {
                   "item": "has_children",
@@ -591,7 +510,7 @@
               "then": [
                 {
                   "target": "child_same_household",
-                  "expect": "asked"
+                  "expect": "required"
                 }
               ],
               "source_refs": [],
@@ -601,7 +520,20 @@
           "source_refs": [
             "F-zh_source_tax_calculator-5725a8",
             "F-zh_source_tax_calculator-3a75cc",
-            "F-zh_source_tax_calculator-7c667f"
+            "F-zh_source_tax_calculator-7c667f",
+            "D-001"
+          ]
+        },
+        {
+          "id": "AC-07.2.4",
+          "title": "Child answers that no longer apply are not kept",
+          "given": "An employee has answered child questions and then changes an earlier answer, so that some child questions no longer apply (for example, they become not subject to source tax, answer \"no\" to having children, or change a child to \"Neither\")",
+          "when": "they submit the questionnaire",
+          "then": "The answers to child questions that no longer apply are discarded. Until submission they are kept, so that going back and forth loses no input.",
+          "examples": [],
+          "source_refs": [
+            "D-036",
+            "G-01"
           ]
         }
       ],
@@ -609,7 +541,9 @@
         "child_age_status",
         "child_same_household"
       ],
-      "rules": [],
+      "rules": [
+        "child_result"
+      ],
       "source_refs": [
         "F-zh_source_tax_calculator-640429",
         "F-zh_source_tax_calculator-09b06d",
@@ -618,7 +552,9 @@
         "F-zh_source_tax_calculator-abe889",
         "F-zh_source_tax_calculator-5725a8",
         "F-zh_source_tax_calculator-3a75cc",
-        "F-zh_source_tax_calculator-7c667f"
+        "F-zh_source_tax_calculator-7c667f",
+        "D-001",
+        "D-036"
       ],
       "status": "confirmed"
     },
@@ -626,44 +562,28 @@
       "id": "US-07.3",
       "title": "Minor child living in the employee's household",
       "as_a": "source_tax",
-      "i_want": "for a minor child living in the employee's household, to know the parental custody and, only where it matters, the common household with the other parent, alternating custody and who pays more of the child's maintenance",
-      "so_that": "it can be decided whether the child counts towards the tariff digit and, for employees who are not married, whether it leads to tariff H",
-      "priority": "P2",
-      "priority_reason": "Needed for a correct tariff, but only for employees subject to source tax with a minor child at home; no source names a specific incident.",
+      "i_want": "the calculator's custody, common-household, alternating-custody and main-contributor questions for a minor child living in the employee's household, asked only as far as the calculator asks them",
+      "so_that": "Lonio can decide whether the child counts, and whether it counts with H for single employees, exactly as the calculator would",
+      "priority": "P1",
+      "priority_reason": "The child digit and the H tariff depend on these answers. Lonio owns the tariff result (D-001), so a wrong branch produces a wrong tariff code.",
       "acceptance_criteria": [
         {
           "id": "AC-07.3.1",
-          "title": "Custody asked; sole custody ends the block",
-          "given": "a child described as \"Minor\" who lives in the same household (US-07.2)",
-          "when": "the block continues",
-          "then": "the employee must choose \"Shared custody\" or \"Sole custody\"; with sole custody no further question is asked for that child (the child counts, and for an employee who is not married it leads to tariff H)",
+          "title": "Custody of a minor child in the household",
+          "given": "An employee subject to source tax has a child who is a \"Minor\" and lives in their household",
+          "when": "they continue with that child",
+          "then": "They must state whether they have \"Shared custody\" or \"Sole custody\". With sole custody the child counts: for married employees and registered partners it simply counts, for single, divorced, separated or widowed employees it counts with H. No further questions are asked about that child. The custody question is not asked about minors living outside the household.",
           "examples": [
             {
-              "name": "Single, sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)",
+              "name": "Calculator path married, sole custody -> C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
+                  "value": "Married"
                 },
                 {
                   "item": "has_children",
@@ -696,134 +616,27 @@
                   "expect": "not asked"
                 },
                 {
-                  "target": "child_main_financial_contributor",
-                  "expect": "not asked"
+                  "target": "child_result",
+                  "expect": "counts"
                 }
               ],
-              "source_refs": [],
-              "illustrative": false
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-4b7063",
-            "F-zh_source_tax_calculator-c09dc1",
-            "F-zh_source_tax_calculator-83de1d",
-            "F-zh_source_tax_calculator-d75286",
-            "F-zh_source_tax_calculator-300c72"
-          ]
-        },
-        {
-          "id": "AC-07.3.2",
-          "title": "Shared custody: common household with the other parent",
-          "given": "a minor child in the household with shared custody",
-          "when": "the block continues",
-          "then": "the employee must answer \"yes\" or \"no\" to living in a common household with the child's other parent. With \"yes\", a married employee is asked nothing more for that child (the child counts), and an employee who is not married is asked who pays more of the child's maintenance (alternating custody is not asked)",
-          "examples": [
-            {
-              "name": "Married, shared custody, common household (zh_source_tax_calculator/F-zh_source_tax_calculator-5d8fb0)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "Roman Catholic, Christian Catholic or Evangelical Reformed"
-                },
-                {
-                  "item": "spouse_gainful_employment",
-                  "value": "yes"
-                },
-                {
-                  "item": "has_children",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_age_status",
-                  "value": "Minor"
-                },
-                {
-                  "item": "child_same_household",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_custody",
-                  "value": "Shared custody"
-                },
-                {
-                  "item": "child_common_household_other_parent",
-                  "value": "yes"
-                }
+              "source_refs": [
+                "F-zh_source_tax_calculator-d75286"
               ],
-              "then": [
-                {
-                  "target": "child_common_household_other_parent",
-                  "expect": "required"
-                },
-                {
-                  "target": "child_alternating_custody",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "child_main_financial_contributor",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
               "illustrative": false
             },
             {
-              "name": "Single, shared custody, common household (zh_source_tax_calculator/F-zh_source_tax_calculator-5686d7)",
+              "name": "Calculator path single, sole custody -> H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
                   "value": "Single"
                 },
                 {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
                   "item": "has_children",
                   "value": "yes"
                 },
@@ -837,483 +650,27 @@
                 },
                 {
                   "item": "child_custody",
-                  "value": "Shared custody"
-                },
-                {
-                  "item": "child_common_household_other_parent",
-                  "value": "yes"
+                  "value": "Sole custody"
                 }
               ],
               "then": [
                 {
-                  "target": "child_alternating_custody",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "child_main_financial_contributor",
-                  "expect": "asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-d79949",
-            "F-zh_source_tax_calculator-e72e42",
-            "F-zh_source_tax_calculator-6dcf5c",
-            "F-zh_source_tax_calculator-ad867a",
-            "F-zh_source_tax_calculator-5d8fb0",
-            "F-zh_source_tax_calculator-5686d7"
-          ]
-        },
-        {
-          "id": "AC-07.3.3",
-          "title": "No common household: alternating custody",
-          "given": "a minor child in the household with shared custody, where the employee does not live in a common household with the other parent",
-          "when": "the block continues",
-          "then": "the employee must answer \"yes\" or \"no\" to alternating custody; with \"no\" nothing more is asked for that child",
-          "examples": [
-            {
-              "name": "Single, no common household, no alternating custody (zh_source_tax_calculator/F-zh_source_tax_calculator-dc0ae9)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
-                  "item": "has_children",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_age_status",
-                  "value": "Minor"
-                },
-                {
-                  "item": "child_same_household",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_custody",
-                  "value": "Shared custody"
-                },
-                {
-                  "item": "child_common_household_other_parent",
-                  "value": "no"
-                },
-                {
-                  "item": "child_alternating_custody",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "child_alternating_custody",
-                  "expect": "required"
-                },
-                {
                   "target": "child_main_financial_contributor",
                   "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "counts with H"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-300c72",
+                "F-zh_source_tax_calculator-d75286"
+              ],
               "illustrative": false
             },
             {
-              "name": "Married, no common household, no alternating custody (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "Roman Catholic, Christian Catholic or Evangelical Reformed"
-                },
-                {
-                  "item": "spouse_gainful_employment",
-                  "value": "yes"
-                },
-                {
-                  "item": "has_children",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_age_status",
-                  "value": "Minor"
-                },
-                {
-                  "item": "child_same_household",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_custody",
-                  "value": "Shared custody"
-                },
-                {
-                  "item": "child_common_household_other_parent",
-                  "value": "no"
-                },
-                {
-                  "item": "child_alternating_custody",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "child_alternating_custody",
-                  "expect": "asked"
-                },
-                {
-                  "target": "child_main_financial_contributor",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-da19df",
-            "F-zh_source_tax_calculator-ebd7b3",
-            "F-zh_source_tax_calculator-64ac33",
-            "F-zh_source_tax_calculator-dc0ae9",
-            "F-zh_source_tax_calculator-a4d358"
-          ]
-        },
-        {
-          "id": "AC-07.3.4",
-          "title": "Alternating custody: who pays more of the maintenance",
-          "given": "a minor child in the household with alternating custody",
-          "when": "the block continues",
-          "then": "the employee must say who makes the larger financial contribution to the child's maintenance: \"The employee\" or \"The other parent\"; it is needed by the source tax office to decide whether the child counts",
-          "examples": [
-            {
-              "name": "Married, alternating custody (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "Roman Catholic, Christian Catholic or Evangelical Reformed"
-                },
-                {
-                  "item": "spouse_gainful_employment",
-                  "value": "yes"
-                },
-                {
-                  "item": "has_children",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_age_status",
-                  "value": "Minor"
-                },
-                {
-                  "item": "child_same_household",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_custody",
-                  "value": "Shared custody"
-                },
-                {
-                  "item": "child_common_household_other_parent",
-                  "value": "no"
-                },
-                {
-                  "item": "child_alternating_custody",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_main_financial_contributor",
-                  "value": "The other parent"
-                }
-              ],
-              "then": [
-                {
-                  "target": "child_main_financial_contributor",
-                  "expect": "asked"
-                },
-                {
-                  "target": "child_main_financial_contributor",
-                  "expect": "required"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-cdd0b6",
-            "F-zh_source_tax_calculator-939b3b",
-            "F-zh_source_tax_calculator-ad867a",
-            "F-zh_source_tax_calculator-a4d358"
-          ]
-        }
-      ],
-      "items": [
-        "child_custody",
-        "child_common_household_other_parent",
-        "child_alternating_custody",
-        "child_main_financial_contributor"
-      ],
-      "rules": [],
-      "source_refs": [
-        "F-zh_source_tax_calculator-4b7063",
-        "F-zh_source_tax_calculator-c09dc1",
-        "F-zh_source_tax_calculator-83de1d",
-        "F-zh_source_tax_calculator-d79949",
-        "F-zh_source_tax_calculator-6dcf5c",
-        "F-zh_source_tax_calculator-da19df",
-        "F-zh_source_tax_calculator-64ac33",
-        "F-zh_source_tax_calculator-cdd0b6",
-        "F-zh_source_tax_calculator-939b3b",
-        "F-zh_source_tax_calculator-ad867a",
-        "F-zh_source_tax_calculator-300c72"
-      ],
-      "status": "confirmed"
-    },
-    {
-      "id": "US-07.4",
-      "title": "Minor child not living in the employee's household",
-      "as_a": "source_tax",
-      "i_want": "for a minor child who does not live with the employee, to know about shared custody (married employees) or parental care (employees who are not married) and, only where it matters, alternating custody and who pays more of the maintenance",
-      "so_that": "it can be decided whether a child living elsewhere still counts towards the tariff, without asking questions that do not apply",
-      "priority": "P2",
-      "priority_reason": "Needed for a correct tariff, but only for employees subject to source tax with a minor child living elsewhere; no source names a specific incident.",
-      "acceptance_criteria": [
-        {
-          "id": "AC-07.4.1",
-          "title": "Married employee: shared custody",
-          "given": "a married employee subject to source tax with a child described as \"Minor\" who does not live in the same household",
-          "when": "the block continues",
-          "then": "the employee must answer \"yes\" or \"no\" to shared custody; the parental-care and in-household custody questions are not asked",
-          "examples": [
-            {
-              "name": "Married, child elsewhere, no shared custody (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
-                  "item": "spouse_gainful_employment",
-                  "value": "no"
-                },
-                {
-                  "item": "has_children",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_age_status",
-                  "value": "Minor"
-                },
-                {
-                  "item": "child_same_household",
-                  "value": "no"
-                },
-                {
-                  "item": "child_shared_custody",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "child_shared_custody",
-                  "expect": "required"
-                },
-                {
-                  "target": "child_parental_care",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "child_custody",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "child_alternating_custody",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-fe0305",
-            "F-zh_source_tax_calculator-d2e516",
-            "F-zh_source_tax_calculator-7dcce6"
-          ]
-        },
-        {
-          "id": "AC-07.4.2",
-          "title": "Employee not married: parental care",
-          "given": "an employee subject to source tax who is single, divorced or widowed, with a child described as \"Minor\" who does not live in the same household",
-          "when": "the block continues",
-          "then": "the employee must answer \"yes\" or \"no\" to having parental care; the shared-custody question for married employees is not asked",
-          "examples": [
-            {
-              "name": "Single, child elsewhere, no parental care (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
-                  "item": "has_children",
-                  "value": "yes"
-                },
-                {
-                  "item": "child_age_status",
-                  "value": "Minor"
-                },
-                {
-                  "item": "child_same_household",
-                  "value": "no"
-                },
-                {
-                  "item": "child_parental_care",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "child_parental_care",
-                  "expect": "required"
-                },
-                {
-                  "target": "child_shared_custody",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "child_alternating_custody",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Divorced, child elsewhere",
+              "name": "Minor child outside the household",
               "given": [
                 {
                   "item": "address_country",
@@ -1324,12 +681,877 @@
                   "value": "Divorced"
                 },
                 {
-                  "item": "income_type",
-                  "value": "Earned income"
+                  "item": "has_children",
+                  "value": "yes"
                 },
                 {
-                  "item": "confession",
-                  "value": "None or other"
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_custody",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-4b7063",
+            "F-zh_source_tax_calculator-c09dc1",
+            "F-zh_source_tax_calculator-83de1d",
+            "F-zh_source_tax_calculator-d75286",
+            "F-zh_source_tax_calculator-300c72",
+            "D-003"
+          ]
+        },
+        {
+          "id": "AC-07.3.2",
+          "title": "Shared custody and a common household with the other parent",
+          "given": "An employee subject to source tax has a minor child in their household with \"Shared custody\"",
+          "when": "they continue with that child",
+          "then": "They must answer \"yes\" or \"no\" to whether they live in a common household with the child's other parent. With \"yes\": for married employees and registered partners the child counts and no further question is asked. Single, divorced, separated or widowed employees are asked who makes the larger financial contribution to the child's maintenance (\"Employee\" or \"Other parent\"): with \"Employee\" the child counts with H, with \"Other parent\" it does not count.",
+          "examples": [
+            {
+              "name": "Calculator path married, shared custody, common household -> C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-5d8fb0)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_common_household_other_parent",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_main_financial_contributor",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_alternating_custody",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "counts"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-5d8fb0"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Calculator path single, common household, other parent main contributor -> A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-5686d7)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Other parent"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_main_financial_contributor",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-5686d7"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Single, common household, employee main contributor",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Employee"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "counts with H"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-300c72"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Registered partner, common household",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Registered partnership"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_main_financial_contributor",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "counts"
+                }
+              ],
+              "source_refs": [
+                "D-003"
+              ],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-d79949",
+            "F-zh_source_tax_calculator-e72e42",
+            "F-zh_source_tax_calculator-6dcf5c",
+            "F-zh_source_tax_calculator-ad867a",
+            "F-zh_source_tax_calculator-939b3b",
+            "F-zh_source_tax_calculator-5d8fb0",
+            "F-zh_source_tax_calculator-5686d7",
+            "F-zh_source_tax_calculator-300c72",
+            "D-003"
+          ]
+        },
+        {
+          "id": "AC-07.3.3",
+          "title": "Shared custody without a common household: alternating custody",
+          "given": "An employee subject to source tax has a minor child in their household with \"Shared custody\" and does not live in a common household with the other parent",
+          "when": "they continue with that child",
+          "then": "They must answer \"yes\" or \"no\" to whether there is alternating custody. With \"no\": for married employees and registered partners the child does not count, for single, divorced, separated or widowed employees it counts with H. No further question is asked about that child.",
+          "examples": [
+            {
+              "name": "Calculator path married, no alternating custody -> C0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_alternating_custody",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_main_financial_contributor",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-a4d358"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Calculator path single, no alternating custody -> H1N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc0ae9)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_main_financial_contributor",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "counts with H"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-dc0ae9"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Separated employee, no alternating custody",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Separated"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "counts with H"
+                }
+              ],
+              "source_refs": [
+                "D-003"
+              ],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-da19df",
+            "F-zh_source_tax_calculator-ebd7b3",
+            "F-zh_source_tax_calculator-64ac33",
+            "F-zh_source_tax_calculator-a4d358",
+            "F-zh_source_tax_calculator-dc0ae9",
+            "D-003"
+          ]
+        },
+        {
+          "id": "AC-07.3.4",
+          "title": "Alternating custody: who contributes most to maintenance",
+          "given": "An employee subject to source tax has a minor child in their household with \"Shared custody\", no common household with the other parent and alternating custody",
+          "when": "they continue with that child",
+          "then": "They must state who makes the larger financial contribution to the child's maintenance, \"Employee\" or \"Other parent\". With \"Employee\" the child counts: married employees and registered partners get a plain count, single, divorced, separated or widowed employees get a count with H. With \"Other parent\" the child does not count. The married + Employee and single + Other parent results were not observed in the calculator and must be checked before go-live (see OQ-calculator-coverage).",
+          "examples": [
+            {
+              "name": "Calculator path married, alternating custody, other parent main contributor -> C0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Other parent"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_main_financial_contributor",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-a4d358"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Married, alternating custody, employee main contributor (inferred)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Employee"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "counts"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-dc6ace",
+                "D-009"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Single, alternating custody, employee main contributor",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Employee"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "counts with H"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-300c72"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Divorced, alternating custody, other parent main contributor (inferred)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Divorced"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Shared custody"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Other parent"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "D-009"
+              ],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-cdd0b6",
+            "F-zh_source_tax_calculator-939b3b",
+            "F-zh_source_tax_calculator-ad867a",
+            "F-zh_source_tax_calculator-a4d358",
+            "F-zh_source_tax_calculator-300c72",
+            "F-zh_source_tax_calculator-dc6ace",
+            "D-009"
+          ]
+        }
+      ],
+      "items": [
+        "child_custody",
+        "child_common_household_other_parent",
+        "child_alternating_custody",
+        "child_main_financial_contributor"
+      ],
+      "rules": [
+        "child_result"
+      ],
+      "source_refs": [
+        "F-zh_source_tax_calculator-4b7063",
+        "F-zh_source_tax_calculator-c09dc1",
+        "F-zh_source_tax_calculator-83de1d",
+        "F-zh_source_tax_calculator-d79949",
+        "F-zh_source_tax_calculator-e72e42",
+        "F-zh_source_tax_calculator-6dcf5c",
+        "F-zh_source_tax_calculator-da19df",
+        "F-zh_source_tax_calculator-ebd7b3",
+        "F-zh_source_tax_calculator-64ac33",
+        "F-zh_source_tax_calculator-cdd0b6",
+        "F-zh_source_tax_calculator-939b3b",
+        "F-zh_source_tax_calculator-ad867a",
+        "F-zh_source_tax_calculator-d75286",
+        "F-zh_source_tax_calculator-300c72",
+        "F-zh_source_tax_calculator-5d8fb0",
+        "F-zh_source_tax_calculator-5686d7",
+        "F-zh_source_tax_calculator-a4d358",
+        "F-zh_source_tax_calculator-dc0ae9",
+        "F-zh_source_tax_calculator-dc6ace",
+        "D-001",
+        "D-003",
+        "D-009"
+      ],
+      "status": "inferred"
+    },
+    {
+      "id": "US-07.4",
+      "title": "Minor child not living in the employee's household",
+      "as_a": "source_tax",
+      "i_want": "the calculator's custody, alternating-custody and main-contributor questions for a minor child living outside the employee's household, with the custody question worded by civil status group",
+      "so_that": "Lonio can decide whether such a child counts, and whether it counts with H for single employees, as the calculator would",
+      "priority": "P1",
+      "priority_reason": "This case affects the child digit and the H tariff of the computed tariff code (D-001). Several results here are inferred and are part of the go-live check (D-009).",
+      "acceptance_criteria": [
+        {
+          "id": "AC-07.4.1",
+          "title": "Married employees and registered partners: shared custody",
+          "given": "An employee subject to source tax whose civil status is Married or Registered partnership has a \"Minor\" child who does not live in their household",
+          "when": "they continue with that child",
+          "then": "They must answer \"yes\" or \"no\" to whether custody is shared. The parental care question is not asked. With \"no\" the child does not count and no further question is asked about it.",
+          "examples": [
+            {
+              "name": "Calculator path married, no shared custody -> B0N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_shared_custody",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_shared_custody",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_parental_care",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_custody",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_alternating_custody",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-dc6ace"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Registered partner, child outside the household",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Registered partnership"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_shared_custody",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_parental_care",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [
+                "D-003"
+              ],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-fe0305",
+            "F-zh_source_tax_calculator-d2e516",
+            "F-zh_source_tax_calculator-7dcce6",
+            "F-zh_source_tax_calculator-dc6ace",
+            "D-003"
+          ]
+        },
+        {
+          "id": "AC-07.4.2",
+          "title": "Single, divorced, separated or widowed employees: parental care",
+          "given": "An employee subject to source tax whose civil status is Single, Divorced, Widowed or Separated has a \"Minor\" child who does not live in their household",
+          "when": "they continue with that child",
+          "then": "They must answer \"yes\" or \"no\" to whether they have parental care. The shared-custody question is not asked. With \"no\" the child does not count and no further question is asked about it.",
+          "examples": [
+            {
+              "name": "Calculator path single, no parental care -> A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_parental_care",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_parental_care",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_shared_custody",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_alternating_custody",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-dc6ace"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Widowed employee, child outside the household",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Widowed"
                 },
                 {
                   "item": "has_children",
@@ -1347,68 +1569,162 @@
               "then": [
                 {
                   "target": "child_parental_care",
-                  "expect": "asked"
+                  "expect": "required"
                 },
                 {
                   "target": "child_shared_custody",
                   "expect": "not asked"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "D-003"
+              ],
               "illustrative": true
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-956f07",
             "F-zh_source_tax_calculator-32fec9",
-            "F-zh_source_tax_calculator-fb4a56"
+            "F-zh_source_tax_calculator-fb4a56",
+            "F-zh_source_tax_calculator-dc6ace",
+            "D-003"
           ]
         },
         {
           "id": "AC-07.4.3",
-          "title": "With shared custody or parental care: alternating custody, then maintenance",
-          "given": "a minor child not in the household, where the married employee has shared custody or the employee who is not married has parental care",
-          "when": "the block continues",
-          "then": "the employee must answer \"yes\" or \"no\" to alternating custody; only with \"yes\" are they asked who pays more of the child's maintenance (\"The employee\" or \"The other parent\"). Without shared custody or parental care (AC-07.4.1, AC-07.4.2) the child does not count and nothing more is asked",
+          "title": "Custody or parental care: alternating custody",
+          "given": "An employee subject to source tax has a minor child outside their household. Either they are married or in a registered partnership with shared custody, or they are single, divorced, separated or widowed with parental care",
+          "when": "they continue with that child",
+          "then": "They must answer \"yes\" or \"no\" to whether there is alternating custody. With \"no\" the child does not count and no further question is asked about it. This result was not observed in the calculator and must be checked before go-live (see OQ-calculator-coverage).",
           "examples": [
             {
-              "name": "Married, shared custody, alternating, employee pays more (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+              "name": "Married, shared custody, no alternating custody (inferred)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
+                  "item": "has_children",
+                  "value": "yes"
                 },
                 {
-                  "item": "spouse_permit_type",
-                  "value": "B permit"
+                  "item": "child_age_status",
+                  "value": "Minor"
                 },
                 {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
-                  "item": "spouse_gainful_employment",
+                  "item": "child_same_household",
                   "value": "no"
+                },
+                {
+                  "item": "child_shared_custody",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_alternating_custody",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_main_financial_contributor",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "D-009"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Single, parental care, no alternating custody (inferred)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_parental_care",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_alternating_custody",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_main_financial_contributor",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "D-009"
+              ],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-da19df",
+            "F-zh_source_tax_calculator-ebd7b3",
+            "F-zh_source_tax_calculator-64ac33",
+            "F-zh_source_tax_calculator-a4d358",
+            "D-009"
+          ]
+        },
+        {
+          "id": "AC-07.4.4",
+          "title": "Alternating custody: who contributes most to maintenance",
+          "given": "An employee subject to source tax has a minor child outside their household with shared custody or parental care and alternating custody",
+          "when": "they continue with that child",
+          "then": "They must state who makes the larger financial contribution to the child's maintenance, \"Employee\" or \"Other parent\". With \"Employee\" the child counts: married employees and registered partners get a plain count, single, divorced, separated or widowed employees get a count with H. With \"Other parent\" the child does not count. This last result was not observed in the calculator (see OQ-calculator-coverage).",
+          "examples": [
+            {
+              "name": "Calculator path married, alternating custody, employee main contributor -> B1N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
                 },
                 {
                   "item": "has_children",
@@ -1432,48 +1748,34 @@
                 },
                 {
                   "item": "child_main_financial_contributor",
-                  "value": "The employee"
+                  "value": "Employee"
                 }
               ],
               "then": [
                 {
-                  "target": "child_alternating_custody",
-                  "expect": "asked"
+                  "target": "child_main_financial_contributor",
+                  "expect": "required"
                 },
                 {
-                  "target": "child_main_financial_contributor",
-                  "expect": "asked"
+                  "target": "child_result",
+                  "expect": "counts"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-dc6ace"
+              ],
               "illustrative": false
             },
             {
-              "name": "Single, parental care, alternating, employee pays more (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+              "name": "Calculator path single, alternating custody, employee main contributor -> H1N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
                   "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
                 },
                 {
                   "item": "has_children",
@@ -1497,24 +1799,26 @@
                 },
                 {
                   "item": "child_main_financial_contributor",
-                  "value": "The employee"
+                  "value": "Employee"
                 }
               ],
               "then": [
                 {
-                  "target": "child_alternating_custody",
+                  "target": "child_main_financial_contributor",
                   "expect": "required"
                 },
                 {
-                  "target": "child_main_financial_contributor",
-                  "expect": "required"
+                  "target": "child_result",
+                  "expect": "counts with H"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-dc6ace"
+              ],
               "illustrative": false
             },
             {
-              "name": "Single, parental care, no alternating custody",
+              "name": "Married, other parent main contributor (inferred)",
               "given": [
                 {
                   "item": "address_country",
@@ -1522,15 +1826,55 @@
                 },
                 {
                   "item": "civil_status",
-                  "value": "Single"
+                  "value": "Married"
                 },
                 {
-                  "item": "income_type",
-                  "value": "Earned income"
+                  "item": "has_children",
+                  "value": "yes"
                 },
                 {
-                  "item": "confession",
-                  "value": "None or other"
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_shared_custody",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_alternating_custody",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Other parent"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-a4d358",
+                "D-009"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Divorced, other parent main contributor (inferred)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Divorced"
                 },
                 {
                   "item": "has_children",
@@ -1550,24 +1894,32 @@
                 },
                 {
                   "item": "child_alternating_custody",
-                  "value": "no"
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Other parent"
                 }
               ],
               "then": [
                 {
-                  "target": "child_main_financial_contributor",
-                  "expect": "not asked"
+                  "target": "child_result",
+                  "expect": "does not count"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "D-009"
+              ],
               "illustrative": true
             }
           ],
           "source_refs": [
-            "F-zh_source_tax_calculator-64ac33",
-            "F-zh_source_tax_calculator-ad867a",
+            "F-zh_source_tax_calculator-cdd0b6",
             "F-zh_source_tax_calculator-939b3b",
-            "F-zh_source_tax_calculator-dc6ace"
+            "F-zh_source_tax_calculator-ad867a",
+            "F-zh_source_tax_calculator-dc6ace",
+            "F-zh_source_tax_calculator-a4d358",
+            "D-009"
           ]
         }
       ],
@@ -1577,7 +1929,9 @@
         "child_alternating_custody",
         "child_main_financial_contributor"
       ],
-      "rules": [],
+      "rules": [
+        "child_result"
+      ],
       "source_refs": [
         "F-zh_source_tax_calculator-fe0305",
         "F-zh_source_tax_calculator-d2e516",
@@ -1587,64 +1941,42 @@
         "F-zh_source_tax_calculator-fb4a56",
         "F-zh_source_tax_calculator-64ac33",
         "F-zh_source_tax_calculator-ad867a",
-        "F-zh_source_tax_calculator-dc6ace"
+        "F-zh_source_tax_calculator-939b3b",
+        "F-zh_source_tax_calculator-dc6ace",
+        "F-zh_source_tax_calculator-a4d358",
+        "F-zh_source_tax_calculator-051bb9",
+        "D-001",
+        "D-003",
+        "D-009"
       ],
-      "status": "confirmed"
+      "status": "inferred"
     },
     {
       "id": "US-07.5",
       "title": "Adult child in first education",
       "as_a": "source_tax",
-      "i_want": "for an adult child in first education, to know whether the employee shares a household with the other parent and, where needed, whether the employee pays more than 50% of the child's maintenance or is the main financial contributor",
-      "so_that": "it can be decided whether the adult child counts towards the tariff and, for employees who are not married, whether it leads to tariff H",
-      "priority": "P2",
-      "priority_reason": "Needed for a correct tariff, but only for employees subject to source tax with an adult child in first education; no source names a specific incident.",
+      "i_want": "the calculator's common-household, main-contributor and maintenance questions for an adult child in first education",
+      "so_that": "Lonio can decide whether the child counts, and whether it counts with H for single employees, as the calculator would",
+      "priority": "P1",
+      "priority_reason": "This case affects the child digit and the H tariff of the computed tariff code (D-001). Several results are inferred and part of the go-live check (D-009).",
       "acceptance_criteria": [
         {
           "id": "AC-07.5.1",
-          "title": "In the household: common household with the other parent",
-          "given": "a child described as \"Adult in first education\" who lives in the same household (US-07.2)",
-          "when": "the block continues",
-          "then": "the employee must answer \"yes\" or \"no\" to living in a common household with the child's other parent; no custody or alternating-custody question is asked for an adult child. With \"yes\", a married employee is asked nothing more for that child (the child counts), and an employee who is not married is asked who pays more of the child's maintenance",
+          "title": "Adult child in the household: common household with the other parent",
+          "given": "An employee subject to source tax has a child who is an \"Adult in first education\" and lives in their household",
+          "when": "they continue with that child",
+          "then": "They must answer \"yes\" or \"no\" to whether they live in a common household with the child's other parent. No custody questions are asked. With \"yes\": for married employees and registered partners the child counts and no further question is asked. Single, divorced, separated or widowed employees are asked who makes the larger financial contribution (\"Employee\" or \"Other parent\"): with \"Employee\" the child counts with H, with \"Other parent\" it does not count. The single-group results were not observed in the calculator (see OQ-calculator-coverage).",
           "examples": [
             {
-              "name": "Married, adult child at home, common household (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+              "name": "Calculator path married, adult child, common household -> B1N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
                   "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "spouse_permit_type",
-                  "value": "B permit"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
-                  "item": "spouse_gainful_employment",
-                  "value": "no"
                 },
                 {
                   "item": "has_children",
@@ -1665,16 +1997,12 @@
               ],
               "then": [
                 {
-                  "target": "child_common_household_other_parent",
-                  "expect": "required"
-                },
-                {
                   "target": "child_custody",
                   "expect": "not asked"
                 },
                 {
-                  "target": "child_alternating_custody",
-                  "expect": "not asked"
+                  "target": "child_common_household_other_parent",
+                  "expect": "required"
                 },
                 {
                   "target": "child_maintenance_over_50",
@@ -1683,13 +2011,19 @@
                 {
                   "target": "child_main_financial_contributor",
                   "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "counts"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-3eb561"
+              ],
               "illustrative": false
             },
             {
-              "name": "Single, adult child at home, common household",
+              "name": "Single, adult child, common household, employee main contributor (inferred)",
               "given": [
                 {
                   "item": "address_country",
@@ -1700,12 +2034,56 @@
                   "value": "Single"
                 },
                 {
-                  "item": "income_type",
-                  "value": "Earned income"
+                  "item": "has_children",
+                  "value": "yes"
                 },
                 {
-                  "item": "confession",
-                  "value": "None or other"
+                  "item": "child_age_status",
+                  "value": "Adult in first education"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Employee"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_main_financial_contributor",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_maintenance_over_50",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "counts with H"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-300c72",
+                "D-009"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Single, adult child, common household, other parent main contributor (inferred)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
                 },
                 {
                   "item": "has_children",
@@ -1722,62 +2100,51 @@
                 {
                   "item": "child_common_household_other_parent",
                   "value": "yes"
+                },
+                {
+                  "item": "child_main_financial_contributor",
+                  "value": "Other parent"
                 }
               ],
               "then": [
                 {
-                  "target": "child_main_financial_contributor",
-                  "expect": "asked"
-                },
-                {
-                  "target": "child_maintenance_over_50",
-                  "expect": "not asked"
+                  "target": "child_result",
+                  "expect": "does not count"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-5686d7",
+                "D-009"
+              ],
               "illustrative": true
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-6dcf5c",
-            "F-zh_source_tax_calculator-e72e42",
             "F-zh_source_tax_calculator-ad867a",
-            "F-zh_source_tax_calculator-3eb561"
+            "F-zh_source_tax_calculator-3eb561",
+            "F-zh_source_tax_calculator-300c72",
+            "F-zh_source_tax_calculator-5686d7",
+            "D-009"
           ]
         },
         {
           "id": "AC-07.5.2",
-          "title": "More than 50% of the maintenance",
-          "given": "a child described as \"Adult in first education\" who either does not live in the same household, or lives there without a common household with the other parent",
-          "when": "the block continues",
-          "then": "the employee must answer \"yes\" or \"no\" to whether they mainly (more than 50%) pay for the child's maintenance; the child counts only with \"yes\". The common-household question is not asked for a child outside the household",
+          "title": "Adult child in the household without a common household: more than 50% of maintenance",
+          "given": "An employee subject to source tax has an adult child in first education in their household and does not live in a common household with the other parent",
+          "when": "they continue with that child",
+          "then": "They must answer \"yes\" or \"no\" to whether they pay more than 50% of the child's maintenance. With \"yes\": single, divorced, separated or widowed employees count the child with H, married employees and registered partners count it. With \"no\" the child does not count. Only the single \"yes\" result was observed in the calculator; the others must be checked before go-live (see OQ-calculator-coverage).",
           "examples": [
             {
-              "name": "Single, adult child at home, no common household (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+              "name": "Calculator path single, adult child in household, >50% maintenance -> H1N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
                   "value": "Single"
-                },
-                {
-                  "item": "income_type",
-                  "value": "Earned income"
-                },
-                {
-                  "item": "confession",
-                  "value": "None or other"
                 },
                 {
                   "item": "has_children",
@@ -1808,49 +2175,220 @@
                 {
                   "target": "child_main_financial_contributor",
                   "expect": "not asked"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "counts with H"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-3eb561"
+              ],
               "illustrative": false
             },
             {
-              "name": "Married, adult child elsewhere (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+              "name": "Married, >50% maintenance (inferred)",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "permit_type",
-                  "value": "B permit"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
                   "value": "Married"
                 },
                 {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
+                  "item": "has_children",
+                  "value": "yes"
                 },
                 {
-                  "item": "spouse_permit_type",
-                  "value": "B permit"
+                  "item": "child_age_status",
+                  "value": "Adult in first education"
                 },
                 {
-                  "item": "income_type",
-                  "value": "Earned income"
+                  "item": "child_same_household",
+                  "value": "yes"
                 },
                 {
-                  "item": "confession",
-                  "value": "None or other"
-                },
-                {
-                  "item": "spouse_gainful_employment",
+                  "item": "child_common_household_other_parent",
                   "value": "no"
+                },
+                {
+                  "item": "child_maintenance_over_50",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "counts"
+                }
+              ],
+              "source_refs": [
+                "D-009"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Married, not more than 50% maintenance (inferred)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Adult in first education"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_maintenance_over_50",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "D-009"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Separated, not more than 50% maintenance (inferred)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Separated"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Adult in first education"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_common_household_other_parent",
+                  "value": "no"
+                },
+                {
+                  "item": "child_maintenance_over_50",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "D-003",
+                "D-009"
+              ],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-b008fe",
+            "F-zh_source_tax_calculator-cb54d9",
+            "F-zh_source_tax_calculator-cd1015",
+            "F-zh_source_tax_calculator-3eb561",
+            "D-009"
+          ]
+        },
+        {
+          "id": "AC-07.5.3",
+          "title": "Adult child outside the household: more than 50% of maintenance",
+          "given": "An employee subject to source tax has an adult child in first education who does not live in their household",
+          "when": "they continue with that child",
+          "then": "The common-household question is not asked. They must answer \"yes\" or \"no\" to whether they pay more than 50% of the child's maintenance. With \"yes\" the child counts, without H, whatever the civil status. With \"no\" it does not count.",
+          "examples": [
+            {
+              "name": "Calculator path single, adult child outside household, >50% maintenance -> A1N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Adult in first education"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_maintenance_over_50",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_common_household_other_parent",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "child_maintenance_over_50",
+                  "expect": "required"
+                },
+                {
+                  "target": "child_result",
+                  "expect": "counts"
+                }
+              ],
+              "source_refs": [
+                "F-zh_source_tax_calculator-3eb561"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Calculator path married, adult child outside household, not >50% -> B0N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
                 },
                 {
                   "item": "has_children",
@@ -1872,45 +2410,346 @@
               "then": [
                 {
                   "target": "child_maintenance_over_50",
-                  "expect": "asked"
+                  "expect": "required"
                 },
                 {
-                  "target": "child_common_household_other_parent",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "child_alternating_custody",
-                  "expect": "not asked"
+                  "target": "child_result",
+                  "expect": "does not count"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-zh_source_tax_calculator-3eb561"
+              ],
               "illustrative": false
+            },
+            {
+              "name": "Married, >50% maintenance (inferred)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Adult in first education"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_maintenance_over_50",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "counts"
+                }
+              ],
+              "source_refs": [
+                "D-009"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Widowed, not more than 50% maintenance (inferred)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Widowed"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Adult in first education"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_maintenance_over_50",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                }
+              ],
+              "source_refs": [
+                "D-009"
+              ],
+              "illustrative": true
             }
           ],
           "source_refs": [
-            "F-zh_source_tax_calculator-b008fe",
-            "F-zh_source_tax_calculator-cb54d9",
             "F-zh_source_tax_calculator-cd1015",
-            "F-zh_source_tax_calculator-3eb561"
+            "F-zh_source_tax_calculator-3eb561",
+            "D-009"
           ]
         }
       ],
       "items": [
         "child_common_household_other_parent",
-        "child_maintenance_over_50",
-        "child_main_financial_contributor"
+        "child_main_financial_contributor",
+        "child_maintenance_over_50"
       ],
-      "rules": [],
+      "rules": [
+        "child_result"
+      ],
       "source_refs": [
-        "F-zh_source_tax_calculator-d79949",
         "F-zh_source_tax_calculator-6dcf5c",
+        "F-zh_source_tax_calculator-d79949",
+        "F-zh_source_tax_calculator-e72e42",
+        "F-zh_source_tax_calculator-ad867a",
+        "F-zh_source_tax_calculator-939b3b",
         "F-zh_source_tax_calculator-b008fe",
         "F-zh_source_tax_calculator-cb54d9",
         "F-zh_source_tax_calculator-cd1015",
         "F-zh_source_tax_calculator-3eb561",
-        "F-zh_source_tax_calculator-ad867a"
+        "F-zh_source_tax_calculator-300c72",
+        "F-zh_source_tax_calculator-5686d7",
+        "D-001",
+        "D-003",
+        "D-009"
       ],
-      "status": "confirmed"
+      "status": "inferred"
+    },
+    {
+      "id": "US-07.6",
+      "title": "Child digit of the tariff code and go-live check of the child paths",
+      "as_a": "source_tax",
+      "i_want": "the child digit of the tariff code to be the number of children who count, with the child paths not observed in the calculator verified before go-live",
+      "so_that": "the tariff code Lonio computes matches the calculator, without HR clicking through the calculator by hand",
+      "priority": "P1",
+      "priority_reason": "Lonio replaces HR's manual calculator step and owns the tariff result (D-001). D-009 makes the verification a go-live condition.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-07.6.1",
+          "title": "The child digit counts every child that counts, with or without H",
+          "given": "An employee subject to source tax has answered the children questions",
+          "when": "Lonio computes the tariff code",
+          "then": "The child digit is the number of children whose result is 'counts' or 'counts with H' (for example, three children who count give the digit 3, as in C3Y). It is 0 if the employee has no children or no child counts. For single, divorced, separated or widowed employees, a child that counts with H is what makes the tariff letter H (see the tariff letter rule).",
+          "examples": [
+            {
+              "name": "No children",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "has_children",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_count",
+                  "expect": "0"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "One child counting with H",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_custody",
+                  "value": "Sole custody"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "counts with H"
+                },
+                {
+                  "target": "child_count",
+                  "expect": "1"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "One child counting without H",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Adult in first education"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_maintenance_over_50",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "counts"
+                },
+                {
+                  "target": "child_count",
+                  "expect": "1"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "One child that does not count",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "has_children",
+                  "value": "yes"
+                },
+                {
+                  "item": "child_age_status",
+                  "value": "Minor"
+                },
+                {
+                  "item": "child_same_household",
+                  "value": "no"
+                },
+                {
+                  "item": "child_shared_custody",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "child_result",
+                  "expect": "does not count"
+                },
+                {
+                  "target": "child_count",
+                  "expect": "0"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-4c53e3",
+            "F-zh_source_tax_calculator-037b1c",
+            "F-zh_source_tax_calculator-300c72",
+            "D-001"
+          ]
+        },
+        {
+          "id": "AC-07.6.2",
+          "title": "The child digit always reflects the latest answers",
+          "given": "The children answers have been recorded and are later changed (after submission only HR can change them)",
+          "when": "the tariff code is derived again",
+          "then": "The per-child results and the child digit are computed from the latest answers. No earlier result is kept as the valid one.",
+          "examples": [],
+          "source_refs": [
+            "D-037",
+            "D-001"
+          ]
+        },
+        {
+          "id": "AC-07.6.3",
+          "title": "Child paths not observed in the calculator are verified before go-live",
+          "given": "Some per-child results were inferred rather than observed in the calculator, and more than 3 children were never tested (see OQ-calculator-coverage, non-blocking)",
+          "when": "the computed tariff code is prepared for release",
+          "then": "Before go-live a domain expert has compared Lonio's per-child results and child digit with the calculator for every inferred child path and for more than 3 children, and any difference has been resolved. Special tariffs such as D (second job) are not part of this check.",
+          "examples": [],
+          "source_refs": [
+            "F-zh_source_tax_calculator-332e2a",
+            "F-zh_source_tax_calculator-4957f6",
+            "D-009"
+          ]
+        }
+      ],
+      "items": [
+        "has_children"
+      ],
+      "rules": [
+        "child_count",
+        "child_result"
+      ],
+      "source_refs": [
+        "F-zh_source_tax_calculator-4c53e3",
+        "F-zh_source_tax_calculator-037b1c",
+        "F-zh_source_tax_calculator-300c72",
+        "F-zh_source_tax_calculator-332e2a",
+        "F-zh_source_tax_calculator-4957f6",
+        "D-001",
+        "D-009",
+        "D-037"
+      ],
+      "status": "inferred"
     }
   ],
   "items": [
@@ -1925,21 +2764,30 @@
     "child_main_financial_contributor",
     "child_maintenance_over_50"
   ],
-  "rules": [],
+  "rules": [
+    "child_result",
+    "child_count"
+  ],
   "open_questions": [
     "OQ-calculator-coverage"
   ],
   "source_refs": [
     "F-zh_source_tax_calculator-103b19",
+    "F-zh_source_tax_calculator-a33b65",
     "F-zh_source_tax_calculator-640429",
-    "F-zh_source_tax_calculator-5725a8",
-    "F-zh_source_tax_calculator-4b7063",
-    "F-zh_source_tax_calculator-d79949",
-    "F-zh_source_tax_calculator-fe0305",
-    "F-zh_source_tax_calculator-956f07",
-    "F-zh_source_tax_calculator-da19df",
-    "F-zh_source_tax_calculator-cdd0b6",
-    "F-zh_source_tax_calculator-b008fe",
-    "F-zh_source_tax_calculator-300c72"
+    "F-zh_source_tax_calculator-abe889",
+    "F-zh_source_tax_calculator-300c72",
+    "F-zh_source_tax_calculator-d75286",
+    "F-zh_source_tax_calculator-5d8fb0",
+    "F-zh_source_tax_calculator-a4d358",
+    "F-zh_source_tax_calculator-dc0ae9",
+    "F-zh_source_tax_calculator-5686d7",
+    "F-zh_source_tax_calculator-dc6ace",
+    "F-zh_source_tax_calculator-3eb561",
+    "F-zh_source_tax_calculator-332e2a",
+    "F-zh_source_tax_calculator-4957f6",
+    "D-001",
+    "D-003",
+    "D-009"
   ]
 }

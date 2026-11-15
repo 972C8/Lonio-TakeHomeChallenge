@@ -2,189 +2,184 @@
   {
     "id": "item.first_name",
     "verdict": "supported",
-    "note": "Pension fund required flag is explicit, and HR's need is backed by Anna's 'Yes' to 'Name, address'."
+    "note": "Pension fund need and required-ness are quoted, and HR's need is backed by the transcript and flagged as inferred."
   },
   {
     "id": "item.last_name",
     "verdict": "supported",
-    "note": "Required on the pension form and the empty-field error, and HR need is backed by the same transcript exchange."
+    "note": "The pension portal quotes and the HR transcript back the need, and the inferred HR need is flagged."
   },
   {
     "id": "item.date_of_birth",
     "verdict": "supported",
-    "note": "Field, required flag and DD.MM.YYYY format are all backed by the pension portal facts."
+    "note": "The field, the required marking and the DD.MM.YYYY format are all backed by the portal facts."
   },
   {
     "id": "item.address_street",
     "verdict": "supported",
-    "note": "HR needs a complete envelope-style address (street, number, postcode, town, country) to post documents."
+    "note": "HR's need for a complete postal address with street is directly quoted."
   },
   {
     "id": "item.address_house_number",
-    "verdict": "supported",
-    "note": "House number is explicitly part of the full address HR requires."
+    "verdict": "partial",
+    "note": "The house number is listed in the full address, but 'required always' is not backed because no source says every address has a house number (as the item's own note admits)."
   },
   {
     "id": "item.address_postcode",
     "verdict": "supported",
-    "note": "Postcode is explicitly part of the full address HR requires."
+    "note": "Postcode is explicitly listed in HR's required complete address."
   },
   {
     "id": "item.address_town",
-    "verdict": "supported",
-    "note": "Complete-address requirement and HR's need to post documents are both quoted."
+    "verdict": "supported"
   },
   {
     "id": "item.address_country",
-    "verdict": "supported",
-    "note": "Country in the address, English naming (G-10 via G-09/G-10 guidance), source tax for those living abroad, and the calculator residence questions are all backed."
+    "verdict": "supported"
   },
   {
     "id": "item.residence_canton",
-    "verdict": "partial",
-    "note": "The facts say it is unknown whether 'Canton' means residence or work canton, so describing and naming it as the canton the employee lives in is an unbacked assumption."
+    "verdict": "supported"
   },
   {
     "id": "item.first_working_day",
-    "verdict": "supported",
-    "note": "HR's need, the employee confirmation, and derivation of the insurance start date are all quoted."
-  },
-  {
-    "id": "item.nationality",
     "verdict": "partial",
-    "note": "The form 'country by English name' is not backed because G-10 is not cited; the rest is supported."
-  },
-  {
-    "id": "item.permit_type",
-    "verdict": "supported",
-    "note": "The C-permit exemption, the relevance only for non-Swiss residents of Switzerland, and the 'B permit'/'C permit' wording (G-10) are backed."
+    "note": "The HR purpose 'reminder to bring the permit refers to it' is not backed by any cited fact."
   },
   {
     "id": "item.civil_status",
-    "verdict": "partial",
-    "note": "The cited facts back the pension-fund use, the values and the calculator's two civil-status groups, but not the claim that civil status decides the spouse exemption."
+    "verdict": "supported"
   },
   {
     "id": "item.spouse_date_of_birth",
+    "verdict": "supported"
+  },
+  {
+    "id": "item.nationality",
     "verdict": "supported",
-    "note": "The facts back the field, its format, the Married condition and that it is required when shown."
+    "note": "Source-tax need, Swiss-citizen rule (D-008), living-in-Switzerland restriction and HR permit-reminder use are backed by the cited facts and D-038."
+  },
+  {
+    "id": "item.holds_c_permit",
+    "verdict": "supported",
+    "note": "C-permit holders being treated like Swiss, the yes/no form (D-005, G-10) and the asked-when condition are all backed."
   },
   {
     "id": "item.spouse_nationality",
     "verdict": "supported",
-    "note": "The conditions, the source-tax purpose and the HR manual-email purpose are all backed by the cited facts."
+    "note": "Spouse nationality need, the registered-partner treatment (D-003) and the data-minimisation restriction (marked inferred) are backed."
   },
   {
-    "id": "item.spouse_permit_type",
-    "verdict": "partial",
-    "note": "The business text says it is required only if the spouse has a permit, but required_when_expr makes it required whenever asked, so the two do not match."
+    "id": "item.spouse_holds_c_permit",
+    "verdict": "supported",
+    "note": "The spouse C-permit exemption, the yes/no form (D-005) and the non-Swiss-spouse condition are backed."
   },
   {
     "id": "item.spouse_residence_country",
     "verdict": "supported",
-    "note": "The condition and purpose match the HR statements about a Swiss or C-permit spouse living here."
-  },
-  {
-    "id": "item.income_type",
-    "verdict": "partial",
-    "note": "The claim that replacement income gives tariff G/Q is not in the cited facts, which only say the personal and child questions are skipped."
+    "note": "The 'lives here' condition for a Swiss or C-permit spouse, read as Switzerland, is backed and marked inferred."
   },
   {
     "id": "item.confession",
-    "verdict": "partial",
-    "note": "The source-tax-subject condition and the 'sensitive personal data' note are not backed by the cited facts, and the calculator's civil-status-answered precondition is not in the expr."
+    "verdict": "supported",
+    "note": "The calculator facts back the options and the church-tax suffix, and the source-tax-only asking is backed by F-b84498 and D-001."
   },
   {
     "id": "item.spouse_gainful_employment",
     "verdict": "supported",
-    "note": "Question, yes/no options, married-only condition and C/B tariff effect are all backed."
+    "note": "Question, Ja/Nein values, married/registered-partnership condition and B/C tariff purpose are all backed by the calculator facts and D-001/D-003."
   },
   {
     "id": "item.has_children",
     "verdict": "partial",
-    "note": "required_when_expr (is_set(civil_status)) does not match the stated 'always when asked' and the asked_when_expr conditions."
+    "note": "The purpose claim that the answer possibly leads to tariff H is not backed by any cited fact."
   },
   {
     "id": "item.child_age_status",
     "verdict": "supported",
-    "note": "Options, per-child repetition, has-children condition and 'weder noch' not counting are all backed."
+    "note": "Per-child question, three options, 'weder noch' ending the child, and the has-children condition are all backed."
   },
   {
     "id": "item.child_same_household",
     "verdict": "supported",
-    "note": "Question, yes/no options and the minor-or-first-education condition are backed."
+    "note": "Question, yes/no values and the minor/adult-in-first-education condition are backed."
   },
   {
     "id": "item.child_custody",
-    "verdict": "supported",
-    "note": "Options, minor-in-household condition, and sole custody counting/H tariff are backed."
+    "verdict": "partial",
+    "note": "The purpose claim that sole custody counts the child, with H for single employees, is not backed by the cited facts."
   },
   {
     "id": "item.child_common_household_other_parent",
     "verdict": "supported",
-    "note": "Question, Ja/Nein options, display condition and the child-counts purpose all match the cited facts and the expression."
+    "note": "Question, yes/no values and the compound condition match the cited facts and the expression."
   },
   {
     "id": "item.child_shared_custody",
     "verdict": "supported",
-    "note": "Options, married/minor/not-in-household condition and the no-shared-custody-child-not-counted purpose are backed."
+    "note": "Question, Ja/Nein values and display conditions are backed, and D-003 covers registered partnership as married."
   },
   {
     "id": "item.child_parental_care",
     "verdict": "supported",
-    "note": "Options, non-married/minor/not-in-household condition and the purpose are backed."
+    "note": "Question, Ja/Nein values and conditions are backed, and D-003 covers separated as single."
   },
   {
     "id": "item.child_alternating_custody",
     "verdict": "supported",
-    "note": "The three-branch display condition matches the facts and the expression, and the options and purpose are backed."
+    "note": "The three-way condition and Ja/Nein values match the cited facts and the expression."
   },
   {
     "id": "item.child_main_financial_contributor",
-    "verdict": "supported",
-    "note": "The two options, the condition (alternating custody, or non-married with a common household) and the H-tariff purpose are backed."
+    "verdict": "partial",
+    "note": "The purpose claim 'main contributor counts the child (with H for single employees)' is not backed by any cited fact; the question, options and conditions are backed."
   },
   {
     "id": "item.child_maintenance_over_50",
     "verdict": "supported",
-    "note": "The question, options, condition and the more-than-50% purpose match the facts and the expression."
+    "note": "Question, Ja/Nein values and the adult-in-first-education conditions match the facts and the expression."
   },
   {
     "id": "item.daily_return_germany",
     "verdict": "supported",
-    "note": "Q18/Q24 wording, Ja/Nein options, income-type and Germany conditions, and the tariff effect are all backed."
+    "note": "Question, Ja/Nein values and the Germany-residence condition are backed, and D-006 removes the income-type condition."
   },
   {
     "id": "item.residence_certificate",
-    "verdict": "supported",
-    "note": "Question, Ja/Nein options, daily-return condition and cross-border vs normal tariff outcome are all backed."
-  },
-  {
-    "id": "item.daily_return_reasonable",
-    "verdict": "supported",
-    "note": "Q20/Q25 wording, options, conditions and the not-reasonable leads to normal tariff outcome are backed."
-  },
-  {
-    "id": "item.non_return_days_60",
-    "verdict": "supported",
-    "note": "Q21/Q26 wording, options, reasonable-return condition and proof leads to normal tariff or none to cross-border are backed."
-  },
-  {
-    "id": "item.daily_return_liechtenstein",
-    "verdict": "supported",
-    "note": "Q22/Q27 wording, options, conditions and the no-liability outcome subject to the double taxation agreement are backed."
-  },
-  {
-    "id": "item.non_return_days_45",
-    "verdict": "supported",
-    "note": "Q23/Q28 wording, options, no-daily-return condition and the over-45-days normal tariff or otherwise no-liability outcomes are backed."
-  },
-  {
-    "id": "rule.subject_to_source_tax",
     "verdict": "supported"
   },
   {
+    "id": "item.daily_return_reasonable",
+    "verdict": "supported"
+  },
+  {
+    "id": "item.non_return_days_60",
+    "verdict": "supported"
+  },
+  {
+    "id": "item.daily_return_liechtenstein",
+    "verdict": "supported"
+  },
+  {
+    "id": "item.non_return_days_45",
+    "verdict": "supported"
+  },
+  {
+    "id": "rule.questionnaire_flow",
+    "verdict": "partial",
+    "note": "The cited facts back the English language, canton only for Switzerland, civil status and spouse date of birth, C permit, the end reminder and the read-only and discard behaviour, and source-tax-only details. They do not back the personal details fields (names, date of birth), the address fields (street, house number, postcode, town), the confession, spouse-works and children questions, or the spouse's country of residence condition."
+  },
+  {
     "id": "rule.insurance_start_date",
+    "verdict": "supported"
+  },
+  {
+    "id": "rule.pension_fund_civil_status",
+    "verdict": "partial",
+    "note": "D-003 gives the partner's date of birth only for registered partnership, but the statement attaches it to Separated as well."
+  },
+  {
+    "id": "rule.subject_to_source_tax",
     "verdict": "supported"
   },
   {
@@ -194,46 +189,94 @@
   {
     "id": "rule.calculator_residence",
     "verdict": "partial",
-    "note": "The Germany and Liechtenstein rows cite F-zh_source_tax_calculator-31d762 and -e22d17, which are not among the provided facts, so the claim that Germany or Liechtenstein questions follow is not backed."
+    "note": "The claim that Germany and Liechtenstein have their own follow-up questions is not backed by the cited facts, which only list the residence options and the base-tariff cases."
   },
   {
     "id": "rule.church_tax_suffix",
     "verdict": "supported"
   },
   {
-    "id": "rule.base_tariff_letter",
+    "id": "rule.child_result",
     "verdict": "partial",
-    "note": "The expression gives H for sole custody alone, but the fact says a child counts with H only if it lives in the household and the person has sole custody or is the main contributor. 'HR keeps the calculator as the authority' is also only loosely backed by the facts."
+    "note": "The expression disagrees with the table (e.g. single, minor not in household, no parental care, Employee contributor gives 'counts with H' in the expression but 'does not count' in the table; married, no parental care, >50% maintenance gives 'counts' in the expression), and the many 'inferred' rows rest only on D-009, which is a verification decision, not a backing fact."
   },
   {
-    "id": "rule.questionnaire_flow",
+    "id": "rule.child_count",
+    "verdict": "supported"
+  },
+  {
+    "id": "rule.base_tariff_letter",
+    "verdict": "supported"
+  },
+  {
+    "id": "rule.cross_border_tariff",
     "verdict": "partial",
-    "note": "The cited facts back only the conditional source tax step (steps 1-5 versus 1-6); the order of steps 1-5, the canton, the first working day and the nationality, family and spouse details are not backed by them."
+    "note": "The 'not Germany -> normal tariff' row cites F-zh_source_tax_calculator-f86c6b, which is not among the cited facts, and fb87f1 only covers Liechtenstein, so that row is not backed."
+  },
+  {
+    "id": "rule.tariff_letter",
+    "verdict": "supported"
+  },
+  {
+    "id": "rule.liechtenstein_no_source_tax",
+    "verdict": "partial",
+    "note": "The 'not Liechtenstein -> tariff code' row cites f86c6b, which is not among the cited facts; the Liechtenstein rows are backed by fb87f1, cc19c7 and D-007."
+  },
+  {
+    "id": "rule.tariff_code",
+    "verdict": "supported",
+    "note": "D-001, D-007, D-034 and D-037 back the code composition, the Liechtenstein case, the recording for HR and the re-derivation; the examples are only illustrative."
+  },
+  {
+    "id": "rule.permit_reminder",
+    "verdict": "supported",
+    "note": "D-010 and D-038 back the audience, the wording by HR and the Swiss-citizen-abroad handling, and the expression matches the table."
+  },
+  {
+    "id": "rule.discard_inapplicable_answers",
+    "verdict": "supported",
+    "note": "D-036 and G-01 back both keeping answers while navigating and discarding them on submission."
+  },
+  {
+    "id": "rule.read_only_after_submission",
+    "verdict": "supported",
+    "note": "D-033, D-034 and D-037 back the read-only questionnaire, the changes being made by HR, the re-derivation and the latest-date-only rule."
   },
   {
     "id": "story.US-01.1",
     "verdict": "partial",
-    "note": "The goal and ACs are backed, but the 'religious denomination' example of sensitive data in the so_that is not in the cited facts."
+    "note": "No cited fact backs asking the confession, children or spouse-works questions, or the German cross-border question details (certificate of residence, reasonable return, 60 days). The subject-to-source-tax conditions, Liechtenstein handling and country options are backed."
   },
   {
     "id": "story.US-01.2",
     "verdict": "partial",
-    "note": "AC-01.2.1 states the full step order and the canton for Swiss residents, and the cited facts do not back either."
+    "note": "The fixed seven-step order in AC-01.2.1 is not stated in any cited fact; the individual conditional questions are backed, and the order of steps 5 and 6 is only implied."
   },
   {
     "id": "story.US-01.3",
-    "verdict": "supported",
-    "note": "Every criterion is backed by the cited facts and G-01 to G-04."
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-01.4",
+    "verdict": "partial",
+    "note": "The two non-illustrative examples (Tomás/Brazil, Maria/Portugal) cite transcript facts F-hr_transcript-b90bd9 and F-hr_transcript-845204 that are not among the cited facts, so they are not backed."
+  },
+  {
+    "id": "story.US-01.5",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-01.6",
+    "verdict": "supported"
   },
   {
     "id": "story.US-02.1",
-    "verdict": "supported",
-    "note": "Required first name, last name and date of birth, the DD.MM.YYYY format and the single ask are backed by the pension portal facts and G-01."
+    "verdict": "partial",
+    "note": "The cited facts don't say HR uses the name to identify the employee, and F-hr_transcript-3edf89 only weakly supports HR needing the name, since Anna elaborated only on the address."
   },
   {
     "id": "story.US-02.2",
-    "verdict": "supported",
-    "note": "The five required address parts, the envelope-style address and the English country names are backed by the HR transcript facts, G-01 and G-10."
+    "verdict": "supported"
   },
   {
     "id": "story.US-02.3",
@@ -241,12 +284,12 @@
   },
   {
     "id": "story.US-02.4",
-    "verdict": "partial",
-    "note": "The claim that the canton is asked 'right after the country' is an ordering that none of the cited facts back."
+    "verdict": "supported"
   },
   {
     "id": "story.US-03.1",
-    "verdict": "supported"
+    "verdict": "partial",
+    "note": "AC-03.1.1's DD.MM.YYYY date format and the 'at Muster AG' wording are not backed by the cited facts, since the format comes from F-pension_portal-dd8126 and G-10, which are not cited here."
   },
   {
     "id": "story.US-03.2",
@@ -263,45 +306,48 @@
   {
     "id": "story.US-04.2",
     "verdict": "supported",
-    "note": "Married-only, required, error and DD.MM.YYYY are backed, and the Divorced/Widowed assumption is flagged as such."
+    "note": "D-003/D-004 back the asked statuses, F-c5ee15 and F-a0065b back required, and F-ef28c3 backs the date form."
   },
   {
     "id": "story.US-04.3",
     "verdict": "supported",
-    "note": "The two-group mapping follows from the pension list and the calculator options, and open cases are marked open."
+    "note": "The group mapping follows the calculator's two groups (F-051bb9) and D-003, and D-037 backs always deriving it from the latest civil status."
   },
   {
     "id": "story.US-05.1",
     "verdict": "supported",
-    "note": "Residence-gated nationality, the permit for non-Swiss only, the C-permit relevance and the answer forms are backed by the HR facts, G-01 and G-10."
+    "note": "Nationality asked only of Swiss residents follows D-038 and G-01, Swiss citizenship follows D-008, and the C-permit yes/no question follows D-005."
   },
   {
     "id": "story.US-05.2",
     "verdict": "supported",
-    "note": "Spouse nationality, permit and residence follow the HR facts and the consolidated rule, and the 'presumably' gating is consistent with the cited fact."
+    "note": "The spouse question conditions follow F-5af8d0, F-b90bd9, D-003 and D-005, and the 'would otherwise be subject' limit follows from the consolidated rule and G-01."
   },
   {
     "id": "story.US-05.3",
     "verdict": "supported",
-    "note": "Every branch matches the consolidated rule and the Tomás and Maria examples, and the hedged confirmation is stated openly."
-  },
-  {
-    "id": "story.US-06.1",
-    "verdict": "partial",
-    "note": "The priority reason's claim that the answer is 'presumably always earned income' for a new hire is not in the cited facts, and AC-06.1.3 equates the calculator's 'personal/child questions' with the specific denomination, spouse employment and children items without a fact saying so."
+    "note": "Each criterion follows the consolidated rule F-5af8d0, with D-007, D-008, D-003 and D-037 covering Liechtenstein, dual nationals, separated status and re-derivation."
   },
   {
     "id": "story.US-06.2",
-    "verdict": "partial",
-    "note": "The condition 'only if subject to source tax' and the non-illustrative Tomás and Maria examples (not asked) are not backed by any cited fact, because the hr_transcript subject-to-source-tax facts are not cited."
+    "verdict": "supported",
+    "note": "Confession asked only of source-tax employees follows F-b84498, G-01 and D-006, the two options and the Y/N suffix follow the calculator facts, and re-derivation follows D-037."
   },
   {
     "id": "story.US-06.3",
-    "verdict": "partial",
-    "note": "The non-illustrative Tomás example (not subject, so not asked) has no cited backing for the not-subject conclusion, and the 'after the denomination question' position is not stated in the cited facts."
+    "verdict": "supported"
   },
   {
     "id": "story.US-06.4",
+    "verdict": "supported"
+  },
+  {
+    "id": "story.US-06.5",
+    "verdict": "partial",
+    "note": "AC-06.5.2 says Liechtenstein residents keep the base letter, but the cited facts only cover Switzerland and 'Anderes Land' (F-f86c6b) and say nothing about Liechtenstein."
+  },
+  {
+    "id": "story.US-06.6",
     "verdict": "supported"
   },
   {
@@ -310,34 +356,47 @@
   },
   {
     "id": "story.US-07.2",
-    "verdict": "supported"
+    "verdict": "partial",
+    "note": "AC-07.2.1 says the questionnaire sets no maximum number of children, but the facts only say the calculator's upper limit is unknown and untested (F-4957f6, D-009), so no such product decision is cited."
   },
   {
     "id": "story.US-07.3",
-    "verdict": "supported"
+    "verdict": "supported",
+    "note": "Questions, options, branching and results are backed by the calculator facts, D-003 and D-009."
   },
   {
     "id": "story.US-07.4",
-    "verdict": "supported"
+    "verdict": "supported",
+    "note": "Q13/Q14 conditions and options, the observed B0N/A0N/B1N/H1N paths and the inferred results (D-009) are all backed."
   },
   {
     "id": "story.US-07.5",
-    "verdict": "supported"
+    "verdict": "supported",
+    "note": "The adult-child paths match F-3eb561, the Q15 and common-household conditions and D-009 for the inferred results."
+  },
+  {
+    "id": "story.US-07.6",
+    "verdict": "supported",
+    "note": "The child digit rule (4c53e3), the recompute rule (D-037) and the go-live check (D-009, 332e2a, 4957f6) are backed."
   },
   {
     "id": "story.US-08.1",
-    "verdict": "supported"
+    "verdict": "supported",
+    "note": "The residence options come from the calculator facts, and deriving them from the address country follows G-08/G-01, D-036 and f86c6b."
   },
   {
     "id": "story.US-08.2",
-    "verdict": "supported"
+    "verdict": "supported",
+    "note": "The Germany-only question, the certificate options with 'not yet' counting as no (D-035), the cross-border letters and the recompute rule are all backed."
   },
   {
     "id": "story.US-08.3",
-    "verdict": "supported"
+    "verdict": "partial",
+    "note": "AC-08.3.1's precondition that everyone living abroad is subject to source tax is not backed by any cited fact (F-hr_transcript-3f2c2a is not cited here); the rest is supported by the calculator facts, D-035 and D-001."
   },
   {
     "id": "story.US-08.4",
-    "verdict": "supported"
+    "verdict": "supported",
+    "note": "Questions, visibility conditions, outcomes (no liability flag vs normal tariff) and the HR priority reason are backed by the calculator facts, D-007, D-034, D-035 and the HR transcript."
   }
 ]

@@ -1,31 +1,6 @@
 {
   "questions": [
     {
-      "file": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
-      "question": "AC-06.4.3 and the base-tariff rule say an unmarried employee gets H only if a child lives in the household AND the employee has sole custody or is the main financial contributor. The spec's own evidence disagrees. F-zh-dc0ae9 gives H1N for a child in the household with shared custody, no common household and no alternating custody. F-zh-dc6ace gives H1N for a minor child who does NOT live in the household. F-zh-3eb561 gives H1N for an adult child where the deciding answer is 'pays more than 50%', not 'main contributor'. Which rule should we build for H vs A? We cannot write the derivation or its tests until this is settled.",
-      "severity": "major"
-    },
-    {
-      "file": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
-      "question": "What exactly does the questionnaire produce as a tariff result, and who sees it? US-06.4 only derives the letter (A/B/C/G/H). But the spec also defines the church-tax suffix (US-06.2), the rule that the digit is the number of counted children, and the Germany cross-border swap (A→L etc.), and AC-06.4.4 says all of these come from the calculator. Should we compute the full tariff code (e.g. H1N, N1Y), only the letter, or nothing? Is the result shown to HR, to the employee, or to neither?",
-      "severity": "major"
-    },
-    {
-      "file": "stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md",
-      "question": "AC-05.3.5 says 'HR can see for each employee whether they are subject'. No story describes what HR sees, where, or when (live while the employee is filling in, or after submission), and the feature puts 'how data is sent to each party' out of scope. Is an HR view of the results (subject yes/no, insurance start date, expected tariff) part of this feature? Should the employee see these derived results?",
-      "severity": "major"
-    },
-    {
-      "file": "stories/US-03.3-re-derive-the-insurance-start-date-when-the-first-working.md",
-      "question": "AC-03.3.1 assumes the first working day 'later changes' after it was recorded. Who changes it, and through what? Can the employee reopen and edit a submitted questionnaire, can HR edit it, or does a new questionnaire go out? Is there a deadline after which changes are no longer accepted? This decides whether we need editing after submission, an HR edit function and an audit of changes.",
-      "severity": "major"
-    },
-    {
-      "file": "stories/US-03.1-employee-confirms-the-first-working-day.md",
-      "question": "The flow table says the first working day is 'confirmed if HR already knows it', and AC-03.1.2 says to confirm the date 'as currently agreed'. No story covers HR entering a known date in advance. Does HR pre-fill the first working day (and perhaps the name) before inviting the employee, so the employee only confirms or corrects it? Or does the employee always type it in?",
-      "severity": "major"
-    },
-    {
       "file": "feature.md",
       "question": "The insurance start rule uses the 'first working day'. If the contract starts on the 1st but the first actual working day is later (weekend or holiday, e.g. contract from Sat 01.06, first day Mon 03.06), the rule gives 01.07 instead of 01.06. Should the rule use the contractual start date or the actual first working day?",
       "severity": "major"
@@ -36,13 +11,23 @@
       "severity": "major"
     },
     {
-      "file": "stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md",
-      "question": "Suppose an employee goes back and changes an earlier answer: the country from Germany to Switzerland, civil status from Married to Single, or the permit to a C permit. Answers they already gave may no longer apply (nationality, spouse data, denomination, children). Under data minimisation, must those answers be thrown away, or may they be kept? Do any rules re-run (e.g. the subject-to-source-tax decision) after submission?",
+      "file": "feature.md",
+      "question": "In step 6 the Liechtenstein cross-border questions come after denomination, spouse employment and all the children questions. A Liechtenstein resident who returns daily (or expects at most 45 non-return days) gets 'in principle no source tax liability' and no tariff code, so their denomination, spouse-employment and children answers are not needed by any party (G-01). Should the Liechtenstein questions come first so those questions are skipped? Or, if the order stays, should those answers be discarded on submission like other answers that no longer apply? Or does HR need them anyway in case the case changes later?",
       "severity": "major"
     },
     {
-      "file": "stories/US-01.1-show-the-source-tax-step-only-to-employees-who-are-subject.md",
-      "question": "What does finishing the questionnaire mean for the business? Is there a review/summary step and an explicit submit with a confirmation to the employee? Is HR notified? Can the employee save partway and come back later? None of this is specified, but it decides when HR can rely on the data.",
+      "file": "stories/US-08.4-liechtenstein-daily-return-and-more-than-45-non-return-days.md",
+      "question": "For Liechtenstein residents with more than 45 non-return days, the calculator returns the normal tariff plus 'Unter Vorbehalt des Doppelbesteuerungsabkommens' (subject to the double taxation agreement), per F-zh_source_tax_calculator-cc19c7. AC-08.4.3 records only 'the normal tariff code'. Should this reservation also be recorded and flagged for HR in that case?",
+      "severity": "major"
+    },
+    {
+      "file": "stories/US-02.2-collect-a-complete-postal-home-address.md",
+      "question": "AC-02.2.2 keeps the house number required even though the spec says no source confirms that every address has one. An employee whose address has no house number (rural address, named building, etc.) could not submit at all. Should the house number be required, optional, or allow an explicit 'no house number'?",
+      "severity": "major"
+    },
+    {
+      "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
+      "question": "Before submission, can the employee save partway and come back later, and is there a review/summary of all answers before the final submit? After submission, does the employee get a confirmation? Submission is final (read-only), so these decide what the employee can check before locking it.",
       "severity": "minor"
     },
     {
@@ -51,71 +36,78 @@
       "severity": "minor"
     },
     {
-      "file": "stories/US-05.1-ask-nationality-and-permit-only-of-employees-living-in.md",
-      "question": "Nationality is 'a country by English name'. Which list of nationalities should be offered, and how do stateless employees or employees with unclear status answer? Only 'Switzerland vs not' matters for the rule. (Dual nationality is already listed as an open question.)",
-      "severity": "minor"
-    },
-    {
       "file": "stories/US-03.1-employee-confirms-the-first-working-day.md",
       "question": "AC-03.1.2 ('the question makes clear the date must be the currently agreed one') cannot be tested as written. Is there agreed wording for the question, or a business requirement such as showing the date HR has on file?",
       "severity": "minor"
     },
     {
-      "file": "stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md",
-      "question": "In the AC-06.2.3 examples, the replacement-income row gives the result 'null', is marked as failing (❌), and has the denomination column twice. Is the expected result for replacement income 'no suffix'? Please fix the example so it can serve as a test case.",
+      "file": "stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md",
+      "question": "Nationality (and the country of the home address and of the spouse's residence) is 'a country by English name'. Which list of countries/nationalities should be offered, and how do stateless employees or employees with unclear status answer the nationality question? Only 'Switzerland vs not' matters for the rule.",
       "severity": "minor"
     },
     {
-      "file": "stories/US-02.4-ask-swiss-residents-for-their-canton.md",
-      "question": "The example tables mix 'required' and 'asked' as expected results for questions that the text says are 'asked and required'. Examples: Canton Zurich 'required' vs St. Gallen 'asked'; the spouse's residence row 'required' vs 'asked'; children 'required' vs 'asked'. Is there a real difference between 'asked' and 'required' (i.e. may some of these be left empty), or are they the same?",
+      "file": "stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md",
+      "question": "The example tables mix 'required' and 'asked' as expected results for questions the text says must be answered. Examples: spouse nationality 'required' for Tomás vs 'asked' for the registered partner; spouse residence 'required' vs 'asked'; in US-05.1, C permit 'required' for Maria vs 'asked' for Tomás. Is there a real difference (i.e. may some of these be left empty), or are they the same?",
       "severity": "minor"
     },
     {
-      "file": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
-      "question": "The AC-06.4.3 example 'Widowed with an adult child in first education who lives elsewhere → A' leaves out the required 'pays more than 50% of maintenance' answer. Per US-07.5 that answer decides whether the child counts. Which answer is meant, and is the expected digit 0 or 1?",
+      "file": "stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md",
+      "question": "The spouse's country of residence matters only as 'lives in Switzerland or not'. Under data minimisation (G-01), should we ask the full country, or only 'Does your spouse/partner live in Switzerland? yes/no'?",
+      "severity": "minor"
+    },
+    {
+      "file": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
+      "question": "'Minor' vs 'Adult in first education': on which date is the child's age judged? The submission date, the first working day, or the start of the tax year? A child who turns 18 around the start date would otherwise be classified differently.",
+      "severity": "minor"
+    },
+    {
+      "file": "stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md",
+      "question": "The permit reminder is 'worded by HR', but no text is given. Who provides the final wording and when (before build or configurable later)? Is it shown only at the end, or also elsewhere (e.g. in a confirmation)?",
       "severity": "minor"
     }
   ],
   "already_flagged": [
-    "OQ-registered-partnership: how registered partners answer civil status and whether they are treated as married",
-    "OQ-separated: which civil status separated employees choose",
-    "OQ-divorced-widowed: whether the pension fund wants spouse data for Divorced/Widowed",
-    "OQ-canton: whether 'Canton' means residence or work, and what to enter for employees living abroad",
-    "OQ-permit-list: which permit types to offer, and how a spouse with no permit answers",
-    "OQ-source-tax-rule: whether the consolidated rule is complete and whether 'here' means Switzerland",
-    "OQ-dual-nationality: how dual nationals with Swiss citizenship answer",
-    "OQ-income-type: whether income type is fixed to earned income",
-    "OQ-liechtenstein: HR's 'always subject' vs the calculator's 'in principle no liability'",
-    "OQ-proof-documents: whether new employees can answer the certificate/proof questions, and to whom the documents go",
-    "OQ-calculator-coverage: untested calculator paths (more than 3 children, removing a child, special tariffs)",
-    "OQ-permit-reminder: whether to remind employees to bring their permit",
-    "OQ-spouse-residence-form: spouse's residence as a country or as yes/no"
+    "OQ-canton-abroad: what Pensionskasse Muster expects in 'Canton' for employees living abroad, and whether it means canton of residence or of work",
+    "OQ-civil-status-partnership: how the fund wants registered partnerships and separated employees entered (provisionally as Married)",
+    "OQ-spouse-dob-other-status: whether the fund's screen asks for a spouse's date of birth (or other fields) for Divorced or Widowed",
+    "OQ-calculator-coverage: whether the computed tariff code matches the calculator for unexplored paths (A/B/H residence block, more than 3 children, H3N/P3N, inferred per-child results)",
+    "OQ-source-tax-rule-confirmation: whether HR's final source tax liability rule is complete and whether 'lives here' means Switzerland"
   ],
   "tech_leaks": [
     {
-      "file": "stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md",
-      "quote": "the employee has entered the country of their home address (address_country) in the home address step",
-      "why": "An internal field identifier appears in the acceptance-criterion prose. Field naming is an engineering choice."
+      "file": "feature.md",
+      "quote": "Feeds the civil status entered at the fund (pension_fund_civil_status) and, for employees subject to source tax, the calculator's civil status group (calculator_civil_status).",
+      "why": "Internal snake_case rule ids are written into the business description of the Civil status item instead of business terms."
     },
     {
       "file": "feature.md",
-      "quote": "If it changes, insurance_start_date must be derived again.",
-      "why": "A snake_case field/rule identifier is used in the business notes of the First working day item instead of the business term 'insurance start date'."
+      "quote": "(The expression shows the contribution of one child; for several children the contributions are added up.)",
+      "why": "This refers to an internal formula/expression representation of the rule, not business language."
     },
     {
-      "file": "feature.md",
-      "quote": "It also answers the source tax calculator's civil status question (see rule calculator_civil_status).",
-      "why": "Internal rule ids (calculator_civil_status, and likewise subject_to_source_tax / insurance_start_date in many ACs) are written into the business prose. These are code-style identifiers, not business language."
+      "file": "stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md",
+      "quote": "(rule subject_to_source_tax, owned by the source tax section)",
+      "why": "A code-style rule identifier appears in acceptance-criterion prose."
     },
     {
-      "file": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
-      "quote": "the employee can describe each child in its own block (Child 1, Child 2, ...) and can add or remove a child",
-      "why": "This prescribes UI interaction (repeating blocks with add/remove controls) copied from the calculator's screen. The business need is only that each child is described separately."
+      "file": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
+      "quote": "(per-child result, rule child_result)",
+      "why": "A code-style rule identifier appears in acceptance-criterion prose."
     },
     {
-      "file": "stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md",
-      "quote": "| Replacement income (illustrative) | Switzerland | Germany | B permit | Single | Replacement income | – | → | null | not asked | ❌ |",
-      "why": "A programming value ('null') appears as the expected business result where the business term 'no suffix' was meant."
+      "file": "stories/US-06.5-replace-the-base-letter-with-the-cross-border-letter-where.md",
+      "quote": "(rule cross_border_tariff: daily return with a certificate of residence handed in",
+      "why": "A code-style rule identifier appears in acceptance-criterion prose."
+    },
+    {
+      "file": "stories/US-07.1-ask-about-children-only-of-employees-who-need-a-source-tax.md",
+      "quote": "(rule subject_to_source_tax: country of residence and, for residents of Switzerland, Swiss citizenship, C permit, civil status and spouse details)",
+      "why": "A code-style rule identifier appears in acceptance-criterion prose."
+    },
+    {
+      "file": "open-questions.md",
+      "quote": "compare all inferred rows of child_result and the cross-border paths",
+      "why": "An internal rule identifier is used instead of the business term 'per-child result'."
     }
   ]
 }

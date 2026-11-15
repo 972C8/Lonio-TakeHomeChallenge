@@ -1,66 +1,66 @@
 {
-  "verdict": "not_ready",
-  "summary": "Not ready. One example fails (AC-06.2.3 replacement income, 'null' vs None). Two open questions are blocking (OQ-registered-partnership, OQ-canton). The tariff-letter rule contradicts the spec's own evidence. Several major dev-refinement questions have no answer: scope of the tariff result and HR view, post-submission edits, and HR pre-fill. Internal identifiers leak into business prose. Many items and stories are inferred, and some trace judgements are only partial.",
+  "verdict": "ready_with_caveats",
+  "summary": "All 300+ examples pass. There are no errors, no blocking open questions and no blocker-level dev questions. The package is buildable. Five major dev-refinement questions, five non-blocking open questions, several partly unbacked claims and some internal rule ids in the prose need a product owner decision or cleanup. The tariff logic rests on inferred per-child rows, which D-009 makes a go-live verification gate.",
   "findings": [
     {
-      "title": "Failing example: replacement-income church tax suffix",
-      "why": "The example is the only failed simulation. It expects the programming value 'null' where the business meaning is 'no suffix'. The row is also marked ❌ and repeats the denomination column.",
-      "evidence": "examples AC-06.2.3 / Replacement income: church_tax_suffix = None, expected 'null'. tech_leak and dev_refinement on US-06.2.",
-      "action": "Rewrite the expected result as 'no suffix' and define it unambiguously, e.g. empty. Remove the duplicate column and the ❌, then re-run the examples."
+      "title": "Insurance start rule: contract start vs actual first working day",
+      "why": "If the contract starts on the 1st but the first working day is later (weekend or holiday), the rule moves insurance start to the next month. This gives wrong fund registrations. The fund's link between start date and first working day is also unknown.",
+      "evidence": "dev_refinement (feature.md, major); coverage: F-pension_portal-3a97ab unused; US-03.2",
+      "action": "Decide in decisions.yaml whether the rule uses the contractual start date or the actual first working day. Confirm with the fund how mid-month starts are handled."
     },
     {
-      "title": "Base tariff H vs A rule contradicts its own evidence",
-      "why": "AC-06.4.3 and rule.base_tariff_letter say H requires the child in the household plus sole custody or main contributor. Three cited facts give H1N in cases that rule excludes. The derivation and its tests cannot be written until this is settled.",
-      "evidence": "dev_refinement US-06.4 (major). Facts F-zh_source_tax_calculator-dc0ae9, -dc6ace, -3eb561. trace_judge on rule.base_tariff_letter. The widowed adult-child example omits the '>50% maintenance' answer.",
-      "action": "Add a decision in decisions.yaml on the exact H vs A conditions. This could be 'counted child' rather than household plus custody. Fix AC-06.4.3 and its examples to match, including the digit 0 or 1."
+      "title": "Child per-child result is inferred and internally inconsistent",
+      "why": "Lonio now computes the tariff itself. The rule expression disagrees with its table in at least two cases, and many rows rest only on D-009, which is a verification decision and not a source. Wrong tariff codes are possible.",
+      "evidence": "trace_judge rule.child_result; inferred_items; OQ-calculator-coverage; US-07.3 to 07.6",
+      "action": "Have the domain expert reconcile the expression and the table. Run the inferred rows against the Zurich calculator before go-live, as D-009 requires. Keep this as an explicit release gate."
     },
     {
-      "title": "Blocking open question: registered partnership",
-      "why": "Employees in a registered partnership (e.g. Daniel) cannot be registered correctly. The pension fund list has no such status, and the question affects the spouse data and the source-tax exemption.",
-      "evidence": "OQ-registered-partnership (blocking: true). It affects civil_status, the spouse items, subject_to_source_tax and calculator_civil_status. OQ-separated is related.",
-      "action": "Ask Pensionskasse Muster through HR. Record a decision. The interim recommendation is to treat registered partners as Married, with OQ-separated resolved consistently."
+      "title": "Liechtenstein question order and the reservation under the double taxation agreement",
+      "why": "Liechtenstein residents who return daily get no tariff code, yet they are still asked about denomination, spouse employment and children. This breaks data minimisation. The 'subject to double taxation agreement' reservation for more than 45 non-return days is not recorded in AC-08.4.3.",
+      "evidence": "dev_refinement (feature.md; US-08.4, major); F-zh_source_tax_calculator-cc19c7",
+      "action": "Decide whether the Liechtenstein questions come first or answers are discarded. Decide whether the reservation is recorded and flagged for HR."
     },
     {
-      "title": "Blocking open question: pension fund 'Canton' meaning",
-      "why": "It is unknown whether the canton means residence or work, and what to enter for cross-border employees. The field is required and the list has only Swiss cantons. residence_canton is also named and described as the canton of residence without backing.",
-      "evidence": "OQ-canton (blocking: true). fact_judge on F-pension_portal-b359c3. trace_judge on item.residence_canton. US-02.4.",
-      "action": "Get the fund's answer and decide what is entered for residents of Germany and Liechtenstein. Rename or reword the item to match."
+      "title": "Residence country timing",
+      "why": "The home-address country decides source-tax liability, the canton and the cross-border questions. Movers' current address may differ from the one that applies from the first working day.",
+      "evidence": "dev_refinement US-02.3 (major)",
+      "action": "Decide whether to ask for the address applying at the first working day. Add this to the story."
     },
     {
-      "title": "Scope of the tariff output and HR visibility undefined",
-      "why": "The spec derives only the tariff letter. It also defines the suffix, the digit and the cross-border swap, and says HR can see results. It never says what is computed, who sees it, or when. Engineering cannot size the feature without this.",
-      "evidence": "dev_refinement US-06.4 (major) and US-05.3 AC-05.3.5 (major). US-01.1 (minor, submit and notify flow).",
-      "action": "Add a decision on the output. Is it the full code, only the letter or nothing? Who sees it? What are the submit and notify semantics? Update the stories or move HR visibility out of scope explicitly."
+      "title": "House number required without a source",
+      "why": "Employees whose address has no house number could not submit.",
+      "evidence": "trace_judge item.address_house_number; dev_refinement US-02.2 (major); AC-02.2.2",
+      "action": "Decide whether the house number is optional or allows an explicit 'no house number'."
     },
     {
-      "title": "Post-submission changes and answer invalidation unspecified",
-      "why": "US-03.3 assumes the first working day changes later, but no actor or mechanism is defined. Going back and changing earlier answers can orphan data that data minimisation forbids keeping.",
-      "evidence": "dev_refinement US-03.3 (major) and US-01.2 (major). AC-03.3.1.",
-      "action": "Decide who can edit and until when. Decide whether dependent answers are discarded when upstream answers change. Add ACs for both."
+      "title": "Fund registration gaps (canton abroad, partnership and separated mapping, divorced and widowed)",
+      "why": "The fund's canton field is required, but employees abroad have no valid value. The Married mapping for registered partners and separated employees is provisional. Divorced and widowed screens are unseen. Registration could be blocked.",
+      "evidence": "OQ-canton-abroad; OQ-civil-status-partnership; OQ-spouse-dob-other-status; fact_judge F-pension_portal-b359c3, 6d3630, 39bab1; trace_judge rule.pension_fund_civil_status (Separated not backed)",
+      "action": "Get the fund's answers and a screenshot for Divorced and Widowed. Record the decisions in decisions.yaml."
     },
     {
-      "title": "First working day inputs and start-date rule ambiguous",
-      "why": "No story covers HR pre-filling the date. Using the actual first working day instead of the contractual start can push the insurance start to the wrong month. The residence-address timing (current vs at start) changes which questions are asked.",
-      "evidence": "dev_refinement US-03.1 (major), feature.md insurance rule (major), US-02.3 (major). AC-03.1.2 is untestable as written.",
-      "action": "Decide whether the date is pre-filled by HR. Decide whether the rule uses the contract start or the first working day, and whether the address is current or as at the start date. Add testable wording."
+      "title": "Source tax liability rule is hedged by HR",
+      "why": "Anna said 'I think so' and added conditions over time. 'Here' is read as Switzerland. This rule gates all the source tax questions.",
+      "evidence": "OQ-source-tax-rule-confirmation; fact_judge F-hr_transcript-550840 and 5af8d0; trace_judge AC-08.3.1",
+      "action": "Have HR confirm the decision table in writing, including 'lives here' = Switzerland and that everyone living abroad is subject."
     },
     {
-      "title": "Item expressions and business text do not match their trace",
-      "why": "Several required_when and asked_when expressions contradict their own business text. Some claims have no cited fact: the 'only if subject' condition, the step order, the Germany/Liechtenstein rows citing missing facts, and the 'sensitive data' note. A developer would build from the expressions.",
-      "evidence": "trace_judge: spouse_permit_type, has_children, confession, income_type, civil_status, calculator_residence, questionnaire_flow, US-01.2, US-02.4, US-06.1 to US-06.3.",
-      "action": "Align each expression with its text. Cite the missing hr_transcript facts, or mark the items as decisions. Drop or confirm the unbacked claims."
+      "title": "Stories include behaviour that no cited fact backs",
+      "why": "Several claims are untraceable. Examples: the confession, children and spouse-works questions; the fixed step order; the Liechtenstein base-letter handling; the 'no maximum number of children' statement; and the date format and permit reminder purposes. Some cite facts that are not in the cited set.",
+      "evidence": "trace_judge story.US-01.1, US-01.2, US-01.4, US-03.1, US-06.5, US-07.2; rule.questionnaire_flow, cross_border_tariff, liechtenstein_no_source_tax",
+      "action": "Fix the citations where facts exist. Otherwise mark these items inferred or add decisions. Decide the maximum number of children."
     },
     {
-      "title": "Source-tax rule only partly confirmed",
-      "why": "The rule decides who sees the whole source-tax section. Anna hedged, and 'here' meaning Switzerland is an assumption. The Liechtenstein result conflicts with HR's 'always subject'. Income type is still modelled as asked.",
-      "evidence": "OQ-source-tax-rule, OQ-liechtenstein, OQ-income-type. fact_judge on F-hr_transcript-550840 and -5af8d0.",
-      "action": "Have HR confirm the decision table. Record the product decisions on income type (fixed to earned income) and on which Liechtenstein result counts."
+      "title": "Internal rule ids written into business prose",
+      "why": "Snake_case rule ids and 'expression' wording appear in the feature, stories and open-questions files. This is a minor technical leak.",
+      "evidence": "tech_leak: feature.md, US-02.3, US-06.4, US-06.5, US-07.1, open-questions.md",
+      "action": "Replace the ids with business terms such as 'source tax liability rule' and 'per-child result'."
     },
     {
-      "title": "Technical identifiers leak into business prose",
-      "why": "Field and rule ids and UI mechanics appear in acceptance criteria and notes, which turns engineering choices into spec content.",
-      "evidence": "tech_leak: US-08.1 (address_country), feature.md (insurance_start_date, calculator_civil_status), US-07.2 (Child 1/2 blocks with add/remove).",
-      "action": "Replace the ids with business terms. State only the need that each child is described separately."
+      "title": "Untestable and ambiguous acceptance criteria wording",
+      "why": "Some wording cannot be tested as written. AC-03.1.2 is untestable. 'Required' and 'asked' are used inconsistently in the example tables. The permit reminder text is missing. The date on which a child's age is judged is not set.",
+      "evidence": "dev_refinement info: US-03.1, US-05.1, US-05.2, US-01.4, US-07.2",
+      "action": "Agree the question wording and the permit reminder text with HR. Standardise 'required' in the examples. Fix the child age reference date."
     }
   ]
 }

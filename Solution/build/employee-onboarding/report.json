@@ -3,23 +3,16 @@
   "counts": {
     "units": 342,
     "facts": 177,
-    "items": 36,
-    "rules": 7,
+    "items": 35,
+    "rules": 17,
     "sections": 8,
-    "stories": 29,
-    "acceptance_criteria": 86,
-    "open_questions": 13,
-    "exclusions": 6
+    "stories": 34,
+    "acceptance_criteria": 108,
+    "open_questions": 5,
+    "exclusions": 10
   },
   "findings": {
-    "error": [
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.2.3 / Replacement income",
-        "message": "church_tax_suffix = None, expected 'null'"
-      }
-    ],
+    "error": [],
     "warning": [
       {
         "check": "fact_judge",
@@ -102,134 +95,122 @@
       {
         "check": "coverage",
         "severity": "warning",
-        "target": "F-pension_portal-e45e5b",
-        "message": "fact not used anywhere in the spec: No screenshot shows the validation error for an insurance start date that is not the 1st of a month or for a malformed date; its behaviour and wording are unknown."
+        "target": "F-pension_portal-3a97ab",
+        "message": "fact not used anywhere in the spec: The portal requires an insurance start date on the 1st of a month but does not show how it relates to the employee's first working day (e.g. which 1st of a month to choose when work starts mid-month); the derivation rule is unknown."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "item.residence_canton",
-        "message": "partial: The facts say it is unknown whether 'Canton' means residence or work canton, so describing and naming it as the canton the employee lives in is an unbacked assumption."
+        "target": "item.address_house_number",
+        "message": "partial: The house number is listed in the full address, but 'required always' is not backed because no source says every address has a house number (as the item's own note admits)."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "item.nationality",
-        "message": "partial: The form 'country by English name' is not backed because G-10 is not cited; the rest is supported."
-      },
-      {
-        "check": "trace_judge",
-        "severity": "warning",
-        "target": "item.civil_status",
-        "message": "partial: The cited facts back the pension-fund use, the values and the calculator's two civil-status groups, but not the claim that civil status decides the spouse exemption."
-      },
-      {
-        "check": "trace_judge",
-        "severity": "warning",
-        "target": "item.spouse_permit_type",
-        "message": "partial: The business text says it is required only if the spouse has a permit, but required_when_expr makes it required whenever asked, so the two do not match."
-      },
-      {
-        "check": "trace_judge",
-        "severity": "warning",
-        "target": "item.income_type",
-        "message": "partial: The claim that replacement income gives tariff G/Q is not in the cited facts, which only say the personal and child questions are skipped."
-      },
-      {
-        "check": "trace_judge",
-        "severity": "warning",
-        "target": "item.confession",
-        "message": "partial: The source-tax-subject condition and the 'sensitive personal data' note are not backed by the cited facts, and the calculator's civil-status-answered precondition is not in the expr."
+        "target": "item.first_working_day",
+        "message": "partial: The HR purpose 'reminder to bring the permit refers to it' is not backed by any cited fact."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
         "target": "item.has_children",
-        "message": "partial: required_when_expr (is_set(civil_status)) does not match the stated 'always when asked' and the asked_when_expr conditions."
+        "message": "partial: The purpose claim that the answer possibly leads to tariff H is not backed by any cited fact."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "rule.calculator_residence",
-        "message": "partial: The Germany and Liechtenstein rows cite F-zh_source_tax_calculator-31d762 and -e22d17, which are not among the provided facts, so the claim that Germany or Liechtenstein questions follow is not backed."
+        "target": "item.child_custody",
+        "message": "partial: The purpose claim that sole custody counts the child, with H for single employees, is not backed by the cited facts."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "rule.base_tariff_letter",
-        "message": "partial: The expression gives H for sole custody alone, but the fact says a child counts with H only if it lives in the household and the person has sole custody or is the main contributor. 'HR keeps the calculator as the authority' is also only loosely backed by the facts."
+        "target": "item.child_main_financial_contributor",
+        "message": "partial: The purpose claim 'main contributor counts the child (with H for single employees)' is not backed by any cited fact; the question, options and conditions are backed."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
         "target": "rule.questionnaire_flow",
-        "message": "partial: The cited facts back only the conditional source tax step (steps 1-5 versus 1-6); the order of steps 1-5, the canton, the first working day and the nationality, family and spouse details are not backed by them."
+        "message": "partial: The cited facts back the English language, canton only for Switzerland, civil status and spouse date of birth, C permit, the end reminder and the read-only and discard behaviour, and source-tax-only details. They do not back the personal details fields (names, date of birth), the address fields (street, house number, postcode, town), the confession, spouse-works and children questions, or the spouse's country of residence condition."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "rule.pension_fund_civil_status",
+        "message": "partial: D-003 gives the partner's date of birth only for registered partnership, but the statement attaches it to Separated as well."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "rule.calculator_residence",
+        "message": "partial: The claim that Germany and Liechtenstein have their own follow-up questions is not backed by the cited facts, which only list the residence options and the base-tariff cases."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "rule.child_result",
+        "message": "partial: The expression disagrees with the table (e.g. single, minor not in household, no parental care, Employee contributor gives 'counts with H' in the expression but 'does not count' in the table; married, no parental care, >50% maintenance gives 'counts' in the expression), and the many 'inferred' rows rest only on D-009, which is a verification decision, not a backing fact."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "rule.cross_border_tariff",
+        "message": "partial: The 'not Germany -> normal tariff' row cites F-zh_source_tax_calculator-f86c6b, which is not among the cited facts, and fb87f1 only covers Liechtenstein, so that row is not backed."
+      },
+      {
+        "check": "trace_judge",
+        "severity": "warning",
+        "target": "rule.liechtenstein_no_source_tax",
+        "message": "partial: The 'not Liechtenstein -> tariff code' row cites f86c6b, which is not among the cited facts; the Liechtenstein rows are backed by fb87f1, cc19c7 and D-007."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
         "target": "story.US-01.1",
-        "message": "partial: The goal and ACs are backed, but the 'religious denomination' example of sensitive data in the so_that is not in the cited facts."
+        "message": "partial: No cited fact backs asking the confession, children or spouse-works questions, or the German cross-border question details (certificate of residence, reasonable return, 60 days). The subject-to-source-tax conditions, Liechtenstein handling and country options are backed."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
         "target": "story.US-01.2",
-        "message": "partial: AC-01.2.1 states the full step order and the canton for Swiss residents, and the cited facts do not back either."
+        "message": "partial: The fixed seven-step order in AC-01.2.1 is not stated in any cited fact; the individual conditional questions are backed, and the order of steps 5 and 6 is only implied."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "story.US-02.4",
-        "message": "partial: The claim that the canton is asked 'right after the country' is an ordering that none of the cited facts back."
+        "target": "story.US-01.4",
+        "message": "partial: The two non-illustrative examples (Tomás/Brazil, Maria/Portugal) cite transcript facts F-hr_transcript-b90bd9 and F-hr_transcript-845204 that are not among the cited facts, so they are not backed."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "story.US-06.1",
-        "message": "partial: The priority reason's claim that the answer is 'presumably always earned income' for a new hire is not in the cited facts, and AC-06.1.3 equates the calculator's 'personal/child questions' with the specific denomination, spouse employment and children items without a fact saying so."
+        "target": "story.US-02.1",
+        "message": "partial: The cited facts don't say HR uses the name to identify the employee, and F-hr_transcript-3edf89 only weakly supports HR needing the name, since Anna elaborated only on the address."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "story.US-06.2",
-        "message": "partial: The condition 'only if subject to source tax' and the non-illustrative Tomás and Maria examples (not asked) are not backed by any cited fact, because the hr_transcript subject-to-source-tax facts are not cited."
+        "target": "story.US-03.1",
+        "message": "partial: AC-03.1.1's DD.MM.YYYY date format and the 'at Muster AG' wording are not backed by the cited facts, since the format comes from F-pension_portal-dd8126 and G-10, which are not cited here."
       },
       {
         "check": "trace_judge",
         "severity": "warning",
-        "target": "story.US-06.3",
-        "message": "partial: The non-illustrative Tomás example (not subject, so not asked) has no cited backing for the not-subject conclusion, and the 'after the denomination question' position is not stated in the cited facts."
+        "target": "story.US-06.5",
+        "message": "partial: AC-06.5.2 says Liechtenstein residents keep the base letter, but the cited facts only cover Switzerland and 'Anderes Land' (F-f86c6b) and say nothing about Liechtenstein."
       },
       {
-        "check": "dev_refinement",
+        "check": "trace_judge",
         "severity": "warning",
-        "target": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
-        "message": "AC-06.4.3 and the base-tariff rule say an unmarried employee gets H only if a child lives in the household AND the employee has sole custody or is the main financial contributor. The spec's own evidence disagrees. F-zh-dc0ae9 gives H1N for a child in the household with shared custody, no common household and no alternating custody. F-zh-dc6ace gives H1N for a minor child who does NOT live in the household. F-zh-3eb561 gives H1N for an adult child where the deciding answer is 'pays more than 50%', not 'main contributor'. Which rule should we build for H vs A? We cannot write the derivation or its tests until this is settled."
+        "target": "story.US-07.2",
+        "message": "partial: AC-07.2.1 says the questionnaire sets no maximum number of children, but the facts only say the calculator's upper limit is unknown and untested (F-4957f6, D-009), so no such product decision is cited."
       },
       {
-        "check": "dev_refinement",
+        "check": "trace_judge",
         "severity": "warning",
-        "target": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
-        "message": "What exactly does the questionnaire produce as a tariff result, and who sees it? US-06.4 only derives the letter (A/B/C/G/H). But the spec also defines the church-tax suffix (US-06.2), the rule that the digit is the number of counted children, and the Germany cross-border swap (A→L etc.), and AC-06.4.4 says all of these come from the calculator. Should we compute the full tariff code (e.g. H1N, N1Y), only the letter, or nothing? Is the result shown to HR, to the employee, or to neither?"
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "warning",
-        "target": "stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md",
-        "message": "AC-05.3.5 says 'HR can see for each employee whether they are subject'. No story describes what HR sees, where, or when (live while the employee is filling in, or after submission), and the feature puts 'how data is sent to each party' out of scope. Is an HR view of the results (subject yes/no, insurance start date, expected tariff) part of this feature? Should the employee see these derived results?"
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "warning",
-        "target": "stories/US-03.3-re-derive-the-insurance-start-date-when-the-first-working.md",
-        "message": "AC-03.3.1 assumes the first working day 'later changes' after it was recorded. Who changes it, and through what? Can the employee reopen and edit a submitted questionnaire, can HR edit it, or does a new questionnaire go out? Is there a deadline after which changes are no longer accepted? This decides whether we need editing after submission, an HR edit function and an audit of changes."
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "warning",
-        "target": "stories/US-03.1-employee-confirms-the-first-working-day.md",
-        "message": "The flow table says the first working day is 'confirmed if HR already knows it', and AC-03.1.2 says to confirm the date 'as currently agreed'. No story covers HR entering a known date in advance. Does HR pre-fill the first working day (and perhaps the name) before inviting the employee, so the employee only confirms or corrects it? Or does the employee always type it in?"
+        "target": "story.US-08.3",
+        "message": "partial: AC-08.3.1's precondition that everyone living abroad is subject to source tax is not backed by any cited fact (F-hr_transcript-3f2c2a is not cited here); the rest is supported by the calculator facts, D-035 and D-001."
       },
       {
         "check": "dev_refinement",
@@ -246,46 +227,70 @@
       {
         "check": "dev_refinement",
         "severity": "warning",
-        "target": "stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md",
-        "message": "Suppose an employee goes back and changes an earlier answer: the country from Germany to Switzerland, civil status from Married to Single, or the permit to a C permit. Answers they already gave may no longer apply (nationality, spouse data, denomination, children). Under data minimisation, must those answers be thrown away, or may they be kept? Do any rules re-run (e.g. the subject-to-source-tax decision) after submission?"
+        "target": "feature.md",
+        "message": "In step 6 the Liechtenstein cross-border questions come after denomination, spouse employment and all the children questions. A Liechtenstein resident who returns daily (or expects at most 45 non-return days) gets 'in principle no source tax liability' and no tariff code, so their denomination, spouse-employment and children answers are not needed by any party (G-01). Should the Liechtenstein questions come first so those questions are skipped? Or, if the order stays, should those answers be discarded on submission like other answers that no longer apply? Or does HR need them anyway in case the case changes later?"
       },
       {
-        "check": "tech_leak",
+        "check": "dev_refinement",
         "severity": "warning",
-        "target": "stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md",
-        "message": "\"the employee has entered the country of their home address (address_country) in the home address step\" - An internal field identifier appears in the acceptance-criterion prose. Field naming is an engineering choice."
+        "target": "stories/US-08.4-liechtenstein-daily-return-and-more-than-45-non-return-days.md",
+        "message": "For Liechtenstein residents with more than 45 non-return days, the calculator returns the normal tariff plus 'Unter Vorbehalt des Doppelbesteuerungsabkommens' (subject to the double taxation agreement), per F-zh_source_tax_calculator-cc19c7. AC-08.4.3 records only 'the normal tariff code'. Should this reservation also be recorded and flagged for HR in that case?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "stories/US-02.2-collect-a-complete-postal-home-address.md",
+        "message": "AC-02.2.2 keeps the house number required even though the spec says no source confirms that every address has one. An employee whose address has no house number (rural address, named building, etc.) could not submit at all. Should the house number be required, optional, or allow an explicit 'no house number'?"
       },
       {
         "check": "tech_leak",
         "severity": "warning",
         "target": "feature.md",
-        "message": "\"If it changes, insurance_start_date must be derived again.\" - A snake_case field/rule identifier is used in the business notes of the First working day item instead of the business term 'insurance start date'."
+        "message": "\"Feeds the civil status entered at the fund (pension_fund_civil_status) and, for employees subject to source tax, the calculator's civil status group (calculator_civil_status).\" - Internal snake_case rule ids are written into the business description of the Civil status item instead of business terms."
       },
       {
         "check": "tech_leak",
         "severity": "warning",
         "target": "feature.md",
-        "message": "\"It also answers the source tax calculator's civil status question (see rule calculator_civil_status).\" - Internal rule ids (calculator_civil_status, and likewise subject_to_source_tax / insurance_start_date in many ACs) are written into the business prose. These are code-style identifiers, not business language."
+        "message": "\"(The expression shows the contribution of one child; for several children the contributions are added up.)\" - This refers to an internal formula/expression representation of the rule, not business language."
       },
       {
         "check": "tech_leak",
         "severity": "warning",
-        "target": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
-        "message": "\"the employee can describe each child in its own block (Child 1, Child 2, ...) and can add or remove a child\" - This prescribes UI interaction (repeating blocks with add/remove controls) copied from the calculator's screen. The business need is only that each child is described separately."
+        "target": "stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md",
+        "message": "\"(rule subject_to_source_tax, owned by the source tax section)\" - A code-style rule identifier appears in acceptance-criterion prose."
       },
       {
         "check": "tech_leak",
         "severity": "warning",
-        "target": "stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md",
-        "message": "\"| Replacement income (illustrative) | Switzerland | Germany | B permit | Single | Replacement income | – | → | null | not asked | ❌ |\" - A programming value ('null') appears as the expected business result where the business term 'no suffix' was meant."
+        "target": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
+        "message": "\"(per-child result, rule child_result)\" - A code-style rule identifier appears in acceptance-criterion prose."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "stories/US-06.5-replace-the-base-letter-with-the-cross-border-letter-where.md",
+        "message": "\"(rule cross_border_tariff: daily return with a certificate of residence handed in\" - A code-style rule identifier appears in acceptance-criterion prose."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "stories/US-07.1-ask-about-children-only-of-employees-who-need-a-source-tax.md",
+        "message": "\"(rule subject_to_source_tax: country of residence and, for residents of Switzerland, Swiss citizenship, C permit, civil status and spouse details)\" - A code-style rule identifier appears in acceptance-criterion prose."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "open-questions.md",
+        "message": "\"compare all inferred rows of child_result and the cross-border paths\" - An internal rule identifier is used instead of the business term 'per-child result'."
       }
     ],
     "info": [
       {
         "check": "dev_refinement",
         "severity": "info",
-        "target": "stories/US-01.1-show-the-source-tax-step-only-to-employees-who-are-subject.md",
-        "message": "What does finishing the questionnaire mean for the business? Is there a review/summary step and an explicit submit with a confirmation to the employee? Is HR notified? Can the employee save partway and come back later? None of this is specified, but it decides when HR can rely on the data."
+        "target": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
+        "message": "Before submission, can the employee save partway and come back later, and is there a review/summary of all answers before the final submit? After submission, does the employee get a confirmation? Submission is final (read-only), so these decide what the employee can check before locking it."
       },
       {
         "check": "dev_refinement",
@@ -296,40 +301,46 @@
       {
         "check": "dev_refinement",
         "severity": "info",
-        "target": "stories/US-05.1-ask-nationality-and-permit-only-of-employees-living-in.md",
-        "message": "Nationality is 'a country by English name'. Which list of nationalities should be offered, and how do stateless employees or employees with unclear status answer? Only 'Switzerland vs not' matters for the rule. (Dual nationality is already listed as an open question.)"
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "info",
         "target": "stories/US-03.1-employee-confirms-the-first-working-day.md",
         "message": "AC-03.1.2 ('the question makes clear the date must be the currently agreed one') cannot be tested as written. Is there agreed wording for the question, or a business requirement such as showing the date HR has on file?"
       },
       {
         "check": "dev_refinement",
         "severity": "info",
-        "target": "stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md",
-        "message": "In the AC-06.2.3 examples, the replacement-income row gives the result 'null', is marked as failing (❌), and has the denomination column twice. Is the expected result for replacement income 'no suffix'? Please fix the example so it can serve as a test case."
+        "target": "stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md",
+        "message": "Nationality (and the country of the home address and of the spouse's residence) is 'a country by English name'. Which list of countries/nationalities should be offered, and how do stateless employees or employees with unclear status answer the nationality question? Only 'Switzerland vs not' matters for the rule."
       },
       {
         "check": "dev_refinement",
         "severity": "info",
-        "target": "stories/US-02.4-ask-swiss-residents-for-their-canton.md",
-        "message": "The example tables mix 'required' and 'asked' as expected results for questions that the text says are 'asked and required'. Examples: Canton Zurich 'required' vs St. Gallen 'asked'; the spouse's residence row 'required' vs 'asked'; children 'required' vs 'asked'. Is there a real difference between 'asked' and 'required' (i.e. may some of these be left empty), or are they the same?"
+        "target": "stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md",
+        "message": "The example tables mix 'required' and 'asked' as expected results for questions the text says must be answered. Examples: spouse nationality 'required' for Tomás vs 'asked' for the registered partner; spouse residence 'required' vs 'asked'; in US-05.1, C permit 'required' for Maria vs 'asked' for Tomás. Is there a real difference (i.e. may some of these be left empty), or are they the same?"
       },
       {
         "check": "dev_refinement",
         "severity": "info",
-        "target": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
-        "message": "The AC-06.4.3 example 'Widowed with an adult child in first education who lives elsewhere → A' leaves out the required 'pays more than 50% of maintenance' answer. Per US-07.5 that answer decides whether the child counts. Which answer is meant, and is the expected digit 0 or 1?"
+        "target": "stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md",
+        "message": "The spouse's country of residence matters only as 'lives in Switzerland or not'. Under data minimisation (G-01), should we ask the full country, or only 'Does your spouse/partner live in Switzerland? yes/no'?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
+        "message": "'Minor' vs 'Adult in first education': on which date is the child's age judged? The submission date, the first working day, or the start of the tax year? A child who turns 18 around the start date would otherwise be classified differently."
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md",
+        "message": "The permit reminder is 'worded by HR', but no text is given. Who provides the final wording and when (before build or configurable later)? Is it shown only at the end, or also elsewhere (e.g. in a confirmation)?"
       }
     ]
   },
   "coverage": {
     "units_total": 342,
-    "units_cited": 166,
+    "units_cited": 159,
     "facts_total": 177,
-    "facts_used": 164,
+    "facts_used": 146,
     "uncited_units": [
       {
         "id": "hr_transcript/T-000",
@@ -856,10 +867,6 @@
         "text": "Insurance start date"
       },
       {
-        "id": "pension_portal/S06-E19",
-        "text": "DD.MM.YYYY. Must be the 1st of a month."
-      },
-      {
         "id": "pension_portal/S06-E21",
         "text": "Civil status"
       },
@@ -976,6 +983,26 @@
         "text": "Fields marked * are required."
       },
       {
+        "id": "zh_source_tax_calculator/C-Q24",
+        "text": "Tägliche Rückkehr an den Hauptwohnsitz in Deutschland während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein"
+      },
+      {
+        "id": "zh_source_tax_calculator/C-Q25",
+        "text": "Tägliche Rückkehr grundsätzlich zumutbar während oder vor Bezug der Ersatzeinkünfte (weniger als 100km Fahrdistanz)? Options: Ja | Nein"
+      },
+      {
+        "id": "zh_source_tax_calculator/C-Q26",
+        "text": "Nachweis von mehr als 60 beruflich bedingten Nichtrückkehrtagen im Kalenderjahr beigebracht während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein"
+      },
+      {
+        "id": "zh_source_tax_calculator/C-Q27",
+        "text": "Tägliche Rückkehr an den Hauptwohnsitz in Liechtenstein während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein"
+      },
+      {
+        "id": "zh_source_tax_calculator/C-Q28",
+        "text": "Mehr als 45 beruflich bedingte Nichtrückkehrtage im Kalenderjahr während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein"
+      },
+      {
         "id": "zh_source_tax_calculator/C-V04",
         "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Verheiratet oder eingetragene Partnerschaft\", \"Q03\": \"Keine oder andere\", \"Q04\": \"Nein\", \"Q05\": \"Nein\", \"Q16\": \"Ja\"}"
       },
@@ -1020,16 +1047,28 @@
         "text": "Answers {\"Q01\": \"Erwerbseinkommen\", \"Q02\": \"Ledig, Geschieden, Getrennt, Verwitwet\", \"Q03\": \"röm.-kath., christ.-kath., evang.-ref.\", \"Q06\": \"Ja\", \"Q07\": \"Minde"
       },
       {
+        "id": "zh_source_tax_calculator/C-V45",
+        "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q24\": \"Ja\", \"Q19\": \"Nein\"} -> result Tarif: G"
+      },
+      {
+        "id": "zh_source_tax_calculator/C-V46",
+        "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q24\": \"Nein\", \"Q25\": \"Ja\", \"Q26\": \"Nein\"} -> result Tarif: Q"
+      },
+      {
+        "id": "zh_source_tax_calculator/C-V47",
+        "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q24\": \"Nein\", \"Q25\": \"Ja\", \"Q26\": \"Ja\"} -> result Tarif: G"
+      },
+      {
+        "id": "zh_source_tax_calculator/C-V48",
+        "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Deutschland\", \"Q24\": \"Nein\", \"Q25\": \"Nein\"} -> result Tarif: G"
+      },
+      {
         "id": "zh_source_tax_calculator/C-V51",
         "text": "Answers {\"Q01\": \"Ersatzeinkünfte\", \"Q16\": \"Nein\", \"Q17\": \"Liechtenstein\", \"Q27\": \"Nein\", \"Q28\": \"Nein\"} -> result Grundsätzlich keine Quellensteuerpflicht / Unt"
       },
       {
         "id": "zh_source_tax_calculator/C-N01",
         "text": "The calculator is an Angular app (app-root, ng 11, assets from www.services.zh.ch/app/quest/tarifbestimmung/prod/) rendered inline in the section 'Tarifrechner "
-      },
-      {
-        "id": "zh_source_tax_calculator/C-N03",
-        "text": "A visually hidden 'Beispiele' area shows the tags H3N and P3N. These were not clicked as inputs."
       },
       {
         "id": "zh_source_tax_calculator/C-N08",
@@ -1039,49 +1078,79 @@
   },
   "examples": [
     {
-      "case": "AC-01.1.1 / Maria, Portuguese with a C permit (hr_transcript/F-hr_transcript-845204)",
+      "case": "AC-01.1.1 / Non-Swiss single employee without C permit living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.1.1 / Tomás, Brazilian with a B permit, Swiss wife, living in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
+      "case": "AC-01.1.1 / Married employee living in Germany",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.1.1 / Swiss employee living in Switzerland",
+      "case": "AC-01.1.1 / Non-Swiss married employee whose C-permit spouse lives abroad",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.1.2 / Stefan, Swiss national living abroad (hr_transcript/F-hr_transcript-3f2c2a), country of residence assumed Germany",
+      "case": "AC-01.1.1 / Separated non-Swiss employee without C permit (counts as single for source tax)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.1.2 / Employee living in Liechtenstein",
+      "case": "AC-01.1.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.1.2 / Single non-Swiss employee with a B permit living in Switzerland",
+      "case": "AC-01.1.2 / Maria (hr_transcript/F-hr_transcript-845204)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.1.2 / Married B-permit employee whose spouse is not Swiss and has a B permit",
+      "case": "AC-01.1.2 / Swiss citizen living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.1.2 / Married B-permit employee whose Swiss spouse lives in Germany",
+      "case": "AC-01.1.2 / Registered partner of a C-permit holder living in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-01.1.3 / Employee living in Germany",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-01.1.3 / Employee living in Liechtenstein",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-01.1.3 / Employee living in another country",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-01.1.3 / Non-Swiss employee without C permit living in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-01.2.2 / Employee living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
@@ -1093,205 +1162,373 @@
       "failures": []
     },
     {
-      "case": "AC-01.2.2 / Swiss employee living in Switzerland",
+      "case": "AC-01.2.3 / Daniel (hr_transcript/F-hr_transcript-3907fe)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.2.2 / Maria, Portuguese living in Switzerland (hr_transcript/F-hr_transcript-845204)",
+      "case": "AC-01.2.3 / Married employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.2.3 / Tomás, Brazilian with a B permit, married to a Swiss wife (hr_transcript/F-hr_transcript-b90bd9)",
+      "case": "AC-01.2.3 / Separated employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.2.3 / Single B-permit employee living in Switzerland",
+      "case": "AC-01.2.3 / Single employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.2.3 / Married Swiss employee living in Switzerland",
+      "case": "AC-01.2.3 / Divorced employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-01.2.3 / Married employee living in Germany",
+      "case": "AC-01.2.3 / Widowed employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.1.1 / Employee living in Switzerland",
+      "case": "AC-01.2.4 / Swiss citizen living in Germany (like Stefan, hr_transcript/F-hr_transcript-3f2c2a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.1.1 / Employee living in Germany",
+      "case": "AC-01.2.4 / Maria (hr_transcript/F-hr_transcript-845204)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.1.2 / Employee born 14.03.1990",
+      "case": "AC-01.2.4 / Swiss citizen living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.1.2 / Employee living in Liechtenstein",
+      "case": "AC-01.2.5 / Tomás (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.2.1 / Employee living in Switzerland",
+      "case": "AC-01.2.5 / Maria (hr_transcript/F-hr_transcript-845204)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.2.1 / Employee living in Germany (e.g. Konstanz)",
+      "case": "AC-01.2.5 / Married, spouse not Swiss and without C permit",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.3.2 / Cross-border employee living in Germany (hr_transcript/F-hr_transcript-3f2c2a, Konstanz)",
+      "case": "AC-01.2.5 / Separated employee without C permit",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.3.2 / Employee living in Liechtenstein",
+      "case": "AC-01.2.5 / Single employee without C permit",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.3.2 / Employee living in Switzerland",
+      "case": "AC-01.3.2 / Separated non-Swiss employee: one civil status answer, two uses",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.4.1 / Employee living in Switzerland",
+      "case": "AC-01.3.2 / Registered partner without C permit: one civil status answer, two uses",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.4.1 / Cross-border employee living in Germany (Konstanz)",
+      "case": "AC-01.3.2 / Employee living in Germany: country answer used for canton and source tax",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.4.1 / Cross-border employee living in Liechtenstein",
+      "case": "AC-01.4.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.4.2 / Employee living in the canton of Zurich",
+      "case": "AC-01.4.1 / Maria (hr_transcript/F-hr_transcript-845204)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-02.4.2 / Employee living in the canton of St. Gallen",
+      "case": "AC-01.4.1 / Swiss citizen living in Germany (like Stefan, hr_transcript/F-hr_transcript-3f2c2a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.1.1 / Employee starting mid-month",
+      "case": "AC-01.4.1 / Employee living in Liechtenstein",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.1.1 / Employee starting on the 1st of a month",
+      "case": "AC-01.4.1 / Swiss citizen living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.2.1 / Start on the 1st of March",
+      "case": "AC-01.5.2 / Employee first entered Switzerland and an Italian nationality, then changed the country to Germany",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.2.1 / Start on the 1st of January",
+      "case": "AC-01.5.2 / Employee first chose Married and gave a spouse's date of birth, then changed to Single",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.2.2 / Julia (hr_transcript/F-hr_transcript-30d25c), year illustrative",
+      "case": "AC-01.5.2 / Non-Swiss employee first answered no C permit and the source tax details, then changed to yes",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.2.2 / Start on the 2nd of a month",
+      "case": "AC-01.6.2 / Nationality corrected to Switzerland after submission",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.2.2 / Start on the last day of a month",
+      "case": "AC-01.6.2 / Non-Swiss employee without C permit marries a Swiss citizen living in Switzerland after submission",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.2.2 / Mid-December start crosses the year end",
+      "case": "AC-01.6.2 / Swiss citizen moves from Switzerland to Germany after submission",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.3.1 / Julia moved her start to 15.03 (hr_transcript/F-hr_transcript-e18e66), year illustrative",
+      "case": "AC-02.3.2 / Employee living in Konstanz, Germany (hr_transcript/F-hr_transcript-3f2c2a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.3.1 / Start moved one week earlier onto the 1st of a month",
+      "case": "AC-02.3.2 / Employee living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-03.3.1 / Start moved within the same month",
+      "case": "AC-02.3.2 / Employee living in another country",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-04.1.1 / Single employee",
+      "case": "AC-02.3.3 / Tomás, lives in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-04.1.1 / Married employee",
+      "case": "AC-02.3.4 / Employee living in Konstanz, Germany (hr_transcript/F-hr_transcript-3f2c2a)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-02.3.4 / Employee living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-02.3.4 / Employee living in another country",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-02.4.1 / Tomás, lives in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-02.4.1 / Employee living in Konstanz, Germany (hr_transcript/F-hr_transcript-3f2c2a)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-02.4.1 / Employee living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-02.4.3 / Employee corrects the country to Germany",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.1.1 / Julia (hr_transcript/F-hr_transcript-e18e66)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.1.1 / Start on the 1st of a month",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.2.2 / Start on 1 March",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.2.2 / Start on 1 January",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.2.3 / Julia (hr_transcript/F-hr_transcript-e18e66)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.2.3 / Start on the 2nd of a month",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.2.3 / Start in December, insurance starts next year",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.2.3 / Start on the last day of a month",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.3.1 / Julia moves her start to the 15th (hr_transcript/F-hr_transcript-e18e66)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.3.1 / Start moved one week earlier onto the 1st",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.3.2 / Julia: latest date 15.03 (hr_transcript/F-hr_transcript-e18e66)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-03.3.2 / Latest date moved to the 1st of the following month",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.1 / Employee living in Switzerland",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.1 / Employee living in Germany",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.3 / Daniel (hr_transcript/F-hr_transcript-3907fe)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.3 / Single employee",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.3 / Married employee",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.3 / Divorced employee",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.3 / Widowed employee",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.1.3 / Separated employee",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.2.1 / Daniel (hr_transcript/F-hr_transcript-3907fe)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
       "case": "AC-04.2.1 / Married employee",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-04.2.1 / Separated employee",
       "origin": "spec",
       "pass": true,
       "failures": []
@@ -1315,37 +1552,49 @@
       "failures": []
     },
     {
+      "case": "AC-04.3.1 / Daniel (hr_transcript/F-hr_transcript-3907fe)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
       "case": "AC-04.3.1 / Married employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-04.3.2 / Single employee",
+      "case": "AC-04.3.1 / Single employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-04.3.2 / Divorced employee",
+      "case": "AC-04.3.1 / Divorced employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-04.3.2 / Widowed employee",
+      "case": "AC-04.3.1 / Widowed employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.1.1 / Employee living in Switzerland",
+      "case": "AC-04.3.1 / Separated employee",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.1.1 / Swiss national living in Germany, like Stefan (F-hr_transcript-3f2c2a)",
+      "case": "AC-05.1.1 / Maria (hr_transcript/F-hr_transcript-845204)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-05.1.1 / Stefan, Swiss living abroad (hr_transcript/F-hr_transcript-3f2c2a), country assumed",
       "origin": "spec",
       "pass": true,
       "failures": []
@@ -1357,67 +1606,91 @@
       "failures": []
     },
     {
-      "case": "AC-05.1.2 / Maria, Portuguese (hr_transcript/F-hr_transcript-845204)",
+      "case": "AC-05.1.2 / Swiss-Italian dual national living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.1.2 / Swiss national living in Switzerland",
+      "case": "AC-05.1.3 / Maria, Portuguese (hr_transcript/F-hr_transcript-845204)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.1.2 / Employee living in Germany",
+      "case": "AC-05.1.3 / Tomás, Brazilian (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.2.1 / Tomás, Brazilian, B permit, married (hr_transcript/F-hr_transcript-b90bd9)",
+      "case": "AC-05.1.3 / Swiss citizen living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.2.1 / Single employee with a B permit",
+      "case": "AC-05.1.3 / Stefan, Swiss living abroad (hr_transcript/F-hr_transcript-3f2c2a), country assumed",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.2.1 / Married employee with a C permit",
+      "case": "AC-05.2.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.2.1 / Married Swiss employee living in Switzerland",
+      "case": "AC-05.2.1 / Non-Swiss employee in a registered partnership",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.2.1 / Married employee living in Germany",
+      "case": "AC-05.2.1 / Married C-permit holder",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.2.2 / Tomás, wife is Swiss (hr_transcript/F-hr_transcript-b90bd9)",
+      "case": "AC-05.2.1 / Married Swiss citizen",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.2.2 / Spouse is Italian",
+      "case": "AC-05.2.1 / Separated non-Swiss employee without C permit",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.2.3 / Tomás, wife is Swiss (hr_transcript/F-hr_transcript-b90bd9)",
+      "case": "AC-05.2.1 / Single non-Swiss employee without C permit",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-05.2.1 / Married employee living abroad",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-05.2.2 / Tomás, Swiss wife (hr_transcript/F-hr_transcript-b90bd9)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-05.2.2 / Married employee with an Italian spouse",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-05.2.3 / Tomás, Swiss wife (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
@@ -1429,225 +1702,325 @@
       "failures": []
     },
     {
-      "case": "AC-05.2.3 / Spouse is Italian with a B permit",
+      "case": "AC-05.2.3 / Spouse is Italian without a C permit",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.1 / Swiss national living in Germany, like Stefan (F-hr_transcript-3f2c2a)",
+      "case": "AC-05.3.1 / Stefan, Swiss living abroad (hr_transcript/F-hr_transcript-3f2c2a), country assumed",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.1 / Employee living in Liechtenstein",
+      "case": "AC-05.3.1 / Married employee living in Liechtenstein",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.2 / Swiss national living in Switzerland",
+      "case": "AC-05.3.2 / Maria, Portuguese with C permit (hr_transcript/F-hr_transcript-845204)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.2 / Maria, Portuguese, C permit (hr_transcript/F-hr_transcript-845204)",
+      "case": "AC-05.3.2 / Swiss citizen living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.3 / Single employee with a B permit",
+      "case": "AC-05.3.3 / Single Italian with B permit",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.3 / Divorced employee with a B permit",
+      "case": "AC-05.3.3 / Separated Italian without C permit",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.4 / Tomás, Brazilian, B permit, Swiss wife, living in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
+      "case": "AC-05.3.4 / Tomás, Swiss wife, living in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.4 / Spouse is Italian with a C permit and lives in Switzerland",
+      "case": "AC-05.3.4 / Registered partner of a C-permit holder living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.4 / Spouse is Italian with a B permit",
+      "case": "AC-05.3.4 / Swiss spouse living in Germany",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-05.3.4 / Spouse is Swiss but lives in Germany",
+      "case": "AC-05.3.4 / Spouse neither Swiss nor C-permit holder",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.1.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9): married to a Swiss wife living in Switzerland, not subject",
+      "case": "AC-05.3.5 / Maria (hr_transcript/F-hr_transcript-845204)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.1.1 / Maria (hr_transcript/F-hr_transcript-845204): Portuguese with a C permit, not subject",
+      "case": "AC-05.3.5 / Single Italian without C permit",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.1.1 / Non-Swiss single employee with a B permit living in Switzerland",
+      "case": "AC-06.2.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.1.1 / Swiss employee living abroad (like Stefan, hr_transcript/F-hr_transcript-3f2c2a)",
+      "case": "AC-06.2.1 / Maria (hr_transcript/F-hr_transcript-845204)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.1.1 / Swiss employee living in Switzerland",
+      "case": "AC-06.2.1 / Swiss citizen living abroad, like Stefan (hr_transcript/F-hr_transcript-3f2c2a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.1.3 / Married employee with replacement income",
+      "case": "AC-06.2.1 / Swiss citizen living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.2.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9): not subject, denomination never collected",
+      "case": "AC-06.2.1 / Non-Swiss employee in Switzerland without C permit",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.2.1 / Maria (hr_transcript/F-hr_transcript-845204): C permit, denomination never collected",
+      "case": "AC-06.2.3 / Calculator path A0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-037b1c)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.2.1 / Subject employee with earned income",
+      "case": "AC-06.2.3 / Calculator path A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-2eab9a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.2.1 / Subject employee with replacement income",
+      "case": "AC-06.3.1 / Married, subject to source tax",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.2.3 / Earned income, member of a recognised church",
+      "case": "AC-06.3.1 / Registered partner, like Daniel (hr_transcript/F-hr_transcript-3907fe)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.2.3 / Earned income, no or another denomination",
+      "case": "AC-06.3.1 / Separated, subject to source tax",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.2.3 / Replacement income",
-      "origin": "spec",
-      "pass": false,
-      "failures": [
-        "church_tax_suffix = None, expected 'null'"
-      ]
-    },
-    {
-      "case": "AC-06.3.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9): married but not subject",
+      "case": "AC-06.3.1 / Divorced, living abroad",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.3.1 / Married, subject, earned income",
+      "case": "AC-06.3.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.3.1 / Single, subject, earned income",
+      "case": "AC-06.4.1 / Calculator path C0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.3.1 / Married, subject, replacement income",
+      "case": "AC-06.4.1 / Calculator path B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.4.1 / Replacement income",
+      "case": "AC-06.4.1 / Calculator path B1N, child with sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.4.2 / Spouse works",
+      "case": "AC-06.4.1 / Registered partner whose partner works",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.4.2 / Spouse does not work",
+      "case": "AC-06.4.2 / Calculator path A0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-037b1c)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.4.3 / Single without children",
+      "case": "AC-06.4.2 / Calculator path H1Y, sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.4.3 / Divorced with a minor child in the household under sole custody",
+      "case": "AC-06.4.2 / Calculator path A0N, other parent main contributor (zh_source_tax_calculator/F-zh_source_tax_calculator-5686d7)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-06.4.3 / Widowed with an adult child in first education who lives elsewhere",
+      "case": "AC-06.4.2 / Separated employee without children",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.1.1 / Single employee living abroad",
+      "case": "AC-06.5.1 / Calculator path L0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-66732c)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.1.1 / Married B-permit holder with a non-Swiss spouse",
+      "case": "AC-06.5.1 / Calculator path M0N (zh_source_tax_calculator/F-zh_source_tax_calculator-66732c)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.1.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9)",
+      "case": "AC-06.5.1 / Calculator path N1Y, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.5.1 / Calculator path P1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-66732c)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.5.1 / Calculator path N1Y, no daily return, at most 60 days (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.5.2 / Calculator path C1Y, no certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.5.2 / Certificate of residence 'not yet'",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.5.2 / Calculator path C1Y, more than 60 days (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.5.2 / Calculator path C1Y, daily return not reasonable (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.5.2 / Calculator path A0N, other country (zh_source_tax_calculator/F-zh_source_tax_calculator-f86c6b)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.5.2 / Living in Switzerland, married, spouse does not work",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.1 / Calculator path A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-2eab9a)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.1 / Calculator path C1Y, sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.1 / Calculator path B0N, child neither minor nor in first education (zh_source_tax_calculator/F-zh_source_tax_calculator-abe889)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.1 / Calculator path N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.1 / Calculator path L0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-66732c)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.1 / Calculator path C1Y, Liechtenstein more than 45 days (zh_source_tax_calculator/F-zh_source_tax_calculator-cc19c7)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.2 / Calculator path Liechtenstein daily return (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.2 / Calculator path Liechtenstein at most 45 days (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.3 / Tomás (hr_transcript/F-hr_transcript-b90bd9)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-06.6.3 / Maria (hr_transcript/F-hr_transcript-845204)",
       "origin": "spec",
       "pass": true,
       "failures": []
@@ -1659,163 +2032,331 @@
       "failures": []
     },
     {
-      "case": "AC-07.1.1 / Swiss national living in Switzerland",
+      "case": "AC-07.1.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.1.2 / Replacement income",
+      "case": "AC-07.1.1 / Swiss citizen living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.1.4 / No children",
+      "case": "AC-07.1.1 / Non-Swiss without C permit living in Switzerland",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.1.4 / Has children",
+      "case": "AC-07.1.1 / Employee living in Germany",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.2.2 / Employee with children",
+      "case": "AC-07.1.1 / Employee living in Liechtenstein",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.2.3 / Married, child neither (zh_source_tax_calculator/F-zh_source_tax_calculator-abe889)",
+      "case": "AC-07.1.3 / No children",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.2.4 / Minor child",
+      "case": "AC-07.1.3 / Has children",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.2.4 / Adult child in first education",
+      "case": "AC-07.2.2 / Calculator path 'weder noch' -> B0N (zh_source_tax_calculator/F-zh_source_tax_calculator-abe889)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.3.1 / Single, sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)",
+      "case": "AC-07.2.2 / Single employee, child neither minor nor in first education",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.3.2 / Married, shared custody, common household (zh_source_tax_calculator/F-zh_source_tax_calculator-5d8fb0)",
+      "case": "AC-07.2.3 / Minor child",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.3.2 / Single, shared custody, common household (zh_source_tax_calculator/F-zh_source_tax_calculator-5686d7)",
+      "case": "AC-07.2.3 / Adult child in first education",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.3.3 / Single, no common household, no alternating custody (zh_source_tax_calculator/F-zh_source_tax_calculator-dc0ae9)",
+      "case": "AC-07.3.1 / Calculator path married, sole custody -> C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.3.3 / Married, no common household, no alternating custody (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358)",
+      "case": "AC-07.3.1 / Calculator path single, sole custody -> H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.3.4 / Married, alternating custody (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358)",
+      "case": "AC-07.3.1 / Minor child outside the household",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.4.1 / Married, child elsewhere, no shared custody (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+      "case": "AC-07.3.2 / Calculator path married, shared custody, common household -> C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-5d8fb0)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.4.2 / Single, child elsewhere, no parental care (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+      "case": "AC-07.3.2 / Calculator path single, common household, other parent main contributor -> A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-5686d7)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.4.2 / Divorced, child elsewhere",
+      "case": "AC-07.3.2 / Single, common household, employee main contributor",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.4.3 / Married, shared custody, alternating, employee pays more (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+      "case": "AC-07.3.2 / Registered partner, common household",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.4.3 / Single, parental care, alternating, employee pays more (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+      "case": "AC-07.3.3 / Calculator path married, no alternating custody -> C0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.4.3 / Single, parental care, no alternating custody",
+      "case": "AC-07.3.3 / Calculator path single, no alternating custody -> H1N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc0ae9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.5.1 / Married, adult child at home, common household (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+      "case": "AC-07.3.3 / Separated employee, no alternating custody",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.5.1 / Single, adult child at home, common household",
+      "case": "AC-07.3.4 / Calculator path married, alternating custody, other parent main contributor -> C0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.5.2 / Single, adult child at home, no common household (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+      "case": "AC-07.3.4 / Married, alternating custody, employee main contributor (inferred)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-07.5.2 / Married, adult child elsewhere (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+      "case": "AC-07.3.4 / Single, alternating custody, employee main contributor",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.1.2 / Tomás, lives in Winterthur (F-hr_transcript-b90bd9)",
+      "case": "AC-07.3.4 / Divorced, alternating custody, other parent main contributor (inferred)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.1.2 / Employee living in Konstanz (F-hr_transcript-3f2c2a)",
+      "case": "AC-07.4.1 / Calculator path married, no shared custody -> B0N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.1.2 / Employee living in Liechtenstein (F-hr_transcript-3f2c2a)",
+      "case": "AC-07.4.1 / Registered partner, child outside the household",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.4.2 / Calculator path single, no parental care -> A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.4.2 / Widowed employee, child outside the household",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.4.3 / Married, shared custody, no alternating custody (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.4.3 / Single, parental care, no alternating custody (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.4.4 / Calculator path married, alternating custody, employee main contributor -> B1N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.4.4 / Calculator path single, alternating custody, employee main contributor -> H1N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.4.4 / Married, other parent main contributor (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.4.4 / Divorced, other parent main contributor (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.1 / Calculator path married, adult child, common household -> B1N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.1 / Single, adult child, common household, employee main contributor (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.1 / Single, adult child, common household, other parent main contributor (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.2 / Calculator path single, adult child in household, >50% maintenance -> H1N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.2 / Married, >50% maintenance (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.2 / Married, not more than 50% maintenance (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.2 / Separated, not more than 50% maintenance (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.3 / Calculator path single, adult child outside household, >50% maintenance -> A1N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.3 / Calculator path married, adult child outside household, not >50% -> B0N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.3 / Married, >50% maintenance (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.5.3 / Widowed, not more than 50% maintenance (inferred)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.6.1 / No children",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.6.1 / One child counting with H",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.6.1 / One child counting without H",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-07.6.1 / One child that does not count",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.1.1 / Tomás, lives in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.1.1 / Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.1.1 / Employee living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.1.1 / Employee living in France",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.1.2 / Tomás, lives in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
@@ -1827,67 +2368,67 @@
       "failures": []
     },
     {
-      "case": "AC-08.1.3 / Employee living in France, earned income",
+      "case": "AC-08.1.3 / Employee moves the address from Germany to Switzerland before submitting",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.1.3 / Non-Swiss single employee with B permit living in Switzerland",
+      "case": "AC-08.2.1 / Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.2.1 / Employee living in Konstanz (F-hr_transcript-3f2c2a)",
+      "case": "AC-08.2.1 / Employee living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.2.1 / Employee living in Liechtenstein (F-hr_transcript-3f2c2a)",
+      "case": "AC-08.2.2 / Germany resident returning daily",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.2.1 / Swiss employee living in Switzerland",
+      "case": "AC-08.2.2 / Germany resident not returning daily",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.2.2 / Germany resident with replacement income",
+      "case": "AC-08.2.3 / Calculator run: daily return, certificate handed in, result N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.2.3 / Germany resident returning daily",
+      "case": "AC-08.2.3 / Calculator run: daily return, no certificate, result C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.2.3 / Germany resident not returning daily",
+      "case": "AC-08.2.3 / New hire without a certificate yet",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.2.3 / Germany resident with replacement income returning daily",
+      "case": "AC-08.2.3 / Tomás, lives in Winterthur (hr_transcript/F-hr_transcript-b90bd9)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.3.1 / Germany resident not returning daily, earned income",
+      "case": "AC-08.2.4 / Certificate later recorded as handed in",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.3.1 / Germany resident not returning daily, replacement income",
+      "case": "AC-08.3.1 / Germany resident not returning daily",
       "origin": "spec",
       "pass": true,
       "failures": []
@@ -1899,31 +2440,43 @@
       "failures": []
     },
     {
-      "case": "AC-08.3.2 / Germany resident, daily return reasonable",
+      "case": "AC-08.3.2 / Return reasonable",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.3.2 / Germany resident, daily return not reasonable",
+      "case": "AC-08.3.2 / Return not reasonable",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.4.1 / Employee living in Liechtenstein (F-hr_transcript-3f2c2a)",
+      "case": "AC-08.3.3 / Calculator run: return not reasonable, result C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.4.1 / Liechtenstein resident with replacement income",
+      "case": "AC-08.3.3 / Calculator run: reasonable, more than 60 days, result C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
       "origin": "spec",
       "pass": true,
       "failures": []
     },
     {
-      "case": "AC-08.4.1 / Employee living in Konstanz (F-hr_transcript-3f2c2a)",
+      "case": "AC-08.3.3 / Calculator run: reasonable, not more than 60 days, result N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.4.1 / Employee living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.4.1 / Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a)",
       "origin": "spec",
       "pass": true,
       "failures": []
@@ -1941,7 +2494,25 @@
       "failures": []
     },
     {
-      "case": "AC-08.4.2 / Liechtenstein resident with replacement income not returning daily",
+      "case": "AC-08.4.3 / Calculator run: daily return to Liechtenstein (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.4.3 / Calculator run: no daily return, not more than 45 days (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.4.3 / Calculator run: more than 45 days, result C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-cc19c7)",
+      "origin": "spec",
+      "pass": true,
+      "failures": []
+    },
+    {
+      "case": "AC-08.4.3 / Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a)",
       "origin": "spec",
       "pass": true,
       "failures": []
@@ -1949,335 +2520,133 @@
   ],
   "open_questions": [
     {
-      "id": "OQ-registered-partnership",
-      "question": "How should an employee in a registered partnership answer civil status, and do the pension fund and the source tax spouse exemption treat them like married employees (partner's date of birth, partner's nationality/permit/residence)?",
-      "why_it_matters": "The pension fund list (Single, Married, Divorced, Widowed) has no registered partnership, but the calculator groups it with married, and such employees exist (Daniel). Without an answer they cannot be registered correctly.",
+      "id": "OQ-canton-abroad",
+      "question": "What does Pensionskasse Muster expect in its required 'Canton' field for employees living abroad, and does 'Canton' mean canton of residence or canton of work?",
+      "why_it_matters": "The fund's list has only the 26 Swiss cantons and the field is required; employees abroad (e.g. Konstanz, Liechtenstein) cannot be registered without an answer. Provisionally the canton is asked only of employees living in Switzerland.",
       "options": [
-        "Ask them to choose 'Married' and treat them as married everywhere",
-        "Ask the pension fund how to register them and keep a separate answer for source tax",
-        "Ask HR to handle it manually"
+        "Canton of work (e.g. Zurich) for everyone, entered by HR",
+        "Canton of residence; the fund has another way for employees abroad",
+        "Ask everyone the canton"
       ],
-      "recommendation": "Ask Pensionskasse Muster via HR. Until then, treat registered partners as Married for both parties, because the calculator explicitly groups them together.",
+      "recommendation": "Keep D-002 (ask residents only); a domain expert verifies with Pensionskasse Muster.",
       "affects": [
-        "civil_status",
-        "spouse_date_of_birth",
-        "spouse_nationality",
-        "spouse_permit_type",
-        "spouse_residence_country",
-        "subject_to_source_tax",
-        "calculator_civil_status"
-      ],
-      "source_refs": [
-        "F-hr_transcript-3907fe",
-        "F-hr_transcript-f197d6",
-        "F-pension_portal-3d1ae4",
-        "F-zh_source_tax_calculator-051bb9",
-        "G-07"
-      ],
-      "blocking": true
-    },
-    {
-      "id": "OQ-separated",
-      "question": "Which civil status should a separated (still married) employee choose? The calculator groups 'separated' with single, but the pension fund has no such option.",
-      "why_it_matters": "A separated employee would pick Married for the pension fund and get the married source tax path, which may differ from the calculator's grouping.",
-      "options": [
-        "Married for both",
-        "Married for the pension fund, plus an extra 'separated' question for source tax only"
-      ],
-      "recommendation": "Confirm with HR. Do not add a question until then.",
-      "affects": [
-        "civil_status",
-        "calculator_civil_status"
-      ],
-      "source_refs": [
-        "F-zh_source_tax_calculator-051bb9",
-        "F-pension_portal-3d1ae4"
-      ],
-      "blocking": false
-    },
-    {
-      "id": "OQ-divorced-widowed",
-      "question": "Does the pension fund ask for any spouse data when civil status is Divorced or Widowed?",
-      "why_it_matters": "No screenshot shows these cases. Asking too little could block the registration.",
-      "options": [
-        "No extra fields (as for Single)",
-        "Spouse's date of birth also appears"
-      ],
-      "recommendation": "Assume no extra fields. Verify with a screenshot of these two cases.",
-      "affects": [
-        "spouse_date_of_birth"
-      ],
-      "source_refs": [
-        "F-pension_portal-6d3630"
-      ],
-      "blocking": false
-    },
-    {
-      "id": "OQ-canton",
-      "question": "Does the pension fund's 'Canton' mean canton of residence or of work, and what is entered for employees who live abroad (Germany, Liechtenstein)?",
-      "why_it_matters": "The field is required, but the list only has the 26 Swiss cantons. Cross-border employees could not be registered.",
-      "options": [
-        "Canton of residence; ask the fund what to enter for residents abroad",
-        "Canton of work (e.g. Zurich), so it is not asked of the employee"
-      ],
-      "recommendation": "Ask Pensionskasse Muster. Meanwhile ask the canton only of Swiss residents.",
-      "affects": [
-        "residence_canton"
+        "residence_canton",
+        "address_country"
       ],
       "source_refs": [
         "F-pension_portal-b359c3",
         "F-pension_portal-3432a9",
-        "F-hr_transcript-b582c0"
-      ],
-      "blocking": true
-    },
-    {
-      "id": "OQ-permit-list",
-      "question": "Which permit types should the employee and spouse be able to choose from, and how does a spouse without any permit answer?",
-      "why_it_matters": "No source lists the permits. Only 'C permit' changes the outcome, but the employee needs a list they recognise.",
-      "options": [
-        "Full list from HR",
-        "'C permit' / 'Other permit' / 'No permit'"
-      ],
-      "recommendation": "Ask HR for the list it uses. The rule only needs to tell C permit apart from other permits.",
-      "affects": [
-        "permit_type",
-        "spouse_permit_type"
-      ],
-      "source_refs": [
-        "F-hr_transcript-c9d9b9",
-        "F-hr_transcript-76eacc"
+        "D-002"
       ],
       "blocking": false
     },
     {
-      "id": "OQ-source-tax-rule",
-      "question": "Is the consolidated source tax rule complete and does 'here' mean Switzerland? HR hedged ('I think so') before adding further conditions.",
-      "why_it_matters": "The rule decides who sees the whole source tax section and the spouse questions. A wrong rule asks Swiss employees too much or misses people who are subject.",
+      "id": "OQ-civil-status-partnership",
+      "question": "How does Pensionskasse Muster want registered partnerships and separated employees entered, given its list offers only Single, Married, Divorced, Widowed?",
+      "why_it_matters": "Provisionally both are entered as Married with the partner's/spouse's date of birth; a wrong mapping gives wrong registrations (the case occurs: Daniel).",
       "options": [
-        "Confirm the rule as modelled",
-        "HR adds more conditions"
+        "Keep provisional mapping (both as Married)",
+        "Separated as another value",
+        "The fund adds values"
       ],
-      "recommendation": "Have HR confirm the decision table of subject_to_source_tax.",
+      "recommendation": "Keep D-003 provisional mapping; domain expert verifies with the fund.",
       "affects": [
-        "subject_to_source_tax",
-        "nationality",
-        "permit_type",
-        "spouse_nationality",
-        "spouse_permit_type",
-        "spouse_residence_country"
+        "civil_status",
+        "pension_fund_civil_status",
+        "spouse_date_of_birth"
       ],
       "source_refs": [
-        "F-hr_transcript-550840",
-        "F-hr_transcript-5af8d0"
+        "F-hr_transcript-f197d6",
+        "F-hr_transcript-3907fe",
+        "F-pension_portal-3d1ae4",
+        "D-003",
+        "D-004"
       ],
       "blocking": false
     },
     {
-      "id": "OQ-dual-nationality",
-      "question": "How should employees with several nationalities, one of them Swiss, answer the nationality question?",
-      "why_it_matters": "HR's rule is 'Swiss passport'. Dual nationals could pick their other nationality and be wrongly sent the source tax questions.",
+      "id": "OQ-spouse-dob-other-status",
+      "question": "Does the fund's screen ask for a spouse's date of birth (or other fields) when civil status is Divorced or Widowed?",
+      "why_it_matters": "No screenshot shows these states; if the fund requires data there, registration would be blocked.",
       "options": [
-        "Ask 'Do you hold Swiss citizenship?' first",
-        "Allow several nationalities"
+        "No extra field (current assumption)",
+        "Extra field required - add a question"
       ],
-      "recommendation": "Confirm with HR that any Swiss citizenship counts as Swiss.",
+      "recommendation": "Get a screenshot of the fund's screen for Divorced and Widowed.",
       "affects": [
-        "nationality",
-        "spouse_nationality",
-        "subject_to_source_tax"
+        "spouse_date_of_birth"
       ],
       "source_refs": [
-        "F-hr_transcript-b0527c"
-      ],
-      "blocking": false
-    },
-    {
-      "id": "OQ-income-type",
-      "question": "Is a new employee's income always earned income (Erwerbseinkommen), so the income-type question can be fixed instead of asked?",
-      "why_it_matters": "Asking a new hire about replacement income is confusing and collects unnecessary data. Fixing it also removes the replacement-income cross-border variants.",
-      "options": [
-        "Fix to 'Earned income' (product decision)",
-        "Ask the employee"
-      ],
-      "recommendation": "Fix to earned income by product decision. Until then it is modelled as asked.",
-      "affects": [
-        "income_type",
-        "confession",
-        "spouse_gainful_employment",
-        "has_children",
-        "daily_return_germany",
-        "daily_return_reasonable",
-        "non_return_days_60",
-        "daily_return_liechtenstein",
-        "non_return_days_45"
-      ],
-      "source_refs": [
-        "F-zh_source_tax_calculator-e06ffd",
-        "F-zh_source_tax_calculator-351289",
-        "G-08"
-      ],
-      "blocking": false
-    },
-    {
-      "id": "OQ-liechtenstein",
-      "question": "HR says everyone living abroad is subject to source tax, but the calculator can return 'in principle no source tax liability' for Liechtenstein residents. Which result counts?",
-      "why_it_matters": "It affects what HR does after the questionnaire. It does not change which questions are asked.",
-      "options": [
-        "Calculator result is final",
-        "HR decides case by case"
-      ],
-      "recommendation": "Keep asking these employees all source tax questions and let the calculator result decide. Confirm with HR.",
-      "affects": [
-        "subject_to_source_tax",
-        "daily_return_liechtenstein",
-        "non_return_days_45"
-      ],
-      "source_refs": [
-        "F-hr_transcript-3f2c2a",
-        "F-zh_source_tax_calculator-fb87f1",
-        "F-zh_source_tax_calculator-cc19c7"
-      ],
-      "blocking": false
-    },
-    {
-      "id": "OQ-proof-documents",
-      "question": "Can a new employee answer 'certificate of residence provided' and 'proof of more than 60 non-return days provided' before starting? To whom are these documents provided?",
-      "why_it_matters": "These questions ask about documents, possibly the 'German forms' HR mentioned. The employee may not have them yet.",
-      "options": [
-        "Ask as yes/no and let HR collect the documents",
-        "Ask whether the employee will provide them"
-      ],
-      "recommendation": "Ask HR how this works today for Stefan.",
-      "affects": [
-        "residence_certificate",
-        "non_return_days_60"
-      ],
-      "source_refs": [
-        "F-hr_transcript-8595fb",
-        "F-zh_source_tax_calculator-687e8b",
-        "F-zh_source_tax_calculator-e8ffac"
+        "F-pension_portal-6d3630",
+        "D-004"
       ],
       "blocking": false
     },
     {
       "id": "OQ-calculator-coverage",
-      "question": "Do the child and cross-border paths behave as modelled for every combination? The calculator was only spot-checked for A/B/H cross-border tariffs, more than 3 children, deleting children and special tariffs (e.g. D).",
-      "why_it_matters": "Untested paths could need more questions.",
+      "question": "Does Lonio's computed tariff code match the calculator for the paths not explored: residence block for A/B/H tariffs, more than 3 children, H3N/P3N, and the per-child results marked as inferred?",
+      "why_it_matters": "Lonio now owns the tariff result; unverified paths could produce wrong tariff codes.",
       "options": [
-        "Explore the remaining paths",
-        "Accept the current coverage"
+        "Domain expert compares computed codes with the calculator before go-live"
       ],
-      "recommendation": "Accept for the questionnaire (the question conditions are explicit). Explore further only if the tariff is computed by Lonio.",
+      "recommendation": "Go-live condition per D-009: compare all inferred rows of child_result and the cross-border paths.",
       "affects": [
-        "has_children",
-        "child_age_status",
-        "base_tariff_letter"
+        "child_result",
+        "child_count",
+        "base_tariff_letter",
+        "tariff_letter",
+        "cross_border_tariff",
+        "tariff_code"
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-66732c",
         "F-zh_source_tax_calculator-332e2a",
-        "F-zh_source_tax_calculator-4957f6"
+        "F-zh_source_tax_calculator-4957f6",
+        "F-zh_source_tax_calculator-953e8c",
+        "D-009"
       ],
       "blocking": false
     },
     {
-      "id": "OQ-permit-reminder",
-      "question": "Should the questionnaire remind employees to bring their permit on the first day, and with which wording?",
-      "why_it_matters": "HR asked for it, but Leo deferred the wording, so it is undecided.",
+      "id": "OQ-source-tax-rule-confirmation",
+      "question": "Is HR's final source tax liability rule complete, and does 'lives here' mean lives in Switzerland?",
+      "why_it_matters": "Anna hedged ('I think so') and added conditions several times; the rule decides who is asked the source tax questions.",
       "options": [
-        "Add a reminder for non-Swiss employees",
-        "Leave it out"
+        "Confirm as modelled",
+        "HR adds further conditions"
       ],
-      "recommendation": "Product owner to decide. It adds no data collection.",
+      "recommendation": "Confirm the decision table of subject_to_source_tax with HR.",
       "affects": [
-        "permit_type"
-      ],
-      "source_refs": [
-        "F-hr_transcript-c53552"
-      ],
-      "blocking": false
-    },
-    {
-      "id": "OQ-spouse-residence-form",
-      "question": "Should the spouse's residence be asked as a country or only as 'lives in Switzerland: yes/no'?",
-      "why_it_matters": "Only whether the spouse lives in Switzerland matters, and data minimisation favours the narrower question.",
-      "options": [
-        "Country",
-        "yes/no"
-      ],
-      "recommendation": "Ask yes/no 'Does your spouse live in Switzerland?' if the product owner agrees.",
-      "affects": [
+        "subject_to_source_tax",
         "spouse_residence_country"
       ],
       "source_refs": [
-        "F-hr_transcript-e5337d",
-        "G-01"
+        "F-hr_transcript-550840",
+        "F-hr_transcript-5af8d0",
+        "F-hr_transcript-54d011"
       ],
       "blocking": false
     }
   ],
   "inferred_items": [
-    "item.address_country",
-    "item.residence_canton",
-    "item.nationality",
-    "item.permit_type",
+    "item.first_name",
+    "item.last_name",
     "item.spouse_nationality",
-    "item.spouse_permit_type",
     "item.spouse_residence_country",
-    "item.income_type",
-    "rule.subject_to_source_tax",
-    "rule.calculator_civil_status",
-    "rule.calculator_residence",
     "rule.church_tax_suffix",
-    "rule.base_tariff_letter",
-    "rule.questionnaire_flow",
-    "story.US-01.1",
-    "story.US-01.2",
-    "story.US-01.3",
+    "rule.child_result",
     "story.US-02.1",
-    "story.US-02.3",
-    "story.US-02.4",
     "story.US-03.3",
-    "story.US-04.2",
-    "story.US-04.3",
-    "story.US-05.1",
     "story.US-05.2",
-    "story.US-05.3",
-    "story.US-06.1",
     "story.US-06.2",
-    "story.US-06.3",
     "story.US-06.4",
-    "story.US-07.1",
-    "story.US-08.1"
+    "story.US-07.3",
+    "story.US-07.4",
+    "story.US-07.5",
+    "story.US-07.6"
   ],
   "dev_refinement": {
     "questions": [
-      {
-        "file": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
-        "question": "AC-06.4.3 and the base-tariff rule say an unmarried employee gets H only if a child lives in the household AND the employee has sole custody or is the main financial contributor. The spec's own evidence disagrees. F-zh-dc0ae9 gives H1N for a child in the household with shared custody, no common household and no alternating custody. F-zh-dc6ace gives H1N for a minor child who does NOT live in the household. F-zh-3eb561 gives H1N for an adult child where the deciding answer is 'pays more than 50%', not 'main contributor'. Which rule should we build for H vs A? We cannot write the derivation or its tests until this is settled.",
-        "severity": "major"
-      },
-      {
-        "file": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
-        "question": "What exactly does the questionnaire produce as a tariff result, and who sees it? US-06.4 only derives the letter (A/B/C/G/H). But the spec also defines the church-tax suffix (US-06.2), the rule that the digit is the number of counted children, and the Germany cross-border swap (A→L etc.), and AC-06.4.4 says all of these come from the calculator. Should we compute the full tariff code (e.g. H1N, N1Y), only the letter, or nothing? Is the result shown to HR, to the employee, or to neither?",
-        "severity": "major"
-      },
-      {
-        "file": "stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md",
-        "question": "AC-05.3.5 says 'HR can see for each employee whether they are subject'. No story describes what HR sees, where, or when (live while the employee is filling in, or after submission), and the feature puts 'how data is sent to each party' out of scope. Is an HR view of the results (subject yes/no, insurance start date, expected tariff) part of this feature? Should the employee see these derived results?",
-        "severity": "major"
-      },
-      {
-        "file": "stories/US-03.3-re-derive-the-insurance-start-date-when-the-first-working.md",
-        "question": "AC-03.3.1 assumes the first working day 'later changes' after it was recorded. Who changes it, and through what? Can the employee reopen and edit a submitted questionnaire, can HR edit it, or does a new questionnaire go out? Is there a deadline after which changes are no longer accepted? This decides whether we need editing after submission, an HR edit function and an audit of changes.",
-        "severity": "major"
-      },
-      {
-        "file": "stories/US-03.1-employee-confirms-the-first-working-day.md",
-        "question": "The flow table says the first working day is 'confirmed if HR already knows it', and AC-03.1.2 says to confirm the date 'as currently agreed'. No story covers HR entering a known date in advance. Does HR pre-fill the first working day (and perhaps the name) before inviting the employee, so the employee only confirms or corrects it? Or does the employee always type it in?",
-        "severity": "major"
-      },
       {
         "file": "feature.md",
         "question": "The insurance start rule uses the 'first working day'. If the contract starts on the 1st but the first actual working day is later (weekend or holiday, e.g. contract from Sat 01.06, first day Mon 03.06), the rule gives 01.07 instead of 01.06. Should the rule use the contractual start date or the actual first working day?",
@@ -2289,13 +2658,23 @@
         "severity": "major"
       },
       {
-        "file": "stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md",
-        "question": "Suppose an employee goes back and changes an earlier answer: the country from Germany to Switzerland, civil status from Married to Single, or the permit to a C permit. Answers they already gave may no longer apply (nationality, spouse data, denomination, children). Under data minimisation, must those answers be thrown away, or may they be kept? Do any rules re-run (e.g. the subject-to-source-tax decision) after submission?",
+        "file": "feature.md",
+        "question": "In step 6 the Liechtenstein cross-border questions come after denomination, spouse employment and all the children questions. A Liechtenstein resident who returns daily (or expects at most 45 non-return days) gets 'in principle no source tax liability' and no tariff code, so their denomination, spouse-employment and children answers are not needed by any party (G-01). Should the Liechtenstein questions come first so those questions are skipped? Or, if the order stays, should those answers be discarded on submission like other answers that no longer apply? Or does HR need them anyway in case the case changes later?",
         "severity": "major"
       },
       {
-        "file": "stories/US-01.1-show-the-source-tax-step-only-to-employees-who-are-subject.md",
-        "question": "What does finishing the questionnaire mean for the business? Is there a review/summary step and an explicit submit with a confirmation to the employee? Is HR notified? Can the employee save partway and come back later? None of this is specified, but it decides when HR can rely on the data.",
+        "file": "stories/US-08.4-liechtenstein-daily-return-and-more-than-45-non-return-days.md",
+        "question": "For Liechtenstein residents with more than 45 non-return days, the calculator returns the normal tariff plus 'Unter Vorbehalt des Doppelbesteuerungsabkommens' (subject to the double taxation agreement), per F-zh_source_tax_calculator-cc19c7. AC-08.4.3 records only 'the normal tariff code'. Should this reservation also be recorded and flagged for HR in that case?",
+        "severity": "major"
+      },
+      {
+        "file": "stories/US-02.2-collect-a-complete-postal-home-address.md",
+        "question": "AC-02.2.2 keeps the house number required even though the spec says no source confirms that every address has one. An employee whose address has no house number (rural address, named building, etc.) could not submit at all. Should the house number be required, optional, or allow an explicit 'no house number'?",
+        "severity": "major"
+      },
+      {
+        "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
+        "question": "Before submission, can the employee save partway and come back later, and is there a review/summary of all answers before the final submit? After submission, does the employee get a confirmation? Submission is final (read-only), so these decide what the employee can check before locking it.",
         "severity": "minor"
       },
       {
@@ -2304,303 +2683,397 @@
         "severity": "minor"
       },
       {
-        "file": "stories/US-05.1-ask-nationality-and-permit-only-of-employees-living-in.md",
-        "question": "Nationality is 'a country by English name'. Which list of nationalities should be offered, and how do stateless employees or employees with unclear status answer? Only 'Switzerland vs not' matters for the rule. (Dual nationality is already listed as an open question.)",
-        "severity": "minor"
-      },
-      {
         "file": "stories/US-03.1-employee-confirms-the-first-working-day.md",
         "question": "AC-03.1.2 ('the question makes clear the date must be the currently agreed one') cannot be tested as written. Is there agreed wording for the question, or a business requirement such as showing the date HR has on file?",
         "severity": "minor"
       },
       {
-        "file": "stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md",
-        "question": "In the AC-06.2.3 examples, the replacement-income row gives the result 'null', is marked as failing (❌), and has the denomination column twice. Is the expected result for replacement income 'no suffix'? Please fix the example so it can serve as a test case.",
+        "file": "stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md",
+        "question": "Nationality (and the country of the home address and of the spouse's residence) is 'a country by English name'. Which list of countries/nationalities should be offered, and how do stateless employees or employees with unclear status answer the nationality question? Only 'Switzerland vs not' matters for the rule.",
         "severity": "minor"
       },
       {
-        "file": "stories/US-02.4-ask-swiss-residents-for-their-canton.md",
-        "question": "The example tables mix 'required' and 'asked' as expected results for questions that the text says are 'asked and required'. Examples: Canton Zurich 'required' vs St. Gallen 'asked'; the spouse's residence row 'required' vs 'asked'; children 'required' vs 'asked'. Is there a real difference between 'asked' and 'required' (i.e. may some of these be left empty), or are they the same?",
+        "file": "stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md",
+        "question": "The example tables mix 'required' and 'asked' as expected results for questions the text says must be answered. Examples: spouse nationality 'required' for Tomás vs 'asked' for the registered partner; spouse residence 'required' vs 'asked'; in US-05.1, C permit 'required' for Maria vs 'asked' for Tomás. Is there a real difference (i.e. may some of these be left empty), or are they the same?",
         "severity": "minor"
       },
       {
-        "file": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
-        "question": "The AC-06.4.3 example 'Widowed with an adult child in first education who lives elsewhere → A' leaves out the required 'pays more than 50% of maintenance' answer. Per US-07.5 that answer decides whether the child counts. Which answer is meant, and is the expected digit 0 or 1?",
+        "file": "stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md",
+        "question": "The spouse's country of residence matters only as 'lives in Switzerland or not'. Under data minimisation (G-01), should we ask the full country, or only 'Does your spouse/partner live in Switzerland? yes/no'?",
+        "severity": "minor"
+      },
+      {
+        "file": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
+        "question": "'Minor' vs 'Adult in first education': on which date is the child's age judged? The submission date, the first working day, or the start of the tax year? A child who turns 18 around the start date would otherwise be classified differently.",
+        "severity": "minor"
+      },
+      {
+        "file": "stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md",
+        "question": "The permit reminder is 'worded by HR', but no text is given. Who provides the final wording and when (before build or configurable later)? Is it shown only at the end, or also elsewhere (e.g. in a confirmation)?",
         "severity": "minor"
       }
     ],
     "already_flagged": [
-      "OQ-registered-partnership: how registered partners answer civil status and whether they are treated as married",
-      "OQ-separated: which civil status separated employees choose",
-      "OQ-divorced-widowed: whether the pension fund wants spouse data for Divorced/Widowed",
-      "OQ-canton: whether 'Canton' means residence or work, and what to enter for employees living abroad",
-      "OQ-permit-list: which permit types to offer, and how a spouse with no permit answers",
-      "OQ-source-tax-rule: whether the consolidated rule is complete and whether 'here' means Switzerland",
-      "OQ-dual-nationality: how dual nationals with Swiss citizenship answer",
-      "OQ-income-type: whether income type is fixed to earned income",
-      "OQ-liechtenstein: HR's 'always subject' vs the calculator's 'in principle no liability'",
-      "OQ-proof-documents: whether new employees can answer the certificate/proof questions, and to whom the documents go",
-      "OQ-calculator-coverage: untested calculator paths (more than 3 children, removing a child, special tariffs)",
-      "OQ-permit-reminder: whether to remind employees to bring their permit",
-      "OQ-spouse-residence-form: spouse's residence as a country or as yes/no"
+      "OQ-canton-abroad: what Pensionskasse Muster expects in 'Canton' for employees living abroad, and whether it means canton of residence or of work",
+      "OQ-civil-status-partnership: how the fund wants registered partnerships and separated employees entered (provisionally as Married)",
+      "OQ-spouse-dob-other-status: whether the fund's screen asks for a spouse's date of birth (or other fields) for Divorced or Widowed",
+      "OQ-calculator-coverage: whether the computed tariff code matches the calculator for unexplored paths (A/B/H residence block, more than 3 children, H3N/P3N, inferred per-child results)",
+      "OQ-source-tax-rule-confirmation: whether HR's final source tax liability rule is complete and whether 'lives here' means Switzerland"
     ],
     "tech_leaks": [
       {
-        "file": "stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md",
-        "quote": "the employee has entered the country of their home address (address_country) in the home address step",
-        "why": "An internal field identifier appears in the acceptance-criterion prose. Field naming is an engineering choice."
+        "file": "feature.md",
+        "quote": "Feeds the civil status entered at the fund (pension_fund_civil_status) and, for employees subject to source tax, the calculator's civil status group (calculator_civil_status).",
+        "why": "Internal snake_case rule ids are written into the business description of the Civil status item instead of business terms."
       },
       {
         "file": "feature.md",
-        "quote": "If it changes, insurance_start_date must be derived again.",
-        "why": "A snake_case field/rule identifier is used in the business notes of the First working day item instead of the business term 'insurance start date'."
+        "quote": "(The expression shows the contribution of one child; for several children the contributions are added up.)",
+        "why": "This refers to an internal formula/expression representation of the rule, not business language."
       },
       {
-        "file": "feature.md",
-        "quote": "It also answers the source tax calculator's civil status question (see rule calculator_civil_status).",
-        "why": "Internal rule ids (calculator_civil_status, and likewise subject_to_source_tax / insurance_start_date in many ACs) are written into the business prose. These are code-style identifiers, not business language."
+        "file": "stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md",
+        "quote": "(rule subject_to_source_tax, owned by the source tax section)",
+        "why": "A code-style rule identifier appears in acceptance-criterion prose."
       },
       {
-        "file": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
-        "quote": "the employee can describe each child in its own block (Child 1, Child 2, ...) and can add or remove a child",
-        "why": "This prescribes UI interaction (repeating blocks with add/remove controls) copied from the calculator's screen. The business need is only that each child is described separately."
+        "file": "stories/US-06.4-derive-the-base-source-tax-tariff-letter.md",
+        "quote": "(per-child result, rule child_result)",
+        "why": "A code-style rule identifier appears in acceptance-criterion prose."
       },
       {
-        "file": "stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md",
-        "quote": "| Replacement income (illustrative) | Switzerland | Germany | B permit | Single | Replacement income | – | → | null | not asked | ❌ |",
-        "why": "A programming value ('null') appears as the expected business result where the business term 'no suffix' was meant."
+        "file": "stories/US-06.5-replace-the-base-letter-with-the-cross-border-letter-where.md",
+        "quote": "(rule cross_border_tariff: daily return with a certificate of residence handed in",
+        "why": "A code-style rule identifier appears in acceptance-criterion prose."
+      },
+      {
+        "file": "stories/US-07.1-ask-about-children-only-of-employees-who-need-a-source-tax.md",
+        "quote": "(rule subject_to_source_tax: country of residence and, for residents of Switzerland, Swiss citizenship, C permit, civil status and spouse details)",
+        "why": "A code-style rule identifier appears in acceptance-criterion prose."
+      },
+      {
+        "file": "open-questions.md",
+        "quote": "compare all inferred rows of child_result and the cross-border paths",
+        "why": "An internal rule identifier is used instead of the business term 'per-child result'."
       }
     ]
   },
-  "impact": null,
+  "impact": {
+    "added": [
+      "US-01.4",
+      "US-01.5",
+      "US-01.6",
+      "US-06.5",
+      "US-06.6",
+      "US-07.6"
+    ],
+    "removed": [
+      "US-06.1"
+    ],
+    "changed": [
+      "US-01.1",
+      "US-01.2",
+      "US-01.3",
+      "US-02.1",
+      "US-02.2",
+      "US-02.3",
+      "US-02.4",
+      "US-03.1",
+      "US-03.2",
+      "US-03.3",
+      "US-04.1",
+      "US-04.2",
+      "US-04.3",
+      "US-05.1",
+      "US-05.2",
+      "US-05.3",
+      "US-06.2",
+      "US-06.3",
+      "US-06.4",
+      "US-07.1",
+      "US-07.2",
+      "US-07.3",
+      "US-07.4",
+      "US-07.5",
+      "US-08.1",
+      "US-08.2",
+      "US-08.3",
+      "US-08.4"
+    ],
+    "unchanged": 0,
+    "changed_without_cause": [],
+    "changed_elements": [
+      "OQ-calculator-coverage",
+      "OQ-canton",
+      "OQ-canton-abroad",
+      "OQ-civil-status-partnership",
+      "OQ-divorced-widowed",
+      "OQ-dual-nationality",
+      "OQ-income-type",
+      "OQ-liechtenstein",
+      "OQ-permit-list",
+      "OQ-permit-reminder",
+      "OQ-proof-documents",
+      "OQ-registered-partnership",
+      "OQ-separated",
+      "OQ-source-tax-rule",
+      "OQ-source-tax-rule-confirmation",
+      "OQ-spouse-dob-other-status",
+      "OQ-spouse-residence-form",
+      "address_country",
+      "address_house_number",
+      "address_postcode",
+      "address_street",
+      "address_town",
+      "base_tariff_letter",
+      "calculator_civil_status",
+      "calculator_residence",
+      "child_age_status",
+      "child_alternating_custody",
+      "child_common_household_other_parent",
+      "child_count",
+      "child_custody",
+      "child_main_financial_contributor",
+      "child_maintenance_over_50",
+      "child_parental_care",
+      "child_result",
+      "child_same_household",
+      "child_shared_custody",
+      "church_tax_suffix",
+      "civil_status",
+      "confession",
+      "cross_border_tariff",
+      "daily_return_germany",
+      "daily_return_liechtenstein",
+      "daily_return_reasonable",
+      "date_of_birth",
+      "discard_inapplicable_answers",
+      "first_name",
+      "first_working_day",
+      "has_children",
+      "holds_c_permit",
+      "income_type",
+      "insurance_start_date",
+      "last_name",
+      "liechtenstein_no_source_tax",
+      "nationality",
+      "non_return_days_45",
+      "non_return_days_60",
+      "pension_fund_civil_status",
+      "permit_reminder",
+      "permit_type",
+      "questionnaire_flow",
+      "read_only_after_submission",
+      "residence_canton",
+      "residence_certificate",
+      "spouse_date_of_birth",
+      "spouse_gainful_employment",
+      "spouse_holds_c_permit",
+      "spouse_nationality",
+      "spouse_permit_type",
+      "spouse_residence_country",
+      "subject_to_source_tax",
+      "tariff_code",
+      "tariff_letter"
+    ],
+    "guard_reverted": []
+  },
   "skipped_sources": [],
   "review": {
-    "verdict": "not_ready",
-    "summary": "Not ready. One example fails (AC-06.2.3 replacement income, 'null' vs None). Two open questions are blocking (OQ-registered-partnership, OQ-canton). The tariff-letter rule contradicts the spec's own evidence. Several major dev-refinement questions have no answer: scope of the tariff result and HR view, post-submission edits, and HR pre-fill. Internal identifiers leak into business prose. Many items and stories are inferred, and some trace judgements are only partial.",
+    "verdict": "ready_with_caveats",
+    "summary": "All 300+ examples pass. There are no errors, no blocking open questions and no blocker-level dev questions. The package is buildable. Five major dev-refinement questions, five non-blocking open questions, several partly unbacked claims and some internal rule ids in the prose need a product owner decision or cleanup. The tariff logic rests on inferred per-child rows, which D-009 makes a go-live verification gate.",
     "findings": [
       {
-        "title": "Failing example: replacement-income church tax suffix",
-        "why": "The example is the only failed simulation. It expects the programming value 'null' where the business meaning is 'no suffix'. The row is also marked ❌ and repeats the denomination column.",
-        "evidence": "examples AC-06.2.3 / Replacement income: church_tax_suffix = None, expected 'null'. tech_leak and dev_refinement on US-06.2.",
-        "action": "Rewrite the expected result as 'no suffix' and define it unambiguously, e.g. empty. Remove the duplicate column and the ❌, then re-run the examples."
+        "title": "Insurance start rule: contract start vs actual first working day",
+        "why": "If the contract starts on the 1st but the first working day is later (weekend or holiday), the rule moves insurance start to the next month. This gives wrong fund registrations. The fund's link between start date and first working day is also unknown.",
+        "evidence": "dev_refinement (feature.md, major); coverage: F-pension_portal-3a97ab unused; US-03.2",
+        "action": "Decide in decisions.yaml whether the rule uses the contractual start date or the actual first working day. Confirm with the fund how mid-month starts are handled."
       },
       {
-        "title": "Base tariff H vs A rule contradicts its own evidence",
-        "why": "AC-06.4.3 and rule.base_tariff_letter say H requires the child in the household plus sole custody or main contributor. Three cited facts give H1N in cases that rule excludes. The derivation and its tests cannot be written until this is settled.",
-        "evidence": "dev_refinement US-06.4 (major). Facts F-zh_source_tax_calculator-dc0ae9, -dc6ace, -3eb561. trace_judge on rule.base_tariff_letter. The widowed adult-child example omits the '>50% maintenance' answer.",
-        "action": "Add a decision in decisions.yaml on the exact H vs A conditions. This could be 'counted child' rather than household plus custody. Fix AC-06.4.3 and its examples to match, including the digit 0 or 1."
+        "title": "Child per-child result is inferred and internally inconsistent",
+        "why": "Lonio now computes the tariff itself. The rule expression disagrees with its table in at least two cases, and many rows rest only on D-009, which is a verification decision and not a source. Wrong tariff codes are possible.",
+        "evidence": "trace_judge rule.child_result; inferred_items; OQ-calculator-coverage; US-07.3 to 07.6",
+        "action": "Have the domain expert reconcile the expression and the table. Run the inferred rows against the Zurich calculator before go-live, as D-009 requires. Keep this as an explicit release gate."
       },
       {
-        "title": "Blocking open question: registered partnership",
-        "why": "Employees in a registered partnership (e.g. Daniel) cannot be registered correctly. The pension fund list has no such status, and the question affects the spouse data and the source-tax exemption.",
-        "evidence": "OQ-registered-partnership (blocking: true). It affects civil_status, the spouse items, subject_to_source_tax and calculator_civil_status. OQ-separated is related.",
-        "action": "Ask Pensionskasse Muster through HR. Record a decision. The interim recommendation is to treat registered partners as Married, with OQ-separated resolved consistently."
+        "title": "Liechtenstein question order and the reservation under the double taxation agreement",
+        "why": "Liechtenstein residents who return daily get no tariff code, yet they are still asked about denomination, spouse employment and children. This breaks data minimisation. The 'subject to double taxation agreement' reservation for more than 45 non-return days is not recorded in AC-08.4.3.",
+        "evidence": "dev_refinement (feature.md; US-08.4, major); F-zh_source_tax_calculator-cc19c7",
+        "action": "Decide whether the Liechtenstein questions come first or answers are discarded. Decide whether the reservation is recorded and flagged for HR."
       },
       {
-        "title": "Blocking open question: pension fund 'Canton' meaning",
-        "why": "It is unknown whether the canton means residence or work, and what to enter for cross-border employees. The field is required and the list has only Swiss cantons. residence_canton is also named and described as the canton of residence without backing.",
-        "evidence": "OQ-canton (blocking: true). fact_judge on F-pension_portal-b359c3. trace_judge on item.residence_canton. US-02.4.",
-        "action": "Get the fund's answer and decide what is entered for residents of Germany and Liechtenstein. Rename or reword the item to match."
+        "title": "Residence country timing",
+        "why": "The home-address country decides source-tax liability, the canton and the cross-border questions. Movers' current address may differ from the one that applies from the first working day.",
+        "evidence": "dev_refinement US-02.3 (major)",
+        "action": "Decide whether to ask for the address applying at the first working day. Add this to the story."
       },
       {
-        "title": "Scope of the tariff output and HR visibility undefined",
-        "why": "The spec derives only the tariff letter. It also defines the suffix, the digit and the cross-border swap, and says HR can see results. It never says what is computed, who sees it, or when. Engineering cannot size the feature without this.",
-        "evidence": "dev_refinement US-06.4 (major) and US-05.3 AC-05.3.5 (major). US-01.1 (minor, submit and notify flow).",
-        "action": "Add a decision on the output. Is it the full code, only the letter or nothing? Who sees it? What are the submit and notify semantics? Update the stories or move HR visibility out of scope explicitly."
+        "title": "House number required without a source",
+        "why": "Employees whose address has no house number could not submit.",
+        "evidence": "trace_judge item.address_house_number; dev_refinement US-02.2 (major); AC-02.2.2",
+        "action": "Decide whether the house number is optional or allows an explicit 'no house number'."
       },
       {
-        "title": "Post-submission changes and answer invalidation unspecified",
-        "why": "US-03.3 assumes the first working day changes later, but no actor or mechanism is defined. Going back and changing earlier answers can orphan data that data minimisation forbids keeping.",
-        "evidence": "dev_refinement US-03.3 (major) and US-01.2 (major). AC-03.3.1.",
-        "action": "Decide who can edit and until when. Decide whether dependent answers are discarded when upstream answers change. Add ACs for both."
+        "title": "Fund registration gaps (canton abroad, partnership and separated mapping, divorced and widowed)",
+        "why": "The fund's canton field is required, but employees abroad have no valid value. The Married mapping for registered partners and separated employees is provisional. Divorced and widowed screens are unseen. Registration could be blocked.",
+        "evidence": "OQ-canton-abroad; OQ-civil-status-partnership; OQ-spouse-dob-other-status; fact_judge F-pension_portal-b359c3, 6d3630, 39bab1; trace_judge rule.pension_fund_civil_status (Separated not backed)",
+        "action": "Get the fund's answers and a screenshot for Divorced and Widowed. Record the decisions in decisions.yaml."
       },
       {
-        "title": "First working day inputs and start-date rule ambiguous",
-        "why": "No story covers HR pre-filling the date. Using the actual first working day instead of the contractual start can push the insurance start to the wrong month. The residence-address timing (current vs at start) changes which questions are asked.",
-        "evidence": "dev_refinement US-03.1 (major), feature.md insurance rule (major), US-02.3 (major). AC-03.1.2 is untestable as written.",
-        "action": "Decide whether the date is pre-filled by HR. Decide whether the rule uses the contract start or the first working day, and whether the address is current or as at the start date. Add testable wording."
+        "title": "Source tax liability rule is hedged by HR",
+        "why": "Anna said 'I think so' and added conditions over time. 'Here' is read as Switzerland. This rule gates all the source tax questions.",
+        "evidence": "OQ-source-tax-rule-confirmation; fact_judge F-hr_transcript-550840 and 5af8d0; trace_judge AC-08.3.1",
+        "action": "Have HR confirm the decision table in writing, including 'lives here' = Switzerland and that everyone living abroad is subject."
       },
       {
-        "title": "Item expressions and business text do not match their trace",
-        "why": "Several required_when and asked_when expressions contradict their own business text. Some claims have no cited fact: the 'only if subject' condition, the step order, the Germany/Liechtenstein rows citing missing facts, and the 'sensitive data' note. A developer would build from the expressions.",
-        "evidence": "trace_judge: spouse_permit_type, has_children, confession, income_type, civil_status, calculator_residence, questionnaire_flow, US-01.2, US-02.4, US-06.1 to US-06.3.",
-        "action": "Align each expression with its text. Cite the missing hr_transcript facts, or mark the items as decisions. Drop or confirm the unbacked claims."
+        "title": "Stories include behaviour that no cited fact backs",
+        "why": "Several claims are untraceable. Examples: the confession, children and spouse-works questions; the fixed step order; the Liechtenstein base-letter handling; the 'no maximum number of children' statement; and the date format and permit reminder purposes. Some cite facts that are not in the cited set.",
+        "evidence": "trace_judge story.US-01.1, US-01.2, US-01.4, US-03.1, US-06.5, US-07.2; rule.questionnaire_flow, cross_border_tariff, liechtenstein_no_source_tax",
+        "action": "Fix the citations where facts exist. Otherwise mark these items inferred or add decisions. Decide the maximum number of children."
       },
       {
-        "title": "Source-tax rule only partly confirmed",
-        "why": "The rule decides who sees the whole source-tax section. Anna hedged, and 'here' meaning Switzerland is an assumption. The Liechtenstein result conflicts with HR's 'always subject'. Income type is still modelled as asked.",
-        "evidence": "OQ-source-tax-rule, OQ-liechtenstein, OQ-income-type. fact_judge on F-hr_transcript-550840 and -5af8d0.",
-        "action": "Have HR confirm the decision table. Record the product decisions on income type (fixed to earned income) and on which Liechtenstein result counts."
+        "title": "Internal rule ids written into business prose",
+        "why": "Snake_case rule ids and 'expression' wording appear in the feature, stories and open-questions files. This is a minor technical leak.",
+        "evidence": "tech_leak: feature.md, US-02.3, US-06.4, US-06.5, US-07.1, open-questions.md",
+        "action": "Replace the ids with business terms such as 'source tax liability rule' and 'per-child result'."
       },
       {
-        "title": "Technical identifiers leak into business prose",
-        "why": "Field and rule ids and UI mechanics appear in acceptance criteria and notes, which turns engineering choices into spec content.",
-        "evidence": "tech_leak: US-08.1 (address_country), feature.md (insurance_start_date, calculator_civil_status), US-07.2 (Child 1/2 blocks with add/remove).",
-        "action": "Replace the ids with business terms. State only the need that each child is described separately."
+        "title": "Untestable and ambiguous acceptance criteria wording",
+        "why": "Some wording cannot be tested as written. AC-03.1.2 is untestable. 'Required' and 'asked' are used inconsistently in the example tables. The permit reminder text is missing. The date on which a child's age is judged is not set.",
+        "evidence": "dev_refinement info: US-03.1, US-05.1, US-05.2, US-01.4, US-07.2",
+        "action": "Agree the question wording and the permit reminder text with HR. Standardise 'required' in the examples. Fix the child age reference date."
       }
     ]
   },
   "stages": {
     "ran": [
-      "normalize/hr_transcript",
-      "normalize/zh_source_tax_calculator",
-      "normalize/pension_portal",
-      "extract/hr_transcript",
-      "extract/pension_portal",
-      "extract/zh_source_tax_calculator",
-      "judge_facts",
       "knowledge.raw",
       "feature.plan",
       "sections/SEC-03-employment-start",
       "sections/SEC-04-civil-status-spouse",
       "sections/SEC-02-personal-details-address",
-      "sections/SEC-01-questionnaire-flow",
       "sections/SEC-05-source-tax-liability",
-      "sections/SEC-06-source-tax-tariff-basics",
       "sections/SEC-08-cross-border-residence",
+      "sections/SEC-01-questionnaire-flow",
+      "sections/SEC-06-source-tax-tariff-basics",
       "sections/SEC-07-source-tax-children",
       "feature.flow",
       "judge_trace",
       "dev_refinement",
       "review"
     ],
-    "reused": []
+    "reused": [
+      "normalize/hr_transcript",
+      "extract/hr_transcript",
+      "normalize/pension_portal",
+      "extract/pension_portal",
+      "normalize/zh_source_tax_calculator",
+      "extract/zh_source_tax_calculator",
+      "judge_facts"
+    ]
   },
-  "cost_usd_this_run": 10.2,
+  "cost_usd_this_run": 9.09,
   "usage_this_run": {
     "by_stage": {
       "write_section": {
         "calls": 8,
         "turns": 16,
         "input_tokens": 16,
-        "output_tokens": 80731,
-        "cache_read_input_tokens": 9936,
-        "cache_creation_input_tokens": 188495,
-        "total_tokens": 279178,
-        "cost_usd": 3.1408,
-        "seconds": 614.3
+        "output_tokens": 108069,
+        "cache_read_input_tokens": 10272,
+        "cache_creation_input_tokens": 239303,
+        "total_tokens": 357660,
+        "cost_usd": 4.0974,
+        "seconds": 808.1
       },
       "dev_refinement": {
         "calls": 1,
-        "turns": 41,
-        "input_tokens": 19,
-        "output_tokens": 12920,
-        "cache_read_input_tokens": 693577,
-        "cache_creation_input_tokens": 199475,
-        "total_tokens": 905991,
-        "cost_usd": 1.9932,
-        "seconds": 120.3
-      },
-      "extract": {
-        "calls": 3,
-        "turns": 6,
-        "input_tokens": 6,
-        "output_tokens": 36144,
-        "cache_read_input_tokens": 882,
-        "cache_creation_input_tokens": 64638,
-        "total_tokens": 101670,
-        "cost_usd": 1.2458,
-        "seconds": 274.2
+        "turns": 2,
+        "input_tokens": 2,
+        "output_tokens": 6358,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 200309,
+        "total_tokens": 206669,
+        "cost_usd": 1.8288,
+        "seconds": 59.2
       },
       "knowledge": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 30385,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 43540,
-        "total_tokens": 73927,
-        "cost_usd": 0.9598,
-        "seconds": 240.9
+        "output_tokens": 40868,
+        "cache_read_input_tokens": 1484,
+        "cache_creation_input_tokens": 44647,
+        "total_tokens": 87001,
+        "cost_usd": 1.1786,
+        "seconds": 316.9
       },
       "judge_trace": {
-        "calls": 12,
-        "turns": 24,
-        "input_tokens": 24,
-        "output_tokens": 13287,
-        "cache_read_input_tokens": 15618,
-        "cache_creation_input_tokens": 172561,
-        "total_tokens": 201490,
-        "cost_usd": 0.8418,
-        "seconds": 111.2
-      },
-      "judge_facts": {
-        "calls": 12,
-        "turns": 24,
-        "input_tokens": 24,
-        "output_tokens": 14527,
-        "cache_read_input_tokens": 12546,
-        "cache_creation_input_tokens": 148266,
-        "total_tokens": 175363,
-        "cost_usd": 0.7538,
-        "seconds": 107.8
-      },
-      "normalize": {
-        "calls": 14,
-        "turns": 43,
-        "input_tokens": 55,
-        "output_tokens": 17034,
-        "cache_read_input_tokens": 102692,
-        "cache_creation_input_tokens": 28030,
-        "total_tokens": 147811,
-        "cost_usd": 0.5887,
-        "seconds": 185.3
+        "calls": 15,
+        "turns": 30,
+        "input_tokens": 30,
+        "output_tokens": 16806,
+        "cache_read_input_tokens": 30900,
+        "cache_creation_input_tokens": 231363,
+        "total_tokens": 279099,
+        "cost_usd": 1.1206,
+        "seconds": 141.8
       },
       "plan_feature": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 4750,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 28856,
-        "total_tokens": 33608,
-        "cost_usd": 0.3283,
-        "seconds": 36.4
+        "output_tokens": 5464,
+        "cache_read_input_tokens": 1416,
+        "cache_creation_input_tokens": 36706,
+        "total_tokens": 43588,
+        "cost_usd": 0.4064,
+        "seconds": 41.5
       },
       "review": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 2408,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 37853,
-        "total_tokens": 40263,
-        "cost_usd": 0.1791,
-        "seconds": 18.0
+        "output_tokens": 2272,
+        "cache_read_input_tokens": 2116,
+        "cache_creation_input_tokens": 41846,
+        "total_tokens": 46236,
+        "cost_usd": 0.1946,
+        "seconds": 17.4
       },
       "write_section_repair": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 1142,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 10595,
-        "total_tokens": 11739,
-        "cost_usd": 0.1083,
-        "seconds": 10.4
+        "output_tokens": 3328,
+        "cache_read_input_tokens": 814,
+        "cache_creation_input_tokens": 15330,
+        "total_tokens": 19474,
+        "cost_usd": 0.1904,
+        "seconds": 26.8
       },
       "flow": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 1175,
-        "cache_read_input_tokens": 0,
-        "cache_creation_input_tokens": 11375,
-        "total_tokens": 12552,
-        "cost_usd": 0.0581,
-        "seconds": 8.0
+        "output_tokens": 1424,
+        "cache_read_input_tokens": 671,
+        "cache_creation_input_tokens": 14980,
+        "total_tokens": 17077,
+        "cost_usd": 0.0752,
+        "seconds": 9.3
       }
     },
     "total": {
-      "calls": 55,
-      "turns": 164,
-      "input_tokens": 154,
-      "output_tokens": 214503,
-      "cache_read_input_tokens": 835251,
-      "cache_creation_input_tokens": 933684,
-      "total_tokens": 1983592,
-      "cost_usd": 10.1977,
-      "seconds": 1726.8
+      "calls": 29,
+      "turns": 58,
+      "input_tokens": 58,
+      "output_tokens": 184589,
+      "cache_read_input_tokens": 47673,
+      "cache_creation_input_tokens": 824484,
+      "total_tokens": 1056804,
+      "cost_usd": 9.092,
+      "seconds": 1421.0
     }
   }
 }
