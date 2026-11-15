@@ -1,12 +1,14 @@
 // The questionnaire: steps, questions, when each is asked, validation and the
-// "discard answers that no longer apply" step on submission (US-08.2).
+// "discard answers that no longer apply" step on submission (US-01.5).
 
-import { COUNTRIES } from './countries';
+import { COUNTRIES, NATIONALITIES } from './countries';
 import {
   AGE_STATUSES, CANTONS, CERTIFICATE, CIVIL_STATUSES, CONTRIBUTORS, CUSTODY, DENOMINATIONS,
   type Answers, type Child,
 } from './model';
-import { asked, childAsked, parseDate, sourceTaxCivilStatus, subjectToSourceTax } from './rules';
+import {
+  asked, childAsked, firstWorkingDayInWindow, parseDate, plausibleDateOfBirth, sourceTaxCivilStatus, sourceTaxDetailsNeeded,
+} from './rules';
 
 const YES_NO = ['yes', 'no'] as const;
 
@@ -32,16 +34,18 @@ export interface ChildQuestion {
   asked: (c: Child, a: Answers) => boolean;
 }
 
-export type StepKey = 'personal' | 'address' | 'nationality' | 'employment' | 'family' | 'sourceTax' | 'review';
+export type StepKey = 'about' | 'address' | 'nationality' | 'family' | 'crossBorder' | 'sourceTax' | 'children' | 'review';
 
+/** The eight steps, in the order fixed by D-047 (US-01.2). */
 export const STEPS: { key: StepKey; title: string }[] = [
-  { key: 'personal', title: 'Personal details' },
+  { key: 'about', title: 'About you' },
   { key: 'address', title: 'Home address' },
-  { key: 'nationality', title: 'Nationality and permit' },
-  { key: 'employment', title: 'Employment' },
-  { key: 'family', title: 'Family' },
-  { key: 'sourceTax', title: 'Source tax' },
-  { key: 'review', title: 'Review and submit' },
+  { key: 'nationality', title: 'Nationality and C permit' },
+  { key: 'family', title: 'Civil status and spouse' },
+  { key: 'crossBorder', title: 'Cross-border commuting' },
+  { key: 'sourceTax', title: 'Source tax details' },
+  { key: 'children', title: 'Children' },
+  { key: 'review', title: 'Summary and submission' },
 ];
 
 const always = () => true;
@@ -50,22 +54,29 @@ const spouse = (a: Answers) =>
   a.civilStatus === 'Registered partnership' ? 'registered partner' : 'spouse';
 
 export const QUESTIONS: Question[] = [
-  // Step 1 – US-01.1
-  { id: 'firstName', step: 'personal', label: 'First name', kind: 'text', asked: always },
-  { id: 'lastName', step: 'personal', label: 'Last name', kind: 'text', asked: always },
-  { id: 'dateOfBirth', step: 'personal', label: 'Date of birth', kind: 'date', asked: always },
+  // Step 1 – US-02.1, US-03.1
+  { id: 'firstName', step: 'about', label: 'First name', kind: 'text', asked: always },
+  { id: 'lastName', step: 'about', label: 'Last name', kind: 'text', asked: always },
+  { id: 'dateOfBirth', step: 'about', label: 'Date of birth', kind: 'date', asked: always },
+  {
+    id: 'firstWorkingDay', step: 'about', label: 'First working day', kind: 'date', asked: always,
+    hint: 'Your contractual start date, also if it falls on a weekend or public holiday.',
+  },
 
-  // Step 2 – US-01.2, US-01.3, US-01.4
+  // Step 2 – US-02.2, US-02.3, US-02.4 (the address that applies on the first working day, D-041)
   { id: 'street', step: 'address', label: 'Street', kind: 'text', asked: always },
-  { id: 'houseNumber', step: 'address', label: 'House number', kind: 'text', asked: always },
+  { id: 'houseNumber', step: 'address', label: 'House number', kind: 'text', asked: (a) => !a.noHouseNumber },
   { id: 'postcode', step: 'address', label: 'Postcode', kind: 'text', asked: always },
   { id: 'town', step: 'address', label: 'Town', kind: 'text', asked: always },
-  { id: 'country', step: 'address', label: 'Country', kind: 'select', options: COUNTRIES, asked: always },
+  {
+    id: 'country', step: 'address', label: 'Country', kind: 'select', options: COUNTRIES, asked: always,
+    hint: 'The country of your home address on your first working day.',
+  },
   { id: 'canton', step: 'address', label: 'Canton', kind: 'select', options: CANTONS, asked: asked.canton },
 
-  // Step 3 – US-04.1
+  // Step 3 – US-05.1
   {
-    id: 'nationality', step: 'nationality', label: 'Nationality', kind: 'select', options: COUNTRIES,
+    id: 'nationality', step: 'nationality', label: 'Nationality', kind: 'select', options: NATIONALITIES,
     hint: 'If you hold Swiss citizenship, choose Switzerland, even if you have another nationality too.',
     asked: asked.nationality,
   },
@@ -74,21 +85,14 @@ export const QUESTIONS: Question[] = [
     kind: 'radio', options: YES_NO, asked: asked.cPermit,
   },
 
-  // Step 4 – US-02.1
-  { id: 'firstWorkingDay', step: 'employment', label: 'First working day', kind: 'date', asked: always },
-
-  // Step 5 – US-03.1, US-03.2, US-04.2
+  // Step 4 – US-04.1, US-04.2, US-05.2
   { id: 'civilStatus', step: 'family', label: 'Civil status', kind: 'select', options: CIVIL_STATUSES, asked: always },
   {
     id: 'spouseDateOfBirth', step: 'family', kind: 'date', asked: asked.spouseDateOfBirth,
     label: (a) => `Your ${spouse(a)}'s date of birth`,
   },
   {
-    id: 'spouseCountry', step: 'family', kind: 'select', options: COUNTRIES, asked: asked.spouseCountry,
-    label: (a) => `In which country does your ${spouse(a)} live?`,
-  },
-  {
-    id: 'spouseNationality', step: 'family', kind: 'select', options: COUNTRIES, asked: asked.spouseNationality,
+    id: 'spouseNationality', step: 'family', kind: 'select', options: NATIONALITIES, asked: asked.spouseNationality,
     label: (a) => `Your ${spouse(a)}'s nationality`,
     hint: 'Anyone holding Swiss citizenship counts as Swiss: choose Switzerland.',
   },
@@ -96,8 +100,45 @@ export const QUESTIONS: Question[] = [
     id: 'spouseCPermit', step: 'family', kind: 'radio', options: YES_NO, asked: asked.spouseCPermit,
     label: (a) => `Does your ${spouse(a)} hold a C permit (permanent residence)?`,
   },
+  {
+    id: 'spouseLivesInCH', step: 'family', kind: 'radio', options: YES_NO, asked: asked.spouseLivesInCH,
+    label: (a) => `Does your ${spouse(a)} live in Switzerland?`,
+  },
 
-  // Step 6 – US-05.3, US-05.4
+  // Step 5 – US-08.2, US-08.3 (Germany)
+  {
+    id: 'deDailyReturn', step: 'crossBorder', group: 'Living in Germany', kind: 'radio', options: YES_NO,
+    asked: asked.deDailyReturn,
+    label: 'Do you expect to return daily to your main residence in Germany?',
+  },
+  {
+    id: 'deCertificate', step: 'crossBorder', group: 'Living in Germany', kind: 'radio', options: CERTIFICATE,
+    asked: asked.deCertificate,
+    label: 'Have you provided a certificate of residence (Ansässigkeitsbescheinigung)?',
+    hint: 'The certificate itself goes to HR directly; nothing is uploaded here.',
+  },
+  {
+    id: 'deReasonable', step: 'crossBorder', group: 'Living in Germany', kind: 'radio', options: YES_NO,
+    asked: asked.deReasonable,
+    label: 'Would a daily return to your home in Germany in principle be reasonable (less than 100 km driving distance)?',
+  },
+  {
+    id: 'deMoreThan60', step: 'crossBorder', group: 'Living in Germany', kind: 'radio', options: YES_NO,
+    asked: asked.deMoreThan60,
+    label: 'Do you expect more than 60 work-related non-return days in the calendar year?',
+  },
+  // Step 5 – US-08.4 (Liechtenstein, before the source tax details, D-040)
+  {
+    id: 'liDailyReturn', step: 'crossBorder', group: 'Living in Liechtenstein', kind: 'radio', options: YES_NO,
+    asked: asked.liDailyReturn,
+    label: 'Do you expect to return daily to your main residence in Liechtenstein?',
+  },
+  {
+    id: 'liMoreThan45', step: 'crossBorder', group: 'Living in Liechtenstein', kind: 'radio', options: YES_NO,
+    asked: asked.liMoreThan45,
+    label: 'Do you expect more than 45 work-related non-return days in the calendar year?',
+  },
+  // Step 6 – US-06.2, US-06.3, US-07.1
   {
     id: 'denomination', step: 'sourceTax', label: 'Your denomination',
     kind: 'radio', options: DENOMINATIONS, asked: asked.denomination,
@@ -107,52 +148,18 @@ export const QUESTIONS: Question[] = [
     asked: asked.spouseWorks,
     label: (a) => `Is your ${spouse(a)} gainfully employed or receiving replacement income?`,
   },
-  // Step 6 – US-06.1 (per-child questions below)
   {
-    id: 'hasChildren', step: 'sourceTax', group: 'Children', kind: 'radio', options: YES_NO,
+    id: 'hasChildren', step: 'sourceTax', kind: 'radio', options: YES_NO,
     asked: asked.hasChildren,
     label: (a) =>
       isMarried(a)
         ? `Do you or your ${spouse(a)} have biological or adopted children?`
         : 'Do you have biological or adopted children?',
   },
-  // Step 6 – US-07.2 (Germany)
-  {
-    id: 'deDailyReturn', step: 'sourceTax', group: 'Living in Germany', kind: 'radio', options: YES_NO,
-    asked: asked.deDailyReturn,
-    label: 'Do you expect to return daily to your main residence in Germany?',
-  },
-  {
-    id: 'deCertificate', step: 'sourceTax', group: 'Living in Germany', kind: 'radio', options: CERTIFICATE,
-    asked: asked.deCertificate,
-    label: 'Have you provided a certificate of residence (Ansässigkeitsbescheinigung)?',
-    hint: 'The certificate itself goes to HR directly; nothing is uploaded here.',
-  },
-  {
-    id: 'deReasonable', step: 'sourceTax', group: 'Living in Germany', kind: 'radio', options: YES_NO,
-    asked: asked.deReasonable,
-    label: 'Would a daily return to your home in Germany in principle be reasonable (less than 100 km driving distance)?',
-  },
-  {
-    id: 'deMoreThan60', step: 'sourceTax', group: 'Living in Germany', kind: 'radio', options: YES_NO,
-    asked: asked.deMoreThan60,
-    label: 'Do you expect more than 60 work-related non-return days in the calendar year?',
-  },
-  // Step 6 – US-07.3 (Liechtenstein)
-  {
-    id: 'liDailyReturn', step: 'sourceTax', group: 'Living in Liechtenstein', kind: 'radio', options: YES_NO,
-    asked: asked.liDailyReturn,
-    label: 'Do you expect to return daily to your main residence in Liechtenstein?',
-  },
-  {
-    id: 'liMoreThan45', step: 'sourceTax', group: 'Living in Liechtenstein', kind: 'radio', options: YES_NO,
-    asked: asked.liMoreThan45,
-    label: 'Do you expect more than 45 work-related non-return days in the calendar year?',
-  },
 ];
 
 export const CHILD_QUESTIONS: ChildQuestion[] = [
-  { id: 'ageStatus', kind: 'radio', options: AGE_STATUSES, asked: childAsked.ageStatus, label: 'Is the child a minor, of age and in first education, or neither?' },
+  { id: 'ageStatus', kind: 'radio', options: AGE_STATUSES, asked: childAsked.ageStatus, label: 'Is the child a minor, an adult in first education, or neither?' },
   { id: 'inHousehold', kind: 'radio', options: YES_NO, asked: childAsked.inHousehold, label: 'Does the child live in your household?' },
   { id: 'custody', kind: 'radio', options: CUSTODY, asked: childAsked.custody, label: 'Is parental custody shared or sole?' },
   { id: 'commonHousehold', kind: 'radio', options: YES_NO, asked: childAsked.commonHousehold, label: "Do you live in a common household with the child's other parent?" },
@@ -171,7 +178,9 @@ export const questionsOf = (step: StepKey, a: Answers) => QUESTIONS.filter((q) =
 export function visibleSteps(a: Answers) {
   return STEPS.filter((s) => {
     if (s.key === 'nationality') return !a.country || asked.nationality(a);
-    if (s.key === 'sourceTax') return subjectToSourceTax(a) !== false;
+    if (s.key === 'crossBorder') return !a.country || a.country === 'Germany' || a.country === 'Liechtenstein';
+    if (s.key === 'sourceTax') return sourceTaxDetailsNeeded(a) || !a.country;
+    if (s.key === 'children') return asked.children(a);
     return true;
   });
 }
@@ -182,14 +191,23 @@ export type Errors = Record<string, string>;
 
 const isEmpty = (v: unknown) => v === undefined || (typeof v === 'string' && v.trim() === '');
 
-export function validateStep(step: StepKey, a: Answers): Errors {
+export function validateStep(step: StepKey, a: Answers, sent: Date = new Date()): Errors {
   const errors: Errors = {};
   for (const q of questionsOf(step, a)) {
     const v = a[q.id];
     if (isEmpty(v)) errors[q.id] = 'Please answer this question.';
     else if (q.kind === 'date' && !parseDate(v as string)) errors[q.id] = 'Please enter a valid date as DD.MM.YYYY.';
   }
-  if (step === 'sourceTax' && asked.children(a)) {
+  if (step === 'address' && !a.noHouseNumber && isEmpty(a.houseNumber)) {
+    errors.houseNumber = "Please enter the house number, or tick 'no house number'.";
+  }
+  if (step === 'about' && !errors.dateOfBirth && !errors.firstWorkingDay) {
+    if (firstWorkingDayInWindow(a.firstWorkingDay, sent) === false)
+      errors.firstWorkingDay = 'The first working day must lie within one year from today.';
+    else if (plausibleDateOfBirth(a.dateOfBirth, a.firstWorkingDay) === false)
+      errors.dateOfBirth = 'Please check the date of birth: you must be between 14 and 100 years old on your first working day.';
+  }
+  if (step === 'children' && asked.children(a)) {
     if (a.children.length === 0) errors.children = 'Please add each child.';
     for (const c of a.children) {
       for (const q of CHILD_QUESTIONS) {
@@ -200,16 +218,17 @@ export function validateStep(step: StepKey, a: Answers): Errors {
   return errors;
 }
 
-export function validateAll(a: Answers): Errors {
-  return Object.assign({}, ...STEPS.map((s) => validateStep(s.key, a)));
+export function validateAll(a: Answers, sent: Date = new Date()): Errors {
+  return Object.assign({}, ...STEPS.map((s) => validateStep(s.key, a, sent)));
 }
 
-/** Keeps only the answers to questions that apply to the final answers (US-08.2, AC-08.2.2). */
+/** Keeps only the answers to questions that apply to the final answers (US-01.5). */
 export function discardInapplicable(a: Answers): Answers {
   const out: Answers = { children: [] };
   for (const q of QUESTIONS) {
     if (q.asked(a) && !isEmpty(a[q.id])) (out as unknown as Record<string, unknown>)[q.id] = a[q.id];
   }
+  if (a.noHouseNumber) out.noHouseNumber = true;
   if (asked.children(a)) {
     out.children = a.children.map((c) => {
       const kept: Child = { id: c.id };

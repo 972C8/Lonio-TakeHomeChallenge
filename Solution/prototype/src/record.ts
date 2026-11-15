@@ -3,7 +3,7 @@
 import type { Answers } from './model';
 import { discardInapplicable } from './questions';
 import {
-  childResult, insuranceStartDate, pensionFundCivilStatus, permitReminder, residence,
+  childResult, insuranceStartDate, pensionFundCanton, pensionFundCivilStatus, permitReminder, residence,
   sourceTaxCivilStatus, sourceTaxResult, subjectToSourceTax, type ChildResult, type SourceTaxResult,
 } from './rules';
 
@@ -12,6 +12,7 @@ export interface SubmissionRecord {
   answers: Answers;
   derived: {
     insuranceStartDate?: string;
+    pensionFundCanton?: string;
     pensionFundCivilStatus?: string;
     sourceTaxCivilStatus?: string;
     residenceForSourceTax?: string;
@@ -29,6 +30,7 @@ export function buildRecord(raw: Answers, now = new Date()): SubmissionRecord {
     answers: a,
     derived: {
       insuranceStartDate: insuranceStartDate(a.firstWorkingDay),
+      pensionFundCanton: pensionFundCanton(a),
       pensionFundCivilStatus: pensionFundCivilStatus(a.civilStatus),
       sourceTaxCivilStatus: sourceTaxCivilStatus(a.civilStatus),
       residenceForSourceTax: residence(a.country),

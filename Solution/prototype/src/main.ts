@@ -7,7 +7,7 @@ import {
 import { buildRecord, type SubmissionRecord } from './record';
 import { permitReminder, type SourceTaxResult } from './rules';
 
-// HR provides the final wording (AC-08.1.3); this is a placeholder with the same purpose.
+// HR provides the final wording before go-live (D-050); this is a placeholder with the same purpose.
 const PERMIT_REMINDER_TEXT = 'Please bring your permit with you on your first working day.';
 
 interface State {
@@ -15,6 +15,8 @@ interface State {
   step: StepKey;
   errors: Errors;
   submitted?: SubmissionRecord;
+  /** When the questionnaire was sent; the first working day must lie within one year after it (D-050). */
+  sentAt: string;
 }
 
 const STORAGE_KEY = 'lonio-onboarding-prototype';
@@ -22,16 +24,21 @@ const STORAGE_KEY = 'lonio-onboarding-prototype';
 function load(): State {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
-    if (saved?.answers) return { answers: saved.answers, step: saved.step ?? 'personal', errors: {}, submitted: saved.submitted };
+    if (saved?.answers)
+      return { answers: saved.answers, step: saved.step ?? 'about', errors: {}, submitted: saved.submitted, sentAt: saved.sentAt ?? new Date().toISOString() };
   } catch { /* ignore */ }
-  return { answers: emptyAnswers(), step: 'personal', errors: {} };
+  return fresh();
+}
+
+function fresh(): State {
+  return { answers: emptyAnswers(), step: 'about', errors: {}, sentAt: new Date().toISOString() };
 }
 
 let state = load();
 
 function save() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: state.answers, step: state.step, submitted: state.submitted }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: state.answers, step: state.step, submitted: state.submitted, sentAt: state.sentAt }));
   } catch { /* storage unavailable: keep working in memory */ }
 }
 
@@ -91,8 +98,16 @@ function renderChild(c: Child, index: number, a: Answers) {
   </fieldset>`;
 }
 
+const sent = () => new Date(state.sentAt);
+
 function renderStepForm(step: StepKey) {
   const a = state.answers;
+  if (step === 'children') {
+    let html = '<p class="hint">One block per child. There is no maximum number of children.</p>';
+    html += a.children.map((c, i) => renderChild(c, i, a)).join('');
+    if (state.errors.children) html += `<div class="error">${esc(state.errors.children)}</div>`;
+    return html + `<button type="button" class="secondary" data-action="add-child">Add a child</button>`;
+  }
   let html = '';
   let group: string | undefined;
   for (const q of questionsOf(step, a)) {
@@ -101,17 +116,23 @@ function renderStepForm(step: StepKey) {
       if (group) html += `<h3>${esc(group)}</h3>`;
     }
     html += renderQuestion(q, a);
-    if (q.id === 'hasChildren' && a.hasChildren === 'yes') {
-      html += a.children.map((c, i) => renderChild(c, i, a)).join('');
-      if (state.errors.children) html += `<div class="error">${esc(state.errors.children)}</div>`;
-      html += `<button type="button" class="secondary" data-action="add-child">Add a child</button>`;
-    }
+  }
+  if (step === 'address') {
+    // the house number is required, unless the address has none (D-042, D-049)
+    const box = `<label class="check"><input type="checkbox" id="in-noHouseNumber" data-flag="noHouseNumber"${a.noHouseNumber ? ' checked' : ''} /> My address has no house number</label>`;
+    html = html.replace('<div class="field" id="field-postcode"', `${box}<div class="field" id="field-postcode"`);
+    if (state.errors.houseNumber && a.noHouseNumber === undefined && !questionsOf(step, a).some((q) => q.id === 'houseNumber'))
+      html += `<div class="error">${esc(state.errors.houseNumber)}</div>`;
   }
   return html;
 }
 
 function summaryValue(q: Question, a: Answers) {
   return esc(a[q.id] as string);
+}
+
+function addressRows(a: Answers) {
+  return a.noHouseNumber ? '<tr><th>House number</th><td>no house number</td></tr>' : '';
 }
 
 function renderReview() {
@@ -123,7 +144,7 @@ function renderReview() {
         .map((q) => `<tr><th>${esc(labelOf(q, a))}</th><td>${summaryValue(q, a)}</td></tr>`)
         .join('');
       const kids =
-        s.key === 'sourceTax' && a.hasChildren === 'yes'
+        s.key === 'children'
           ? a.children
               .map(
                 (c, i) =>
@@ -136,7 +157,7 @@ function renderReview() {
           : '';
       return `<section class="summary">
         <div class="summary-head"><h3>${esc(s.title)}</h3><button type="button" class="link" data-action="goto" data-step="${s.key}">Edit</button></div>
-        <table>${rows}${kids}</table>
+        <table>${rows}${s.key === 'address' ? addressRows(a) : ''}${kids}</table>
       </section>`;
     })
     .join('');
@@ -144,14 +165,15 @@ function renderReview() {
     ? `<div class="notice" role="note"><strong>Reminder:</strong> ${esc(PERMIT_REMINDER_TEXT)}</div>`
     : '';
   const hasErrors = Object.keys(state.errors).length > 0;
-  return `${sections}${reminder}${hasErrors ? '<div class="error">Some answers are missing. Please complete the highlighted steps.</div>' : ''}`;
+  const confirm = '<p class="hint">Please check your answers. Submitting sends them to HR; afterwards you can no longer change them here.</p>';
+  return `${sections}${reminder}${confirm}${hasErrors ? '<div class="error">Some answers are missing. Please complete the highlighted steps.</div>' : ''}`;
 }
 
 function describeResult(r: SourceTaxResult | undefined) {
   if (!r) return '–';
   if (r.kind === 'none') return 'Not subject to source tax (no source tax result)';
   if (r.kind === 'liechtenstein-no-liability') return `${r.text} <span class="flag">flag for HR</span>`;
-  return `Tariff code <strong>${esc(r.code)}</strong>${r.subjectToDTA ? ', subject to the double taxation agreement' : ''}`;
+  return `Tariff code <strong>${esc(r.code)}</strong>${r.dtaNote ? `; note: ${esc(r.dtaNote)} <span class="flag">flag for HR</span>` : ''}`;
 }
 
 function renderSubmitted(rec: SubmissionRecord) {
@@ -159,7 +181,7 @@ function renderSubmitted(rec: SubmissionRecord) {
   const d = rec.derived;
   const row = (k: string, v: string | undefined, raw = false) =>
     v === undefined || v === '' ? '' : `<tr><th>${esc(k)}</th><td>${raw ? v : esc(v)}</td></tr>`;
-  const address = [`${a.street ?? ''} ${a.houseNumber ?? ''}`.trim(), `${a.postcode ?? ''} ${a.town ?? ''}`.trim(), a.country]
+  const address = [`${a.street ?? ''} ${a.noHouseNumber ? '' : (a.houseNumber ?? '')}`.trim(), `${a.postcode ?? ''} ${a.town ?? ''}`.trim(), a.country]
     .filter(Boolean)
     .join(', ');
   return `<div class="card">
@@ -173,7 +195,7 @@ function renderSubmitted(rec: SubmissionRecord) {
     <h3>Pension fund</h3>
     <table>
       ${row('First name', a.firstName)}${row('Last name', a.lastName)}${row('Date of birth', a.dateOfBirth)}
-      ${row('Canton', a.canton)}${row('Civil status', d.pensionFundCivilStatus)}
+      ${row('Canton', d.pensionFundCanton)}${row('Civil status', d.pensionFundCivilStatus)}
       ${row("Spouse's / registered partner's date of birth", a.spouseDateOfBirth)}
       ${row('Insurance start date', d.insuranceStartDate)}
     </table>
@@ -198,7 +220,7 @@ function render() {
   if (!steps.some((s) => s.key === state.step)) state.step = nearestStep(state.step, steps);
   const idx = steps.findIndex((s) => s.key === state.step);
   const current = steps[idx];
-  const stepErrors = (k: StepKey) => Object.keys(validateStep(k, state.answers)).length > 0;
+  const stepErrors = (k: StepKey) => Object.keys(validateStep(k, state.answers, sent())).length > 0;
   const nav = steps
     .map((s, i) => {
       const cls = [s.key === state.step ? 'current' : '', Object.keys(state.errors).length && stepErrors(s.key) ? 'invalid' : '']
@@ -219,7 +241,7 @@ function render() {
       <div class="actions">
         ${idx > 0 ? '<button type="button" class="secondary" data-action="back">Back</button>' : '<span></span>'}
         ${current.key === 'review'
-          ? '<button type="button" data-action="submit">Submit</button>'
+          ? '<button type="button" data-action="submit">Confirm and submit</button>'
           : '<button type="button" data-action="next">Next</button>'}
       </div>
     </form>`;
@@ -255,6 +277,16 @@ root.addEventListener('input', (e) => {
 });
 
 root.addEventListener('change', (e) => {
+  const flag = (e.target as HTMLInputElement).dataset.flag;
+  if (flag === 'noHouseNumber') {
+    const on = (e.target as HTMLInputElement).checked;
+    state.answers.noHouseNumber = on || undefined;
+    if (on) state.answers.houseNumber = undefined;
+    delete state.errors.houseNumber;
+    save();
+    render();
+    return;
+  }
   const t = e.target as HTMLInputElement | HTMLSelectElement;
   if (!t.dataset.q || (t as HTMLInputElement).type === 'text') return;
   setAnswer(t);
@@ -281,7 +313,7 @@ root.addEventListener('click', (e) => {
       go(steps[Math.max(0, idx - 1)].key);
       break;
     case 'next': {
-      const errors = validateStep(state.step, state.answers);
+      const errors = validateStep(state.step, state.answers, sent());
       state.errors = errors;
       if (Object.keys(errors).length) {
         render();
@@ -292,7 +324,7 @@ root.addEventListener('click', (e) => {
       break;
     }
     case 'submit': {
-      const errors = validateAll(state.answers);
+      const errors = validateAll(state.answers, sent());
       state.errors = errors;
       if (Object.keys(errors).length) {
         render();
@@ -316,7 +348,7 @@ root.addEventListener('click', (e) => {
       render();
       break;
     case 'reset':
-      state = { answers: emptyAnswers(), step: 'personal', errors: {} };
+      state = fresh();
       save();
       render();
       break;

@@ -28,3 +28,7 @@ const OTHERS = [
 ];
 
 export const COUNTRIES: readonly string[] = [...NEIGHBOURS, ...OTHERS];
+
+
+/** Nationality: the country list plus 'stateless' (D-050). */
+export const NATIONALITIES = [...COUNTRIES, 'stateless'];
