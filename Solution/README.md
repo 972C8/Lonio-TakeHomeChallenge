@@ -82,7 +82,8 @@ The Agent SDK runs on the local Claude Code login; no API key is needed.
 ## Layout
 
 ```
-tests/                       deterministic tests: source-scoped ids, id feedback between runs
+tests/                       deterministic tests (no LLM, no network)
+bench/                       rerun benchmark: mock-source cases, harness, results (see "Tokens and the rerun benchmark")
 pipeline/                    GENERIC - never changed for a new feature
   engine/                    schemas, stage cache, Agent SDK wrapper, condition language, decisions
   adapters/<source type>/    adapter.py + agent.md (+ config.yaml): transcript, screenshots, web_calculator
@@ -139,8 +140,10 @@ can't. The prompts handle what interviews are full of:
 - Each fact is tagged `explicit` or `inferred`, so interpretations are visible.
 
 **In → out.** Units + source-type prompt (`adapters/<type>/agent.md`) +
-feature guidance → `extract/<source>.json` (facts `F-hr_transcript-3fa9c1` – source id plus a hash of the kind and the quotes, so ids stay stable across reruns – with kind,
-statement, anchors, tags and supersedes links).
+feature guidance → `extract/<source>.json` (facts `F-hr_transcript-3fa9c1` – source id plus a hash of the kind and the quotes – with kind,
+statement, anchors, tags and supersedes links). An unchanged source is not extracted again, so its fact ids stay
+the same; when a source is extracted again, a fact keeps its id only if the agent quotes exactly the same
+passages, so a decision that accepts a fact may have to be pointed at the new id.
 
 **Complete and correct.**
 - **Exhaustive extraction:** the prompt asks the agent to be exhaustive about who needs what, when and why.
@@ -155,7 +158,9 @@ statement, anchors, tags and supersedes links).
 3. **Code:** supersede links are resolved, so the history of a corrected statement is kept.
 
 **In → out.** Facts + units → `facts.json` (each fact with `anchor_ok`, the
-judge's verdict and note, and `superseded_by`).
+judge's verdict and note, and `superseded_by`). Verdicts are cached per fact (its statement, its quoted units
+and their neighbours, and the judge prompt) in `judge_facts.cache.json`, so a rerun judges only new or changed
+facts.
 
 **Complete and correct.**
 - **Unusable facts stop here:** facts with a broken quote, or judged unsupported, never reach the next step. They are listed as errors in `review.md`.
@@ -204,7 +209,8 @@ stays in business language. How to build it is left to engineering.
 `sections/<section>.json` (the feature's sections with stories, criteria and examples).
 
 **Complete and correct.**
-- **Full coverage:** every item and rule a section owns must be covered by at least one story, and every row of every decision table by a criterion.
+- **Full coverage:** code checks that every item and rule a section owns is covered by at least one story; the writer is told to cover every row of the decision tables its stories cover (a prompt rule, not a check).
+- **Scoped input:** each writer gets the knowledge-model elements its section owns or uses (with their formalisation) and the exclusions in full, and the rest of the model as a one-line index. Its examples are still executed against the whole model.
 - **Only affected sections are rewritten:** the plan keeps its sections and only assigns new elements. A section is rewritten only when something it owns changed, or something it merely uses changed in behaviour (conditions, allowed values, expression - not descriptions or citations); it gets its previous version, and stories the change does not touch are restored word for word by code. Untouched sections are reused as they are.
 - **Exact examples:** examples must be complete enough to be executed in step 7. Each section's examples are already executed right after writing; failing ones go back to the writer once, with the reason (typically an answer to a question that is not asked in that case).
 - **Cited sources:** stories and criteria cite facts, guidelines or decisions.
@@ -236,7 +242,7 @@ decisions are cited like any source, with the highest precedence.
 **Complete and correct.**
 - **Fingerprinted evidence:** each decision records a fingerprint of the source units it is based on. If that evidence changes later, the decision is flagged "needs re-confirmation" instead of being applied silently.
 - **Broken targets reported:** a decision whose target no longer exists is reported as an error.
-- **New evidence reported:** the pipeline remembers which facts existed when a decision was made. If an element the decision shapes changed in substance and now cites a newer fact (e.g. from a new source), the decision is flagged for re-confirmation (a mere new citation does not count); `pipeline reconfirm D-00N` re-stamps it.
+- **New evidence reported:** the pipeline remembers which facts existed when a decision was made. If an element the decision shapes changed in substance and now cites a newer fact (e.g. from a new source), the decision is flagged for re-confirmation (a mere new citation does not count). The flag stays on later runs until `pipeline reconfirm D-00N` re-stamps the decision.
 - **Ignored directives reported:** a directive that no item, rule, story or criterion cites is reported as an error.
 
 ### 7. Check, render & review – prove it, publish it, judge it
@@ -257,12 +263,14 @@ decisions are cited like any source, with the highest precedence.
    - open questions
    - out of scope
    - traceability
-4. **Dev refinement (one agent):** an engineer agent that reads `feature.md`, the story files and the shared files lists every question it would ask in refinement, plus any technical decisions that leaked into the spec. This is the acceptance test of the task: "built without anyone asking a single question".
-5. **Review (agent):** summarises everything into one verdict (ready / ready with caveats / not ready), with prioritised findings and suggested decisions.
+4. **Dev refinement (one agent):** an engineer agent that reads `feature.md`, the story files and the shared files lists every question it would ask in refinement, plus any technical decisions that leaked into the spec. This is the acceptance test of the task: "built without anyone asking a single question". The first run (or a changed prompt, or `--force dev_refinement`) reads every file with tools. A rerun makes one call with only the rendered files that changed, plus `feature.md`, the shared files and the unchanged stories that share an item or rule with a changed one; the questions on unchanged files are kept by code.
+5. **Review (agent):** summarises everything into one verdict (ready / ready with caveats / not ready), with prioritised findings and suggested decisions. It reruns only when the report changed (not when only the "impact of this run" section did).
 
 **In → out.** `spec.json`, facts, units →
 `requirements/<feature>/` (the deliverable), `report.json` and **`review.md`**,
-the one file the product owner reads.
+the one file the product owner reads. `report.json` also records the tokens of this run per stage
+(`usage_this_run`: calls, input, output, cache read and cache write tokens, and the SDK's cost estimate), and
+`review.md` ends with the total.
 
 **Complete and correct.** This step *is* the safety net:
 - **Correct:** quotes proven, examples executed, every element traced, nothing technical leaking.
@@ -321,8 +329,9 @@ type the name in Claude Code opened in this folder.
    and the `item_checklist`.
 2. **`features/<f>/guidance.md`** – scope and what is out of scope, id and value
    conventions, product-owner statements tagged `[G-nn]`. No source facts.
-3. **Run** – `pipeline run` (about 15–20 minutes, roughly $5–7 the first time).
-   Output is generated, not committed.
+3. **Run** – `pipeline run` (a full run from scratch took 14 minutes and about 2M tokens, about $10 by
+   the SDK's list-price estimate; on a Claude Max login it counts against the usage limits, not a bill).
+   Exploring the calculator (`pipeline explore`) is separate and cached.
 
 ### 2. After every run – `/review`
 
@@ -337,12 +346,13 @@ in this order:
 6. **Dev-refinement questions** – answer with a decision, or add a line to
    `guidance.md`.
 
-Then rerun (cheap: only the later steps rerun) until the verdict is acceptable.
+Then rerun until the verdict is acceptable. Patch decisions rerun only the later steps; a directive (`direct`)
+reruns modelling and writing.
 
 Decision targets in `decisions.yaml`: `item.<id>`, `rule.<id>`, `story.<id>`
 (ids contain a dot, e.g. `story.US-02.1.priority`), `section.<id>`,
 `feature.<attribute>`, `open.<id>`, `exclusion.<id>`, `fact.<id>`. Actions:
-`override`, `add`, `exclude`, `resolve`, `accept`, `reject`.
+`override`, `add`, `exclude`, `resolve`, `accept`, `reject`, and `direct` (no target, a `statement`).
 
 ### 3. After a source changes or a new one arrives – `/update-source`
 
@@ -373,5 +383,14 @@ come from the cache.
 New source type → new adapter folder (`/new-adapter`) + one entry in
 `profile.yaml`. New process → new `features/<name>/` folder (`/new-feature`),
 with no change to `pipeline/`.
+
+## Tokens and the rerun benchmark
+
+Every agent call logs its tokens; `report.json` sums them per stage. Models are chosen per role in
+`profile.yaml` (`models:`): Opus for extraction, modelling, writing and dev refinement; Sonnet for the judges,
+the review, the flow and assigning new elements to sections. `bench/` reruns fixed cases against one frozen
+baseline (`python -m bench run B2 B3 B4 --label <name> --noop-after`, then `python -m bench compare <a> <b>`):
+three mock sources with expected changes, checked for tokens, changed stories, errors, examples, open
+questions and the verdict, plus a rerun right after that must call no agent. Results: `bench/SUMMARY.md`.
 
 See [LIMITATIONS.md](LIMITATIONS.md) for where the pipeline stands, and [docs/improvements.md](docs/improvements.md) for the next steps.
