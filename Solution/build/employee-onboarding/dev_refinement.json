@@ -1,65 +1,69 @@
 {
   "questions": [
     {
-      "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
-      "question": "AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?",
-      "severity": "major"
-    },
-    {
       "file": "stories/US-03.1-employee-confirms-the-first-working-day.md",
       "question": "The first working day 'must lie within one year after the questionnaire is sent'. Can it also be before the send date or in the past, for example when the employee has already started or fills in the questionnaire late? Sending the questionnaire is part of the later HR-side spec, so which date counts as 'sent' for this check? Is there also any plausibility check on the spouse's date of birth?",
       "severity": "minor"
     },
     {
       "file": "stories/US-01.8-review-a-summary-and-submit-with-one-confirmation.md",
-      "question": "The stories disagree on when a missing required answer blocks the employee. US-02.1 and US-02.2 say the employee 'cannot continue' to the next step. US-04.1 and AC-01.8.3 say the employee only cannot submit, and is then shown what is missing. Should a missing required answer stop the employee from moving to the next step, or only from submitting (so a partly filled step can be saved and left, as US-01.7 allows)?",
+      "question": "The stories disagree on when a missing required answer blocks the employee. US-02.1 says the employee 'cannot leave step 1 complete' without the name or date of birth. US-02.2 says the address 'step cannot be completed'. US-03.1, US-04.1 and AC-01.8.2 say the employee only cannot submit. Should a missing required answer stop the employee from moving to the next step, or only from submitting (so a partly filled step can be saved and left, as US-01.7 allows)? And if the employee can go on, how is a step that is not complete shown?",
       "severity": "minor"
     },
     {
       "file": "stories/US-08.2-germany-daily-return-and-certificate-of-residence.md",
-      "question": "The item is called 'Certificate of residence handed in', and the calculator asks whether it has been provided ('beigebracht'). The story instead asks whether the employee 'has a certificate of residence for HR'. Does 'yes' mean the certificate has already been given to HR, or only that the employee has one? Should HR expect a certificate later for 'no' as well as for 'not yet', or only for 'not yet'?",
+      "question": "The calculator asks whether the certificate of residence has been provided ('beigebracht'). The story asks whether the employee 'has a certificate of residence for HR'. Does 'yes' mean the certificate has already been given to HR, or only that the employee has one? Should HR expect a certificate later for 'no' as well as for 'not yet', or only for 'not yet'?",
       "severity": "minor"
     },
     {
       "file": "stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md",
-      "question": "Expected results for the same question differ between stories. US-01.2 marks spouse's nationality, spouse lives in Switzerland and nationality as 'asked' (AC-01.2.4, AC-01.2.5). US-05.1 and US-05.2 mark the same cases as 'required'. Several rows also show '–' for questions that always apply, for example civil status for the married C-permit holder in AC-01.2.5, or postcode and town for Stefan in AC-01.2.3. Is there a real difference between 'asked' and 'required' (can any of these answers be left empty?), and does '–' mean 'not checked in this example'?",
+      "question": "Expected results for the same question still differ between stories. AC-01.2.2 marks the canton as 'asked', but US-02.4 marks it 'required'. AC-01.2.4 marks the spouse's date of birth and the spouse's nationality as 'asked', but US-04.2 and US-05.2 mark them 'required'. US-06.3 has 'required' for a married employee and 'asked' for a registered partner. Several rows also show '–' for questions that always apply, for example First name for the Germany resident in AC-01.2.2. Is there a real difference between 'asked' and 'required' (can any of these answers be left empty?), and does '–' mean 'not checked in this example'?",
       "severity": "minor"
     },
     {
       "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
-      "question": "For a Liechtenstein resident with more than 45 non-return days, AC-06.6.3 and the tariff code rule say the code is recorded 'with the note subject to the double taxation agreement', but the example expects just 'C0Y' and D-051 says the code is one single text. Is the note part of the recorded result text (e.g. 'C0Y, subject to the double taxation agreement'), or is the code 'C0Y' recorded alone with the note and HR flag kept separately? This changes what is recorded and what the acceptance test checks.",
+      "question": "Both examples in AC-06.6.5 are marked as failed (❌). The first expects Denomination 'required' after an HR change. D-053 says that examples after an HR change should expect 'HR must complete', not that the question is asked. The second example (civil status changed to Married) does not show the never-asked spouse employment question at all. What exactly should these examples expect, so we have a passing acceptance test for the 'incomplete' case?",
       "severity": "major"
     },
     {
-      "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
-      "question": "In the AC-06.6.3 example table, the columns for whether denomination, spouse gainfully employed and has children were asked show '–' for the 'at most 45 non-return days' and 'more than 45 non-return days' rows, rather than 'not asked' or 'asked' as in the 'returns daily' row. Should the expected values be 'not asked' for the second row and 'asked' for the third, so these examples can be tested?",
+      "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
+      "question": "After an HR change, 'incomplete - HR must complete' is specified for the tariff code and for 'subject to source tax'. What happens to the pension fund results when an HR change makes an answer apply that was never asked? Two examples: a move from abroad to Switzerland, where the canton was never asked; and a change from Single to Married, where the spouse's date of birth was never asked. Should the canton for the fund, and the fund registration with civil status Married, also show 'incomplete - HR must complete'? Or should the canton keep showing Zurich until HR enters it? Which derived results does the 'incomplete' state apply to?",
+      "severity": "major"
+    },
+    {
+      "file": "stories/US-01.1-show-the-source-tax-step-only-to-employees-who-are-subject.md",
+      "question": "Several example tables use the same item as both an input and an expected result, with values that do not match. In AC-01.1.1, Nationality is '–' as an input but 'not asked' as a result for Stefan. In AC-01.1.2, 'More than 45 non-return days' is 'yes' or 'no' as an input but '–' or 'not asked' as a result. The same happens in US-07.3 and US-07.5. Which of the two values is the expected outcome a tester should check?",
       "severity": "minor"
     },
     {
-      "file": "feature.md",
-      "question": "D-052 (cited for the source tax tariff code rule) says 'the child digit is 1 when the child counts, otherwise 0'. The child digit rule and F-zh_source_tax_calculator-4c53e3 say the digit is the number of counted children (e.g. C3Y). Can you confirm that D-052 means the per-child contribution and that the code's digit is the total count, with no upper limit (D-044)?",
+      "file": "stories/US-04.4-enter-the-civil-status-on-the-pension-fund-s-list.md",
+      "question": "In the AC-04.4.1 example table, the spouse's date of birth is '–' for Married, but 'required' for Registered partnership and Separated. It is also '–' for Single, but 'not asked' for Divorced and Widowed. Should Married expect 'required' and Single expect 'not asked', as US-04.2 says?",
+      "severity": "minor"
+    },
+    {
+      "file": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
+      "question": "AC-07.2.1 says 'At least one child block is filled in' when the employee answered 'yes' to having children. The trace check notes that no cited source backs this. Is it a confirmed rule, and if so what happens when the employee removes the last child block? Is that blocked, or is 'has children' then treated as 'no'?",
       "severity": "minor"
     }
   ],
   "already_flagged": [
-    "OQ-calculator-coverage: whether the computed tariff code matches the Zurich calculator for unexplored paths (residence block for A/B/H, more than 3 children, H3N/P3N, inferred per-child rows); non-blocking go-live condition",
-    "OQ-fund-divorced-widowed: whether the pension fund form shows an extra field (e.g. a former spouse's date of birth) for Divorced or Widowed; proceed with D-004 until the fund or HR checks the portal"
+    "OQ-calculator-coverage: whether the computed tariff code matches the Zurich calculator for unexplored paths (residence block for A/B/H, more than 3 children, H3N/P3N, inferred per-child rows); non-blocking go-live condition"
   ],
   "tech_leaks": [
     {
+      "file": "feature.md",
+      "quote": "(The internal expression evaluates one child block; it is summed over all blocks.)",
+      "why": "Refers to an internal formula ('internal expression') rather than business language. D-045 forbids this."
+    },
+    {
       "file": "information.md",
-      "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
-      "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
+      "quote": "(The internal expression evaluates one child block; it is summed over all blocks.)",
+      "why": "Refers to an internal formula ('internal expression') rather than business language. D-045 forbids this."
     },
     {
-      "file": "feature.md",
-      "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
-      "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
-    },
-    {
-      "file": "feature.md",
-      "quote": "using only the constructs the condition language allows; the child digit is 1 when the child counts, otherwise 0.",
-      "why": "D-052 (in the Evidence list) refers to the constraints of an internal rule/condition language. That is an implementation detail, not a business rule."
+      "file": "stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md",
+      "quote": "free text is not accepted and the country is required",
+      "why": "Prescribes how the input field behaves (no free text). Choosing from the list is already the business rule; how input is restricted is up to engineering."
     }
   ]
 }

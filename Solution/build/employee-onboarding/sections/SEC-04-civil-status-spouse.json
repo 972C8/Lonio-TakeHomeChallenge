@@ -2,37 +2,37 @@
   "id": "SEC-04-civil-status-spouse",
   "order": 4,
   "title": "Civil status and spouse data",
-  "purpose": "Ask every employee for their civil status, using six values. Map it to the pension fund's four values and to the calculator's two groups. Ask the spouse's or registered partner's date of birth only of married, registered-partner and separated employees.",
+  "purpose": "Ask the civil status of every employee and the spouse's or partner's date of birth where the fund needs it, and convert the civil status to the pension fund's list and to the calculator's two groups.",
   "stories": [
     {
       "id": "US-04.1",
       "title": "Ask every employee for their civil status",
       "as_a": "employee",
-      "i_want": "to state my civil status once, in step 4 'Civil status and spouse' of the onboarding questionnaire, choosing from a list that matches my real situation",
-      "so_that": "Lonio can register me with the pension fund and work out my source tax tariff without asking me the same thing again for each party",
+      "i_want": "to state my civil status once, choosing from a list that covers my real situation, including a registered partnership or a separation",
+      "so_that": "the pension fund can register me and the source tax tariff can be worked out without HR asking me again",
       "priority": "P1",
-      "priority_reason": "The pension fund requires a civil status to register the employee, and the source tax tariff depends on it. Without it, the registration and the tariff are blocked.",
+      "priority_reason": "Civil status is a required field of the pension fund registration; without it the registration is blocked (F-pension_portal-8664f4). It also drives the source tax tariff.",
       "acceptance_criteria": [
         {
           "id": "AC-04.1.1",
-          "title": "Civil status is asked of everyone and is required",
-          "given": "an employee is filling in the questionnaire, wherever they live",
-          "when": "they reach step 4 'Civil status and spouse'",
-          "then": "they are asked for their civil status and cannot submit the questionnaire without answering. The answer is recorded for the pension fund and for source tax. Assumption to be verified by a domain expert: the step order follows the agreed eight-step list (D-047).",
+          "title": "Civil status is asked of every employee, wherever they live",
+          "given": "an employee filling in the onboarding questionnaire, living in Switzerland or abroad",
+          "when": "they reach step 4 'Civil status and spouse' of the eight questionnaire steps",
+          "then": "Lonio asks for their civil status, and an answer is required before the questionnaire can be submitted. Assumption to be verified by a domain expert: the step order follows the eight fixed steps (D-047).",
           "examples": [
             {
-              "name": "Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe)",
+              "name": "Daniel, registered partnership, living in Switzerland (hr_transcript/F-hr_transcript-3907fe)",
               "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
                 {
                   "item": "civil_status",
                   "value": "Registered partnership"
                 }
               ],
               "then": [
-                {
-                  "target": "civil_status",
-                  "expect": "asked"
-                },
                 {
                   "target": "civil_status",
                   "expect": "required"
@@ -44,11 +44,11 @@
               "illustrative": false
             },
             {
-              "name": "Single employee living in Switzerland",
+              "name": "Employee living in Germany",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Switzerland"
+                  "value": "Germany"
                 },
                 {
                   "item": "civil_status",
@@ -58,10 +58,6 @@
               "then": [
                 {
                   "target": "civil_status",
-                  "expect": "asked"
-                },
-                {
-                  "target": "civil_status",
                   "expect": "required"
                 }
               ],
@@ -69,11 +65,11 @@
               "illustrative": true
             },
             {
-              "name": "Married employee living in Germany",
+              "name": "Employee living in Liechtenstein",
               "given": [
                 {
                   "item": "address_country",
-                  "value": "Germany"
+                  "value": "Liechtenstein"
                 },
                 {
                   "item": "civil_status",
@@ -81,10 +77,6 @@
                 }
               ],
               "then": [
-                {
-                  "target": "civil_status",
-                  "expect": "asked"
-                },
                 {
                   "target": "civil_status",
                   "expect": "required"
@@ -97,23 +89,40 @@
           "source_refs": [
             "F-hr_transcript-ce8ca4",
             "F-pension_portal-8664f4",
-            "F-zh_source_tax_calculator-051bb9",
+            "F-zh_source_tax_calculator-9007c3",
             "D-047"
           ]
         },
         {
           "id": "AC-04.1.2",
-          "title": "Six civil status values are offered",
-          "given": "an employee is asked for their civil status",
-          "when": "they choose an answer",
-          "then": "they can choose exactly one of: Single, Married, Divorced, Widowed, Registered partnership, Separated. The fund's list has only the first four. Registered partnership and Separated are added because the source tax calculator treats them in a specific way and registered partnerships do occur at Muster AG. Assumption to be verified by a domain expert (D-003).",
+          "title": "Civil status offers exactly six values",
+          "given": "the civil status question is shown",
+          "when": "the employee chooses an answer",
+          "then": "they choose exactly one of: Single, Married, Divorced, Widowed, Registered partnership, Separated. The first four use the wording of the pension fund's list; Registered partnership and Separated are added because they occur (Daniel is in a registered partnership) and the source tax calculator names them. Assumption to be verified by a domain expert (D-003).",
           "examples": [],
           "source_refs": [
             "F-pension_portal-3d1ae4",
-            "F-zh_source_tax_calculator-051bb9",
+            "F-hr_transcript-bd8c8e",
             "F-hr_transcript-3907fe",
-            "D-003",
-            "G-10"
+            "F-zh_source_tax_calculator-051bb9",
+            "G-10",
+            "D-003"
+          ]
+        },
+        {
+          "id": "AC-04.1.3",
+          "title": "Civil status is recorded for the pension fund and for source tax",
+          "given": "the employee has answered the civil status question and submitted the questionnaire",
+          "when": "the answers are recorded for HR",
+          "then": "the civil status is recorded as needed by the pension fund (its required 'Civil status' field, converted to the fund's list) and by source tax (the calculator's civil status group and the spouse exemption in HR's source tax rule). How the data is sent to each party is out of scope.",
+          "examples": [],
+          "source_refs": [
+            "F-hr_transcript-ce8ca4",
+            "F-pension_portal-8664f4",
+            "F-zh_source_tax_calculator-9007c3",
+            "F-hr_transcript-5af8d0",
+            "G-04",
+            "D-034"
           ]
         }
       ],
@@ -127,11 +136,11 @@
         "F-hr_transcript-3907fe",
         "F-pension_portal-8664f4",
         "F-pension_portal-3d1ae4",
+        "F-zh_source_tax_calculator-9007c3",
         "F-zh_source_tax_calculator-051bb9",
-        "D-003",
-        "D-047",
         "G-10",
-        "G-01"
+        "D-003",
+        "D-047"
       ],
       "status": "decision"
     },
@@ -139,17 +148,17 @@
       "id": "US-04.2",
       "title": "Ask for the spouse's or registered partner's date of birth when the fund registers the employee as Married",
       "as_a": "pension_fund",
-      "i_want": "to receive the spouse's date of birth for every employee registered with me as Married",
-      "so_that": "the registration is not blocked by a missing required field",
+      "i_want": "the date of birth of the spouse or registered partner of every employee I register as Married, and no spouse data for anyone else",
+      "so_that": "the registration is not blocked by the missing 'Spouse's date of birth' and no personal data is collected that I do not need",
       "priority": "P1",
-      "priority_reason": "The fund's portal blocks the registration with 'Spouse's date of birth is required.' when the civil status is Married and the field is empty.",
+      "priority_reason": "The fund's portal blocks the registration of a Married employee when the spouse's date of birth is empty (F-pension_portal-c5ee15).",
       "acceptance_criteria": [
         {
           "id": "AC-04.2.1",
-          "title": "Asked and required only of married, registered-partner and separated employees",
+          "title": "Spouse's or partner's date of birth is asked only for married, registered-partner and separated employees",
           "given": "an employee has answered the civil status question in step 4",
-          "when": "the civil status is Married, Registered partnership or Separated",
-          "then": "the employee is asked for the date of birth of their spouse or registered partner and must answer it. For Single, Divorced or Widowed it is not asked, and no spouse data is sent to the fund. Assumption to be verified by a domain expert (D-004): the fund needs the date of birth for everyone it registers as Married, which includes registered partners and separated employees (D-003). It also assumes the fund needs nothing extra for Divorced or Widowed (see OQ-fund-divorced-widowed).",
+          "when": "their civil status is Married, Registered partnership or Separated",
+          "then": "Lonio asks for the date of birth of their spouse or registered partner in the same step, and an answer is required. For Single, Divorced and Widowed it is not asked and no spouse data is recorded for the fund. Assumption to be verified by a domain expert: registered partners and separated employees are entered at the fund as Married and therefore need this date; divorced and widowed employees do not (D-003, D-004; HR did not know what the fund wants for registered partners, F-hr_transcript-f197d6).",
           "examples": [
             {
               "name": "Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe)",
@@ -162,16 +171,11 @@
               "then": [
                 {
                   "target": "spouse_date_of_birth",
-                  "expect": "asked"
-                },
-                {
-                  "target": "spouse_date_of_birth",
                   "expect": "required"
                 }
               ],
               "source_refs": [
-                "F-hr_transcript-3907fe",
-                "D-004"
+                "F-hr_transcript-3907fe"
               ],
               "illustrative": false
             },
@@ -186,16 +190,10 @@
               "then": [
                 {
                   "target": "spouse_date_of_birth",
-                  "expect": "asked"
-                },
-                {
-                  "target": "spouse_date_of_birth",
                   "expect": "required"
                 }
               ],
-              "source_refs": [
-                "F-hr_transcript-2334d8"
-              ],
+              "source_refs": [],
               "illustrative": true
             },
             {
@@ -209,16 +207,10 @@
               "then": [
                 {
                   "target": "spouse_date_of_birth",
-                  "expect": "asked"
-                },
-                {
-                  "target": "spouse_date_of_birth",
                   "expect": "required"
                 }
               ],
-              "source_refs": [
-                "D-004"
-              ],
+              "source_refs": [],
               "illustrative": true
             },
             {
@@ -235,9 +227,7 @@
                   "expect": "not asked"
                 }
               ],
-              "source_refs": [
-                "F-pension_portal-39bab1"
-              ],
+              "source_refs": [],
               "illustrative": true
             },
             {
@@ -254,9 +244,7 @@
                   "expect": "not asked"
                 }
               ],
-              "source_refs": [
-                "D-004"
-              ],
+              "source_refs": [],
               "illustrative": true
             },
             {
@@ -273,9 +261,7 @@
                   "expect": "not asked"
                 }
               ],
-              "source_refs": [
-                "D-004"
-              ],
+              "source_refs": [],
               "illustrative": true
             }
           ],
@@ -284,32 +270,48 @@
             "F-pension_portal-39bab1",
             "F-pension_portal-c5ee15",
             "F-pension_portal-6d3630",
+            "F-hr_transcript-f197d6",
             "D-003",
             "D-004"
           ]
         },
         {
           "id": "AC-04.2.2",
-          "title": "Date of birth given as a full date",
-          "given": "the employee is asked for the spouse's or registered partner's date of birth",
-          "when": "they enter it",
-          "then": "it is accepted only as a complete date in the form DD.MM.YYYY, as the fund requires, and is recorded for the pension fund.",
+          "title": "The date is given as a calendar date",
+          "given": "the spouse's or partner's date of birth is asked",
+          "when": "the employee enters it",
+          "then": "it is a date in the form DD.MM.YYYY, as the fund's field expects.",
           "examples": [],
           "source_refs": [
             "F-pension_portal-ef28c3",
-            "F-pension_portal-a0065b"
+            "G-10"
           ]
         },
         {
           "id": "AC-04.2.3",
-          "title": "Spouse's date of birth discarded when it no longer applies",
+          "title": "An answer that no longer applies is not kept",
           "given": "an employee entered a spouse's date of birth and then changed their civil status to Single, Divorced or Widowed",
           "when": "they submit the questionnaire",
-          "then": "the spouse's date of birth is not kept. Before submission, it is kept so that the employee loses no input if they change the civil status back.",
+          "then": "the spouse's date of birth is discarded and not recorded; if they change back before submitting, the date they entered is still there.",
           "examples": [],
           "source_refs": [
             "D-036",
+            "D-050",
             "G-01"
+          ]
+        },
+        {
+          "id": "AC-04.2.4",
+          "title": "The date is recorded for the pension fund",
+          "given": "the employee has entered the spouse's or partner's date of birth and submitted",
+          "when": "the answers are recorded for HR",
+          "then": "the date is recorded as the fund's 'Spouse's date of birth' for an employee entered at the fund as Married.",
+          "examples": [],
+          "source_refs": [
+            "F-pension_portal-a0065b",
+            "F-hr_transcript-2334d8",
+            "D-003",
+            "D-034"
           ]
         }
       ],
@@ -319,16 +321,15 @@
       "rules": [],
       "source_refs": [
         "F-hr_transcript-2334d8",
+        "F-hr_transcript-f197d6",
         "F-pension_portal-a0065b",
+        "F-pension_portal-ef28c3",
         "F-pension_portal-39bab1",
         "F-pension_portal-c5ee15",
-        "F-pension_portal-ef28c3",
         "F-pension_portal-6d3630",
-        "F-hr_transcript-f197d6",
         "D-003",
         "D-004",
-        "D-036",
-        "G-01"
+        "D-036"
       ],
       "status": "decision"
     },
@@ -336,17 +337,17 @@
       "id": "US-04.3",
       "title": "Answer the calculator's civil status question from the employee's civil status",
       "as_a": "source_tax",
-      "i_want": "the employee's civil status to be put into the calculator's two groups the same way the Zurich calculator does it",
-      "so_that": "the computed tariff code uses the right civil status group without anyone clicking through the calculator",
+      "i_want": "the employee's civil status placed in one of the calculator's two groups",
+      "so_that": "the tariff code follows the calculator's logic without asking the employee a second civil status question",
       "priority": "P1",
-      "priority_reason": "The full tariff code is computed by Lonio and replaces HR's manual calculator step (D-001). A wrong group gives a wrong tariff.",
+      "priority_reason": "Lonio computes the full tariff code instead of HR (D-001); the civil status group is an input to the tariff letter.",
       "acceptance_criteria": [
         {
           "id": "AC-04.3.1",
-          "title": "Civil status mapped to the calculator's two groups",
+          "title": "Civil status is converted to the calculator's two groups",
           "given": "an employee has answered the civil status question",
-          "when": "Lonio works out the civil status for source tax",
-          "then": "Married and Registered partnership count as 'Married or registered partnership'. Single, Divorced, Widowed and Separated count as 'Single, divorced, separated or widowed'. This follows the calculator's two options. Assumption to be verified by a domain expert: a registered partnership is treated as married, including the spouse exemption, and Separated is treated as single (D-003). The result is always worked out again from the latest civil status, including after HR changes it (D-037).",
+          "when": "Lonio works out the civil status group for source tax",
+          "then": "Married and Registered partnership give 'Married or registered partnership'; Single, Divorced, Widowed and Separated give 'Single, divorced, separated or widowed', exactly as the calculator groups them. Registered partners therefore count as married for source tax, including the spouse exemption in HR's source tax rule. Assumption to be verified by a domain expert (D-003). The group is derived again whenever the civil status changes (D-037).",
           "examples": [
             {
               "name": "Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe)",
@@ -363,8 +364,7 @@
                 }
               ],
               "source_refs": [
-                "F-hr_transcript-3907fe",
-                "D-003"
+                "F-hr_transcript-3907fe"
               ],
               "illustrative": false
             },
@@ -450,14 +450,13 @@
                   "expect": "Single, divorced, separated or widowed"
                 }
               ],
-              "source_refs": [
-                "D-003"
-              ],
+              "source_refs": [],
               "illustrative": true
             }
           ],
           "source_refs": [
             "F-zh_source_tax_calculator-051bb9",
+            "F-zh_source_tax_calculator-9007c3",
             "D-003",
             "D-037"
           ]
@@ -471,6 +470,7 @@
       ],
       "source_refs": [
         "F-zh_source_tax_calculator-051bb9",
+        "F-zh_source_tax_calculator-9007c3",
         "D-001",
         "D-003",
         "D-037"
@@ -481,17 +481,17 @@
       "id": "US-04.4",
       "title": "Enter the civil status on the pension fund's list",
       "as_a": "pension_fund",
-      "i_want": "to receive the employee's civil status as one of the four values my registration form accepts",
-      "so_that": "the employee can be registered for occupational pension without HR having to interpret the answer",
+      "i_want": "every employee's civil status as one of my four values: Single, Married, Divorced or Widowed",
+      "so_that": "I can register every employee, including registered partners and separated employees, whom my list does not name",
       "priority": "P1",
-      "priority_reason": "The fund's civil status field is required and accepts only Single, Married, Divorced or Widowed. Any other value blocks the registration.",
+      "priority_reason": "Civil status is a required fund field with a fixed list; a value outside it cannot be entered and blocks the registration (F-pension_portal-8664f4, F-pension_portal-3d1ae4).",
       "acceptance_criteria": [
         {
           "id": "AC-04.4.1",
-          "title": "Civil status mapped to the fund's four values",
+          "title": "Civil status is converted to the fund's list",
           "given": "an employee has answered the civil status question",
           "when": "Lonio works out the civil status for the pension fund",
-          "then": "Single, Married, Divorced and Widowed stay as they are. Registered partnership and Separated are recorded as Married, together with the spouse's or partner's date of birth. HR did not know how the fund handles a registered partnership, so this is an assumption to be verified by a domain expert (D-003). Whether the fund needs an extra field for Divorced or Widowed is still open (see OQ-fund-divorced-widowed). The result is always worked out again from the latest civil status, including after HR changes it (D-037).",
+          "then": "Single, Married, Divorced and Widowed are entered as they are; Registered partnership and Separated are entered as Married, together with the spouse's or partner's date of birth. Assumption to be verified by a domain expert: HR did not know how the fund handles a registered partnership, and the fund's list has no value for it or for separation (D-003, D-004). The result is derived again whenever the civil status changes (D-037).",
           "examples": [
             {
               "name": "Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe)",
@@ -512,8 +512,7 @@
                 }
               ],
               "source_refs": [
-                "F-hr_transcript-3907fe",
-                "D-003"
+                "F-hr_transcript-3907fe"
               ],
               "illustrative": false
             },
@@ -535,9 +534,24 @@
                   "expect": "required"
                 }
               ],
-              "source_refs": [
-                "D-003"
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Married",
+              "given": [
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
               ],
+              "then": [
+                {
+                  "target": "pension_fund_civil_status",
+                  "expect": "Married"
+                }
+              ],
+              "source_refs": [],
               "illustrative": true
             },
             {
@@ -558,23 +572,6 @@
               "illustrative": true
             },
             {
-              "name": "Married",
-              "given": [
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                }
-              ],
-              "then": [
-                {
-                  "target": "pension_fund_civil_status",
-                  "expect": "Married"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
               "name": "Divorced",
               "given": [
                 {
@@ -586,6 +583,10 @@
                 {
                   "target": "pension_fund_civil_status",
                   "expect": "Divorced"
+                },
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "not asked"
                 }
               ],
               "source_refs": [],
@@ -603,6 +604,10 @@
                 {
                   "target": "pension_fund_civil_status",
                   "expect": "Widowed"
+                },
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "not asked"
                 }
               ],
               "source_refs": [],
@@ -612,7 +617,6 @@
           "source_refs": [
             "F-pension_portal-3d1ae4",
             "F-hr_transcript-f197d6",
-            "F-pension_portal-6d3630",
             "D-003",
             "D-004",
             "D-037"
@@ -626,10 +630,9 @@
         "pension_fund_civil_status"
       ],
       "source_refs": [
-        "F-pension_portal-3d1ae4",
         "F-pension_portal-8664f4",
+        "F-pension_portal-3d1ae4",
         "F-hr_transcript-f197d6",
-        "F-pension_portal-6d3630",
         "D-003",
         "D-004",
         "D-037"
@@ -645,16 +648,15 @@
     "pension_fund_civil_status",
     "calculator_civil_status"
   ],
-  "open_questions": [
-    "OQ-fund-divorced-widowed"
-  ],
+  "open_questions": [],
   "source_refs": [
     "F-hr_transcript-ce8ca4",
     "F-hr_transcript-2334d8",
     "F-hr_transcript-f197d6",
+    "F-pension_portal-8664f4",
     "F-pension_portal-3d1ae4",
     "F-pension_portal-a0065b",
-    "F-pension_portal-6d3630",
+    "F-pension_portal-ef28c3",
     "F-zh_source_tax_calculator-051bb9",
     "G-10",
     "D-003",

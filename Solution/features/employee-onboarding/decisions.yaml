@@ -650,9 +650,9 @@ decisions:
 - id: D-052
   action: override
   target: rule.tariff_code.expression
-  statement: The tariff code is one code made of the tariff letter, the child digit and the church-tax suffix
-    (D-051), for example C1Y. The child digit is the number of children who count; the examples have one
-    child each.
+  statement: The tariff code is one code made of the tariff letter, the child digit and the church-tax
+    suffix (D-051), for example C1Y. The child digit is the number of children who count; the examples
+    have one child each.
   value: if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in
     principle no source tax liability, subject to the double taxation agreement", [tariff_letter, if_else(child_count,
     1, 0), church_tax_suffix]))
@@ -664,20 +664,25 @@ decisions:
 - id: D-053
   action: direct
   target: ''
-  statement: After submission the questionnaire stays read-only for the employee and is never reopened. When an
-    HR change makes new questions apply, HR enters the missing answers itself; until then the derived results
-    that depend on them show 'incomplete - HR must complete' (D-048). Examples after an HR change therefore
-    expect 'HR must complete', not 'asked'. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  statement: After submission the questionnaire stays read-only for the employee and is never reopened.
+    When an HR change makes new questions apply, HR enters the missing answers itself; until then the
+    derived results that depend on them show 'incomplete - HR must complete' (D-048). Examples after an
+    HR change therefore expect 'HR must complete', not 'asked'. Assumption - to be verified by a domain
+    expert; state this assumption in the user story.
   value: null
-  rationale: "Review finding: AC-01.6.2 contradicted AC-01.6.3."
+  rationale: 'Review finding: AC-01.6.2 contradicted AC-01.6.3.'
   by: Product owner
+  evidence: []
+  evidence_hash: e3b0c44298fc
 - id: D-054
   action: direct
   target: ''
-  statement: For Liechtenstein residents with more than 45 non-return days, the recorded tariff code is the plain
-    code (for example C0Y). The note 'subject to the double taxation agreement' is recorded separately next
-    to the code and flagged for HR; it is not part of the code. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  statement: For Liechtenstein residents with more than 45 non-return days, the recorded tariff code is
+    the plain code (for example C0Y). The note 'subject to the double taxation agreement' is recorded
+    separately next to the code and flagged for HR; it is not part of the code. Assumption - to be verified
+    by a domain expert; state this assumption in the user story.
   value: null
-  rationale: "Review finding: unclear whether the DTA note is part of the recorded code."
+  rationale: 'Review finding: unclear whether the DTA note is part of the recorded code.'
   by: Product owner
-
+  evidence: []
+  evidence_hash: e3b0c44298fc

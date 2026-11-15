@@ -1,66 +1,66 @@
 {
   "verdict": "not_ready",
-  "summary": "All 300+ examples pass and there are no errors. Two major dev-refinement questions are open (AC-01.6.2 vs AC-01.6.3, and the Liechtenstein tariff-code note), and implementation vocabulary leaks into the spec (D-045 and D-052 'expression' / 'condition language', ISO 3166). Many trace-judge partials also point to non-cited or unbacked claims. Resolve the blockers, then it should be ready_with_caveats.",
+  "summary": "Two examples in AC-06.6.5 fail, and dev refinement raised two major questions about the 'incomplete - HR must complete' state. Technical wording also leaks into the spec (D-045). Several rules and items are only partly traced to cited sources. The calculator-coverage open question is non-blocking, but it needs sign-off before go-live.",
   "findings": [
     {
-      "title": "AC-01.6.2 contradicts AC-01.6.3 after submission",
-      "why": "The example expects Denomination 'asked' after HR records a change, but the questionnaire is read-only after submission and the tariff code should show 'incomplete - HR must complete'. Devs cannot tell whether the questionnaire reopens.",
-      "evidence": "dev_refinement (major) US-01.6; AC-01.6.1/2/3; D-048; example 'AC-01.6.2 / Tomás after HR records...'",
-      "action": "Add a decision: after submission HR completes the missing answers and the tariff shows incomplete (no reopen), or the questionnaire reopens for the employee. Fix the AC-01.6.2 expected value to match."
+      "title": "AC-06.6.5 examples fail: the 'incomplete' case has no passing test",
+      "why": "After an HR change, the tariff code is specified as 'incomplete - HR must complete' (D-053). The computed code instead returns a partial value (A0 / N). The first example expects Denomination 'required', which contradicts D-053. The second never shows the unasked spouse-employment question. The incomplete-state behaviour is therefore untested and ambiguous.",
+      "evidence": "examples: AC-06.6.5 (both cases pass=false); dev_refinement US-06.6 (major)",
+      "action": "Decide in decisions.yaml that the tariff code is 'incomplete - HR must complete' whenever a required input was never asked. Then fix both example tables: show the unasked question as 'not asked' and expect 'incomplete'. Fix the rule expression so it returns 'incomplete' rather than a partial code."
     },
     {
-      "title": "Liechtenstein >45 days: is the DTA note part of the recorded code?",
-      "why": "The recorded result changes. The example expects 'C0Y' alone, the rule says 'with the note', and D-051 says the code is one single text. The acceptance test is ambiguous.",
-      "evidence": "dev_refinement (major) US-06.6; AC-06.6.3; rule.tariff_code trace_judge (expression lacks the note/flag); D-051",
-      "action": "Decide in decisions.yaml: code 'C0Y' with the note and HR flag stored separately, or one text including the note. Align the rule expression, the AC and the examples."
+      "title": "Scope of the 'incomplete' state is undefined for pension fund results",
+      "why": "The spec covers only the tariff code and 'subject to source tax'. It does not say what the fund canton, or the fund civil status Married without a spouse date of birth, show after an HR change that makes an unasked answer applicable. Engineering would have to guess.",
+      "evidence": "dev_refinement US-01.6 (major); items pension_fund_canton, pension_fund_civil_status",
+      "action": "Decide which derived results go 'incomplete' (for example canton and the spouse date of birth for the fund). Or decide that HR must enter the missing value, and state that in US-01.6."
     },
     {
-      "title": "Technical vocabulary leaks into the spec",
-      "why": "The spec must stay in business language. D-045 forbids 'expression', and D-052 refers to the 'condition language'.",
-      "evidence": "tech_leak: information.md and feature.md ('The expression gives, per child...'; D-052 'constructs the condition language allows'); ISO 3166 in item.address_country, item.nationality, item.spouse_nationality, AC-02.3.1",
-      "action": "Reword to business language, e.g. 'the digit is the number of counted children' and 'country list (all countries, plus stateless)'. Reword D-052 and remove the ISO standard name unless the PO wants it as a requirement."
+      "title": "tariff_code rule contradicts its own statement",
+      "why": "The expression uses if_else(child_count,1,0), which yields only 0 or 1. The statement and the calculator facts require the number of counted children (for example C3Y). Codes for two or more children would be wrong.",
+      "evidence": "trace_judge rule.tariff_code; OQ-calculator-coverage (H3N/P3N, more than 3 children)",
+      "action": "Correct the expression to use the child count (or its capped value). Add examples for 2 and 3 children. Confirm the behaviour for more than 3 children with the domain expert."
     },
     {
-      "title": "Child digit wording in D-052 conflicts with the rule",
-      "why": "D-052 says the digit is 1 or 0, but the rule and calculator say the digit is the count of counted children (C3Y), with no upper limit (D-044).",
-      "evidence": "dev_refinement info feature.md; F-zh_source_tax_calculator-4c53e3; D-044",
-      "action": "Confirm that D-052 means the per-child contribution and reword it. State the total count and no upper limit."
+      "title": "Technical wording leaks into the spec",
+      "why": "D-045 forbids internal-formula language in business text. ISO 3166 is implementation vocabulary, and 'free text is not accepted' dictates how the input behaves.",
+      "evidence": "tech_leak: feature.md and information.md ('internal expression'); US-02.3; item.address_country, nationality, spouse_nationality; AC-02.3.1, AC-05.1.2, AC-05.2.3",
+      "action": "Remove the 'internal expression' sentence. Say 'a list of countries (English names) plus stateless'. Drop the free-text prohibition and keep only 'the country is required'."
     },
     {
-      "title": "Rules and ACs rest on uncited or unbacked claims",
-      "why": "Traceability is partial. Several claims have no cited fact: the Liechtenstein 'never cross-border' claim, Swiss nationals being exempt, the spouse-employment and children conditions for Liechtenstein, the Maria/Tomás example refs, and the partner date of birth for Separated.",
-      "evidence": "trace_judge: rule.cross_border_tariff, US-08.2, US-06.5, US-06.6, US-06.2/06.3/06.7, US-01.2/01.4, rule.pension_fund_civil_status, item.spouse_gainful_employment, item.has_children",
-      "action": "Add the missing fact citations (F-hr_transcript-845204, -b90bd9, -3f2c2a, F-...-cc19c7) or record decisions. Confirm the partner date of birth for Separated and Married, and the Liechtenstein daily-return case."
+      "title": "Rules rely on facts and gating that no cited source backs",
+      "why": "Liechtenstein/non_return_days_45 gating, the tariff purposes, the 'cannot occur for onboarding' claim and several table rows are not backed by the cited facts. Some rows cite facts that are not in the rule's citation list. That weakens traceability and risks wrong rules.",
+      "evidence": "trace_judge: rule.questionnaire_flow, base_tariff_letter, cross_border_tariff, tariff_letter, calculator_residence, pension_fund_canton, liechtenstein_no_source_tax; items has_children, child_*, spouse_gainful_employment",
+      "action": "Add the missing citations (D-002, D-047, F-...3432a9, e22d17, f86c6b, 5af8d0). Where no source exists, mark the claim as inferred in decisions.yaml or remove it."
     },
     {
-      "title": "Required vs asked, and '–' in example tables are inconsistent",
-      "why": "The same cases are marked 'asked' in US-01.2 and 'required' in US-05.x. '–' is used for questions that always apply. The AC-06.6.3 rows are untestable as written.",
-      "evidence": "dev_refinement info US-01.2, US-06.6",
-      "action": "Define 'asked' vs 'required' in guidance. Fill in the '–' cells with explicit expected values (not asked / asked)."
+      "title": "Unconfirmed rule: at least one child block is required",
+      "why": "AC-07.2.1 requires at least one child block and every child question to be required. No source backs either. The behaviour when the last block is removed is undefined.",
+      "evidence": "trace_judge story.US-07.2; dev_refinement US-07.2",
+      "action": "Confirm with HR. Decide whether removing the last child block is blocked or sets 'has children' to no."
     },
     {
-      "title": "Missing-answer behaviour: blocks the step or only the submit?",
-      "why": "US-02.x says the employee cannot continue. US-04.1 and AC-01.8.3 say only submit is blocked. This conflicts with the save-and-resume in US-01.7.",
-      "evidence": "dev_refinement info US-01.8",
-      "action": "Decide: block only submit (recommended, matches US-01.7) and update US-02.1 and US-02.2."
+      "title": "Inconsistent expected values across example tables",
+      "why": "The same question is marked 'asked' in some stories and 'required' in others. '–' is used for inputs and for results with mismatched values, and Married/Single spouse date of birth differs from Divorced/Widowed. Testers cannot tell what to assert.",
+      "evidence": "dev_refinement US-01.2, US-01.1, US-04.4",
+      "action": "Define a single vocabulary (required / optional / not asked) and what '–' means. Align the tables to it and fix the US-04.4 rows."
     },
     {
-      "title": "Certificate of residence semantics unclear",
-      "why": "The item says 'handed in', the calculator says provided ('beigebracht'), and the story says the employee 'has' one. HR's follow-up for 'no' vs 'not yet' is undefined.",
-      "evidence": "dev_refinement info US-08.2; trace_judge item.residence_certificate",
-      "action": "Decide what 'yes' means and whether HR expects a certificate for 'no' or only for 'not yet'."
+      "title": "Conflicting rules on when a missing answer blocks the employee",
+      "why": "Some stories block leaving the step and others block only submission. US-01.7 allows saving a partly filled step.",
+      "evidence": "dev_refinement US-01.8 (US-02.1, US-02.2, US-03.1, US-04.1, AC-01.8.2)",
+      "action": "Decide that missing answers block only submission, not navigation. Align the stories and say how an incomplete step is shown."
     },
     {
-      "title": "Open go-live and source gaps (non-blocking)",
-      "why": "The tariff code is unverified on unexplored calculator paths. The pension portal's Divorced/Widowed fields and its insurance start-date derivation are unknown. Several judged facts rest on inferred labels (Q16, Q14, Q19). Calculator checks and the portal's start-date validation are not yet specced.",
-      "evidence": "OQ-calculator-coverage; OQ-fund-divorced-widowed; coverage F-pension_portal-3a97ab, -e45e5b, F-hr_transcript-8595fb; fact_judge partials",
-      "action": "Keep the domain-expert check as a go-live condition. Ask the fund or HR to check the portal. Decide how the insurance start date (1st of month) derives from the first working day."
+      "title": "Tariff calculator coverage is unverified (non-blocking)",
+      "why": "Unexplored paths (A/B/H residence block, inferred per-child rows, more than 3 children, H3N/P3N) could produce wrong source tax codes. Some calculator facts are only partly verified (Q16 residence meaning, Q14, Q19, Q to the cross-border tariff).",
+      "evidence": "open_questions OQ-calculator-coverage; fact_judge F-zh_source_tax_calculator-037b1c, 64ac33, dc0ae9, c8aa5e, 2754e8; inferred_items",
+      "action": "Schedule the domain expert comparison against the Zurich calculator before go-live. Confirm the meaning of Q14, Q16 and Q19."
     },
     {
-      "title": "First working day: date-range and reference-date rules unspecified",
-      "why": "It is unclear whether past dates are allowed, which date counts as 'sent', and whether the first working day is the reference date for children's ages (no cited fact says so).",
-      "evidence": "dev_refinement info US-03.1; trace_judge item.first_working_day, US-03.1 (AC-03.1.4)",
-      "action": "Decide the allowed range and the reference date for children's age. Remove or source the AC-03.1.4 claim that HR 'keeps the fund registration up to date'."
+      "title": "Certificate-of-residence and start-date semantics unclear (minor)",
+      "why": "'Provided' versus 'has' a certificate changes what HR expects. The first-working-day check has no defined 'sent' date, and past dates are not addressed. The insurance start date validation (the 1st of a month) has no source for its error behaviour.",
+      "evidence": "dev_refinement US-08.2, US-03.1; coverage F-pension_portal-e45e5b unused",
+      "action": "Decide: 'yes' means already given to HR. Define the reference date for the one-year window and whether past dates are allowed. State the start-date error wording as a product decision."
     }
   ]
 }

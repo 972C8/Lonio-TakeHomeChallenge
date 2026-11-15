@@ -3,7 +3,7 @@ id: employee-onboarding
 title: "Employee onboarding questionnaire"
 stakeholders: [employee, hr, pension_fund, source_tax]
 sections: [SEC-01-questionnaire-flow, SEC-02-personal-details-address, SEC-03-employment-start, SEC-04-civil-status-spouse, SEC-05-source-tax-liability, SEC-08-cross-border-residence, SEC-06-source-tax-tariff-basics, SEC-07-source-tax-children]
-stories: [US-01.1, US-01.2, US-01.3, US-01.4, US-01.5, US-01.6, US-01.7, US-01.8, US-02.1, US-02.2, US-02.3, US-02.4, US-03.1, US-03.2, US-03.3, US-04.1, US-04.2, US-04.3, US-04.4, US-05.1, US-05.2, US-05.3, US-05.4, US-08.1, US-08.2, US-08.3, US-08.4, US-06.2, US-06.3, US-06.7, US-06.4, US-06.5, US-06.6, US-07.1, US-07.2, US-07.3, US-07.4, US-07.5, US-07.6]
+stories: [US-01.1, US-01.2, US-01.3, US-01.4, US-01.5, US-01.6, US-01.7, US-01.8, US-02.1, US-02.2, US-02.3, US-02.4, US-03.1, US-03.2, US-03.3, US-04.1, US-04.2, US-04.3, US-04.4, US-05.1, US-05.2, US-05.3, US-05.4, US-08.1, US-08.2, US-08.3, US-08.4, US-08.5, US-06.2, US-06.3, US-06.7, US-06.4, US-06.5, US-06.6, US-07.1, US-07.2, US-07.3, US-07.4, US-07.5, US-07.6]
 ---
 
 # Employee onboarding questionnaire
@@ -11,10 +11,10 @@ stories: [US-01.1, US-01.2, US-01.3, US-01.4, US-01.5, US-01.6, US-01.7, US-01.8
 Each user story is its own file in [stories/](stories/); this file holds the
 feature, its sections and the information and rules they share.
 
-**Goal:** A new employee of Muster AG answers one questionnaire, in English, that asks each piece of information once and only when a receiving party needs it. From those answers Lonio records what the pension fund needs to register the employee, what HR needs for its records, and the full Zurich source tax tariff code, with no manual calculator step.
+**Goal:** A new employee of Muster AG answers one English onboarding questionnaire in Lonio. It asks each piece of information once and only when a receiving party needs it for that person. From the answers, Lonio registers the employee with Pensionskasse Muster, decides whether source tax applies and computes the full Zurich source tax tariff code, so that HR has everything it needs.
 
 ## Context
-Today the onboarding data is collected for each receiving party separately. HR then re-enters it in Pensionskasse Muster's portal and clicks through the Zurich source tax calculator to find the tariff. If too little is asked, a registration is blocked: for example, the fund requires the spouse's date of birth for married employees. If too much is asked, Lonio holds personal data no party needs, which breaks data minimisation (G-01). The receiving parties in scope are the pension fund, source tax and HR (G-02). Social insurance (AHV) data, IT equipment and badge photos are out of scope (G-03). This spec covers only what the employee is asked, in which order and under which conditions, plus the rules derived from the answers. How data is sent to each party and any HR screens are separate topics (G-04, D-034). Lonio derives values instead of asking for them where it can (G-08), for example the insurance start date (D-039) and the full tariff code (D-001, D-051). The questionnaire has eight fixed steps (D-047). It is read-only for the employee after submission; HR makes later changes, and every derived result is always derived again from the latest answers (D-033, D-037, D-048). The sources are fictional and are treated as the truth (G-06). Where a decision is marked as an assumption, the story must state it for a domain expert to verify.
+Today HR at Muster AG collects onboarding data itself and enters it for each receiving party. For the pension fund (Pensionskasse Muster), the insurance start date is 'the number one thing'. It depends on the first working day, and that date often changes. The fund also needs the name, date of birth, canton, civil status and, for married employees, the spouse's date of birth. To find the source tax tariff, HR works out who is subject to source tax using its own rule: anyone living abroad, and people living in Switzerland who are not Swiss, have no C permit and are not married to a Swiss national or C-permit holder living in Switzerland. HR then clicks through the Zurich tariff calculator, including the cross-border questions for Germany and Liechtenstein and the detailed questions per child. HR also wants a complete postal address and asks non-Swiss employees to bring their permit. Asking too little blocks a registration, and asking too much collects personal data no party needs (G-01). Lonio replaces this work. The employee answers once in eight fixed steps (D-047), and Lonio works out the insurance start date, the civil status and canton for the fund, whether source tax applies and the full tariff code (D-001). The sources are fictional and are treated as the truth (G-06). AHV data, IT equipment, the badge photo, how data is sent to each party and all HR screens are out of scope (G-03, G-04, D-034).
 
 **Stakeholders:** new employee, HR, pension fund, source tax office
 
@@ -22,22 +22,22 @@ Today the onboarding data is collected for each receiving party separately. HR t
 
 ## Questionnaire flow
 
-The questionnaire has eight steps in a fixed order. Only the questions that apply to this employee are shown, and a step where no question applies is skipped. The order follows dependency: the home address country decides who is asked for nationality and cross-border details. Civil status and spouse answers come before the source tax details. Liechtenstein cross-border questions come before the source tax details, because they decide whether those details are needed at all. Children come last, after the question of whether the employee has any. Answers are saved as the employee goes and can be resumed until submission. Going back and changing an earlier answer keeps the other answers until submission.
+The questionnaire has eight steps, always in this order. Only the questions that apply to this employee are shown, and a step with no applicable question is skipped (for example step 3 for employees living abroad, steps 5 to 7 for employees who are not subject to source tax). Earlier answers decide which later questions apply, so basic facts come first, then residence, nationality, civil status, cross-border commuting, source tax details and children. Each answer is asked once and reused for every receiving party. Answers are saved as the employee goes and can be resumed until submission.
 
 | Step | What is asked | Shown to | Stories |
 |---|---|---|---|
-| 1. About you | First name, last name, date of birth and first working day. | Everyone | [US-01.1](stories/US-01.1-show-the-source-tax-step-only-to-employees-who-are-subject.md), [US-01.2](stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md), [US-01.3](stories/US-01.3-ask-each-piece-of-information-once-and-reuse-it-for-every.md), [US-01.5](stories/US-01.5-discard-answers-that-no-longer-apply-on-submission.md), [US-01.7](stories/US-01.7-save-answers-as-i-go-and-resume-until-i-submit.md), [US-01.8](stories/US-01.8-review-a-summary-and-submit-with-one-confirmation.md), [US-02.1](stories/US-02.1-collect-the-employee-s-name-and-date-of-birth.md), [US-03.1](stories/US-03.1-employee-confirms-the-first-working-day.md), [US-03.2](stories/US-03.2-derive-the-pension-insurance-start-date-from-the-first.md), [US-03.3](stories/US-03.3-re-derive-the-insurance-start-date-when-the-first-working.md) |
-| 2. Home address | Street, house number, postcode, town and country of the home address as on the first working day; the canton of residence only if the country is Switzerland. | Everyone | [US-01.2](stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md), [US-01.3](stories/US-01.3-ask-each-piece-of-information-once-and-reuse-it-for-every.md), [US-01.4](stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md), [US-02.2](stories/US-02.2-collect-a-complete-postal-home-address.md), [US-02.3](stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md), [US-02.4](stories/US-02.4-ask-swiss-residents-for-their-canton.md) |
-| 3. Nationality and C permit | Nationality; whether the employee holds a C permit only if not Swiss. | Employees living in Switzerland (skipped for employees living abroad) | [US-01.2](stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md), [US-01.4](stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md), [US-05.1](stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md), [US-05.3](stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md) |
-| 4. Civil status and spouse | Civil status. Date of birth of the spouse or registered partner if Married, Registered partnership or Separated. If the employee lives in Switzerland, is not Swiss, has no C permit and is married or in a registered partnership: the spouse's nationality, whether the spouse holds a C permit (only if the spouse is not Swiss), and whether the spouse lives in Switzerland (only if the spouse is Swiss or holds a C permit). | Everyone for civil status; the spouse questions only as described | [US-01.2](stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md), [US-01.3](stories/US-01.3-ask-each-piece-of-information-once-and-reuse-it-for-every.md), [US-04.1](stories/US-04.1-ask-every-employee-for-their-civil-status.md), [US-04.2](stories/US-04.2-ask-for-the-spouse-s-or-registered-partner-s-date-of-birth.md), [US-04.3](stories/US-04.3-answer-the-calculator-s-civil-status-question-from-the.md), [US-04.4](stories/US-04.4-enter-the-civil-status-on-the-pension-fund-s-list.md), [US-05.2](stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md), [US-05.3](stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md) |
-| 5. Cross-border commuting | Liechtenstein: daily return, and if not daily, more than 45 work-related non-return days. Germany: daily return; if daily, whether a certificate of residence has been handed in ('not yet' counts as no); if not daily, whether daily return is reasonable (less than 100 km) and, if reasonable, more than 60 work-related non-return days. | Employees living in Liechtenstein or Germany who are subject to source tax (skipped for everyone else) | [US-01.1](stories/US-01.1-show-the-source-tax-step-only-to-employees-who-are-subject.md), [US-01.2](stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md), [US-08.1](stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md), [US-08.2](stories/US-08.2-germany-daily-return-and-certificate-of-residence.md), [US-08.3](stories/US-08.3-germany-no-daily-return-reasonableness-and-more-than-60-non.md), [US-08.4](stories/US-08.4-liechtenstein-daily-return-and-more-than-45-non-return-days.md) |
-| 6. Source tax details | Denomination; whether the spouse or partner is gainfully employed (only if married or in a registered partnership); whether the employee has biological or adopted children. | Employees subject to source tax; for Liechtenstein residents only with more than 45 non-return days (skipped if there is in principle no source tax liability) | [US-01.1](stories/US-01.1-show-the-source-tax-step-only-to-employees-who-are-subject.md), [US-01.2](stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md), [US-06.2](stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md), [US-06.3](stories/US-06.3-ask-married-employees-and-registered-partners-subject-to.md), [US-06.7](stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md) |
-| 7. Children | One block per child: minor or adult in first education; whether the child lives in the same household; then, depending on the answers, custody, common household with the other parent, shared custody, parental care, alternating custody, who contributes more financially, and whether more than 50% of maintenance is provided. | Employees subject to source tax who have children (skipped otherwise) | [US-07.1](stories/US-07.1-ask-about-children-only-of-employees-who-need-a-source-tax.md), [US-07.2](stories/US-07.2-one-block-per-child-age-status-and-household.md), [US-07.3](stories/US-07.3-minor-child-living-in-the-employee-s-household.md), [US-07.4](stories/US-07.4-minor-child-not-living-in-the-employee-s-household.md), [US-07.5](stories/US-07.5-adult-child-in-first-education.md) |
-| 8. Permit reminder, summary and submission | Nothing new is asked. The employee sees a reminder to bring their permit on the first working day, reviews a summary of the answers and submits with one confirmation. | Everyone; the permit reminder only to non-Swiss employees living in Switzerland and to all employees living abroad | [US-01.4](stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md), [US-01.5](stories/US-01.5-discard-answers-that-no-longer-apply-on-submission.md), [US-01.6](stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md) |
+| 1. About you | First name, last name, date of birth and first working day. | Everyone | [US-02.1](stories/US-02.1-collect-the-employee-s-name-and-date-of-birth.md), [US-03.1](stories/US-03.1-employee-confirms-the-first-working-day.md), [US-03.2](stories/US-03.2-derive-the-pension-insurance-start-date-from-the-first.md), [US-03.3](stories/US-03.3-re-derive-the-insurance-start-date-when-the-first-working.md) |
+| 2. Home address | Street, house number, postcode, town and country of residence as on the first working day; the canton only if the country is Switzerland. | Everyone | [US-02.2](stories/US-02.2-collect-a-complete-postal-home-address.md), [US-02.3](stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md), [US-02.4](stories/US-02.4-ask-swiss-residents-for-their-canton.md), [US-05.4](stories/US-05.4-derive-the-calculator-s-residence-from-the-home-address.md) |
+| 3. Nationality and C permit | Nationality; whether the employee holds a C permit only if not Swiss. | Employees living in Switzerland | [US-05.1](stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md), [US-05.3](stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md) |
+| 4. Civil status and spouse | Civil status; the spouse's or partner's date of birth if married, in a registered partnership or separated; if the employee lives in Switzerland, is not Swiss, has no C permit and is married or in a registered partnership: the spouse's nationality, whether the spouse holds a C permit (if not Swiss) and whether the spouse lives in Switzerland. | Everyone (spouse questions only where the conditions apply) | [US-04.1](stories/US-04.1-ask-every-employee-for-their-civil-status.md), [US-04.2](stories/US-04.2-ask-for-the-spouse-s-or-registered-partner-s-date-of-birth.md), [US-04.3](stories/US-04.3-answer-the-calculator-s-civil-status-question-from-the.md), [US-04.4](stories/US-04.4-enter-the-civil-status-on-the-pension-fund-s-list.md), [US-05.2](stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md), [US-05.3](stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md) |
+| 5. Cross-border commuting | Liechtenstein: daily return, and if not daily, whether more than 45 non-return days are expected. Germany: daily return; if daily, whether a certificate of residence exists ('not yet' counts as no); if not daily, whether daily return is reasonable and, if so, whether more than 60 non-return days are expected. | Employees living in Liechtenstein or Germany who are subject to source tax | [US-08.1](stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md), [US-08.2](stories/US-08.2-germany-daily-return-and-certificate-of-residence.md), [US-08.3](stories/US-08.3-germany-no-daily-return-reasonableness-and-more-than-60-non.md), [US-08.4](stories/US-08.4-liechtenstein-daily-return-and-more-than-45-non-return-days.md), [US-08.5](stories/US-08.5-liechtenstein-record-the-double-taxation-agreement-note-next.md) |
+| 6. Source tax details | Denomination; whether the spouse or partner is gainfully employed (only if married or in a registered partnership); whether the employee has children. | Employees subject to source tax, except Liechtenstein residents who are in principle not liable | [US-06.2](stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md), [US-06.3](stories/US-06.3-ask-married-employees-and-registered-partners-subject-to.md), [US-06.7](stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md) |
+| 7. Children | One block per child: whether the child is a minor or an adult in first education, whether the child lives in the household, and the follow-up questions on custody, parental care, common household with the other parent, alternating custody, main financial contributor and more than 50% maintenance, as far as they apply to that child. | Employees subject to source tax who have children | [US-07.1](stories/US-07.1-ask-about-children-only-of-employees-who-need-a-source-tax.md), [US-07.2](stories/US-07.2-one-block-per-child-age-status-and-household.md), [US-07.3](stories/US-07.3-minor-child-living-in-the-employee-s-household.md), [US-07.4](stories/US-07.4-minor-child-not-living-in-the-employee-s-household.md), [US-07.5](stories/US-07.5-adult-child-in-first-education.md) |
+| 8. Permit reminder, summary and submission | Nothing new is asked. The employee sees the permit reminder if it applies, reviews a summary of the answers and submits with one confirmation. | Everyone (the permit reminder only to non-Swiss employees living in Switzerland and to employees living abroad) | [US-01.4](stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md) |
 
-Never asked, always derived from the answers: Insurance start date ([US-03.2](stories/US-03.2-derive-the-pension-insurance-start-date-from-the-first.md), [US-03.3](stories/US-03.3-re-derive-the-insurance-start-date-when-the-first-working.md)), Civil status for the pension fund ([US-04.4](stories/US-04.4-enter-the-civil-status-on-the-pension-fund-s-list.md)), Canton for the pension fund ([US-02.4](stories/US-02.4-ask-swiss-residents-for-their-canton.md)), Subject to source tax ([US-05.3](stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md)), Civil status for source tax ([US-04.3](stories/US-04.3-answer-the-calculator-s-civil-status-question-from-the.md)), Residence for source tax ([US-05.4](stories/US-05.4-derive-the-calculator-s-residence-from-the-home-address.md), [US-08.1](stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md)), Church-tax suffix ([US-06.2](stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md)), Per-child source tax result ([US-07.2](stories/US-07.2-one-block-per-child-age-status-and-household.md), [US-07.3](stories/US-07.3-minor-child-living-in-the-employee-s-household.md), [US-07.4](stories/US-07.4-minor-child-not-living-in-the-employee-s-household.md), [US-07.5](stories/US-07.5-adult-child-in-first-education.md), [US-07.6](stories/US-07.6-child-digit-of-the-tariff-code-and-go-live-check-of-the.md)), Child digit of the tariff code ([US-07.6](stories/US-07.6-child-digit-of-the-tariff-code-and-go-live-check-of-the.md)), Base tariff letter ([US-06.4](stories/US-06.4-derive-the-base-source-tax-tariff-letter.md)), Cross-border tariff applies (Germany) ([US-08.2](stories/US-08.2-germany-daily-return-and-certificate-of-residence.md), [US-08.3](stories/US-08.3-germany-no-daily-return-reasonableness-and-more-than-60-non.md)), Tariff letter ([US-06.5](stories/US-06.5-replace-the-base-letter-with-the-cross-border-letter-where.md)), Source tax tariff code ([US-06.6](stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md)), Read-only after submission ([US-01.6](stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md)).
+Never asked, always derived from the answers: Questionnaire flow overview ([US-01.1](stories/US-01.1-show-the-source-tax-step-only-to-employees-who-are-subject.md), [US-01.2](stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md), [US-01.3](stories/US-01.3-ask-each-piece-of-information-once-and-reuse-it-for-every.md), [US-01.7](stories/US-01.7-save-answers-as-i-go-and-resume-until-i-submit.md), [US-01.8](stories/US-01.8-review-a-summary-and-submit-with-one-confirmation.md)), Civil status for the pension fund ([US-04.4](stories/US-04.4-enter-the-civil-status-on-the-pension-fund-s-list.md)), Canton for the pension fund ([US-02.4](stories/US-02.4-ask-swiss-residents-for-their-canton.md)), Subject to source tax ([US-05.1](stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md), [US-05.2](stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md), [US-05.3](stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md)), Double taxation agreement note (Liechtenstein) ([US-08.5](stories/US-08.5-liechtenstein-record-the-double-taxation-agreement-note-next.md)), Civil status group for source tax ([US-04.3](stories/US-04.3-answer-the-calculator-s-civil-status-question-from-the.md)), Residence for the tariff calculation ([US-05.4](stories/US-05.4-derive-the-calculator-s-residence-from-the-home-address.md), [US-08.1](stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md)), Church-tax suffix ([US-06.2](stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md)), Per-child result ([US-07.2](stories/US-07.2-one-block-per-child-age-status-and-household.md), [US-07.3](stories/US-07.3-minor-child-living-in-the-employee-s-household.md), [US-07.4](stories/US-07.4-minor-child-not-living-in-the-employee-s-household.md), [US-07.5](stories/US-07.5-adult-child-in-first-education.md), [US-07.6](stories/US-07.6-child-digit-of-the-tariff-code-and-go-live-check-of-the.md)), Number of counted children (child digit) ([US-07.6](stories/US-07.6-child-digit-of-the-tariff-code-and-go-live-check-of-the.md)), Base tariff letter ([US-06.4](stories/US-06.4-derive-the-base-source-tax-tariff-letter.md)), Cross-border (Grenzgänger) tariff applies ([US-08.2](stories/US-08.2-germany-daily-return-and-certificate-of-residence.md), [US-08.3](stories/US-08.3-germany-no-daily-return-reasonableness-and-more-than-60-non.md)), Tariff letter ([US-06.5](stories/US-06.5-replace-the-base-letter-with-the-cross-border-letter-where.md)), Full source tax tariff code ([US-06.6](stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md)), Discard answers that no longer apply ([US-01.5](stories/US-01.5-discard-answers-that-no-longer-apply-on-submission.md)), Read-only after submission ([US-01.6](stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md)).
 
-After submission the questionnaire is read-only for the employee. Answers that no longer apply are discarded on submission. Any later change is made by HR, and all derived results are derived again from the latest answers.
+After submission the questionnaire is read-only for the employee and is never reopened. Answers that no longer apply are discarded on submission. Later changes are made by HR.
 
 ## Contents
 
@@ -48,7 +48,7 @@ After submission the questionnaire is read-only for the employee. Answers that n
 | [3. First working day and insurance start date](#SEC-03-employment-start) | [US-03.1](stories/US-03.1-employee-confirms-the-first-working-day.md), [US-03.2](stories/US-03.2-derive-the-pension-insurance-start-date-from-the-first.md), [US-03.3](stories/US-03.3-re-derive-the-insurance-start-date-when-the-first-working.md) |
 | [4. Civil status and spouse data](#SEC-04-civil-status-spouse) | [US-04.1](stories/US-04.1-ask-every-employee-for-their-civil-status.md), [US-04.2](stories/US-04.2-ask-for-the-spouse-s-or-registered-partner-s-date-of-birth.md), [US-04.3](stories/US-04.3-answer-the-calculator-s-civil-status-question-from-the.md), [US-04.4](stories/US-04.4-enter-the-civil-status-on-the-pension-fund-s-list.md) |
 | [5. Who is subject to source tax](#SEC-05-source-tax-liability) | [US-05.1](stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md), [US-05.2](stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md), [US-05.3](stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md), [US-05.4](stories/US-05.4-derive-the-calculator-s-residence-from-the-home-address.md) |
-| [6. Source tax: residence abroad and cross-border questions](#SEC-08-cross-border-residence) | [US-08.1](stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md), [US-08.2](stories/US-08.2-germany-daily-return-and-certificate-of-residence.md), [US-08.3](stories/US-08.3-germany-no-daily-return-reasonableness-and-more-than-60-non.md), [US-08.4](stories/US-08.4-liechtenstein-daily-return-and-more-than-45-non-return-days.md) |
+| [6. Source tax: residence abroad and cross-border questions](#SEC-08-cross-border-residence) | [US-08.1](stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md), [US-08.2](stories/US-08.2-germany-daily-return-and-certificate-of-residence.md), [US-08.3](stories/US-08.3-germany-no-daily-return-reasonableness-and-more-than-60-non.md), [US-08.4](stories/US-08.4-liechtenstein-daily-return-and-more-than-45-non-return-days.md), [US-08.5](stories/US-08.5-liechtenstein-record-the-double-taxation-agreement-note-next.md) |
 | [7. Source tax tariff: denomination, spouse employment and tariff code](#SEC-06-source-tax-tariff-basics) | [US-06.2](stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md), [US-06.3](stories/US-06.3-ask-married-employees-and-registered-partners-subject-to.md), [US-06.7](stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md), [US-06.4](stories/US-06.4-derive-the-base-source-tax-tariff-letter.md), [US-06.5](stories/US-06.5-replace-the-base-letter-with-the-cross-border-letter-where.md), [US-06.6](stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md) |
 | [8. Source tax tariff: children](#SEC-07-source-tax-children) | [US-07.1](stories/US-07.1-ask-about-children-only-of-employees-who-need-a-source-tax.md), [US-07.2](stories/US-07.2-one-block-per-child-age-status-and-household.md), [US-07.3](stories/US-07.3-minor-child-living-in-the-employee-s-household.md), [US-07.4](stories/US-07.4-minor-child-not-living-in-the-employee-s-household.md), [US-07.5](stories/US-07.5-adult-child-in-first-education.md), [US-07.6](stories/US-07.6-child-digit-of-the-tariff-code-and-go-live-check-of-the.md) |
 
@@ -56,7 +56,7 @@ After submission the questionnaire is read-only for the employee. Answers that n
 
 ## 1. Questionnaire flow overview
 
-Define the eight steps, their order and the conditions under which each step and question appears. Cover saving and resuming, going back without losing answers, discarding answers that no longer apply, the permit reminder, the summary and confirmation, and read-only after submission.
+Set the eight steps, their order and when each applies, how the employee saves, resumes, reviews and submits, and what happens to answers that no longer apply or need changing after submission.
 
 | Story | Priority | Status |
 |---|---|---|
@@ -64,47 +64,57 @@ Define the eight steps, their order and the conditions under which each step and
 | [US-01.2 – Ask the steps in an order that avoids unneeded questions](stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md) | P1 | decision |
 | [US-01.3 – Ask each piece of information once and reuse it for every receiving party](stories/US-01.3-ask-each-piece-of-information-once-and-reuse-it-for-every.md) | P1 | decision |
 | [US-01.4 – Remind non-Swiss employees and employees living abroad to bring their permit](stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md) | P2 | decision |
-| [US-01.5 – Discard answers that no longer apply on submission](stories/US-01.5-discard-answers-that-no-longer-apply-on-submission.md) | P1 | decision |
-| [US-01.6 – Make the questionnaire read-only after submission and derive results from the latest answers](stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md) | P2 | decision |
+| [US-01.5 – Discard answers that no longer apply on submission](stories/US-01.5-discard-answers-that-no-longer-apply-on-submission.md) | P2 | decision |
+| [US-01.6 – Make the questionnaire read-only after submission and derive results from the latest answers](stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md) | P1 | decision |
 | [US-01.7 – Save answers as I go and resume until I submit](stories/US-01.7-save-answers-as-i-go-and-resume-until-i-submit.md) | P2 | decision |
-| [US-01.8 – Review a summary and submit with one confirmation](stories/US-01.8-review-a-summary-and-submit-with-one-confirmation.md) | P1 | inferred |
+| [US-01.8 – Review a summary and submit with one confirmation](stories/US-01.8-review-a-summary-and-submit-with-one-confirmation.md) | P2 | decision |
 
 ### Business rules in this section
 
-#### Questionnaire flow
-The questionnaire has exactly eight steps in this order (assumption D-047). Each question appears only when at least one receiving party needs the answer for this person. Answers are saved as the employee goes; the employee can resume until submitting; going back and changing an earlier answer keeps the other answers until submission; submitting needs one confirmation on a summary page (D-050). For Liechtenstein residents the cross-border questions come before the source tax details, which are skipped when there is in principle no source tax liability (D-040).
+#### Questionnaire flow overview
+The questionnaire has exactly eight steps in this order. Each question is asked once and its answer is reused for every receiving party; a question is only asked when at least one party needs the answer for this person. Answers are saved as the employee goes and they can resume until they submit; submitting needs one confirmation on a summary page.
 
 | # | Step | → Result | Sources |
 |---|---|---|---|
-| 1 | 1 About you | First name, last name, date of birth, first working day - asked of everyone. | D-047, F-pension_portal-db702a, F-hr_transcript-872bd7 |
-| 2 | 2 Home address | Street, house number (or 'no house number'), postcode, town, country as on the first working day - everyone; canton only if living in Switzerland. | D-047, D-041, D-002, D-049 |
-| 3 | 3 Nationality and C permit | Only employees living in Switzerland: nationality; C permit (yes/no) only if not Swiss. | D-047, D-005, D-008 |
-| 4 | 4 Civil status and spouse | Civil status for everyone; spouse's date of birth if Married, Registered partnership or Separated; spouse's nationality, C permit and residence in Switzerland only for spouse exemption check. | D-047, D-003, D-004, F-hr_transcript-b90bd9 |
-| 5 | 5 Cross-border commuting | Only residents of Liechtenstein or Germany (all subject to source tax): the daily-return and non-return-day questions, and for Germany the certificate of residence. | D-047, D-040, D-035 |
-| 6 | 6 Source tax details | Only employees subject to source tax (and not exempt in principle as Liechtenstein residents): denomination, spouse gainfully employed (married/registered partners), has children. | D-047, F-hr_transcript-b84498, D-040 |
-| 7 | 7 Children | Only if the employee has children: one block per child with the child questions. | D-047, F-zh_source_tax_calculator-fd9a15, D-044 |
-| 8 | 8 Permit reminder, summary and submission | Permit reminder (non-Swiss or living abroad), summary page, one confirmation to submit. | D-047, D-010, D-050 |
+| 1 | 1 About you | Always: first name, last name, date of birth, first working day | D-047, F-pension_portal-db702a, F-hr_transcript-872bd7 |
+| 2 | 2 Home address | Always: street, house number (or 'no house number'), postcode, town and country as on the first working day; canton only if the country is Switzerland | D-047, D-041, D-042, D-049, D-002 |
+| 3 | 3 Nationality and C permit | Only employees living in Switzerland: nationality; C permit (yes/no) only if not Swiss | D-047, D-005, D-008 |
+| 4 | 4 Civil status and spouse | Civil status from everyone; spouse's date of birth if married, registered partnership or separated; spouse's nationality, C permit and whether the spouse lives in Switzerland only for non-Swiss employees without C permit living in Switzerland who are married or in a registered partnership | D-047, D-003, D-004, F-hr_transcript-5af8d0 |
+| 5 | 5 Cross-border commuting | Only employees living in Liechtenstein or Germany (always subject to source tax): daily return and non-return days; certificate of residence for Germany | D-047, D-007, D-035, D-040 |
+| 6 | 6 Source tax details | Only employees subject to source tax, except Liechtenstein residents in principle not liable: denomination, spouse gainfully employed (married or registered partnership), has children | D-047, D-040, F-hr_transcript-b84498 |
+| 7 | 7 Children | Only if source tax details are asked and the employee has children: one block per child, no maximum | D-047, D-044 |
+| 8 | 8 Permit reminder, summary and submission | Always: summary and one confirmation; permit reminder for non-Swiss employees and employees living abroad | D-047, D-010, D-038, D-050 |
 
-_Status: decision · Sources: D-047, D-040, D-050, D-036, G-01, D-045_
+_Status: decision · Sources: D-047, D-050, G-01, D-036, D-037_
 
 #### Discard answers that no longer apply
-Answers to questions that no longer apply after an earlier answer changes are kept while the employee goes back and forth, and discarded on submission. The same applies when HR changes an answer after submission (D-048).
+Answers to questions that no longer apply after an earlier answer changes are kept while the employee goes back and forth, and discarded on submission. The same applies after an HR change.
 
-_Status: decision · Sources: D-036, D-048, D-050, G-01_
+| # | Moment | → Result | Sources |
+|---|---|---|---|
+| 1 | before submission | answers kept | D-036, D-050 |
+| 2 | on submission or after an HR change | answers to questions that no longer apply are discarded | D-036, D-048 |
+
+_Status: decision · Sources: G-01, D-036, D-048, D-050_
 
 #### Read-only after submission
-After submission the questionnaire is read-only for the employee. Later changes (a move, marriage, new child, a certificate of residence handed in later, a corrected nationality, a moved first working day) are made by HR (specified later). All derived results are always derived again from the latest answers.
+After submission the questionnaire is read-only for the employee and never reopened. Later changes (move, marriage, new child, late certificate of residence, corrected nationality, first working day) are made by HR; every derived result is derived again from the latest answers, and results depending on questions never asked show 'incomplete - HR must complete' until HR enters the answers.
 
-_Status: decision · Sources: D-037, D-033, D-034_
+| # | Moment | → Result | Sources |
+|---|---|---|---|
+| 1 | before submission | employee can edit and resume | D-050 |
+| 2 | after submission | read-only for the employee; changes by HR only | D-037, D-053, D-033 |
+
+_Status: decision · Sources: D-033, D-034, D-037, D-048, D-053_
 
 #### Permit reminder
-At the end of the questionnaire, every non-Swiss employee living in Switzerland and every employee living abroad (whatever their nationality, which is not asked of them) is reminded to bring their permit on the first working day. HR provides the wording before go-live, worded so that a Swiss citizen living abroad sees it does not apply to them. It collects no data.
+At the end of the questionnaire, every non-Swiss employee living in Switzerland and every employee living abroad (whatever their nationality, which is not asked) is reminded to bring their permit on the first working day. HR provides the wording before go-live, so that a Swiss citizen living abroad can see it does not apply to them. It collects no data.
 
 | # | Country of residence | Nationality | → Result | Sources |
 |---|---|---|---|---|
-| 1 | Switzerland | Switzerland | No reminder | D-010 |
-| 2 | Switzerland | other | Reminder shown | D-010 |
-| 3 | not Switzerland | - | Reminder shown | D-038 |
+| 1 | Switzerland | Switzerland | no reminder | D-010 |
+| 2 | Switzerland | other than Switzerland | reminder shown | D-010, F-hr_transcript-c53552 |
+| 3 | any country other than Switzerland | - | reminder shown | D-010, D-038 |
 
 _Status: decision · Sources: F-hr_transcript-c53552, D-010, D-038, D-050_
 
@@ -112,12 +122,12 @@ _Status: decision · Sources: F-hr_transcript-c53552, D-010, D-038, D-050_
 
 ## 2. Personal details and home address
 
-Collect the employee's name, date of birth and complete home address (as on the first working day), plus the canton for the pension fund. Residents of Switzerland choose their canton; for employees abroad Zurich is recorded and the canton is not asked.
+Collect the employee's identity and the complete home address that applies on the first working day, plus the canton the pension fund needs.
 
 | Story | Priority | Status |
 |---|---|---|
-| [US-02.1 – Collect the employee's name and date of birth](stories/US-02.1-collect-the-employee-s-name-and-date-of-birth.md) | P1 | inferred |
-| [US-02.2 – Collect a complete postal home address](stories/US-02.2-collect-a-complete-postal-home-address.md) | P1 | decision |
+| [US-02.1 – Collect the employee's name and date of birth](stories/US-02.1-collect-the-employee-s-name-and-date-of-birth.md) | P1 | decision |
+| [US-02.2 – Collect a complete postal home address](stories/US-02.2-collect-a-complete-postal-home-address.md) | P2 | decision |
 | [US-02.3 – Use the home address country as the country of residence](stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md) | P1 | decision |
 | [US-02.4 – Ask Swiss residents for their canton](stories/US-02.4-ask-swiss-residents-for-their-canton.md) | P1 | decision |
 
@@ -129,92 +139,92 @@ also in [information.md](information.md)).
 #### First name
 | | |
 |---|---|
-| **What?** | The new employee's first name, used to register the employee at the pension fund and by HR for its records and correspondence. |
-| **When do we ask?** | Always (step 1 'About you'). |
-| **When is it required?** | Always. |
+| **What?** | The employee's first name, as needed to register the employee with the pension fund and for HR's records. |
+| **When do we ask?** | Always (step 1 About you) |
+| **When is it required?** | Always |
 | **Depends on** | nothing |
-| **Who needs it?** | pension fund: Required field 'First name' for the registration.<br>HR: Identify the employee and address documents. |
+| **Who needs it?** | pension fund: Required field 'First name' of the registration form<br>HR: Identify the employee (HR asked for 'the basics, name, address') |
 | **Status · sources** | confirmed · F-pension_portal-db702a, F-pension_portal-44a27b, F-hr_transcript-3edf89, D-047 |
 
 #### Last name
 | | |
 |---|---|
-| **What?** | The new employee's last name. |
-| **When do we ask?** | Always (step 1 'About you'). |
-| **When is it required?** | Always. |
+| **What?** | The employee's last name. |
+| **When do we ask?** | Always (step 1 About you) |
+| **When is it required?** | Always |
 | **Depends on** | nothing |
-| **Who needs it?** | pension fund: Required field 'Last name' for the registration.<br>HR: Identify the employee and address documents. |
+| **Who needs it?** | pension fund: Required field 'Last name' of the registration form<br>HR: Identify the employee |
 | **Status · sources** | confirmed · F-pension_portal-c688e4, F-pension_portal-44a27b, F-hr_transcript-3edf89, D-047 |
 
 #### Date of birth
 | | |
 |---|---|
-| **What?** | The new employee's date of birth. Assumption (D-050): the employee must be at least 14 and at most 100 years old on the first working day. – Form: Date in the format DD.MM.YYYY. Employee at least 14 and at most 100 years old on the first working day. |
-| **When do we ask?** | Always (step 1 'About you'). |
-| **When is it required?** | Always. |
+| **What?** | The employee's date of birth. – Form: Date in the format DD.MM.YYYY; the employee must be at least 14 and at most 100 years old on the first working day |
+| **When do we ask?** | Always (step 1 About you) |
+| **When is it required?** | Always |
 | **Depends on** | nothing |
-| **Who needs it?** | pension fund: Required field 'Date of birth' for the registration. |
+| **Who needs it?** | pension fund: Required field 'Date of birth' of the registration form |
 | **Status · sources** | confirmed · F-pension_portal-88b436, F-pension_portal-967bc9, F-pension_portal-44a27b, D-050, D-047 |
 
 #### Street
 | | |
 |---|---|
-| **What?** | Street of the employee's home address as it applies on the first working day (assumption D-041). – Form: Part of a normal postal address as written on an envelope: street, house number, postcode, town and country. |
-| **When do we ask?** | Always (step 2 'Home address'). |
-| **When is it required?** | Always. |
+| **What?** | Street of the employee's home address that applies on the first working day. – Form: Part of a normal postal address as written on an envelope |
+| **When do we ask?** | Always (step 2 Home address) |
+| **When is it required?** | Always |
 | **Depends on** | nothing |
-| **Who needs it?** | HR: HR posts many documents to employees; the address must be complete. |
+| **Who needs it?** | HR: Post documents to the employee; the address must be complete |
 | **Status · sources** | confirmed · F-hr_transcript-3beee8, F-hr_transcript-c0fe95, F-hr_transcript-66fe15, D-041, D-049, D-047 |
 
 #### House number
 | | |
 |---|---|
-| **What?** | House number of the home address as it applies on the first working day. Required; an explicit 'no house number' option covers addresses without one (assumption D-042). – Form: Part of a normal postal address: street, house number, postcode, town and country. Explicit 'no house number' option. |
-| **When do we ask?** | Always (step 2 'Home address'). |
-| **When is it required?** | Always (a house number or the explicit 'no house number' option). |
+| **What?** | House number of the home address on the first working day. An explicit 'no house number' option covers addresses without one. – Form: Part of a normal postal address; the option 'no house number' may be chosen instead |
+| **When do we ask?** | Always (step 2 Home address) |
+| **When is it required?** | Always (a number or 'no house number') |
 | **Depends on** | nothing |
-| **Who needs it?** | HR: Complete postal address for documents. |
-| **Status · sources** | decision · F-hr_transcript-c0fe95, F-hr_transcript-3beee8, D-042, D-049, D-041 |
+| **Who needs it?** | HR: Post documents to the employee; HR wants the address complete including the number |
+| **Status · sources** | decision · F-hr_transcript-c0fe95, F-hr_transcript-3beee8, D-042, D-049 |
 
 #### Postcode
 | | |
 |---|---|
-| **What?** | Postcode of the home address as it applies on the first working day. – Form: Part of a normal postal address: street, house number, postcode, town and country. |
-| **When do we ask?** | Always (step 2 'Home address'). |
-| **When is it required?** | Always. |
+| **What?** | Postcode of the home address on the first working day. – Form: Part of a normal postal address |
+| **When do we ask?** | Always (step 2 Home address) |
+| **When is it required?** | Always |
 | **Depends on** | nothing |
-| **Who needs it?** | HR: Complete postal address for documents. |
-| **Status · sources** | confirmed · F-hr_transcript-c0fe95, F-hr_transcript-3beee8, D-049, D-041 |
+| **Who needs it?** | HR: Post documents to the employee |
+| **Status · sources** | confirmed · F-hr_transcript-c0fe95, F-hr_transcript-3beee8, D-041, D-049 |
 
 #### Town
 | | |
 |---|---|
-| **What?** | Town of the home address as it applies on the first working day. – Form: Part of a normal postal address: street, house number, postcode, town and country. |
-| **When do we ask?** | Always (step 2 'Home address'). |
-| **When is it required?** | Always. |
+| **What?** | Town of the home address on the first working day. – Form: Part of a normal postal address |
+| **When do we ask?** | Always (step 2 Home address) |
+| **When is it required?** | Always |
 | **Depends on** | nothing |
-| **Who needs it?** | HR: Complete postal address for documents. |
-| **Status · sources** | confirmed · F-hr_transcript-c0fe95, F-hr_transcript-3beee8, D-049, D-041 |
+| **Who needs it?** | HR: Post documents to the employee |
+| **Status · sources** | confirmed · F-hr_transcript-c0fe95, F-hr_transcript-3beee8, D-041, D-049 |
 
-#### Country of residence (country of the home address)
+#### Country of residence (home address country)
 | | |
 |---|---|
-| **What?** | Country of the home address as it applies on the first working day; this is the employee's country of residence. Decides whether the employee lives in Switzerland or abroad (source tax liability, which further questions apply, the canton for the pension fund, the cross-border questions and the permit reminder). – Form: Country chosen from the ISO 3166 country list, by English name (e.g. Switzerland, Germany, Liechtenstein). |
-| **When do we ask?** | Always (step 2 'Home address'). |
-| **When is it required?** | Always. |
+| **What?** | Country of the employee's home address on the first working day. It is the employee's country of residence and decides whether the employee lives in Switzerland or abroad (source tax liability, cross-border questions, canton, permit reminder). The calculator's questions 'main residence in Switzerland?' and 'country of residence' are derived from it, not asked again. – Form: Chosen from the ISO 3166 country list (English names, e.g. Switzerland, Germany, Liechtenstein) |
+| **When do we ask?** | Always (step 2 Home address) |
+| **When is it required?** | Always |
 | **Depends on** | nothing |
-| **Who needs it?** | HR: Complete postal address for documents.<br>source tax office: Employees living abroad are always subject to source tax; residence country drives the cross-border tariff questions.<br>pension fund: Decides whether the canton is chosen by the employee or set to the canton of the place of work. |
-| **Status · sources** | confirmed · F-hr_transcript-c0fe95, F-hr_transcript-ab3cba, F-hr_transcript-5af8d0, F-zh_source_tax_calculator-4c65ae, G-09, G-10, D-041, D-049, D-050, D-002 |
+| **Who needs it?** | HR: Complete postal address<br>source tax office: Employees living abroad are always subject to source tax; residence block of the tariff calculator<br>pension fund: Decides whether the canton is the canton of residence or of the place of work |
+| **Status · sources** | confirmed · F-hr_transcript-c0fe95, F-hr_transcript-ab3cba, F-hr_transcript-5af8d0, F-zh_source_tax_calculator-aedb40, F-zh_source_tax_calculator-4c65ae, G-08, G-09, D-041, D-049, D-050 |
 
 #### Canton of residence
 | | |
 |---|---|
-| **What?** | The Swiss canton the employee lives in on the first working day, for the pension fund's 'Canton' field. Only asked of employees living in Switzerland; for employees abroad the canton of the place of work (Zurich) is entered instead and not asked (assumption D-002). |
+| **What?** | The Swiss canton the employee lives in on the first working day, for the pension fund's 'Canton' field. Not asked of employees living abroad; for them the canton of the place of work (Zurich) is used (assumption D-002). |
 | **Allowed values** | Aargau · Appenzell Ausserrhoden · Appenzell Innerrhoden · Basel-Landschaft · Basel-Stadt · Bern · Fribourg · Geneva · Glarus · Graubünden · Jura · Lucerne · Neuchâtel · Nidwalden · Obwalden · Schaffhausen · Schwyz · Solothurn · St. Gallen · Thurgau · Ticino · Uri · Valais · Vaud · Zug · Zurich |
-| **When do we ask?** | Only if the employee lives in Switzerland (step 2 'Home address'). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address) |
-| **Who needs it?** | pension fund: Required field 'Canton' for the registration. |
+| **When do we ask?** | Only if the employee lives in Switzerland (step 2 Home address) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country) |
+| **Who needs it?** | pension fund: Required field 'Canton' of the registration form |
 | **Status · sources** | decision · F-pension_portal-6c621f, F-pension_portal-3432a9, F-pension_portal-b359c3, F-pension_portal-44a27b, D-002, D-047 |
 
 ### Business rules in this section
@@ -222,10 +232,10 @@ also in [information.md](information.md)).
 #### Canton for the pension fund
 Employees living in Switzerland: the canton they chose. Employees living abroad: the canton of the place of work, Zurich for Muster AG, not asked (assumption D-002).
 
-| # | Country of residence | → Result | Sources |
-|---|---|---|---|
-| 1 | Switzerland | The chosen canton of residence. | D-002, F-pension_portal-6c621f |
-| 2 | any other country | Zurich | D-002 |
+| # | Country of residence | Canton of residence | → Result | Sources |
+|---|---|---|---|---|
+| 1 | Switzerland | any canton | the chosen canton | D-002, F-pension_portal-3432a9 |
+| 2 | any country other than Switzerland | - | Zurich | D-002 |
 
 _Status: decision · Sources: F-pension_portal-6c621f, F-pension_portal-b359c3, D-002_
 
@@ -233,7 +243,7 @@ _Status: decision · Sources: F-pension_portal-6c621f, F-pension_portal-b359c3, 
 
 ## 3. First working day and insurance start date
 
-Ask for the first working day (the contractual start date) in step 1, without a separate step, and derive the pension fund's insurance start date from it.
+Ask the employee for the contractual first working day and derive the pension fund insurance start date from it.
 
 | Story | Priority | Status |
 |---|---|---|
@@ -249,32 +259,31 @@ also in [information.md](information.md)).
 #### First working day
 | | |
 |---|---|
-| **What?** | The contractual start date of employment, even when it falls on a weekend or public holiday (assumption D-039). The employee enters/confirms it because it often moves. After submission only HR can change it; the latest date always counts and no history of earlier dates is kept. The insurance start date and the reference date for children's age and for the address are derived from it. – Form: Date in the format DD.MM.YYYY. Must lie within one year after the questionnaire is sent. |
-| **When do we ask?** | Always (step 1 'About you'). |
-| **When is it required?** | Always. |
+| **What?** | The contractual start date of employment, entered and confirmed by the employee, even if it falls on a weekend or public holiday. After submission only HR can change it; the latest date always counts and no history is kept. It is the reference date for the insurance start, the home address and the children's age. – Form: Date in the format DD.MM.YYYY; must lie within one year after the questionnaire is sent |
+| **When do we ask?** | Always (step 1 About you) |
+| **When is it required?** | Always |
 | **Depends on** | nothing |
-| **Who needs it?** | pension fund: Basis for the insurance start date.<br>HR: Plans the start and keeps the fund registration up to date when the date moves. |
-| **Status · sources** | decision · F-hr_transcript-872bd7, F-hr_transcript-e3721e, F-hr_transcript-e18e66, G-08, G-10, D-033, D-039, D-050, D-047 |
+| **Who needs it?** | pension fund: Derive the insurance start date (HR: 'the number one thing')<br>HR: Start of employment; HR makes later changes |
+| **Status · sources** | decision · F-hr_transcript-872bd7, F-hr_transcript-e3721e, F-hr_transcript-e18e66, G-08, G-10, D-033, D-039, D-041, D-044, D-050, D-047 |
 
 ### Business rules in this section
 
 #### Insurance start date
-The pension fund insurance start date is derived from the first working day (the contractual start date, assumption D-039), never asked: if the first working day is the 1st of a month, insurance starts that day; otherwise on the 1st of the following month (e.g. 15.03.2026 gives 01.04.2026). It is always derived again from the latest first working day.
+The pension fund insurance start date is derived from the first working day only: if the first working day is the 1st of a month, insurance starts that day; otherwise on the 1st of the following month. It is always derived again from the latest first working day.
 
-| # | First working day is the 1st of a month | → Result | Sources |
+| # | First working day | → Result | Sources |
 |---|---|---|---|
-| 1 | yes | Insurance starts on the first working day. | F-hr_transcript-1d5c07 |
-| 2 | no | Insurance starts on the 1st of the following month. | F-hr_transcript-1d5c07, F-pension_portal-dd8126 |
+| 1 | is the 1st of a month | the first working day itself | F-hr_transcript-1d5c07, F-hr_transcript-fdf50a |
+| 2 | any other day | the 1st of the following month | F-hr_transcript-1d5c07, F-hr_transcript-30d25c |
 
-_Status: confirmed · Sources: F-hr_transcript-1d5c07, F-hr_transcript-e18e66, F-pension_portal-509cbe, F-pension_portal-dd8126, G-08, D-033, D-037, D-039_
+_Status: confirmed · Sources: F-hr_transcript-1d5c07, F-hr_transcript-e18e66, F-pension_portal-509cbe, F-pension_portal-dd8126, F-pension_portal-3a97ab, G-08, D-033, D-037, D-039_
 
 <a id="SEC-04-civil-status-spouse"></a>
 
 ## 4. Civil status and spouse data
 
-Ask every employee for their civil status, using six values. Map it to the pension fund's four values and to the calculator's two groups. Ask the spouse's or registered partner's date of birth only of married, registered-partner and separated employees.
+Ask the civil status of every employee and the spouse's or partner's date of birth where the fund needs it, and convert the civil status to the pension fund's list and to the calculator's two groups.
 
-> ⚠ Open questions affecting this section: [OQ-fund-divorced-widowed](open-questions.md#oq-fund-divorced-widowed)
 | Story | Priority | Status |
 |---|---|---|
 | [US-04.1 – Ask every employee for their civil status](stories/US-04.1-ask-every-employee-for-their-civil-status.md) | P1 | decision |
@@ -290,28 +299,28 @@ also in [information.md](information.md)).
 #### Civil status
 | | |
 |---|---|
-| **What?** | The employee's civil status. Used for the pension fund (Registered partnership and Separated are entered there as Married, assumption D-003) and for source tax (Registered partnership counts as married, Separated as single, as in the calculator). Asked of everyone, wherever they live. |
+| **What?** | The employee's civil status. Asked of everyone, wherever they live. Mapped to the pension fund's list and to the calculator's two groups (assumption D-003). |
 | **Allowed values** | Single · Married · Divorced · Widowed · Registered partnership · Separated |
-| **When do we ask?** | Always (step 4 'Civil status and spouse'). |
-| **When is it required?** | Always. |
+| **When do we ask?** | Always (step 4 Civil status and spouse) |
+| **When is it required?** | Always |
 | **Depends on** | nothing |
-| **Who needs it?** | pension fund: Required field 'Civil status'.<br>source tax office: Determines the tariff group and the spouse exemption. |
-| **Status · sources** | decision · F-hr_transcript-ce8ca4, F-hr_transcript-bd8c8e, F-hr_transcript-3907fe, F-pension_portal-8664f4, F-pension_portal-3d1ae4, F-zh_source_tax_calculator-051bb9, D-003, D-047, G-10 |
+| **Who needs it?** | pension fund: Required field 'Civil status'; Married triggers the spouse's date of birth<br>source tax office: Spouse exemption and calculator civil status group (tariff A/H vs B/C) |
+| **Status · sources** | decision · F-hr_transcript-ce8ca4, F-hr_transcript-bd8c8e, F-hr_transcript-3907fe, F-hr_transcript-f197d6, F-pension_portal-8664f4, F-pension_portal-3d1ae4, F-zh_source_tax_calculator-9007c3, F-zh_source_tax_calculator-051bb9, G-10, D-003, D-047 |
 
-#### Spouse's / registered partner's date of birth
+#### Spouse's or registered partner's date of birth
 | | |
 |---|---|
-| **What?** | Date of birth of the spouse or registered partner. Asked of married employees, registered partners and separated employees (all entered at the fund as Married); not of divorced or widowed employees (assumption D-004). – Form: Date in the format DD.MM.YYYY. |
-| **When do we ask?** | Only if civil status is Married, Registered partnership or Separated (step 4). |
-| **When is it required?** | Whenever asked. |
+| **What?** | Date of birth of the spouse or registered partner. Asked of married, registered-partner and separated employees, who are all entered at the fund as Married; not asked of divorced or widowed employees (assumption D-004). – Form: Date in the format DD.MM.YYYY |
+| **When do we ask?** | Only if the employee is married, in a registered partnership or separated (step 4) |
+| **When is it required?** | Whenever asked |
 | **Depends on** | Civil status |
-| **Who needs it?** | pension fund: Required when civil status is Married; registration is blocked without it. |
-| **Status · sources** | decision · F-hr_transcript-2334d8, F-pension_portal-a0065b, F-pension_portal-ef28c3, F-pension_portal-39bab1, F-pension_portal-c5ee15, F-hr_transcript-f197d6, D-003, D-004 |
+| **Who needs it?** | pension fund: 'Spouse's date of birth' is required when Civil status is Married |
+| **Status · sources** | decision · F-hr_transcript-2334d8, F-pension_portal-a0065b, F-pension_portal-ef28c3, F-pension_portal-39bab1, F-pension_portal-c5ee15, F-pension_portal-6d3630, F-hr_transcript-f197d6, D-003, D-004 |
 
 ### Business rules in this section
 
 #### Civil status for the pension fund
-The fund only accepts Single, Married, Divorced, Widowed. Registered partnership and Separated are entered as Married (with the partner's/spouse's date of birth); the others unchanged (assumption D-003).
+The fund only accepts Single, Married, Divorced and Widowed. Registered partnership and Separated are entered as Married (with the spouse's/partner's date of birth); the other values are entered as they are (assumption D-003).
 
 | # | Civil status | → Result | Sources |
 |---|---|---|---|
@@ -322,10 +331,10 @@ The fund only accepts Single, Married, Divorced, Widowed. Registered partnership
 | 5 | Registered partnership | Married | D-003 |
 | 6 | Separated | Married | D-003 |
 
-_Status: decision · Sources: F-pension_portal-3d1ae4, F-hr_transcript-f197d6, D-003, D-037_
+_Status: decision · Sources: F-pension_portal-3d1ae4, F-hr_transcript-f197d6, D-003, D-004_
 
-#### Civil status for source tax
-Married and Registered partnership count as 'married or registered partnership'; Single, Divorced, Widowed and Separated count as 'single, divorced, separated or widowed', as in the calculator.
+#### Civil status group for source tax
+For source tax, Married and Registered partnership count as 'married or registered partnership'; Single, Divorced, Widowed and Separated count as 'single, divorced, separated or widowed', as in the calculator.
 
 | # | Civil status | → Result | Sources |
 |---|---|---|---|
@@ -338,14 +347,14 @@ _Status: decision · Sources: F-zh_source_tax_calculator-051bb9, D-003_
 
 ## 5. Who is subject to source tax
 
-Decide whether the employee is subject to source tax. Ask nationality and C permit only of residents of Switzerland. Ask the spouse's nationality, C permit and residence only when needed to check the spouse exemption.
+Ask only what HR's rule needs (nationality, C permit, and the spouse's nationality, C permit and whether the spouse lives in Switzerland) to decide whether the employee is subject to source tax.
 
 | Story | Priority | Status |
 |---|---|---|
 | [US-05.1 – Ask nationality and C permit only of employees living in Switzerland](stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md) | P1 | decision |
 | [US-05.2 – Ask the spouse's nationality, C permit and residence only when they can exempt the employee](stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md) | P1 | inferred |
 | [US-05.3 – Decide whether the employee is subject to source tax](stories/US-05.3-decide-whether-the-employee-is-subject-to-source-tax.md) | P1 | decision |
-| [US-05.4 – Derive the calculator's residence from the home address country](stories/US-05.4-derive-the-calculator-s-residence-from-the-home-address.md) | P1 | confirmed |
+| [US-05.4 – Derive the calculator's residence from the home address country](stories/US-05.4-derive-the-calculator-s-residence-from-the-home-address.md) | P2 | inferred |
 
 ### Information needed in this section
 
@@ -355,85 +364,86 @@ also in [information.md](information.md)).
 #### Nationality
 | | |
 |---|---|
-| **What?** | The employee's nationality, to decide source tax liability for employees living in Switzerland. Anyone holding Swiss citizenship (also together with another nationality) answers Switzerland and counts as Swiss (D-008). Not asked of employees living abroad, who are subject to source tax whatever their nationality (data minimisation). – Form: Country chosen from the ISO 3166 country list, plus 'stateless'. |
-| **When do we ask?** | Only if the employee lives in Switzerland (step 3 'Nationality and C permit'). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address) |
-| **Who needs it?** | source tax office: Swiss employees living in Switzerland are not subject to source tax.<br>HR: Decides whether the permit reminder is shown. |
-| **Status · sources** | decision · F-hr_transcript-35fae3, F-hr_transcript-5af8d0, F-hr_transcript-3f2c2a, G-01, D-008, D-038, D-047, D-050 |
+| **What?** | The employee's nationality. Anyone with Swiss citizenship counts as Swiss, even with another nationality, and chooses Switzerland. Only asked of employees living in Switzerland; employees living abroad are subject to source tax whatever their passport. – Form: Chosen from the ISO 3166 country list, plus 'stateless' |
+| **When do we ask?** | Only if the employee lives in Switzerland (step 3) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country) |
+| **Who needs it?** | source tax office: Swiss citizens living in Switzerland are not subject to source tax<br>HR: Decide whether the permit reminder applies |
+| **Status · sources** | decision · F-hr_transcript-35fae3, F-hr_transcript-5af8d0, F-hr_transcript-3f2c2a, G-01, D-008, D-010, D-038, D-047, D-050 |
 
 #### Holds a C permit
 | | |
 |---|---|
-| **What?** | Whether a non-Swiss employee living in Switzerland holds a C permit (permanent residence). C-permit holders are treated like Swiss people for source tax. No other permit type is asked (D-005). |
+| **What?** | Whether a non-Swiss employee living in Switzerland holds a C permit (permanent residence). No other permit type is asked. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the employee lives in Switzerland and is not Swiss (step 3). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), Nationality |
-| **Who needs it?** | source tax office: A C permit exempts the employee from source tax. |
-| **Status · sources** | decision · F-hr_transcript-845204, F-hr_transcript-c9d9b9, F-hr_transcript-5af8d0, D-005, D-047 |
+| **When do we ask?** | Only if the employee lives in Switzerland and is not Swiss (step 3) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Nationality |
+| **Who needs it?** | source tax office: C-permit holders are treated like Swiss people and are not subject to source tax |
+| **Status · sources** | decision · F-hr_transcript-845204, F-hr_transcript-c9d9b9, F-hr_transcript-5af8d0, G-01, D-005, D-047 |
 
 #### Spouse's nationality
 | | |
 |---|---|
-| **What?** | Nationality of the spouse or registered partner, to check the spouse exemption from source tax (married to a Swiss national who lives in Switzerland). Only needed when the employee would otherwise be subject to source tax. – Form: Country chosen from the ISO 3166 country list, plus 'stateless'. |
-| **When do we ask?** | Only if the employee lives in Switzerland, is not Swiss, has no C permit and is married or in a registered partnership (step 4). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), Civil status, Holds a C permit, Nationality |
-| **Who needs it?** | source tax office: Spouse exemption from source tax. |
-| **Status · sources** | inferred · F-hr_transcript-f3ce84, F-hr_transcript-b90bd9, F-hr_transcript-54d011, F-hr_transcript-5af8d0, D-003, D-008, D-050 |
+| **What?** | Nationality of the spouse or registered partner, to check the spouse exemption from source tax. A spouse with Swiss citizenship counts as Swiss. – Form: Chosen from the ISO 3166 country list, plus 'stateless' |
+| **When do we ask?** | Only if the employee lives in Switzerland, is not Swiss, has no C permit and is married or in a registered partnership (step 4) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Civil status, Holds a C permit, Nationality |
+| **Who needs it?** | source tax office: Being married to a Swiss national living in Switzerland exempts the employee |
+| **Status · sources** | inferred · F-hr_transcript-f3ce84, F-hr_transcript-b90bd9, F-hr_transcript-5af8d0, F-hr_transcript-54d011, F-hr_transcript-a45422, G-01, D-003, D-008, D-050 |
 
 #### Spouse holds a C permit
 | | |
 |---|---|
-| **What?** | Whether a non-Swiss spouse or registered partner holds a C permit, for the spouse exemption from source tax. No other permit type is asked (D-005). |
+| **What?** | Whether a non-Swiss spouse or registered partner holds a C permit. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the spouse question applies (see spouse's nationality) and the spouse is not Swiss (step 4). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), Civil status, Holds a C permit, Nationality, Spouse's nationality |
-| **Who needs it?** | source tax office: Spouse exemption from source tax. |
-| **Status · sources** | decision · F-hr_transcript-76eacc, F-hr_transcript-b90bd9, F-hr_transcript-54d011, D-005 |
+| **When do we ask?** | Only if the spouse's nationality is asked and the spouse is not Swiss (step 4) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Civil status, Holds a C permit, Nationality, Spouse's nationality |
+| **Who needs it?** | source tax office: Being married to a C-permit holder living in Switzerland exempts the employee |
+| **Status · sources** | inferred · F-hr_transcript-76eacc, F-hr_transcript-b90bd9, F-hr_transcript-5af8d0, F-hr_transcript-54d011, D-005 |
 
 #### Spouse lives in Switzerland
 | | |
 |---|---|
-| **What?** | Whether the spouse or registered partner lives in Switzerland, asked as 'Does your spouse live in Switzerland? yes/no' (D-050). Only relevant when the spouse is Swiss or holds a C permit. |
+| **What?** | Whether the spouse or registered partner lives in Switzerland ('here' in HR's wording). Asked as yes/no, not as a country. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the spouse question applies and the spouse is Swiss or holds a C permit (step 4). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), Civil status, Holds a C permit, Nationality, Spouse holds a C permit, Spouse's nationality |
-| **Who needs it?** | source tax office: Spouse exemption applies only if the spouse lives in Switzerland. |
-| **Status · sources** | decision · F-hr_transcript-e5337d, F-hr_transcript-b90bd9, F-hr_transcript-5af8d0, D-043, D-050 |
+| **When do we ask?** | Same as the spouse's nationality (step 4) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Civil status, Holds a C permit, Nationality |
+| **Who needs it?** | source tax office: The spouse exemption applies only if the Swiss or C-permit spouse lives in Switzerland |
+| **Status · sources** | inferred · F-hr_transcript-e5337d, F-hr_transcript-b90bd9, F-hr_transcript-5af8d0, F-hr_transcript-54d011, D-043, D-050 |
 
 ### Business rules in this section
 
 #### Subject to source tax
-An employee living abroad is subject to source tax whatever their nationality. An employee living in Switzerland is subject only if not Swiss (Swiss citizenship, also as dual nationality, counts as Swiss), without a C permit, and not married or in a registered partnership with a Swiss national or C-permit holder who lives in Switzerland. Separated counts as single, so no spouse exemption. ('Here' in HR's wording means Switzerland; assumption D-043.) Always derived again from the latest answers.
+An employee living abroad is subject to source tax whatever their nationality. An employee living in Switzerland is subject only if not Swiss, without a C permit, and not married to (or in a registered partnership with) a Swiss national or C-permit holder who lives in Switzerland. Separated counts as single. 'Here' in HR's wording means Switzerland (assumption D-043).
 
-| # | Country of residence | Nationality | Holds C permit | Civil status | Spouse Swiss or C permit | Spouse lives in Switzerland | → Result | Sources |
+| # | Country of residence | Nationality | Holds a C permit | Civil status | Spouse lives in Switzerland | Spouse Swiss or holds a C permit | → Result | Sources |
 |---|---|---|---|---|---|---|---|---|
-| 1 | not Switzerland | - | - | any | - | - | Subject to source tax | F-hr_transcript-3f2c2a, F-hr_transcript-5af8d0 |
-| 2 | Switzerland | Switzerland | - | any | - | - | Not subject | F-hr_transcript-5af8d0, D-008 |
-| 3 | Switzerland | other | yes | any | - | - | Not subject | F-hr_transcript-845204 |
-| 4 | Switzerland | other | no | Married or Registered partnership | yes | yes | Not subject (spouse exemption) | F-hr_transcript-b90bd9, D-003 |
-| 5 | Switzerland | other | no | Married or Registered partnership | yes | no | Subject to source tax | F-hr_transcript-5af8d0 |
-| 6 | Switzerland | other | no | Married or Registered partnership | no | - | Subject to source tax | F-hr_transcript-5af8d0 |
-| 7 | Switzerland | other | no | Single, Divorced, Widowed or Separated | - | - | Subject to source tax | F-hr_transcript-5af8d0, D-003 |
+| 1 | any country other than Switzerland | - | - | any | - | - | subject to source tax | F-hr_transcript-3f2c2a, F-hr_transcript-5af8d0 |
+| 2 | Switzerland | Switzerland | - | any | - | - | not subject | F-hr_transcript-b0527c, F-hr_transcript-5af8d0, D-008 |
+| 3 | Switzerland | other than Switzerland | yes | any | - | - | not subject | F-hr_transcript-845204, F-hr_transcript-5af8d0 |
+| 4 | Switzerland | other than Switzerland | no | Single, Divorced, Widowed or Separated | - | - | subject to source tax | F-hr_transcript-5af8d0, D-003 |
+| 5 | Switzerland | other than Switzerland | no | Married or Registered partnership | yes | yes | not subject | F-hr_transcript-b90bd9, F-hr_transcript-5af8d0, D-003 |
+| 6 | Switzerland | other than Switzerland | no | Married or Registered partnership | yes | no | subject to source tax | F-hr_transcript-5af8d0 |
+| 7 | Switzerland | other than Switzerland | no | Married or Registered partnership | no | any | subject to source tax | F-hr_transcript-5af8d0 |
 
-_Status: decision · Sources: F-hr_transcript-5af8d0, F-hr_transcript-845204, F-hr_transcript-b90bd9, F-hr_transcript-3f2c2a, D-003, D-008, D-043, D-037_
+_Status: decision · Sources: F-hr_transcript-5af8d0, F-hr_transcript-b84498, F-hr_transcript-845204, F-hr_transcript-b90bd9, F-hr_transcript-3f2c2a, D-003, D-008, D-043_
 
 <a id="SEC-08-cross-border-residence"></a>
 
 ## 6. Source tax: residence abroad and cross-border questions
 
-Group the country of residence as the calculator does. Ask Liechtenstein and Germany residents the cross-border questions (daily return, non-return days, certificate of residence) and derive whether the employee is in principle not liable to source tax (Liechtenstein) or the cross-border tariff applies (Germany).
+For employees living in Germany or Liechtenstein, ask the cross-border questions to decide between the cross-border tariff, the normal tariff and 'in principle no source tax liability' for Liechtenstein, including the separate note on the double taxation agreement.
 
 | Story | Priority | Status |
 |---|---|---|
-| [US-08.1 – Derive the calculator's residence answers from the home address and ask cross-border questions only of Germany and Liechtenstein residents](stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md) | P1 | decision |
+| [US-08.1 – Derive the calculator's residence answers from the home address and ask cross-border questions only of Germany and Liechtenstein residents](stories/US-08.1-derive-the-calculator-s-residence-answers-from-the-home.md) | P1 | inferred |
 | [US-08.2 – Germany: daily return and certificate of residence](stories/US-08.2-germany-daily-return-and-certificate-of-residence.md) | P1 | decision |
 | [US-08.3 – Germany: no daily return - reasonableness and more than 60 non-return days](stories/US-08.3-germany-no-daily-return-reasonableness-and-more-than-60-non.md) | P1 | decision |
 | [US-08.4 – Liechtenstein: daily return and more than 45 non-return days](stories/US-08.4-liechtenstein-daily-return-and-more-than-45-non-return-days.md) | P1 | decision |
+| [US-08.5 – Liechtenstein: record the double taxation agreement note next to the plain tariff code](stories/US-08.5-liechtenstein-record-the-double-taxation-agreement-note-next.md) | P2 | decision |
 
 ### Information needed in this section
 
@@ -443,122 +453,135 @@ also in [information.md](information.md)).
 #### Daily return to Liechtenstein
 | | |
 |---|---|
-| **What?** | Whether the employee living in Liechtenstein expects to return daily to the main residence in Liechtenstein. Asked before denomination, spouse and children questions (D-040). |
+| **What?** | Whether the employee living in Liechtenstein returns daily to the main residence in Liechtenstein, as expected for the year. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the employee lives in Liechtenstein (step 5 'Cross-border commuting'). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address) |
-| **Who needs it?** | source tax office: Decides whether there is in principle no source tax liability. |
-| **Status · sources** | confirmed · F-zh_source_tax_calculator-981b6b, F-zh_source_tax_calculator-a2041b, F-zh_source_tax_calculator-e22d17, D-007, D-040, D-035, D-006 |
+| **When do we ask?** | Only if the employee lives in Liechtenstein (step 5, before denomination, spouse and children) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country) |
+| **Who needs it?** | source tax office: Daily return means in principle no source tax liability (subject to the DTA) |
+| **Status · sources** | decision · F-zh_source_tax_calculator-981b6b, F-zh_source_tax_calculator-a2041b, F-zh_source_tax_calculator-e22d17, F-zh_source_tax_calculator-fb87f1, F-hr_transcript-8595fb, D-001, D-007, D-035, D-040, D-047 |
 
-#### More than 45 work-related non-return days (Liechtenstein)
+#### More than 45 non-return days (Liechtenstein)
 | | |
 |---|---|
-| **What?** | Whether the employee living in Liechtenstein who does not return daily expects more than 45 work-related non-return days in the calendar year (a declaration of expectation, D-035). |
+| **What?** | Whether the employee living in Liechtenstein without daily return expects more than 45 work-related non-return days in the calendar year. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the employee lives in Liechtenstein and does not return daily (step 5). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), Daily return to Liechtenstein |
-| **Who needs it?** | source tax office: More than 45 days gives the normal tariff subject to the double taxation agreement. |
-| **Status · sources** | confirmed · F-zh_source_tax_calculator-e96210, F-zh_source_tax_calculator-0ff846, F-zh_source_tax_calculator-f4ece9, D-007, D-035, D-040 |
+| **When do we ask?** | Only if the employee lives in Liechtenstein and does not return daily (step 5) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Daily return to Liechtenstein |
+| **Who needs it?** | source tax office: More than 45 days gives the normal tariff with the DTA reservation; otherwise in principle no liability |
+| **Status · sources** | decision · F-zh_source_tax_calculator-e96210, F-zh_source_tax_calculator-0ff846, F-zh_source_tax_calculator-f4ece9, F-zh_source_tax_calculator-cc19c7, D-007, D-035, D-040 |
 
 #### Daily return to Germany
 | | |
 |---|---|
-| **What?** | Whether the employee living in Germany expects to return daily to the main residence in Germany. |
+| **What?** | Whether the employee living in Germany returns daily to the main residence in Germany, as expected for the year. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the employee lives in Germany (step 5). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address) |
-| **Who needs it?** | source tax office: Decides the cross-border tariff. |
-| **Status · sources** | confirmed · F-zh_source_tax_calculator-69edd5, F-zh_source_tax_calculator-64ac42, F-zh_source_tax_calculator-31d762, D-001, D-035, D-006 |
+| **When do we ask?** | Only if the employee lives in Germany (step 5) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country) |
+| **Who needs it?** | source tax office: Decides between cross-border (L/M/N/P) and normal tariff |
+| **Status · sources** | confirmed · F-zh_source_tax_calculator-69edd5, F-zh_source_tax_calculator-64ac42, F-zh_source_tax_calculator-31d762, F-hr_transcript-8595fb, D-001, D-035, D-047 |
 
-#### Certificate of residence handed in
+#### Certificate of residence
 | | |
 |---|---|
-| **What?** | Whether the employee living in Germany who returns daily has a certificate of residence for HR. 'Not yet' is a valid answer and counts as 'no' for the tariff code. The document itself goes to HR outside Lonio; there is no upload (D-035). |
+| **What?** | Whether the employee living in Germany who returns daily has a certificate of residence (Ansässigkeitsbescheinigung) for HR. 'Not yet' is a valid answer and counts as 'no' for the tariff code. The document goes to HR outside Lonio; no upload. |
 | **Allowed values** | yes · no · not yet |
-| **When do we ask?** | Only if the employee lives in Germany and returns daily (step 5). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), Daily return to Germany |
-| **Who needs it?** | source tax office: With a certificate the cross-border tariff applies.<br>HR: Knows that a certificate is still expected. |
-| **Status · sources** | decision · F-zh_source_tax_calculator-687e8b, F-zh_source_tax_calculator-823151, F-zh_source_tax_calculator-5f6820, F-zh_source_tax_calculator-993db3, D-035 |
+| **When do we ask?** | Only if the employee lives in Germany and returns daily (step 5) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Daily return to Germany |
+| **Who needs it?** | source tax office: With a certificate the cross-border tariff applies, without it the normal tariff<br>HR: Collect the certificate outside Lonio |
+| **Status · sources** | decision · F-zh_source_tax_calculator-687e8b, F-zh_source_tax_calculator-823151, F-zh_source_tax_calculator-5f6820, F-zh_source_tax_calculator-993db3, D-035, D-037 |
 
-#### Daily return reasonable (less than 100 km)
+#### Daily return reasonable
 | | |
 |---|---|
-| **What?** | Whether, for an employee living in Germany who does not return daily, a daily return would basically be reasonable (less than 100 km driving distance). |
+| **What?** | For an employee living in Germany without daily return: whether a daily return would in principle be reasonable (less than 100 km driving distance). |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the employee lives in Germany and does not return daily (step 5). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), Daily return to Germany |
-| **Who needs it?** | source tax office: Decides the cross-border tariff. |
-| **Status · sources** | confirmed · F-zh_source_tax_calculator-d2b3cf, F-zh_source_tax_calculator-087ae5, F-zh_source_tax_calculator-aaece6 |
+| **When do we ask?** | Only if the employee lives in Germany and does not return daily (step 5) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Daily return to Germany |
+| **Who needs it?** | source tax office: Not reasonable gives the normal tariff |
+| **Status · sources** | confirmed · F-zh_source_tax_calculator-d2b3cf, F-zh_source_tax_calculator-087ae5, F-zh_source_tax_calculator-aaece6, F-zh_source_tax_calculator-c8aa5e |
 
-#### More than 60 work-related non-return days (Germany)
+#### More than 60 non-return days (Germany)
 | | |
 |---|---|
-| **What?** | Whether the employee living in Germany, for whom daily return is reasonable, expects more than 60 work-related non-return days in the calendar year (a declaration of expectation, not proof, D-035). |
+| **What?** | For an employee living in Germany without daily return although it would be reasonable: whether they expect more than 60 work-related non-return days in the calendar year (a declaration, not proof). |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the employee lives in Germany, does not return daily and daily return is reasonable (step 5). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), Daily return to Germany, Daily return reasonable (less than 100 km) |
-| **Who needs it?** | source tax office: More than 60 days gives the normal tariff; otherwise the cross-border tariff. |
-| **Status · sources** | decision · F-zh_source_tax_calculator-e8ffac, F-zh_source_tax_calculator-ea3cd8, F-zh_source_tax_calculator-33ef31, D-035 |
+| **When do we ask?** | Only if the employee lives in Germany, does not return daily and daily return is reasonable (step 5) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Daily return to Germany, Daily return reasonable |
+| **Who needs it?** | source tax office: More than 60 days gives the normal tariff, otherwise the cross-border tariff |
+| **Status · sources** | decision · F-zh_source_tax_calculator-e8ffac, F-zh_source_tax_calculator-ea3cd8, F-zh_source_tax_calculator-33ef31, F-zh_source_tax_calculator-c8aa5e, D-035 |
 
 ### Business rules in this section
 
-#### Residence for source tax
-The country of residence is grouped as in the calculator: Switzerland, Germany, Liechtenstein or other country. Switzerland and other country lead to the base tariff without further residence questions.
+#### Residence for the tariff calculation
+The calculator's residence answers are derived from the home address country instead of being asked again: Switzerland, Germany, Liechtenstein or another country. Switzerland and other countries give the base tariff without further residence questions.
 
 | # | Country of residence | → Result | Sources |
 |---|---|---|---|
-| 1 | Switzerland | Switzerland | F-zh_source_tax_calculator-aedb40 |
-| 2 | Germany | Germany | F-zh_source_tax_calculator-d62dd4 |
-| 3 | Liechtenstein | Liechtenstein | F-zh_source_tax_calculator-d62dd4 |
-| 4 | any other country | Other country | F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-f86c6b |
+| 1 | Switzerland | Switzerland (base tariff) | F-zh_source_tax_calculator-f86c6b |
+| 2 | Germany | Germany (cross-border questions) | F-zh_source_tax_calculator-d62dd4 |
+| 3 | Liechtenstein | Liechtenstein (cross-border questions) | F-zh_source_tax_calculator-d62dd4 |
+| 4 | any other country | Other country (base tariff) | F-zh_source_tax_calculator-f86c6b |
 
-_Status: confirmed · Sources: F-zh_source_tax_calculator-aedb40, F-zh_source_tax_calculator-4c65ae, F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-f86c6b, G-08_
+_Status: inferred · Sources: F-zh_source_tax_calculator-aedb40, F-zh_source_tax_calculator-4c65ae, F-zh_source_tax_calculator-d62dd4, F-zh_source_tax_calculator-f86c6b, G-01, G-08_
 
-#### Liechtenstein: in principle no source tax liability
-Liechtenstein residents are asked the source tax questions (HR's rule). With daily return, or without daily return and at most 45 non-return days, the result is 'in principle no source tax liability, subject to the double taxation agreement' instead of a tariff code, flagged for HR, and the remaining tariff questions are skipped. With more than 45 non-return days the normal tariff code applies with the note 'subject to the double taxation agreement', flagged for HR (assumption D-040).
+#### Liechtenstein resident in principle not liable
+An employee living in Liechtenstein who returns daily, or who does not return daily but expects at most 45 non-return days, is in principle not liable to source tax, subject to the double taxation agreement. Lonio shows this instead of a tariff code, flags it for HR and skips the remaining tariff questions.
 
-| # | Daily return to Liechtenstein | More than 45 non-return days | → Result | Sources |
-|---|---|---|---|---|
-| 1 | yes | - | In principle no source tax liability | F-zh_source_tax_calculator-fb87f1, D-007 |
-| 2 | no | no | In principle no source tax liability | F-zh_source_tax_calculator-fb87f1, D-007 |
-| 3 | no | yes | Normal tariff code, subject to the double taxation agreement | F-zh_source_tax_calculator-cc19c7, D-040 |
+| # | Country of residence | Daily return to Liechtenstein | More than 45 non-return days | → Result | Sources |
+|---|---|---|---|---|---|
+| 1 | Liechtenstein | yes | - | in principle no source tax liability (flagged for HR) | F-zh_source_tax_calculator-fb87f1 |
+| 2 | Liechtenstein | no | no | in principle no source tax liability (flagged for HR) | F-zh_source_tax_calculator-fb87f1 |
+| 3 | Liechtenstein | no | yes | normal tariff code | F-zh_source_tax_calculator-cc19c7, D-054 |
+| 4 | any country other than Liechtenstein | - | - | does not apply | F-zh_source_tax_calculator-e22d17 |
 
-_Status: decision · Sources: F-zh_source_tax_calculator-fb87f1, F-zh_source_tax_calculator-cc19c7, D-007, D-040, D-034_
+_Status: decision · Sources: F-zh_source_tax_calculator-fb87f1, D-007, D-034, D-040_
 
-#### Cross-border tariff applies (Germany)
-For Germany residents the cross-border tariff applies with daily return and a certificate of residence ('not yet' counts as no), or without daily return when daily return is reasonable and the employee does not expect more than 60 non-return days. Otherwise the normal tariff applies. Other countries never get the cross-border tariff.
+#### Double taxation agreement note (Liechtenstein)
+For an employee living in Liechtenstein without daily return and with more than 45 non-return days, the plain tariff code is recorded and the note 'subject to the double taxation agreement' is recorded separately next to it and flagged for HR; the note is not part of the code.
+
+| # | Country of residence | Daily return to Liechtenstein | More than 45 non-return days | → Result | Sources |
+|---|---|---|---|---|---|
+| 1 | Liechtenstein | no | yes | note recorded and flagged for HR | F-zh_source_tax_calculator-cc19c7, D-054 |
+| 2 | Liechtenstein | yes | - | no separate note (in principle not liable) | D-007 |
+| 3 | Liechtenstein | no | no | no separate note (in principle not liable) | D-007 |
+| 4 | any country other than Liechtenstein | - | - | no note | F-zh_source_tax_calculator-cc19c7 |
+
+_Status: decision · Sources: F-zh_source_tax_calculator-cc19c7, D-040, D-054, D-034_
+
+#### Cross-border (Grenzgänger) tariff applies
+For an employee living in Germany the cross-border tariff applies if they return daily and have a certificate of residence ('not yet' counts as no), or if they do not return daily, daily return would be reasonable and they do not expect more than 60 non-return days. Otherwise the normal tariff applies.
 
 | # | Country of residence | Daily return to Germany | Certificate of residence | Daily return reasonable | More than 60 non-return days | → Result | Sources |
 |---|---|---|---|---|---|---|---|
-| 1 | not Germany | - | - | - | - | Normal tariff | F-zh_source_tax_calculator-f86c6b, F-zh_source_tax_calculator-cc19c7 |
-| 2 | Germany | yes | yes | - | - | Cross-border tariff | F-zh_source_tax_calculator-993db3 |
-| 3 | Germany | yes | no or not yet | - | - | Normal tariff | F-zh_source_tax_calculator-993db3, D-035 |
-| 4 | Germany | no | - | no | - | Normal tariff | F-zh_source_tax_calculator-c8aa5e |
-| 5 | Germany | no | - | yes | yes | Normal tariff | F-zh_source_tax_calculator-c8aa5e |
-| 6 | Germany | no | - | yes | no | Cross-border tariff | F-zh_source_tax_calculator-c8aa5e |
+| 1 | Germany | yes | yes | - | - | cross-border tariff | F-zh_source_tax_calculator-993db3 |
+| 2 | Germany | yes | no or not yet | - | - | normal tariff | F-zh_source_tax_calculator-993db3, D-035 |
+| 3 | Germany | no | - | no | - | normal tariff | F-zh_source_tax_calculator-c8aa5e |
+| 4 | Germany | no | - | yes | yes | normal tariff | F-zh_source_tax_calculator-c8aa5e |
+| 5 | Germany | no | - | yes | no | cross-border tariff | F-zh_source_tax_calculator-c8aa5e |
+| 6 | any country other than Germany | - | - | - | - | normal tariff | F-zh_source_tax_calculator-f86c6b |
 
-_Status: confirmed · Sources: F-zh_source_tax_calculator-993db3, F-zh_source_tax_calculator-c8aa5e, D-035, D-001_
+_Status: decision · Sources: F-zh_source_tax_calculator-993db3, F-zh_source_tax_calculator-c8aa5e, D-001, D-035_
 
 <a id="SEC-06-source-tax-tariff-basics"></a>
 
 ## 7. Source tax tariff: denomination, spouse employment and tariff code
 
-Ask employees subject to source tax for their denomination, whether the spouse is gainfully employed and whether they have children. Combine these with the cross-border and child results into one tariff code (e.g. 'C1Y'), 'no tariff code', the Liechtenstein note, or 'incomplete - HR must complete'.
+Ask the denomination, whether the spouse or partner is gainfully employed and whether the employee has children, then compute the full Zurich tariff code (letter, child digit and church-tax suffix) or the result shown when no code applies.
 
 > ⚠ Open questions affecting this section: [OQ-calculator-coverage](open-questions.md#oq-calculator-coverage)
 | Story | Priority | Status |
 |---|---|---|
-| [US-06.2 – Ask the religious denomination only where source tax needs it and derive the church-tax suffix](stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md) | P1 | inferred |
-| [US-06.3 – Ask married employees and registered partners subject to source tax whether their spouse or partner works](stories/US-06.3-ask-married-employees-and-registered-partners-subject-to.md) | P1 | inferred |
-| [US-06.7 – Ask employees subject to source tax whether they have children](stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md) | P1 | inferred |
+| [US-06.2 – Ask the religious denomination only where source tax needs it and derive the church-tax suffix](stories/US-06.2-ask-the-religious-denomination-only-where-source-tax-needs.md) | P1 | decision |
+| [US-06.3 – Ask married employees and registered partners subject to source tax whether their spouse or partner works](stories/US-06.3-ask-married-employees-and-registered-partners-subject-to.md) | P1 | decision |
+| [US-06.7 – Ask employees subject to source tax whether they have children](stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md) | P1 | decision |
 | [US-06.4 – Derive the base source tax tariff letter](stories/US-06.4-derive-the-base-source-tax-tariff-letter.md) | P1 | inferred |
-| [US-06.5 – Replace the base letter with the cross-border letter where the cross-border tariff applies](stories/US-06.5-replace-the-base-letter-with-the-cross-border-letter-where.md) | P1 | confirmed |
+| [US-06.5 – Replace the base letter with the cross-border letter where the cross-border tariff applies](stories/US-06.5-replace-the-base-letter-with-the-cross-border-letter-where.md) | P1 | decision |
 | [US-06.6 – Compute and record the full source tax tariff code](stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md) | P1 | decision |
 
 ### Information needed in this section
@@ -569,91 +592,92 @@ also in [information.md](information.md)).
 #### Denomination
 | | |
 |---|---|
-| **What?** | The employee's religious denomination, which sets the church-tax suffix of the tariff code (Y or N). |
-| **Allowed values** | Roman Catholic, Christian Catholic or Evangelical Reformed · None or other |
-| **When do we ask?** | Only if the employee is subject to source tax and, for Liechtenstein residents, has more than 45 non-return days (step 6 'Source tax details'). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), More than 45 work-related non-return days (Liechtenstein), Subject to source tax |
-| **Who needs it?** | source tax office: Church-tax suffix of the tariff code. |
+| **What?** | The employee's religious denomination, which sets the church-tax suffix of the tariff code. |
+| **Allowed values** | Roman Catholic, Christ Catholic or Evangelical Reformed · None or other |
+| **When do we ask?** | Only if the employee is subject to source tax, except Liechtenstein residents who are in principle not liable (step 6) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Church-tax suffix Y or N |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-208104, F-zh_source_tax_calculator-b7fea8, F-zh_source_tax_calculator-b05b44, F-zh_source_tax_calculator-2eab9a, F-hr_transcript-b84498, D-001, D-040, D-047 |
 
 #### Spouse gainfully employed
 | | |
 |---|---|
-| **What?** | Whether the spouse or registered partner is gainfully employed or receives replacement income. Decides tariff C (yes) or B (no). |
+| **What?** | Whether the spouse or registered partner is gainfully employed or receives replacement income. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the source tax details apply (see denomination) and the employee is married or in a registered partnership (step 6). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), Civil status, More than 45 work-related non-return days (Liechtenstein), Subject to source tax |
-| **Who needs it?** | source tax office: Tariff letter B or C. |
+| **When do we ask?** | Only if source tax details are asked and the employee is married or in a registered partnership (step 6) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Civil status, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Yes gives tariff C, no gives tariff B |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-7b637b, F-zh_source_tax_calculator-e740d1, F-zh_source_tax_calculator-0137bf, F-zh_source_tax_calculator-97139a, F-hr_transcript-6a0a40, D-003, D-047 |
 
-#### Has biological or adopted children
+#### Has children
 | | |
 |---|---|
-| **What?** | Whether the employee (for married employees and registered partners: the employee or the spouse/partner) has biological or adopted children. |
+| **What?** | Whether the employee (or, for married/registered partners, either spouse/partner) has biological or adopted children. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | Only if the source tax details apply (step 6). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Country of residence (country of the home address), More than 45 work-related non-return days (Liechtenstein), Subject to source tax |
-| **Who needs it?** | source tax office: Opens the child questions that determine the child digit. |
+| **When do we ask?** | Only if source tax details are asked (step 6) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Opens the child blocks for the child digit and tariff H |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-103b19, F-zh_source_tax_calculator-a166c7, F-zh_source_tax_calculator-a33b65, F-zh_source_tax_calculator-ab8a06, F-zh_source_tax_calculator-b62b85, F-zh_source_tax_calculator-75cd87, D-047 |
 
 ### Business rules in this section
 
 #### Church-tax suffix
-Roman Catholic, Christian Catholic or Evangelical Reformed gives suffix Y; none or other gives N.
+Roman Catholic, Christ Catholic or Evangelical Reformed gives the suffix Y; none or other gives N.
 
 | # | Denomination | → Result | Sources |
 |---|---|---|---|
-| 1 | Roman Catholic, Christian Catholic or Evangelical Reformed | Y | F-zh_source_tax_calculator-2eab9a |
+| 1 | Roman Catholic, Christ Catholic or Evangelical Reformed | Y | F-zh_source_tax_calculator-2eab9a |
 | 2 | None or other | N | F-zh_source_tax_calculator-2eab9a |
 
-_Status: inferred · Sources: F-zh_source_tax_calculator-2eab9a, D-001_
+_Status: confirmed · Sources: F-zh_source_tax_calculator-2eab9a, D-001_
 
 #### Base tariff letter
-Married/registered partners: C if the spouse is gainfully employed, otherwise B. Single, divorced, separated or widowed: H if at least one child is counted with H, otherwise A.
+Married or registered partnership: C if the spouse/partner is gainfully employed (or receives replacement income), otherwise B. Single, divorced, separated or widowed: H if any child is counted with H, otherwise A. Earned income is always assumed, so G does not occur (D-006).
 
-| # | Civil status for source tax | Spouse gainfully employed | At least one child counted with H | → Result | Sources |
+| # | Civil status group | Spouse gainfully employed | Any child counted with H | → Result | Sources |
 |---|---|---|---|---|---|
-| 1 | Married or registered partnership | yes | - | C | F-zh_source_tax_calculator-97139a |
-| 2 | Married or registered partnership | no | - | B | F-zh_source_tax_calculator-97139a |
+| 1 | Married or registered partnership | yes | any | C | F-zh_source_tax_calculator-97139a |
+| 2 | Married or registered partnership | no | any | B | F-zh_source_tax_calculator-97139a |
 | 3 | Single, divorced, separated or widowed | - | yes | H | F-zh_source_tax_calculator-300c72 |
 | 4 | Single, divorced, separated or widowed | - | no | A | F-zh_source_tax_calculator-037b1c |
 
-_Status: inferred · Sources: F-zh_source_tax_calculator-97139a, F-zh_source_tax_calculator-037b1c, F-zh_source_tax_calculator-300c72, F-zh_source_tax_calculator-f86c6b, D-006, D-001_
+_Status: confirmed · Sources: F-zh_source_tax_calculator-97139a, F-zh_source_tax_calculator-037b1c, F-zh_source_tax_calculator-300c72, D-001, D-006_
 
 #### Tariff letter
-Without the cross-border tariff the base letter applies. With it: A becomes L, B becomes M, C becomes N, H becomes P (and G would become Q, as the calculator shows; G does not occur because replacement income is out of scope, D-006).
+When the cross-border tariff applies, the base letter is replaced: A by L, B by M, C by N, H by P (and G by Q, which cannot occur for onboarding). Otherwise the base letter is used.
 
-| # | Cross-border tariff applies | Base tariff letter | → Result | Sources |
+| # | Base tariff letter | Cross-border tariff applies | → Result | Sources |
 |---|---|---|---|---|
-| 1 | no | any | Base tariff letter | F-zh_source_tax_calculator-993db3 |
-| 2 | yes | A | L | F-zh_source_tax_calculator-993db3 |
-| 3 | yes | B | M | F-zh_source_tax_calculator-993db3 |
-| 4 | yes | C | N | F-zh_source_tax_calculator-993db3 |
-| 5 | yes | H | P | F-zh_source_tax_calculator-993db3 |
-| 6 | yes | G | Q (does not occur) | F-zh_source_tax_calculator-993db3, D-051, D-006 |
+| 1 | any | no | the base letter | F-zh_source_tax_calculator-993db3 |
+| 2 | A | yes | L | F-zh_source_tax_calculator-993db3 |
+| 3 | B | yes | M | F-zh_source_tax_calculator-993db3 |
+| 4 | C | yes | N | F-zh_source_tax_calculator-993db3 |
+| 5 | H | yes | P | F-zh_source_tax_calculator-993db3 |
+| 6 | G | yes | Q | F-zh_source_tax_calculator-993db3, D-051 |
 
-_Status: confirmed · Sources: F-zh_source_tax_calculator-993db3, F-zh_source_tax_calculator-c8aa5e, D-051, D-006_
+_Status: confirmed · Sources: F-zh_source_tax_calculator-993db3, F-zh_source_tax_calculator-c8aa5e, D-051_
 
-#### Source tax tariff code
-Lonio computes the full Zurich tariff code for every employee subject to source tax, replacing HR's manual calculator step: one text made of tariff letter, child digit and church-tax suffix, e.g. 'C1Y', 'L0Y', 'N1Y'. Employees not subject to source tax get 'no tariff code'. Liechtenstein residents with in principle no liability get 'in principle no source tax liability, subject to the double taxation agreement', flagged for HR; with more than 45 non-return days the code carries the note 'subject to the double taxation agreement', flagged for HR. If HR later changes an answer so that unanswered questions apply, the result is 'incomplete - HR must complete' until HR enters them (assumption D-048). Always derived again from the latest answers. Computed codes are not legally binding, like the calculator's.
+#### Full source tax tariff code
+Lonio computes the full Zurich tariff code as one text: tariff letter, number of counted children and church-tax suffix (e.g. 'C1Y', 'L0Y'). Not subject to source tax: 'no tariff code'. Liechtenstein resident in principle not liable: 'in principle no source tax liability, subject to the double taxation agreement', flagged for HR. When answers needed for the code are missing (e.g. after an HR change made new questions apply): 'incomplete - HR must complete'. Always derived again from the latest answers.
 
-| # | Subject to source tax | Lives in Liechtenstein | In principle no source tax liability | → Result | Sources |
-|---|---|---|---|---|---|
-| 1 | no | - | - | 'no tariff code' | D-051 |
-| 2 | yes | yes | yes | 'in principle no source tax liability, subject to the double taxation agreement', flagged for HR | D-007, F-zh_source_tax_calculator-fb87f1 |
-| 3 | yes | yes | no | Full tariff code with note 'subject to the double taxation agreement', flagged for HR | D-040, F-zh_source_tax_calculator-cc19c7 |
-| 4 | yes | no | - | Full tariff code (letter + child digit + church-tax suffix) | D-001, D-051, F-zh_source_tax_calculator-4c53e3 |
+| # | Subject to source tax | Liechtenstein in principle not liable | Tariff letter | Number of counted children | Church-tax suffix | → Result | Sources |
+|---|---|---|---|---|---|---|---|
+| 1 | no | - | - | - | - | no tariff code | D-051, F-hr_transcript-5af8d0 |
+| 2 | yes | yes | - | - | - | in principle no source tax liability, subject to the double taxation agreement (flagged for HR) | D-007, F-zh_source_tax_calculator-fb87f1 |
+| 3 | yes | no | not determined | any | any | incomplete - HR must complete | D-048, D-053 |
+| 4 | yes | no | any | any | not determined | incomplete - HR must complete | D-048, D-053 |
+| 5 | yes | no | letter | number | Y or N | letter + number + suffix, e.g. C1Y, N1Y, A0N, H1Y | F-zh_source_tax_calculator-4c53e3, F-zh_source_tax_calculator-993db3, D-051, D-054 |
 
-_Status: decision · Sources: D-001, D-007, D-037, D-040, D-048, D-051, D-052, F-hr_transcript-34494f, F-zh_source_tax_calculator-4c53e3, F-zh_source_tax_calculator-86d588_
+_Status: decision · Sources: D-001, D-007, D-037, D-048, D-051, D-052, D-053, D-054, F-hr_transcript-34494f, F-zh_source_tax_calculator-2eab9a, F-zh_source_tax_calculator-4c53e3, F-zh_source_tax_calculator-993db3, F-zh_source_tax_calculator-cc19c7, F-zh_source_tax_calculator-fb87f1_
 
 <a id="SEC-07-source-tax-children"></a>
 
 ## 8. Source tax tariff: children
 
-Ask the child questions in one block per child (no maximum, age judged on the first working day). Derive each child's result (counted, counted with H, or not counted) and the child digit of the tariff code.
+Ask one block of questions per child (no maximum, age judged on the first working day) to decide whether each child counts, whether tariff H applies and what the child digit is.
 
 | Story | Priority | Status |
 |---|---|---|
@@ -662,7 +686,7 @@ Ask the child questions in one block per child (no maximum, age judged on the fi
 | [US-07.3 – Minor child living in the employee's household](stories/US-07.3-minor-child-living-in-the-employee-s-household.md) | P1 | inferred |
 | [US-07.4 – Minor child not living in the employee's household](stories/US-07.4-minor-child-not-living-in-the-employee-s-household.md) | P1 | inferred |
 | [US-07.5 – Adult child in first education](stories/US-07.5-adult-child-in-first-education.md) | P1 | inferred |
-| [US-07.6 – Child digit of the tariff code and go-live check of the child paths](stories/US-07.6-child-digit-of-the-tariff-code-and-go-live-check-of-the.md) | P1 | decision |
+| [US-07.6 – Child digit of the tariff code and go-live check of the child paths](stories/US-07.6-child-digit-of-the-tariff-code-and-go-live-check-of-the.md) | P1 | inferred |
 
 ### Information needed in this section
 
@@ -672,152 +696,151 @@ also in [information.md](information.md)).
 #### Child: minor or adult in first education
 | | |
 |---|---|
-| **What?** | Per child (one block per child, no maximum number, D-044): whether the child is a minor, an adult in first education, or neither, judged on the first working day (assumption D-044). 'Neither' ends the child block; the child does not count. – Form: Repeated once per child. |
-| **Allowed values** | Minor · Adult and in first education · Neither |
-| **When do we ask?** | For each child, if the employee has children (step 7 'Children'). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Has biological or adopted children |
-| **Who needs it?** | source tax office: Per-child result and child digit. |
+| **What?** | Per child: whether the child is a minor, an adult in first education, or neither, judged on the first working day. There is no maximum number of children; one block per child. – Form: One block per child |
+| **Allowed values** | Minor · Adult in first education · Neither |
+| **When do we ask?** | For each child, if the employee has children (step 7) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Has children, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: 'Neither' does not count; decides the following child questions |
 | **Status · sources** | decision · F-zh_source_tax_calculator-640429, F-zh_source_tax_calculator-09b06d, F-zh_source_tax_calculator-6bed1f, F-zh_source_tax_calculator-fd9a15, F-zh_source_tax_calculator-abe889, D-044, D-047 |
 
 #### Child lives in the same household
 | | |
 |---|---|
-| **What?** | Per child: whether the child lives in the employee's household. – Form: Repeated once per child. |
+| **What?** | Per child: whether the child lives in the employee's household. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | For each child who is a minor or an adult in first education. |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Child: minor or adult in first education, Has biological or adopted children |
-| **Who needs it?** | source tax office: Per-child result. |
+| **When do we ask?** | Per child, if the child is a minor or an adult in first education |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Child: minor or adult in first education, Has children, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Per-child result |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-5725a8, F-zh_source_tax_calculator-3a75cc, F-zh_source_tax_calculator-7c667f |
 
-#### Child: parental custody
+#### Child: parental custody (shared or sole)
 | | |
 |---|---|
-| **What?** | Per minor child living in the household: whether parental custody is shared or sole. – Form: Repeated once per child. |
+| **What?** | Per minor child in the household: whether parental custody is shared or sole. |
 | **Allowed values** | Shared custody · Sole custody |
-| **When do we ask?** | For each minor child living in the same household. |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Child: minor or adult in first education, Child lives in the same household, Has biological or adopted children |
-| **Who needs it?** | source tax office: Per-child result. |
+| **When do we ask?** | Per child, if the child is a minor living in the household |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Child: minor or adult in first education, Child lives in the same household, Has children, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Sole custody counts the child (H for single persons) |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-4b7063, F-zh_source_tax_calculator-c09dc1, F-zh_source_tax_calculator-83de1d |
 
-#### Child: common household with the other parent
+#### Common household with the other parent
 | | |
 |---|---|
-| **What?** | Per child: whether the employee lives in a common household with the child's other parent. – Form: Repeated once per child. |
+| **What?** | Per child: whether the employee lives in a common household with the child's other parent. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | For a minor child in the household with shared custody, or an adult child in first education living in the household. |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Child: minor or adult in first education, Child: parental custody, Child lives in the same household, Has biological or adopted children |
-| **Who needs it?** | source tax office: Per-child result. |
+| **When do we ask?** | Per child in the household that is either a minor with shared custody or an adult in first education |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Child: minor or adult in first education, Child: parental custody (shared or sole), Child lives in the same household, Has children, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Per-child result |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-d79949, F-zh_source_tax_calculator-e72e42, F-zh_source_tax_calculator-6dcf5c |
 
-#### Child: shared custody (child not in household, married)
+#### Child: shared custody (married, child not in household)
 | | |
 |---|---|
-| **What?** | Per minor child not living in the household of a married employee or registered partner: whether custody is shared. – Form: Repeated once per child. |
+| **What?** | Per minor child not in the household of a married employee or registered partner: whether custody is shared. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | For a minor child not in the household, if the employee is married or in a registered partnership. |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Child: minor or adult in first education, Child lives in the same household, Civil status, Has biological or adopted children |
-| **Who needs it?** | source tax office: Per-child result. |
+| **When do we ask?** | Per child, if the employee is married or in a registered partnership and the child is a minor not in the household |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Civil status group for source tax, Child: minor or adult in first education, Child lives in the same household, Has children, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Without shared custody the child does not count |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-fe0305, F-zh_source_tax_calculator-d2e516, F-zh_source_tax_calculator-7dcce6, D-003 |
 
-#### Child: parental care (child not in household, not married)
+#### Child: parental care (non-married, child not in household)
 | | |
 |---|---|
-| **What?** | Per minor child not living in the household of an employee who is single, divorced, widowed or separated: whether the employee has parental care. – Form: Repeated once per child. |
+| **What?** | Per minor child not in the household of a single, divorced, separated or widowed employee: whether the employee has parental care. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | For a minor child not in the household, if the employee is single, divorced, widowed or separated. |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Child: minor or adult in first education, Child lives in the same household, Civil status, Has biological or adopted children |
-| **Who needs it?** | source tax office: Per-child result. |
+| **When do we ask?** | Per child, if the employee is single, divorced, separated or widowed and the child is a minor not in the household |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Civil status group for source tax, Child: minor or adult in first education, Child lives in the same household, Has children, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Without parental care the child does not count |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-956f07, F-zh_source_tax_calculator-32fec9, F-zh_source_tax_calculator-fb4a56, D-003 |
 
 #### Child: alternating custody
 | | |
 |---|---|
-| **What?** | Per minor child: whether there is alternating custody with the other parent. – Form: Repeated once per child. |
+| **What?** | Per minor child: whether there is alternating custody. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | For a minor child: in the household with shared custody and no common household with the other parent; or not in the household with shared custody (married) or parental care (not married). |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Child: minor or adult in first education, Child: common household with the other parent, Child: parental custody, Child: parental care (child not in household, not married), Child lives in the same household, Child: shared custody (child not in household, married), Has biological or adopted children |
-| **Who needs it?** | source tax office: Per-child result. |
+| **When do we ask?** | Per minor child: in the household with shared custody and no common household with the other parent; or not in the household with shared custody (married) or parental care (non-married) |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Civil status group for source tax, Child: minor or adult in first education, Common household with the other parent, Child: parental custody (shared or sole), Child: parental care (non-married, child not in household), Child lives in the same household, Child: shared custody (married, child not in household), Has children, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Per-child result |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-da19df, F-zh_source_tax_calculator-ebd7b3, F-zh_source_tax_calculator-64ac33 |
 
-#### Child: larger financial contributor
+#### Child: main financial contributor
 | | |
 |---|---|
-| **What?** | Per child: who makes the larger financial contribution to the child's maintenance - the employee or the other parent. – Form: Repeated once per child. |
-| **Allowed values** | Me · The other parent |
-| **When do we ask?** | For a child with alternating custody, or - for employees who are single, divorced, widowed or separated - a child in the household where the employee lives with the other parent. |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Child: alternating custody, Child: common household with the other parent, Child lives in the same household, Civil status, Has biological or adopted children |
-| **Who needs it?** | source tax office: Per-child result (H tariff for single parents). |
-| **Status · sources** | confirmed · F-zh_source_tax_calculator-cdd0b6, F-zh_source_tax_calculator-939b3b, F-zh_source_tax_calculator-ad867a, D-003 |
+| **What?** | Per child: who makes the larger financial contribution to the child's maintenance - the employee or the other parent. |
+| **Allowed values** | Myself · Other parent |
+| **When do we ask?** | Per child, if there is alternating custody, or if a single, divorced, separated or widowed employee lives with the child and the other parent in a common household |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Civil status group for source tax, Child: alternating custody, Common household with the other parent, Child lives in the same household, Has children, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Being the main contributor counts the child (H for single persons) |
+| **Status · sources** | confirmed · F-zh_source_tax_calculator-cdd0b6, F-zh_source_tax_calculator-939b3b, F-zh_source_tax_calculator-ad867a |
 
 #### Child: more than 50% of maintenance provided
 | | |
 |---|---|
-| **What?** | Per adult child in first education: whether the employee mainly (more than 50%) provides for the child's maintenance. – Form: Repeated once per child. |
+| **What?** | Per adult child in first education: whether the employee mainly (more than 50%) provides for the child's maintenance. |
 | **Allowed values** | yes · no |
-| **When do we ask?** | For an adult child in first education who is not in the household, or is in the household without a common household with the other parent. |
-| **When is it required?** | Whenever asked. |
-| **Depends on** | Child: minor or adult in first education, Child: common household with the other parent, Child lives in the same household, Has biological or adopted children |
-| **Who needs it?** | source tax office: Per-child result. |
+| **When do we ask?** | Per adult child in first education that does not live in the household, or lives in it without a common household with the other parent |
+| **When is it required?** | Whenever asked |
+| **Depends on** | Country of residence (home address country), Child: minor or adult in first education, Common household with the other parent, Child lives in the same household, Has children, More than 45 non-return days (Liechtenstein), Subject to source tax |
+| **Who needs it?** | source tax office: Per-child result |
 | **Status · sources** | confirmed · F-zh_source_tax_calculator-b008fe, F-zh_source_tax_calculator-cb54d9, F-zh_source_tax_calculator-cd1015 |
 
 ### Business rules in this section
 
-#### Per-child source tax result
-For each child, the answers give one of: counted, counted with H (single parents), or not counted - following the calculator. Observed calculator rows win over the derived logic (assumption D-046); rows marked inferred are not observed and are checked before go-live (D-009).
+#### Per-child result
+Each child block yields one result: counted, counted with H (single, divorced, separated or widowed employees only) or not counted. Observed calculator results win over the general rule (D-046); rows marked inferred are checked against the calculator before go-live (D-009).
 
-| # | Civil status for source tax | Child's status | Same household | Parental custody | Common household with other parent | Shared custody (not in household) | Parental care (not in household) | Alternating custody | Larger financial contributor | More than 50% of maintenance | → Result | Sources |
+| # | Civil status group | Child age status | Same household | Custody | Common household with other parent | Shared custody (married, not in household) | Parental care (non-married, not in household) | Alternating custody | Main financial contributor | More than 50% of maintenance | → Result | Sources |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | any | Neither | - | - | - | - | - | - | - | - | Not counted | F-zh_source_tax_calculator-abe889 |
-| 2 | Married or registered partnership | Minor | yes | Sole custody | - | - | - | - | - | - | Counted | F-zh_source_tax_calculator-d75286 |
-| 3 | Married or registered partnership | Minor | yes | Shared custody | yes | - | - | - | - | - | Counted | F-zh_source_tax_calculator-5d8fb0 |
-| 4 | Married or registered partnership | Minor | yes | Shared custody | no | - | - | no | - | - | Not counted | F-zh_source_tax_calculator-a4d358 |
-| 5 | Married or registered partnership | Minor | yes | Shared custody | no | - | - | yes | The other parent | - | Not counted | F-zh_source_tax_calculator-a4d358 |
-| 6 | Married or registered partnership | Minor | yes | Shared custody | no | - | - | yes | Me |  - | Counted (inferred, go-live check) | F-zh_source_tax_calculator-dc6ace, D-009, D-046 |
-| 7 | Married or registered partnership | Minor | no | - | - | yes | - | yes | Me | - | Counted | F-zh_source_tax_calculator-dc6ace |
-| 8 | Married or registered partnership | Minor | no | - | - | yes | - | yes | The other parent | - | Not counted (inferred, go-live check) | F-zh_source_tax_calculator-a4d358, D-009 |
-| 9 | Married or registered partnership | Minor | no | - | - | yes | - | no | - | - | Not counted (inferred, go-live check) | F-zh_source_tax_calculator-a4d358, D-009 |
-| 10 | Married or registered partnership | Minor | no | - | - | no | - | - | - | - | Not counted | F-zh_source_tax_calculator-dc6ace |
-| 11 | Married or registered partnership | Adult and in first education | yes | - | yes | - | - | - | - | - | Counted | F-zh_source_tax_calculator-3eb561 |
-| 12 | Married or registered partnership | Adult and in first education | yes | - | no | - | - | - | - | yes | Counted (inferred, go-live check) | F-zh_source_tax_calculator-3eb561, D-009 |
-| 13 | Married or registered partnership | Adult and in first education | yes | - | no | - | - | - | - | no | Not counted (inferred, go-live check) | F-zh_source_tax_calculator-3eb561, D-009 |
-| 14 | Married or registered partnership | Adult and in first education | no | - | - | - | - | - | - | yes | Counted (inferred, go-live check) | F-zh_source_tax_calculator-3eb561, D-009 |
-| 15 | Married or registered partnership | Adult and in first education | no | - | - | - | - | - | - | no | Not counted | F-zh_source_tax_calculator-3eb561 |
-| 16 | Single, divorced, separated or widowed | Minor | yes | Sole custody | - | - | - | - | - | - | Counted with H | F-zh_source_tax_calculator-300c72, F-zh_source_tax_calculator-d75286 |
-| 17 | Single, divorced, separated or widowed | Minor | yes | Shared custody | yes | - | - | - | Me | - | Counted with H | F-zh_source_tax_calculator-300c72 |
-| 18 | Single, divorced, separated or widowed | Minor | yes | Shared custody | yes | - | - | - | The other parent | - | Not counted | F-zh_source_tax_calculator-5686d7 |
-| 19 | Single, divorced, separated or widowed | Minor | yes | Shared custody | no | - | - | no | - | - | Counted with H | F-zh_source_tax_calculator-dc0ae9, D-046 |
-| 20 | Single, divorced, separated or widowed | Minor | yes | Shared custody | no | - | - | yes | Me | - | Counted with H | F-zh_source_tax_calculator-300c72 |
-| 21 | Single, divorced, separated or widowed | Minor | yes | Shared custody | no | - | - | yes | The other parent | - | Not counted (inferred, go-live check) | F-zh_source_tax_calculator-300c72, D-009 |
-| 22 | Single, divorced, separated or widowed | Minor | no | - | - | - | yes | yes | Me | - | Counted with H | F-zh_source_tax_calculator-dc6ace, D-046 |
-| 23 | Single, divorced, separated or widowed | Minor | no | - | - | - | yes | yes | The other parent | - | Not counted (inferred, go-live check) | F-zh_source_tax_calculator-300c72, D-009 |
-| 24 | Single, divorced, separated or widowed | Minor | no | - | - | - | yes | no | - | - | Not counted (inferred, go-live check) | F-zh_source_tax_calculator-300c72, D-009 |
-| 25 | Single, divorced, separated or widowed | Minor | no | - | - | - | no | - | - | - | Not counted | F-zh_source_tax_calculator-dc6ace |
-| 26 | Single, divorced, separated or widowed | Adult and in first education | yes | - | yes | - | - | - | Me | - | Counted with H | F-zh_source_tax_calculator-300c72 |
-| 27 | Single, divorced, separated or widowed | Adult and in first education | yes | - | yes | - | - | - | The other parent | - | Not counted (inferred, go-live check) | F-zh_source_tax_calculator-300c72, D-009 |
-| 28 | Single, divorced, separated or widowed | Adult and in first education | yes | - | no | - | - | - | - | yes | Counted with H | F-zh_source_tax_calculator-3eb561 |
-| 29 | Single, divorced, separated or widowed | Adult and in first education | yes | - | no | - | - | - | - | no | Not counted (inferred, go-live check) | F-zh_source_tax_calculator-3eb561, D-009 |
-| 30 | Single, divorced, separated or widowed | Adult and in first education | no | - | - | - | - | - | - | yes | Counted | F-zh_source_tax_calculator-3eb561 |
-| 31 | Single, divorced, separated or widowed | Adult and in first education | no | - | - | - | - | - | - | no | Not counted (inferred, go-live check) | F-zh_source_tax_calculator-3eb561, D-009 |
+| 1 | any | Neither | - | - | - | - | - | - | - | - | not counted | F-zh_source_tax_calculator-abe889 |
+| 2 | Married or registered partnership | Minor | yes | Sole custody | - | - | - | - | - | - | counted | F-zh_source_tax_calculator-d75286 |
+| 3 | Single, divorced, separated or widowed | Minor | yes | Sole custody | - | - | - | - | - | - | counted with H | F-zh_source_tax_calculator-d75286, F-zh_source_tax_calculator-300c72 |
+| 4 | Married or registered partnership | Minor | yes | Shared custody | yes | - | - | - | - | - | counted | F-zh_source_tax_calculator-5d8fb0 |
+| 5 | Single, divorced, separated or widowed | Minor | yes | Shared custody | yes | - | - | - | Other parent | - | not counted | F-zh_source_tax_calculator-5686d7 |
+| 6 | Single, divorced, separated or widowed | Minor | yes | Shared custody | yes | - | - | - | Myself | - | counted with H (inferred) | F-zh_source_tax_calculator-300c72, D-009 |
+| 7 | Married or registered partnership | Minor | yes | Shared custody | no | - | - | yes | Other parent | - | not counted | F-zh_source_tax_calculator-a4d358 |
+| 8 | Married or registered partnership | Minor | yes | Shared custody | no | - | - | yes | Myself | - | counted (inferred) | F-zh_source_tax_calculator-a4d358, D-009 |
+| 9 | Single, divorced, separated or widowed | Minor | yes | Shared custody | no | - | - | yes | Other parent | - | not counted (inferred) | F-zh_source_tax_calculator-300c72, D-009 |
+| 10 | Single, divorced, separated or widowed | Minor | yes | Shared custody | no | - | - | yes | Myself | - | counted with H (inferred) | F-zh_source_tax_calculator-300c72, D-009 |
+| 11 | Married or registered partnership | Minor | yes | Shared custody | no | - | - | no | - | - | not counted | F-zh_source_tax_calculator-a4d358 |
+| 12 | Single, divorced, separated or widowed | Minor | yes | Shared custody | no | - | - | no | - | - | counted with H | F-zh_source_tax_calculator-dc0ae9, D-046 |
+| 13 | Married or registered partnership | Minor | no | - | - | no | - | - | - | - | not counted | F-zh_source_tax_calculator-dc6ace |
+| 14 | Married or registered partnership | Minor | no | - | - | yes | - | yes | Myself | - | counted | F-zh_source_tax_calculator-dc6ace |
+| 15 | Married or registered partnership | Minor | no | - | - | yes | - | yes | Other parent | - | not counted (inferred) | F-zh_source_tax_calculator-a4d358, D-009 |
+| 16 | Married or registered partnership | Minor | no | - | - | yes | - | no | - | - | not counted (inferred) | F-zh_source_tax_calculator-a4d358, D-009 |
+| 17 | Single, divorced, separated or widowed | Minor | no | - | - | - | no | - | - | - | not counted | F-zh_source_tax_calculator-dc6ace |
+| 18 | Single, divorced, separated or widowed | Minor | no | - | - | - | yes | yes | Myself | - | counted with H | F-zh_source_tax_calculator-dc6ace, D-046 |
+| 19 | Single, divorced, separated or widowed | Minor | no | - | - | - | yes | yes | Other parent | - | not counted (inferred) | D-009 |
+| 20 | Single, divorced, separated or widowed | Minor | no | - | - | - | yes | no | - | - | not counted (inferred) | D-009 |
+| 21 | Married or registered partnership | Adult in first education | yes | - | yes | - | - | - | - | - | counted | F-zh_source_tax_calculator-3eb561 |
+| 22 | Single, divorced, separated or widowed | Adult in first education | yes | - | yes | - | - | - | Myself | - | counted with H (inferred) | F-zh_source_tax_calculator-300c72, D-009 |
+| 23 | Single, divorced, separated or widowed | Adult in first education | yes | - | yes | - | - | - | Other parent | - | not counted (inferred) | F-zh_source_tax_calculator-300c72, D-009 |
+| 24 | Married or registered partnership | Adult in first education | yes | - | no | - | - | - | - | yes | counted (inferred) | F-zh_source_tax_calculator-3eb561, D-009 |
+| 25 | Married or registered partnership | Adult in first education | yes | - | no | - | - | - | - | no | not counted (inferred) | F-zh_source_tax_calculator-3eb561, D-009 |
+| 26 | Single, divorced, separated or widowed | Adult in first education | yes | - | no | - | - | - | - | yes | counted with H | F-zh_source_tax_calculator-3eb561 |
+| 27 | Single, divorced, separated or widowed | Adult in first education | yes | - | no | - | - | - | - | no | not counted (inferred) | D-009 |
+| 28 | any | Adult in first education | no | - | - | - | - | - | - | yes | counted | F-zh_source_tax_calculator-3eb561 |
+| 29 | any | Adult in first education | no | - | - | - | - | - | - | no | not counted | F-zh_source_tax_calculator-3eb561 |
 
-_Status: inferred · Sources: F-zh_source_tax_calculator-abe889, F-zh_source_tax_calculator-300c72, F-zh_source_tax_calculator-d75286, F-zh_source_tax_calculator-5d8fb0, F-zh_source_tax_calculator-a4d358, F-zh_source_tax_calculator-dc0ae9, F-zh_source_tax_calculator-5686d7, F-zh_source_tax_calculator-dc6ace, F-zh_source_tax_calculator-3eb561, D-009, D-046, D-001_
+_Status: inferred · Sources: F-zh_source_tax_calculator-abe889, F-zh_source_tax_calculator-300c72, F-zh_source_tax_calculator-d75286, F-zh_source_tax_calculator-5d8fb0, F-zh_source_tax_calculator-a4d358, F-zh_source_tax_calculator-dc0ae9, F-zh_source_tax_calculator-5686d7, F-zh_source_tax_calculator-dc6ace, F-zh_source_tax_calculator-3eb561, D-001, D-009, D-046_
 
-#### Child digit of the tariff code
-The child digit equals the number of children whose per-child result is 'counted' or 'counted with H' (e.g. three counted children give C3Y). Without children the digit is 0. (The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)
+#### Number of counted children (child digit)
+The child digit of the tariff code is the number of children whose result is 'counted' or 'counted with H', summed over all child blocks. Without children it is 0. (The internal expression evaluates one child block; it is summed over all blocks.)
 
-| # | Per-child result | → Result | Sources |
-|---|---|---|---|
-| 1 | Counted or counted with H | Adds 1 to the child digit | F-zh_source_tax_calculator-4c53e3 |
-| 2 | Not counted | Adds nothing | F-zh_source_tax_calculator-4c53e3, F-zh_source_tax_calculator-abe889 |
+| # | Has children | Per-child result | → Result | Sources |
+|---|---|---|---|---|
+| 1 | no | - | 0 | F-zh_source_tax_calculator-037b1c |
+| 2 | yes | counted or counted with H | adds 1 per such child | F-zh_source_tax_calculator-4c53e3 |
+| 3 | yes | not counted | adds 0 | F-zh_source_tax_calculator-4c53e3 |
 
-_Status: confirmed · Sources: F-zh_source_tax_calculator-4c53e3, D-001, D-044_
+_Status: confirmed · Sources: F-zh_source_tax_calculator-4c53e3, F-zh_source_tax_calculator-fd9a15, D-044_
 
 ## Evidence
 - **D-001** (product decision (Product owner)): Lonio computes the full Zurich source tax tariff code (tariff letter including the cross-border letters, child digit and church-tax suffix, e.g. "C1Y", "L0Y") for every employee subject to source tax, from the answers it collects, following the calculator's logic. HR no longer clicks through the calculator.
@@ -849,12 +872,16 @@ _Status: confirmed · Sources: F-zh_source_tax_calculator-4c53e3, D-001, D-044_
 - **D-049** (product decision (Product owner)): Every home address field (street, house number, postcode, town, country) is required; the only exception is the explicit 'no house number' option. Examples and acceptance criteria use the term 'required' for these fields, never 'asked'. Assumption - to be verified by a domain expert; state this assumption in the user story.
 - **D-050** (product decision (Product owner)): Build-time values. HR provides the permit reminder wording before go-live. Country of residence and nationality are chosen from the ISO 3166 country list; nationality also offers 'stateless'. The date of birth must make the employee at least 14 and at most 100 years old on the first working day; the first working day must lie within one year after the questionnaire is sent. Answers are saved as the employee goes and they can resume until they submit; submitting needs one confirmation on a summary page. Answers are kept when the employee goes back and changes an earlier answer (until submission), and this is testable. The spouse's residence is asked as 'Does your spouse live in Switzerland? yes/no', not as a country. Assumption - to be verified by a domain expert; state this assumption in the user story.
 - **D-051** (product decision (Product owner)): The full tariff code is one text such as 'N1Y' (letter, child digit, church-tax suffix). When no tariff code is needed the result is the text 'no tariff code'. The cross-border letter mapping follows the calculator fact in full, including G to Q where the calculator shows it. Assumption - to be verified by a domain expert; state this assumption in the user story.
-- **D-052** (product decision (Product owner)): The tariff code joins tariff letter, child digit and church-tax suffix into one code (D-051), using only the constructs the condition language allows; the child digit is 1 when the child counts, otherwise 0.
+- **D-052** (product decision (Product owner)): The tariff code is one code made of the tariff letter, the child digit and the church-tax suffix (D-051), for example C1Y. The child digit is the number of children who count; the examples have one child each.
+- **D-053** (product decision (Product owner)): After submission the questionnaire stays read-only for the employee and is never reopened. When an HR change makes new questions apply, HR enters the missing answers itself; until then the derived results that depend on them show 'incomplete - HR must complete' (D-048). Examples after an HR change therefore expect 'HR must complete', not 'asked'. Assumption - to be verified by a domain expert; state this assumption in the user story.
+- **D-054** (product decision (Product owner)): For Liechtenstein residents with more than 45 non-return days, the recorded tariff code is the plain code (for example C0Y). The note 'subject to the double taxation agreement' is recorded separately next to the code and flagged for HR; it is not part of the code. Assumption - to be verified by a domain expert; state this assumption in the user story.
 - **F-hr_transcript-1d5c07** (hr_transcript): Consolidated rule: the insurance start date is derived from the first working day. If the first working day is the 1st of a month, insurance starts that day. Otherwise it starts on the 1st of the following month.
   - "because insurance starts on the first of the following month." — hr_transcript/T-026, Anna
   - "Unless somebody starts exactly on the first, of course, then it's just that day." — hr_transcript/T-028, Anna
 - **F-hr_transcript-2334d8** (hr_transcript): If the employee is married, the pension fund wants the spouse's date of birth.
   - "And if someone is married, they want the date of birth of the husband or wife." — hr_transcript/T-032, Anna
+- **F-hr_transcript-30d25c** (hr_transcript): First version: pension fund insurance starts on the first day of the month after the first working day (for example, first working day 15.03 gives insurance start 01.04).
+  - "because insurance starts on the first of the following month. So for her that was the first of April" — hr_transcript/T-026, Anna
 - **F-hr_transcript-34494f** (hr_transcript): The source tax questionnaire is the canton of Zurich's online tariff calculator, which outputs the tariff code. HR uses the Zurich calculator for everybody and acknowledges that this is not exactly how it works. Leo agreed to keep it that way for now.
   - "I use the Zurich calculator on the canton's website. The one that gives you the tariff code." — hr_transcript/T-012, Anna
   - "For everybody I use Zurich, by the way. I know it's not exactly how it works, but that's what we do for now." — hr_transcript/T-012, Anna
@@ -892,10 +919,18 @@ _Status: confirmed · Sources: F-zh_source_tax_calculator-4c53e3, D-001, D-044_
 - **F-hr_transcript-845204** (hr_transcript): Correction: non-Swiss employees with a C permit are not subject to source tax. They are treated like Swiss people (example: Maria, Portuguese, C permit).
   - "No, that's actually not right." — hr_transcript/T-038, Anna
   - "So, not the people with a C permit. They're treated like Swiss people for this." — hr_transcript/T-038, Anna
+- **F-hr_transcript-8595fb** (hr_transcript): For employees living abroad, the calculator asks more questions, and Germany has its own forms. Anna cannot remember what they are called. Leo deferred to the calculator, so the exact questions are unresolved in this transcript.
+  - "And with them the calculator gets much more complicated, there are more questions. Germany has its own forms, I can never remember what they're called." — hr_transcript/T-050, Anna
+  - "Okay, that's fine, the calculator will tell us." — hr_transcript/T-051, Leo
 - **F-hr_transcript-872bd7** (hr_transcript): The pension fund needs the employee's first working day. Anna calls it the number one item.
   - "I need their first working day. That's the number one thing" — hr_transcript/T-024, Anna
+- **F-hr_transcript-a45422** (hr_transcript): Today HR checks the spouse exemption by hand and asks for the spouse details by email, which takes forever.
+  - "I always have to check that one by hand." — hr_transcript/T-044, Anna
+  - "I ask them by email, and it takes forever." — hr_transcript/T-046, Anna
 - **F-hr_transcript-ab3cba** (hr_transcript): The employee's country of residence (the country of the home address) is needed to decide source tax liability for cross-border employees.
   - "Those people do source tax because they work here and they don't live here." — hr_transcript/T-048, Anna
+- **F-hr_transcript-b0527c** (hr_transcript): First version: all non-Swiss employees (anyone without a Swiss passport) are subject to source tax.
+  - "All the non-Swiss employees. Simple as that. If you don't have a Swiss passport, you do source tax." — hr_transcript/T-010, Anna
 - **F-hr_transcript-b84498** (hr_transcript): Source tax questions should only be asked of employees who are subject to source tax, not of everybody.
   - "Because I never know up front who has to answer those questions." — hr_transcript/T-008, Anna
   - "So who actually needs to answer them?" — hr_transcript/T-009, Leo
@@ -927,6 +962,8 @@ _Status: confirmed · Sources: F-zh_source_tax_calculator-4c53e3, D-001, D-044_
 - **F-hr_transcript-f3ce84** (hr_transcript): For source tax, HR needs the spouse's nationality.
   - "So you need to know about the spouse as well." — hr_transcript/T-045, Leo
   - "Yes. Their nationality, their permit if they have one, and that they live here." — hr_transcript/T-046, Anna
+- **F-hr_transcript-fdf50a** (hr_transcript): Exception: if the first working day is the first day of a month, insurance starts on that same day.
+  - "Unless somebody starts exactly on the first, of course, then it's just that day." — hr_transcript/T-028, Anna
 - **F-pension_portal-3432a9** (pension_portal): The Canton dropdown offers exactly these 26 options: Aargau, Appenzell Ausserrhoden, Appenzell Innerrhoden, Basel-Landschaft, Basel-Stadt, Bern, Fribourg, Geneva, Glarus, Graubünden, Jura, Lucerne, Neuchâtel, Nidwalden, Obwalden, Schaffhausen, Schwyz, Solothurn, St. Gallen, Thurgau, Ticino, Uri, Valais, Vaud, Zug, Zurich. There is no option for a residence outside Switzerland.
   - "Canton" — 02-canton-list.png (pension_portal/S02-E10)
   - "Aargau" — 02-canton-list.png (pension_portal/S02-E12)
@@ -961,6 +998,8 @@ _Status: confirmed · Sources: F-zh_source_tax_calculator-4c53e3, D-001, D-044_
   - "Married" — 07-married-missing-spouse.png (pension_portal/S07-E20)
   - "Spouse's date of birth" — 07-married-missing-spouse.png (pension_portal/S07-E21)
   - "Single" — 04-single.png (pension_portal/S04-E20)
+- **F-pension_portal-3a97ab** (pension_portal, inferred): The portal requires an insurance start date on the 1st of a month but does not show how it relates to the employee's first working day (e.g. which 1st of a month to choose when work starts mid-month); the derivation rule is unknown.
+  - "DD.MM.YYYY. Must be the 1st of a month." — 01-empty.png (pension_portal/S01-E14)
 - **F-pension_portal-3d1ae4** (pension_portal): The Civil status dropdown offers exactly these options: Single, Married, Divorced, Widowed.
   - "Civil status" — 03-civil-status-list.png (pension_portal/S03-E19)
   - "Single" — 03-civil-status-list.png (pension_portal/S03-E21)
@@ -1085,9 +1124,9 @@ _Status: confirmed · Sources: F-zh_source_tax_calculator-4c53e3, D-001, D-044_
   - "Options: Ja | Nein" — zh_source_tax_calculator/C-Q19
 - **F-zh_source_tax_calculator-83de1d** (zh_source_tax_calculator): The custody question (Q09) is shown only when the child is Minderjährig and lives in the same household, for both civil status groups.
   - "Elterliche Sorge" — zh_source_tax_calculator/C-Q09
-- **F-zh_source_tax_calculator-86d588** (zh_source_tax_calculator): The calculator determines the source tax tariff from employee data; the tariffs shown are not legally binding.
-  - "Der Tarifrechner dient der Ermittlung des Quellensteuertarifs." — zh_source_tax_calculator/C-N02
-  - "Die ausgewiesenen Tarife sind nicht rechtsverbindlich." — zh_source_tax_calculator/C-N02
+- **F-zh_source_tax_calculator-9007c3** (zh_source_tax_calculator): For earned income, the calculator asks for the civil status of the person subject to source tax.
+  - "Zivilstand" — zh_source_tax_calculator/C-Q02
+  - "Section heading: 'Angaben zur quellensteuerpflichtigen Person'" — zh_source_tax_calculator/C-Q02
 - **F-zh_source_tax_calculator-939b3b** (zh_source_tax_calculator): Main contributor options are exactly: Quellensteuerpflichtige Person (the person subject to source tax) and Anderer Elternteil (other parent).
   - "Options: Quellensteuerpflichtige Person | Anderer Elternteil" — zh_source_tax_calculator/C-Q12
 - **F-zh_source_tax_calculator-956f07** (zh_source_tax_calculator): For non-married persons with a minor child not in the household, the calculator asks whether they have parental care (Elterliche Sorge, yes/no).
@@ -1202,7 +1241,6 @@ _Status: confirmed · Sources: F-zh_source_tax_calculator-4c53e3, D-001, D-044_
 - **F-zh_source_tax_calculator-fe0305** (zh_source_tax_calculator): For married persons with a minor child not in the household, the calculator asks whether custody is shared (Geteiltes Sorgerecht).
   - "Geteiltes Sorgerecht Options: Ja | Nein" — zh_source_tax_calculator/C-Q13
 - **G-01** (product owner guidance): Lonio collects onboarding data from a new employee **once** and reuses it for every receiving party. Asking too little blocks a registration; asking too much collects personal data we must not have (data minimisation). A question must only be asked when at least one receiving party needs the answer for this person.
-- **G-04** (product owner guidance): Scope of these feature specs: what Lonio asks the new employee (which information, in which order, under which conditions, required or not) and the business rules derived from the answers. How collected data is transmitted to each receiving party (exports, portal entry, change notifications) is a separate topic; each information item documents which stakeholder needs it and why.
 - **G-08** (product owner guidance): Prefer asking for primary facts and **deriving** values (e.g. ask the first working day, derive the insurance start date) instead of asking the employee for values they cannot know.
 - **G-09** (product owner guidance): Questionnaire language: English.
 - **G-10** (product owner guidance): Business wording for values (used in allowed values and examples): countries by English name ("Switzerland", "Germany", "Liechtenstein"), permits as "B permit", "C permit", civil status exactly as the pension fund's list shows it ("Single", "Married", ...), dates as DD.MM.YYYY, yes/no as "yes"/"no".
