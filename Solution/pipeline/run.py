@@ -84,12 +84,20 @@ class ReviewFinding(BaseModel):
     why: str
     evidence: str
     action: str
+    status: Literal["new", "still_open"] = F("new", description="still_open: the same problem was a finding of the "
+                                                                 "previous review; new: it was not")
+
+
+class ResolvedFinding(BaseModel):
+    title: str = F(description="The previous finding's title, as it was")
+    resolved_by: str = F(description="What resolved it: decision ids, or what changed in the spec")
 
 
 class Review(BaseModel):
     verdict: Literal["ready", "ready_with_caveats", "not_ready"]
     summary: str
     findings: list[ReviewFinding]
+    resolved: list[ResolvedFinding] = F(default_factory=list, description="Previous findings that no longer apply")
 
 
 # ------------------------------------------------------------------ stages --
@@ -698,14 +706,40 @@ async def _refine_delta(ctx, system: str, req_dir: Path, spec: Spec, prev: dict,
     return merge_refinement(prev, out, reviewed)
 
 
-async def stage_review(ctx, report: dict) -> dict:
+def review_followup(prev_review: dict | None, prev_report: dict | None, decisions: list) -> str:
+    """The previous review's findings and the decisions taken since, so the reviewer can say which findings
+    are resolved, still open or new. Empty on the first review."""
+    if not prev_review or not prev_review.get("findings"):
+        return ""
+    known = prev_report.get("decision_ids") if prev_report else None
+    new = [d for d in decisions if known is not None and d.id not in set(known)]
+    L = ["", "## Follow-up to the previous review", "",
+         "Below are the findings of the previous review. For each one, decide from the report above whether it "
+         "still applies. If it no longer applies, list it under `resolved` with what resolved it (decision ids "
+         "or what changed). If it still applies, keep it as a finding with status `still_open` (keep its title "
+         "unless the problem itself changed). Every other finding has status `new`. Do not invent resolutions: "
+         "a finding is resolved only when the report no longer shows the problem.", "", "Previous findings:"]
+    L += [f"- {f['title']}: {f['why']} (evidence: {f['evidence']})" for f in prev_review["findings"]]
+    if known is None:
+        L += ["", "Decisions taken since the previous review: not recorded for that review; use the report."]
+    else:
+        L += ["", "Decisions taken since the previous review:"] + \
+             ([f"- {d.id} ({d.action}{' ' + d.target if d.target else ''}): {d.statement}" for d in new] or ["- none"])
+    return "\n".join(L)
+
+
+async def stage_review(ctx, report: dict, decisions: list | None = None) -> dict:
+    # read before this run overwrites them: the previous review and the report it was based on
+    followup = review_followup(_previous(ctx, "review"), _previous(ctx, "report"), decisions or [])
+
     async def go():
         return await run_agent("review", load_prompt(AGENTS / "reviewer.md"),
-                               json.dumps(report, ensure_ascii=False, indent=1, default=str), Review,
+                               json.dumps(report, ensure_ascii=False, indent=1, default=str) + followup, Review,
                                model=ctx.model("review"), max_turns=6)
     # the impact section says what the last run changed; on a rerun with nothing new it only flips to "nothing
-    # changed", which is no reason to review again
-    stable = {k: v for k, v in report.items() if k != "impact"}
+    # changed", which is no reason to review again. The follow-up block is not part of the fingerprint either:
+    # it changes with every review, and an unchanged report needs no new review.
+    stable = {k: v for k, v in report.items() if k not in ("impact", "decision_ids")}
     stable["findings"] = {sev: [f for f in fs if f["check"] != "impact"] for sev, fs in report["findings"].items()}
     return await ctx.stage("review", [stable, AGENTS / "reviewer.md"], go)
 
@@ -801,11 +835,12 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
         "dev_refinement": refinement,
         "impact": impact,
         "skipped_sources": [s["id"] for s in ctx.profile["sources"] if not any(u.source_id == s["id"] for u in units)],
+        "decision_ids": [d.id for d in decisions],     # the next review lists the decisions taken since this one
     }
     review = None
     if not skip_llm_checks:
         ctx.log("[10] review")
-        review = await stage_review(ctx, report)
+        review = await stage_review(ctx, report, decisions)
     report["review"] = review
     report["stages"] = {"ran": ctx.ran, "reused": ctx.reused}
     report["cost_usd_this_run"] = round(sum(c["cost_usd"] for c in COSTS), 2)
@@ -821,8 +856,12 @@ def write_review_md(ctx: Context, r: dict, facts: list[Fact]) -> None:
         L += [f"**Verdict: {r['review']['verdict'].replace('_', ' ').upper()}**", "", r["review"]["summary"], "",
               "## Reviewer findings", ""]
         for i, f in enumerate(r["review"]["findings"], 1):
-            L += [f"{i}. **{f['title']}** – {f['why']}  ", f"   Evidence: {f['evidence']}  ", f"   Action: {f['action']}"]
+            tag = " (still open)" if f.get("status") == "still_open" else ""
+            L += [f"{i}. **{f['title']}**{tag} – {f['why']}  ", f"   Evidence: {f['evidence']}  ", f"   Action: {f['action']}"]
         L.append("")
+        if r["review"].get("resolved"):
+            L += ["## Resolved since the last review", ""] + \
+                 [f"- ~~{f['title']}~~ – {f['resolved_by']}" for f in r["review"]["resolved"]] + [""]
     else:
         L += ["**Verdict: not available** – the LLM checks (trace judge, dev refinement, review) did not run for this "
               "report. Run `pipeline run` for the full review.", ""]
