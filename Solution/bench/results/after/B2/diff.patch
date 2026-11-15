@@ -1,0 +1,333 @@
+--- baseline/requirements/employee-onboarding/README.md
++++ run/requirements/employee-onboarding/README.md
+@@ -22,7 +22,7 @@
+ | 5 | [Source tax tariff basics and computed result](feature.md#SEC-05-tariff-basics) | For employees subject to source tax, ask the denomination and whether the spouse or partner is employed. Combine these with the child and cross-border results into the full Zurich tariff code (or the Liechtenstein result), so HR no longer uses the calculator. | 4 | 1 |
+ | 6 | [Children for the source tax tariff](feature.md#SEC-06-children) | For employees subject to source tax, ask whether they have children and go through one block per child. This decides whether each child counts (and whether it counts towards an H tariff), which gives the child digit and the H tariff. | 6 | 0 |
+ | 7 | [Employees living abroad (Germany, Liechtenstein)](feature.md#SEC-07-living-abroad) | Derive the state of residence from the home address. Ask cross-border commuters in Germany or Liechtenstein about daily return, the certificate of residence and the non-return days they expect, to decide between the cross-border tariff, the normal tariff and the Liechtenstein 'in principle no liability' result. | 3 | 0 |
+-| 8 | [Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission) | Give the employee the step-by-step questionnaire flow. Show the permit reminder at the end, discard answers that no longer apply on submission, and make the questionnaire read-only afterwards, with every derived result always taken from the latest answers. | 4 | 0 |
++| 8 | [Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission) | Give the employee the step-by-step questionnaire flow. Show the permit reminder at the end, discard answers that no longer apply on submission, and make the questionnaire read-only afterwards, with every derived result always taken from the latest answers. | 5 | 1 |
+ 
+ The order in which the user is asked is in [Questionnaire flow](feature.md#flow).
+ 
+--- baseline/requirements/employee-onboarding/feature.md
++++ run/requirements/employee-onboarding/feature.md
+@@ -3,7 +3,7 @@
+ title: "Employee onboarding questionnaire"
+ stakeholders: [employee, hr, pension_fund, source_tax]
+ sections: [SEC-01-identity-and-address, SEC-02-start-date-insurance, SEC-03-civil-status-spouse, SEC-04-source-tax-liability, SEC-05-tariff-basics, SEC-06-children, SEC-07-living-abroad, SEC-08-completion-and-submission]
+-stories: [US-01.1, US-01.2, US-01.3, US-01.4, US-02.1, US-02.2, US-03.1, US-03.2, US-03.3, US-03.4, US-04.1, US-04.2, US-04.3, US-05.3, US-05.4, US-05.6, US-05.7, US-06.1, US-06.2, US-06.3, US-06.4, US-06.5, US-06.6, US-07.1, US-07.2, US-07.3, US-08.1, US-08.2, US-08.3, US-08.4]
++stories: [US-01.1, US-01.2, US-01.3, US-01.4, US-02.1, US-02.2, US-03.1, US-03.2, US-03.3, US-03.4, US-04.1, US-04.2, US-04.3, US-05.3, US-05.4, US-05.6, US-05.7, US-06.1, US-06.2, US-06.3, US-06.4, US-06.5, US-06.6, US-07.1, US-07.2, US-07.3, US-08.1, US-08.2, US-08.3, US-08.4, US-08.5]
+ ---
+ 
+ # Employee onboarding questionnaire
+@@ -52,11 +52,11 @@
+ | 6. Source tax | The denomination. Employees who are married or in a registered partnership are asked whether the spouse or partner is gainfully employed or receives replacement income. Everyone in this step is asked whether they have children. | Employees subject to source tax: everyone living abroad, and employees living in Switzerland who are not Swiss, hold no C permit and are not exempted by a Swiss or C-permit spouse or partner living in Switzerland | [US-05.3](stories/US-05.3-state-the-denomination-for-the-church-tax-part-of-the-tariff.md), [US-05.4](stories/US-05.4-state-whether-the-spouse-or-registered-partner-works-for.md), [US-06.1](stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md), [US-06.6](stories/US-06.6-derive-the-child-digit-and-the-single-parent-h-tariff.md) |
+ | 7. Children | One block per child, repeated for each child the employee adds. It asks whether the child is a minor or of age and in first education, and whether the child lives in the same household. Further questions follow only where the earlier answers make them relevant: custody, common household with the other parent, alternating care, who contributes more to the child's maintenance, and whether the employee mainly maintains a child of age (more than 50%). | Employees subject to source tax who have children | [US-06.1](stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md), [US-06.2](stories/US-06.2-ask-custody-and-common-household-for-a-minor-child-living.md), [US-06.3](stories/US-06.3-ask-custody-and-alternating-care-for-a-minor-child-not.md), [US-06.4](stories/US-06.4-ask-who-contributes-more-to-the-child-s-maintenance.md), [US-06.5](stories/US-06.5-ask-household-and-maintenance-for-a-child-of-age-in-first.md) |
+ | 8. Cross-border commuting | Employees living in Germany are asked whether they return home daily. With daily return, they are asked whether they have a certificate of residence ('not yet' is a valid answer). Without daily return, they are asked whether a daily return would be reasonable (less than 100 km). If it would be, they are asked whether they expect more than 60 work-related non-return days. Employees living in Liechtenstein are asked whether they return home daily. If not, they are asked whether they expect more than 45 work-related non-return days. | Employees subject to source tax who live in Germany or Liechtenstein | [US-07.2](stories/US-07.2-decide-the-cross-border-tariff-for-employees-living-in.md), [US-07.3](stories/US-07.3-determine-the-source-tax-outcome-for-employees-living-in.md) |
+-| 9. Finish | Nothing new is asked. The employee submits the answers. Non-Swiss employees and all employees living abroad are reminded to bring their permit on the first working day. | Everyone | [US-08.1](stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md), [US-08.2](stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md), [US-08.3](stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md) |
++| 9. Finish | Non-Swiss employees and all employees living abroad are reminded to bring their permit on the first working day. Then the employee is asked whether they want a copy of their answers by email. Only if yes, the email address for the copy is asked. The employee then submits the answers. The copy is not needed by any receiving party; HR requested it. | Everyone | [US-08.1](stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md), [US-08.2](stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md), [US-08.3](stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md), [US-08.5](stories/US-08.5-send-the-employee-a-copy-of-their-submitted-answers.md) |
+ 
+ Never asked, always derived from the answers: Insurance start date ([US-02.2](stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md)), Civil status for the pension fund ([US-03.3](stories/US-03.3-enter-the-civil-status-in-the-pension-fund-s-terms.md)), Civil status for source tax ([US-03.4](stories/US-03.4-group-the-civil-status-for-source-tax.md)), Spouse exempts from source tax ([US-04.2](stories/US-04.2-ask-spouse-details-only-when-the-spouse-could-exempt-the.md)), Subject to source tax ([US-04.3](stories/US-04.3-decide-whether-the-employee-is-subject-to-source-tax.md)), State of residence for source tax ([US-07.1](stories/US-07.1-derive-the-calculator-s-residence-answers-from-the-home.md)), Church-tax suffix ([US-05.3](stories/US-05.3-state-the-denomination-for-the-church-tax-part-of-the-tariff.md)), Base letter for married employees ([US-05.4](stories/US-05.4-state-whether-the-spouse-or-registered-partner-works-for.md)), Child result (per child) ([US-06.1](stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md), [US-06.2](stories/US-06.2-ask-custody-and-common-household-for-a-minor-child-living.md), [US-06.3](stories/US-06.3-ask-custody-and-alternating-care-for-a-minor-child-not.md), [US-06.4](stories/US-06.4-ask-who-contributes-more-to-the-child-s-maintenance.md), [US-06.5](stories/US-06.5-ask-household-and-maintenance-for-a-child-of-age-in-first.md)), Child digit of the tariff code ([US-06.6](stories/US-06.6-derive-the-child-digit-and-the-single-parent-h-tariff.md)), H tariff for non-married employees ([US-06.6](stories/US-06.6-derive-the-child-digit-and-the-single-parent-h-tariff.md)), Cross-border tariff applies ([US-07.2](stories/US-07.2-decide-the-cross-border-tariff-for-employees-living-in.md)), Liechtenstein: in principle no source tax liability ([US-07.3](stories/US-07.3-determine-the-source-tax-outcome-for-employees-living-in.md)), Tariff letter ([US-05.6](stories/US-05.6-determine-the-tariff-letter-including-the-cross-border.md)), Source tax result ([US-05.7](stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md)).
+ 
+-When the employee submits, answers to questions that no longer apply are discarded. The questionnaire then becomes read-only for the employee, and any later change is made by HR. Lonio records for HR the insurance start date, the civil status for the pension fund and for source tax, and whether the employee is subject to source tax. It also records the source tax result: a tariff code, or for Liechtenstein residents the flagged 'in principle no source tax liability' result. All of these are always derived again from the latest answers.
++When the employee submits, answers to questions that no longer apply are discarded. If the employee asked for a copy, an email with the answers exactly as submitted is sent to the address they typed in; it contains no derived results. The questionnaire then becomes read-only for the employee, and any later change is made by HR. Lonio records for HR the insurance start date, the civil status for the pension fund and for source tax, and whether the employee is subject to source tax. It also records the source tax result: a tariff code, or for Liechtenstein residents the flagged 'in principle no source tax liability' result. All of these are always derived again from the latest answers.
+ 
+ ## Contents
+ 
+@@ -69,7 +69,7 @@
+ | [5. Source tax tariff basics and computed result](#SEC-05-tariff-basics) | [US-05.3](stories/US-05.3-state-the-denomination-for-the-church-tax-part-of-the-tariff.md), [US-05.4](stories/US-05.4-state-whether-the-spouse-or-registered-partner-works-for.md), [US-05.6](stories/US-05.6-determine-the-tariff-letter-including-the-cross-border.md), [US-05.7](stories/US-05.7-compute-and-record-the-source-tax-result-for-hr.md) |
+ | [6. Children for the source tax tariff](#SEC-06-children) | [US-06.1](stories/US-06.1-ask-each-child-s-age-status-and-household-only-where-the.md), [US-06.2](stories/US-06.2-ask-custody-and-common-household-for-a-minor-child-living.md), [US-06.3](stories/US-06.3-ask-custody-and-alternating-care-for-a-minor-child-not.md), [US-06.4](stories/US-06.4-ask-who-contributes-more-to-the-child-s-maintenance.md), [US-06.5](stories/US-06.5-ask-household-and-maintenance-for-a-child-of-age-in-first.md), [US-06.6](stories/US-06.6-derive-the-child-digit-and-the-single-parent-h-tariff.md) |
+ | [7. Employees living abroad (Germany, Liechtenstein)](#SEC-07-living-abroad) | [US-07.1](stories/US-07.1-derive-the-calculator-s-residence-answers-from-the-home.md), [US-07.2](stories/US-07.2-decide-the-cross-border-tariff-for-employees-living-in.md), [US-07.3](stories/US-07.3-determine-the-source-tax-outcome-for-employees-living-in.md) |
+-| [8. Completing and submitting the questionnaire](#SEC-08-completion-and-submission) | [US-08.1](stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md), [US-08.2](stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md), [US-08.3](stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md), [US-08.4](stories/US-08.4-step-by-step-questionnaire-flow.md) |
++| [8. Completing and submitting the questionnaire](#SEC-08-completion-and-submission) | [US-08.1](stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md), [US-08.2](stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md), [US-08.3](stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md), [US-08.4](stories/US-08.4-step-by-step-questionnaire-flow.md), [US-08.5](stories/US-08.5-send-the-employee-a-copy-of-their-submitted-answers.md) |
+ 
+ <a id="SEC-01-identity-and-address"></a>
+ 
+@@ -833,12 +833,42 @@
+ 
+ Give the employee the step-by-step questionnaire flow. Show the permit reminder at the end, discard answers that no longer apply on submission, and make the questionnaire read-only afterwards, with every derived result always taken from the latest answers.
+ 
++> ⚠ Open questions affecting this section: [OQ-copy-email-address-retention](open-questions.md#oq-copy-email-address-retention)
+ | Story | Priority | Status |
+ |---|---|---|
+ | [US-08.1 – Remind employees to bring their permit on the first working day](stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md) | P2 | decision |
+ | [US-08.2 – Discard answers that no longer apply on submission](stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md) | P1 | decision |
+ | [US-08.3 – Questionnaire is read-only for the employee after submission](stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md) | P1 | decision |
+ | [US-08.4 – Step-by-step questionnaire flow](stories/US-08.4-step-by-step-questionnaire-flow.md) | P2 | inferred |
++| [US-08.5 – Send the employee a copy of their submitted answers](stories/US-08.5-send-the-employee-a-copy-of-their-submitted-answers.md) | P2 | inferred |
++
++### Information needed in this section
++
++Each piece is asked once and reused by every stakeholder listed (all of it is
++also in [information.md](information.md)).
++
++#### Email address for the copy
++| | |
++|---|---|
++| **What?** | The email address, typed in by the employee, to which the copy of their submitted form data is sent. Used only to send the copy, not passed to any receiving party. |
++| **When do we ask?** | Only if the employee wants a copy of their answers |
++| **When is it required?** | Whenever it is asked |
++| **Depends on** | Send me a copy of my answers |
++| **Who needs it?** | new employee: Where the copy of the submitted answers is sent |
++| **Status · sources** | inferred · F-hr_email_copy-029105, F-hr_email_copy-b67d2f, F-hr_email_copy-77a561 |
++| **Notes** | Step 9 'Finish'. That it is only asked when a copy is wanted is inferred from the feature being optional. |
++
++#### Send me a copy of my answers
++| | |
++|---|---|
++| **What?** | Whether the employee wants to be sent an email with a copy of the form data they submit. Offered at the end of the questionnaire, when submitting. Optional: not everyone wants it. |
++| **Allowed values** | yes · no |
++| **When do we ask?** | Always, at the end of the questionnaire when submitting |
++| **When is it required?** | May be left empty; without a 'yes' no copy is sent |
++| **Depends on** | nothing |
++| **Who needs it?** | new employee: Keeps a record of what they entered<br>HR: Fewer calls from new employees asking what they entered |
++| **Status · sources** | confirmed · F-hr_email_copy-37cede, F-hr_email_copy-addeef, F-hr_email_copy-6d2b5a, F-hr_email_copy-77a561, G-10 |
++| **Notes** | Step 9 'Finish', after the permit reminder, at submission. Not needed by any receiving party; requested by HR (see OQ-copy-email-address-retention). |
+ 
+ ### Business rules in this section
+ 
+@@ -857,6 +887,16 @@
+ If the employee changes an earlier answer so that later questions no longer apply, those answers may be kept while the employee goes back and forth, but are discarded on submission. After submission the questionnaire is read-only for the employee; later changes are made by HR.
+ 
+ _Status: decision · Sources: G-01, D-036, D-037_
++
++#### Copy of the submitted answers
++If the employee asks for a copy, an email is sent on submission to the address they typed in. It shows the answers exactly as they were submitted, nothing more: no derived results (such as the insurance start date or the tariff code) and no other content.
++
++| # | Wants a copy | → Result | Sources |
++|---|---|---|---|
++| 1 | yes | Send the submitted answers, exactly as submitted, to the email address given | F-hr_email_copy-37cede, F-hr_email_copy-029105, F-hr_email_copy-ab2538 |
++| 2 | no or empty | No copy is sent | F-hr_email_copy-addeef |
++
++_Status: confirmed · Sources: F-hr_email_copy-37cede, F-hr_email_copy-addeef, F-hr_email_copy-029105, F-hr_email_copy-ab2538_
+ 
+ ## Evidence
+ - **D-001** (product decision (Product owner)): Lonio computes the full Zurich source tax tariff code (tariff letter including the cross-border letters, child digit and church-tax suffix, e.g. "C1Y", "L0Y") for every employee subject to source tax, from the answers it collects, following the calculator's logic. HR no longer clicks through the calculator.
+@@ -875,6 +915,22 @@
+ - **D-036** (product decision (Product owner)): Answers to questions that no longer apply after the employee changes an earlier answer are discarded on submission; until then they may be kept so going back and forth loses no input.
+ - **D-037** (product decision (Product owner)): After submission the questionnaire is read-only for the employee. Any later change (a move, a marriage, a new child, a certificate of residence handed in later, a corrected nationality) is made by HR and belongs to the later HR-side spec (D-034). Every derived result (insurance start date, civil status for the fund and for source tax, subject to source tax, tariff code) is always derived again from the latest answers, as for the first working day (D-033).
+ - **D-038** (product decision (Product owner)): Employees living abroad get the permit reminder whatever their nationality, because nationality is not asked of them (data minimisation, G-01). HR words the reminder so that a Swiss citizen living abroad, such as Stefan, can see that it does not apply to them. Asking everyone 'Swiss citizen yes/no' only for the reminder is not worth the extra question.
++- **F-hr_email_copy-029105** (hr_email_copy): The employee types in the email address the copy of their form data should be sent to.
++  - "They just type in the email address the copy should go to." — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-37cede** (hr_email_copy): At the end of the questionnaire, when submitting, the employee should be able to send themselves an email with a copy of their form data.
++  - "at the end of the questionnaire, when they submit, the employee should be able to send themselves an email with a copy of their form data" — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-6d2b5a** (hr_email_copy): Today, new employees keep calling HR (Muster AG) to ask what they entered in the questionnaire.
++  - "New employees keep calling us to ask what they entered" — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-77a561** (hr_email_copy, inferred): The copy-email feature is requested by HR (Muster AG) to reduce employee calls about what they entered; the email address is used only for sending the copy, not for a receiving party.
++  - "New employees keep calling us to ask what they entered" — hr_email_copy/T-001, Anna
++  - "They just type in the email address the copy should go to." — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-ab2538** (hr_email_copy): The copy should show the answers exactly as they were submitted, nothing more (no additional content or derived data).
++  - "The copy should show the answers exactly as they were submitted, nothing more." — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-addeef** (hr_email_copy): Sending the copy email is optional for the employee; not everyone wants it.
++  - "It is optional, not everyone wants it." — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-b67d2f** (hr_email_copy, inferred): The copy email address is only needed if the employee chooses to receive a copy of their form data (the feature is optional).
++  - "It is optional, not everyone wants it." — hr_email_copy/T-001, Anna
++  - "They just type in the email address the copy should go to." — hr_email_copy/T-001, Anna
+ - **F-hr_transcript-09b3fe** (hr_transcript): For married employees, the source tax calculator asks additional questions, e.g. whether the husband or wife works.
+   - "It changes the questions in the calculator, yes. Whether the husband or wife works." — hr_transcript/T-044, Anna
+ - **F-hr_transcript-1a20bb** (hr_transcript): Employees who work in Switzerland but live abroad (e.g. Konstanz in Germany, Liechtenstein) are always subject to source tax, regardless of nationality – even Swiss citizens.
+--- baseline/requirements/employee-onboarding/information.md
++++ run/requirements/employee-onboarding/information.md
+@@ -41,6 +41,8 @@
+ | **More than 60 work-related non-return days expected** | For employees living in Germany for whom a daily return is reasonable but who do not return daily: whether they expect more than 60 work-related non-return days in the calendar year (a declaration, not proof). Values: yes · no | Only if the employee lives in Germany, does not return daily and a daily return is reasonable | Whenever it is asked | Country (home address), Daily return to the home in Germany, Daily return reasonable (less than 100 km) | source_tax | [Employees living abroad (Germany, Liechtenstein)](feature.md#SEC-07-living-abroad) |
+ | **Daily return to the home in Liechtenstein** | For employees living in Liechtenstein: whether they expect to return daily to their main residence in Liechtenstein. Values: yes · no | Only if the employee lives in Liechtenstein (subject to source tax) | Whenever it is asked | Country (home address), Subject to source tax | source_tax | [Employees living abroad (Germany, Liechtenstein)](feature.md#SEC-07-living-abroad) |
+ | **More than 45 work-related non-return days expected** | For employees living in Liechtenstein who do not return daily: whether they expect more than 45 work-related non-return days in the calendar year. Values: yes · no | Only if the employee lives in Liechtenstein and does not return daily | Whenever it is asked | Country (home address), Daily return to the home in Liechtenstein | source_tax | [Employees living abroad (Germany, Liechtenstein)](feature.md#SEC-07-living-abroad) |
++| **Send me a copy of my answers** | Whether the employee wants to be sent an email with a copy of the form data they submit. Offered at the end of the questionnaire, when submitting. Optional: not everyone wants it. Values: yes · no | Always, at the end of the questionnaire when submitting | May be left empty; without a 'yes' no copy is sent |  | employee, hr | [Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission) |
++| **Email address for the copy** | The email address, typed in by the employee, to which the copy of their submitted form data is sent. Used only to send the copy, not passed to any receiving party. | Only if the employee wants a copy of their answers | Whenever it is asked | Send me a copy of my answers | employee | [Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission) |
+ 
+ ## Derived results (never asked)
+ 
+@@ -61,3 +63,4 @@
+ - **Source tax result** – Lonio computes the full Zurich tariff code for every employee subject to source tax: tariff letter, child digit and church-tax suffix (e.g. C1Y, L0Y, H2N). For Liechtenstein residents with daily return or at most 45 non-return days the result is 'In principle no source tax liability, subject to the double taxation agreement', flagged for HR. Employees not subject get no result. The result is always derived again from the latest answers. ([Source tax tariff basics and computed result](feature.md#SEC-05-tariff-basics))
+ - **Permit reminder** – At the end of the questionnaire, every non-Swiss employee and every employee living abroad (whatever their nationality) is reminded to bring their permit on the first working day. HR words the reminder, so that a Swiss citizen living abroad can see it does not apply to them. It collects no data. ([Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission))
+ - **Discard answers that no longer apply** – If the employee changes an earlier answer so that later questions no longer apply, those answers may be kept while the employee goes back and forth, but are discarded on submission. After submission the questionnaire is read-only for the employee; later changes are made by HR. ([Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission))
++- **Copy of the submitted answers** – If the employee asks for a copy, an email is sent on submission to the address they typed in. It shows the answers exactly as they were submitted, nothing more: no derived results (such as the insurance start date or the tariff code) and no other content. ([Completing and submitting the questionnaire](feature.md#SEC-08-completion-and-submission))
+--- baseline/requirements/employee-onboarding/open-questions.md
++++ run/requirements/employee-onboarding/open-questions.md
+@@ -87,3 +87,19 @@
+ - **G-01**: Lonio collects onboarding data from a new employee **once** and reuses it for every receiving party. Asking too little blocks a registration; asking too much collects personal data we must not have (data minimisation). A question must only be asked when at least one receiving party needs the answer for this person.
+ - **D-008**: Anyone with Swiss citizenship counts as Swiss for source tax, even with another nationality. This closes OQ-dual-nationality. To be verified by a domain expert.
+ 
++## OQ-copy-email-address-retention
++**Is the email address for the copy kept after the copy has been sent? Is it recorded for HR?**
++
++No receiving party needs the address. Keeping it would collect personal data that no party needs (data minimisation, G-01).
++
++Options:
++- Use it only to send the copy and do not keep it
++- Keep it and record it for HR
++
++**Recommendation:** Use it only to send the copy and do not keep it. Confirm with the product owner.
++
++Affects: Email address for the copy, Copy of the submitted answers
++- **F-hr_email_copy-77a561**: The copy-email feature is requested by HR (Muster AG) to reduce employee calls about what they entered; the email address is used only for sending the copy, not for a receiving party. — "New employees keep calling us to ask what they entered" (hr_email_copy/T-001, Anna) — "They just type in the email address the copy should go to." (hr_email_copy/T-001, Anna)
++- **F-hr_email_copy-029105**: The employee types in the email address the copy of their form data should be sent to. — "They just type in the email address the copy should go to." (hr_email_copy/T-001, Anna)
++- **G-01**: Lonio collects onboarding data from a new employee **once** and reuses it for every receiving party. Asking too little blocks a registration; asking too much collects personal data we must not have (data minimisation). A question must only be asked when at least one receiving party needs the answer for this person.
++
+--- baseline/requirements/employee-onboarding/stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md
++++ run/requirements/employee-onboarding/stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md
+@@ -17,6 +17,7 @@
+ 
+ Priority **P2** – HR asked for it explicitly and it fixes a recurring annoyance (half of the new employees forget their permit), but it blocks no registration. · Status: **decision** · Sources: F-hr_transcript-c53552, F-hr_transcript-1a20bb, F-hr_transcript-d7431e, G-01, D-010, D-038
+ 
++> ⚠ Open questions affecting this section: [OQ-copy-email-address-retention](../open-questions.md#oq-copy-email-address-retention)
+ Covers (details in [the section](../feature.md#SEC-08-completion-and-submission) and [information.md](../information.md)): Permit reminder
+ 
+ ## Acceptance criteria
+--- baseline/requirements/employee-onboarding/stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md
++++ run/requirements/employee-onboarding/stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md
+@@ -17,6 +17,7 @@
+ 
+ Priority **P1** – Data minimisation is a core constraint of the feature: keeping answers no party needs means holding personal data Lonio must not have. · Status: **decision** · Sources: G-01, D-036
+ 
++> ⚠ Open questions affecting this section: [OQ-copy-email-address-retention](../open-questions.md#oq-copy-email-address-retention)
+ Covers (details in [the section](../feature.md#SEC-08-completion-and-submission) and [information.md](../information.md)): Discard answers that no longer apply
+ 
+ ## Acceptance criteria
+--- baseline/requirements/employee-onboarding/stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md
++++ run/requirements/employee-onboarding/stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md
+@@ -17,6 +17,7 @@
+ 
+ Priority **P1** – Wrong or stale derived results (e.g. an insurance start date from an old first working day) would give the pension fund or source tax wrong data; HR reports that the first working day often moves. · Status: **decision** · Sources: F-hr_transcript-872bd7, F-hr_transcript-1d5c07, D-033, D-034, D-037
+ 
++> ⚠ Open questions affecting this section: [OQ-copy-email-address-retention](../open-questions.md#oq-copy-email-address-retention)
+ Covers (details in [the section](../feature.md#SEC-08-completion-and-submission) and [information.md](../information.md)): Discard answers that no longer apply
+ 
+ ## Acceptance criteria
+--- baseline/requirements/employee-onboarding/stories/US-08.4-step-by-step-questionnaire-flow.md
++++ run/requirements/employee-onboarding/stories/US-08.4-step-by-step-questionnaire-flow.md
+@@ -17,6 +17,7 @@
+ 
+ Priority **P2** – Structures the employee experience; the underlying ask-once and only-when-needed conditions are already required by the individual questions. · Status: **inferred** · Sources: G-01, G-09, F-hr_transcript-b84498, D-002, D-005, D-007, D-010, D-036, D-037
+ 
++> ⚠ Open questions affecting this section: [OQ-copy-email-address-retention](../open-questions.md#oq-copy-email-address-retention)
+ ## Acceptance criteria
+ 
+ - **AC-08.4.1 Steps in a fixed order**
+--- baseline/requirements/employee-onboarding/stories/US-08.5-send-the-employee-a-copy-of-their-submitted-answers.md
++++ run/requirements/employee-onboarding/stories/US-08.5-send-the-employee-a-copy-of-their-submitted-answers.md
+@@ -0,0 +1,85 @@
++---
++id: US-08.5
++feature: employee-onboarding
++section: SEC-08-completion-and-submission
++priority: P2
++status: inferred
++as_a: employee
++items: [wants_copy_email, copy_email_address]
++rules: [copy_email_content]
++---
++
++# US-08.5 – Send the employee a copy of their submitted answers
++
++Part of [Employee onboarding questionnaire](../feature.md), section [8. Completing and submitting the questionnaire](../feature.md#SEC-08-completion-and-submission).
++
++**As** new employee, **I want** to choose, when I submit the questionnaire, to be sent an email with a copy of the answers I submitted, to an email address I type in, **so that** I keep a record of what I entered and do not need to call HR to ask (today new employees keep calling HR about what they entered)
++
++Priority **P2** – HR asked for it to reduce recurring calls from new employees; it is optional, a convenience, and blocks no registration. · Status: **inferred** · Sources: F-hr_email_copy-37cede, F-hr_email_copy-addeef, F-hr_email_copy-6d2b5a, F-hr_email_copy-77a561, F-hr_email_copy-029105, F-hr_email_copy-b67d2f, F-hr_email_copy-ab2538, G-01, G-10
++
++> ⚠ Open questions affecting this section: [OQ-copy-email-address-retention](../open-questions.md#oq-copy-email-address-retention)
++Covers (details in [the section](../feature.md#SEC-08-completion-and-submission) and [information.md](../information.md)): Send me a copy of my answers, Email address for the copy, Copy of the submitted answers
++
++## Acceptance criteria
++
++- **AC-08.5.1 Copy offered at submission and optional**
++  - **Given** an employee at the end of the questionnaire, when submitting (after the permit reminder, where it is shown)
++  - **When** they are about to submit
++  - **Then** Lonio offers to send them a copy of their answers (yes or no); the employee may leave it unanswered and can still submit, and without a 'yes' no copy is sent
++  - _Sources: F-hr_email_copy-37cede, F-hr_email_copy-addeef, G-10_
++
++  | Example | Country (home address) | Nationality | → | Send me a copy of my answers | Checked |
++  |---|---|---|---|---|---|
++  | Every employee is offered the copy (illustrative) | Switzerland | Switzerland | → | optional | ✅ |
++
++- **AC-08.5.2 Email address asked only when a copy is wanted**
++  - **Given** an employee at submission
++  - **When** they answer whether they want a copy
++  - **Then** if they answer 'yes', they type in the email address the copy should go to, and it must be given; if they answer 'no' or leave the question empty, no email address is asked
++  - _Sources: F-hr_email_copy-029105, F-hr_email_copy-b67d2f, F-hr_email_copy-addeef_
++
++  | Example | Send me a copy of my answers | → | Email address for the copy | Checked |
++  |---|---|---|---|---|
++  | Employee wants a copy (illustrative) | yes | → | required | ✅ |
++  | Employee does not want a copy (illustrative) | no | → | not asked | ✅ |
++
++- **AC-08.5.3 Copy shows the submitted answers exactly, nothing more**
++  - **Given** an employee who answered 'yes' and typed in an email address
++  - **When** they submit the questionnaire
++  - **Then** an email is sent to that address showing the answers exactly as they were submitted (only the answers recorded on submission), with nothing more: no derived results such as the insurance start date, the source tax liability or the tariff code, and no other content. If the employee answered 'no' or left the question empty, no copy is sent
++  - _Sources: F-hr_email_copy-37cede, F-hr_email_copy-029105, F-hr_email_copy-ab2538, F-hr_email_copy-addeef, D-036_
++
++  | Example | Send me a copy of my answers | Email address for the copy | Country (home address) | → | Copy of the submitted answers | Checked |
++  |---|---|---|---|---|---|---|
++  | Copy wanted, address given (illustrative) | yes | new.employee@example.com | – | → | yes | ✅ |
++  | Copy not wanted (illustrative) | no | – | – | → | no | ✅ |
++  | Copy question left empty (illustrative) | – | – | Switzerland | → | no | ✅ |
++
++- **AC-08.5.4 Email address used only to send the copy**
++  - **Given** an employee who typed in an email address for the copy
++  - **When** the questionnaire is submitted and the copy is sent
++  - **Then** the address is used only to send the copy; it is not recorded for the pension fund or for source tax. Whether it is kept afterwards or recorded for HR is open (see OQ-copy-email-address-retention)
++  - _Sources: F-hr_email_copy-77a561, F-hr_email_copy-029105, G-01_
++_Trace check: partial – AC-08.5.1 places the offer after the permit reminder, which none of the cited facts support._
++
++
++## Evidence
++- **D-036** (product decision (Product owner)): Answers to questions that no longer apply after the employee changes an earlier answer are discarded on submission; until then they may be kept so going back and forth loses no input.
++- **F-hr_email_copy-029105** (hr_email_copy): The employee types in the email address the copy of their form data should be sent to.
++  - "They just type in the email address the copy should go to." — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-37cede** (hr_email_copy): At the end of the questionnaire, when submitting, the employee should be able to send themselves an email with a copy of their form data.
++  - "at the end of the questionnaire, when they submit, the employee should be able to send themselves an email with a copy of their form data" — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-6d2b5a** (hr_email_copy): Today, new employees keep calling HR (Muster AG) to ask what they entered in the questionnaire.
++  - "New employees keep calling us to ask what they entered" — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-77a561** (hr_email_copy, inferred): The copy-email feature is requested by HR (Muster AG) to reduce employee calls about what they entered; the email address is used only for sending the copy, not for a receiving party.
++  - "New employees keep calling us to ask what they entered" — hr_email_copy/T-001, Anna
++  - "They just type in the email address the copy should go to." — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-ab2538** (hr_email_copy): The copy should show the answers exactly as they were submitted, nothing more (no additional content or derived data).
++  - "The copy should show the answers exactly as they were submitted, nothing more." — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-addeef** (hr_email_copy): Sending the copy email is optional for the employee; not everyone wants it.
++  - "It is optional, not everyone wants it." — hr_email_copy/T-001, Anna
++- **F-hr_email_copy-b67d2f** (hr_email_copy, inferred): The copy email address is only needed if the employee chooses to receive a copy of their form data (the feature is optional).
++  - "It is optional, not everyone wants it." — hr_email_copy/T-001, Anna
++  - "They just type in the email address the copy should go to." — hr_email_copy/T-001, Anna
++- **G-01** (product owner guidance): Lonio collects onboarding data from a new employee **once** and reuses it for every receiving party. Asking too little blocks a registration; asking too much collects personal data we must not have (data minimisation). A question must only be asked when at least one receiving party needs the answer for this person.
++- **G-10** (product owner guidance): Business wording for values (used in allowed values and examples): countries by English name ("Switzerland", "Germany", "Liechtenstein"), permits as "B permit", "C permit", civil status exactly as the pension fund's list shows it ("Single", "Married", ...), dates as DD.MM.YYYY, yes/no as "yes"/"no".
+--- baseline/requirements/employee-onboarding/traceability.md
++++ run/requirements/employee-onboarding/traceability.md
+@@ -38,6 +38,7 @@
+ | US-08.2 Discard answers that no longer apply on submission | AC-08.2.1, AC-08.2.2 | G-01, D-036 |
+ | US-08.3 Questionnaire is read-only for the employee after submission | AC-08.3.1, AC-08.3.2 | F-hr_transcript-872bd7, F-hr_transcript-1d5c07, D-033, D-034, D-037 |
+ | US-08.4 Step-by-step questionnaire flow | AC-08.4.1, AC-08.4.2, AC-08.4.3 | G-01, G-09, F-hr_transcript-b84498, D-002, D-005, D-007, D-010, D-036, D-037 |
++| US-08.5 Send the employee a copy of their submitted answers | AC-08.5.1, AC-08.5.2, AC-08.5.3, AC-08.5.4 | F-hr_email_copy-37cede, F-hr_email_copy-addeef, F-hr_email_copy-6d2b5a, F-hr_email_copy-77a561, F-hr_email_copy-029105, F-hr_email_copy-b67d2f, F-hr_email_copy-ab2538, G-01, G-10 |
+ 
+ ## Information and rules → sources
+ 
+@@ -78,6 +79,8 @@
+ | More than 60 work-related non-return days expected | F-zh_source_tax_calculator-e8ffac, F-zh_source_tax_calculator-ea3cd8, F-zh_source_tax_calculator-33ef31, F-zh_source_tax_calculator-b948fd, D-035 |
+ | Daily return to the home in Liechtenstein | F-zh_source_tax_calculator-981b6b, F-zh_source_tax_calculator-a2041b, F-zh_source_tax_calculator-e22d17, F-zh_source_tax_calculator-e80d8f, D-007, D-035 |
+ | More than 45 work-related non-return days expected | F-zh_source_tax_calculator-e96210, F-zh_source_tax_calculator-0ff846, F-zh_source_tax_calculator-f4ece9, F-zh_source_tax_calculator-ab4e1e, D-007, D-035 |
++| Send me a copy of my answers | F-hr_email_copy-37cede, F-hr_email_copy-addeef, F-hr_email_copy-6d2b5a, F-hr_email_copy-77a561, G-10 |
++| Email address for the copy | F-hr_email_copy-029105, F-hr_email_copy-b67d2f, F-hr_email_copy-77a561 |
+ | rule: Insurance start date | F-hr_transcript-1d5c07, F-hr_transcript-30d25c, F-hr_transcript-fdf50a, F-hr_transcript-d7a23b, F-pension_portal-509cbe, F-pension_portal-dd8126, F-pension_portal-3a97ab, G-08, D-033, D-037 |
+ | rule: Civil status for the pension fund | F-pension_portal-3d1ae4, F-pension_portal-9b24c5, F-hr_transcript-f197d6, D-003 |
+ | rule: Civil status for source tax | F-zh_source_tax_calculator-051bb9, D-003 |
+@@ -95,6 +98,7 @@
+ | rule: Source tax result | F-zh_source_tax_calculator-ecef37, F-zh_source_tax_calculator-2eab9a, F-zh_source_tax_calculator-86d588, F-hr_transcript-563a9f, F-hr_transcript-4e180e, D-001, D-007, D-034, D-037 |
+ | rule: Permit reminder | F-hr_transcript-c53552, D-010, D-038 |
+ | rule: Discard answers that no longer apply | G-01, D-036, D-037 |
++| rule: Copy of the submitted answers | F-hr_email_copy-37cede, F-hr_email_copy-addeef, F-hr_email_copy-029105, F-hr_email_copy-ab2538 |
+ 
+ ## Facts
+ 
+@@ -279,3 +283,11 @@
+ | F-zh_source_tax_calculator-332e2a | zh_source_tax_calculator | open | explicit | The full cross-product of child paths × residence paths × confession × civil status was not enumerated. | zh_source_tax_calculator/C-N06 |
+ | F-zh_source_tax_calculator-4957f6 | zh_source_tax_calculator | open | explicit | Not tested: more than 3 children (upper limit unknown), whether 'Kind löschen' recomputes correctly, and tariff D or other special tariffs. | zh_source_tax_calculator/C-N07 |
+ | F-zh_source_tax_calculator-3cdbd7 | zh_source_tax_calculator | open | explicit | A hidden 'Beispiele' area shows tags H3N and P3N, which were not explored as inputs. | zh_source_tax_calculator/C-N03 |
++| F-hr_email_copy-6d2b5a | hr_email_copy | context | explicit | Today, new employees keep calling HR (Muster AG) to ask what they entered in the questionnaire. | hr_email_copy/T-001 |
++| F-hr_email_copy-37cede | hr_email_copy | decision | explicit | At the end of the questionnaire, when submitting, the employee should be able to send themselves an email with a copy of their form data. | hr_email_copy/T-001 |
++| F-hr_email_copy-addeef | hr_email_copy | rule | explicit | Sending the copy email is optional for the employee; not everyone wants it. | hr_email_copy/T-001 |
++| F-hr_email_copy-029105 | hr_email_copy | field | explicit | The employee types in the email address the copy of their form data should be sent to. | hr_email_copy/T-001 |
++| F-hr_email_copy-b67d2f | hr_email_copy | condition | inferred | The copy email address is only needed if the employee chooses to receive a copy of their form data (the feature is optional). | hr_email_copy/T-001, hr_email_copy/T-001 |
++| F-hr_email_copy-ab2538 | hr_email_copy | format | explicit | The copy should show the answers exactly as they were submitted, nothing more (no additional content or derived data). | hr_email_copy/T-001 |
++| F-hr_email_copy-77a561 | hr_email_copy | context | inferred | The copy-email feature is requested by HR (Muster AG) to reduce employee calls about what they entered; the email address is used only for sending the copy, not for a receiving party. | hr_email_copy/T-001, hr_email_copy/T-001 |
++| F-hr_email_copy-607694 | hr_email_copy | decision | explicit | Apart from the copy email, everything else stays as discussed in the earlier HR meeting. | hr_email_copy/T-001 |

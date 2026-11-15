@@ -1,0 +1,40 @@
+Pipeline for feature 'employee-onboarding'
+[1-2] normalize + extract sources
+  running normalize/hr_email_copy ...
+  running extract/hr_email_copy ...
+[3] verify facts
+  running judge_facts ...
+  fact judge: 8 facts judged, 179 verdicts reused
+[4] knowledge model
+  running knowledge.raw ...
+  delta: 8 new or changed facts, 0 removed
+  delta: 2 items, 1 rules, 1 open questions changed or added; 0 removed
+[5] feature: sections and stories
+  running feature.plan ...
+  plan: keeping 8 sections, assigning OQ-copy-email-address-retention, copy_email_address, copy_email_content, wants_copy_email
+  reusing sections/SEC-01-identity-and-address (nothing it depends on changed)
+  reusing sections/SEC-02-start-date-insurance (nothing it depends on changed)
+  reusing sections/SEC-03-civil-status-spouse (nothing it depends on changed)
+  reusing sections/SEC-04-source-tax-liability (nothing it depends on changed)
+  reusing sections/SEC-05-tariff-basics (nothing it depends on changed)
+  reusing sections/SEC-06-children (nothing it depends on changed)
+  reusing sections/SEC-07-living-abroad (nothing it depends on changed)
+  running sections/SEC-08-completion-and-submission ...
+  updating sections/SEC-08-completion-and-submission: OQ-copy-email-address-retention, copy_email_address, copy_email_content, wants_copy_email
+  running feature.flow ...
+[6] apply decisions
+[7] checks
+  running judge_trace ...
+  trace judge: 4 elements judged, 82 verdicts reused
+[8] render feature specs
+[9] dev refinement
+  running dev_refinement ...
+  dev refinement (incremental): 8 changed, 0 removed, 1 context files
+[10] review
+  running review ...
+
+187 facts -> 37 information items, 18 rules -> 1 feature with 8 sections, 31 stories, 104 acceptance criteria; 6 open questions
+errors 0, warnings 51, examples 225/225 pass, dev refinement questions 17, tech leaks 6
+verdict: not_ready
+cost this run: $2.08
+review: build/employee-onboarding/review.md   requirements: requirements/employee-onboarding/

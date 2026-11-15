@@ -1,0 +1,252 @@
+{
+ "case": "B2",
+ "label": "after",
+ "ok": true,
+ "checks": [
+  {
+   "check": "no errors (other than expected flags)",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "all examples pass",
+   "ok": true,
+   "soft": false,
+   "detail": "225/225"
+  },
+  {
+   "check": "only expected stories changed",
+   "ok": true,
+   "soft": false,
+   "detail": "none changed"
+  },
+  {
+   "check": "1-2 stories added",
+   "ok": true,
+   "soft": false,
+   "detail": "US-08.5"
+  },
+  {
+   "check": "an added story mentions ['email', 'e-mail']",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "no-op rerun calls no agent (B0)",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  }
+ ],
+ "metrics": {
+  "usage": {
+   "by_stage": {
+    "dev_refinement": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 3848,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 86534,
+     "total_tokens": 90384,
+     "cost_usd": 0.7777,
+     "seconds": 34.9
+    },
+    "write_section": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 8108,
+     "cache_read_input_tokens": 7340,
+     "cache_creation_input_tokens": 35870,
+     "total_tokens": 51320,
+     "cost_usd": 0.4542,
+     "seconds": 56.4
+    },
+    "knowledge_delta": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 2354,
+     "cache_read_input_tokens": 1515,
+     "cache_creation_input_tokens": 45696,
+     "total_tokens": 49567,
+     "cost_usd": 0.4168,
+     "seconds": 22.2
+    },
+    "review": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 2184,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 41111,
+     "total_tokens": 43297,
+     "cost_usd": 0.1903,
+     "seconds": 16.4
+    },
+    "flow": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 2272,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 17622,
+     "total_tokens": 19896,
+     "cost_usd": 0.0944,
+     "seconds": 13.2
+    },
+    "extract": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 1181,
+     "cache_read_input_tokens": 882,
+     "cache_creation_input_tokens": 4562,
+     "total_tokens": 6627,
+     "cost_usd": 0.0605,
+     "seconds": 10.2
+    },
+    "judge_trace": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 740,
+     "cache_read_input_tokens": 2060,
+     "cache_creation_input_tokens": 6512,
+     "total_tokens": 9314,
+     "cost_usd": 0.0344,
+     "seconds": 7.2
+    },
+    "plan_assign": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 182,
+     "cache_read_input_tokens": 0,
+     "cache_creation_input_tokens": 7958,
+     "total_tokens": 8142,
+     "cost_usd": 0.0337,
+     "seconds": 2.6
+    },
+    "judge_facts": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 480,
+     "cache_read_input_tokens": 2091,
+     "cache_creation_input_tokens": 3985,
+     "total_tokens": 6558,
+     "cost_usd": 0.0214,
+     "seconds": 4.4
+    }
+   },
+   "total": {
+    "calls": 9,
+    "turns": 18,
+    "input_tokens": 18,
+    "output_tokens": 21349,
+    "cache_read_input_tokens": 13888,
+    "cache_creation_input_tokens": 249850,
+    "total_tokens": 285105,
+    "cost_usd": 2.0834,
+    "seconds": 167.5
+   }
+  },
+  "cost_usd": 2.08,
+  "stages_ran": [
+   "normalize/hr_email_copy",
+   "extract/hr_email_copy",
+   "judge_facts",
+   "knowledge.raw",
+   "feature.plan",
+   "sections/SEC-08-completion-and-submission",
+   "feature.flow",
+   "judge_trace",
+   "dev_refinement",
+   "review"
+  ],
+  "counts": {
+   "units": 343,
+   "facts": 187,
+   "items": 37,
+   "rules": 18,
+   "sections": 8,
+   "stories": 31,
+   "acceptance_criteria": 104,
+   "open_questions": 6,
+   "exclusions": 12
+  },
+  "verdict": "not_ready",
+  "baseline_verdict": "ready_with_caveats",
+  "errors": [],
+  "warnings": 51,
+  "examples": {
+   "pass": 225,
+   "total": 225
+  },
+  "dev_refinement": {
+   "questions": 17,
+   "by_severity": {
+    "blocker": 0,
+    "major": 8,
+    "minor": 9
+   },
+   "tech_leaks": 6
+  },
+  "review_findings": 10,
+  "stories": {
+   "added": [
+    "US-08.5"
+   ],
+   "removed": [],
+   "changed": [],
+   "unchanged": 30,
+   "added_sections": {
+    "US-08.5": "SEC-08-completion-and-submission"
+   }
+  },
+  "elements": {
+   "added": [
+    "item.copy_email_address",
+    "item.wants_copy_email",
+    "open.OQ-copy-email-address-retention",
+    "rule.copy_email_content"
+   ],
+   "removed": [],
+   "changed_behaviour": []
+  },
+  "files_changed": [
+   "requirements/employee-onboarding/README.md",
+   "requirements/employee-onboarding/feature.md",
+   "requirements/employee-onboarding/information.md",
+   "requirements/employee-onboarding/open-questions.md",
+   "requirements/employee-onboarding/stories/US-08.1-remind-employees-to-bring-their-permit-on-the-first-working.md",
+   "requirements/employee-onboarding/stories/US-08.2-discard-answers-that-no-longer-apply-on-submission.md",
+   "requirements/employee-onboarding/stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md",
+   "requirements/employee-onboarding/stories/US-08.4-step-by-step-questionnaire-flow.md",
+   "requirements/employee-onboarding/stories/US-08.5-send-the-employee-a-copy-of-their-submitted-answers.md",
+   "requirements/employee-onboarding/traceability.md"
+  ],
+  "impact": {
+   "added": [
+    "US-08.5"
+   ],
+   "removed": [],
+   "changed": [],
+   "unchanged": 30,
+   "changed_without_cause": [],
+   "changed_elements": [
+    "OQ-copy-email-address-retention",
+    "copy_email_address",
+    "copy_email_content",
+    "wants_copy_email"
+   ],
+   "guard_reverted": []
+  },
+  "seconds": 174
+ },
+ "noop_after": true
+}

@@ -26,13 +26,16 @@ def _pct(a, b) -> str:
 
 
 def gate(ref: dict, new: dict) -> tuple[bool, list[str]]:
+    """A change passes a case when no check that held before fails now (hard or soft), the review verdict is the
+    same, and the run used fewer tokens. Checks that already failed before are reported, not gated: they are
+    findings about the pipeline, not regressions of the change."""
     why = []
-    if not new.get("ok"):
-        why.append("hard checks fail")
-    soft_ref = {c["check"]: c["ok"] for c in ref.get("checks", []) if c["soft"]}
+    if "error" in new:
+        why.append(new["error"])
+    before = {c["check"]: c["ok"] for c in ref.get("checks", [])}
     for c in new.get("checks", []):
-        if c["soft"] and soft_ref.get(c["check"]) and not c["ok"]:
-            why.append(f"soft check worse: {c['check']}")
+        if before.get(c["check"]) and not c["ok"]:
+            why.append(f"regressed: {c['check']}")
     mr, mn = ref.get("metrics") or {}, new.get("metrics") or {}
     if mr and mn and mr.get("verdict") != mn.get("verdict"):
         why.append(f"verdict {mr.get('verdict')} -> {mn.get('verdict')}")

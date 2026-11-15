@@ -259,6 +259,12 @@ def run_case(name: str, label: str, ref: str, noop_after: bool) -> dict:
                    "checks": checks, "metrics": m}
             if noop_after:                     # B0: nothing changed since -> no agent call
                 rc0, _ = run_pipeline(out / "noop.log", no_agents=True)
+                logs = SOLUTION / "build" / "logs"
+                for f in logs.glob("blocked_*.json"):          # what the rerun wanted to send, and what the run sent
+                    shutil.copy(f, out / f.name)
+                    sent = logs / (f.name.removeprefix("blocked_").removesuffix(".json") + ".attempt0.json")
+                    if sent.exists():
+                        shutil.copy(sent, out / ("sent_" + sent.name))
                 res["noop_after"] = rc0 == 0
                 res["checks"].append({"check": "no-op rerun calls no agent (B0)", "ok": rc0 == 0, "soft": False, "detail": ""})
                 res["ok"] = res["ok"] and rc0 == 0

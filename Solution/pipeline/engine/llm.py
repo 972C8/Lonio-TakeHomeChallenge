@@ -67,6 +67,8 @@ async def run_agent(
     retries: int = 1,
 ) -> dict[str, Any]:
     if os.environ.get("PIPELINE_NO_AGENTS"):    # benchmark B0: a no-op rerun must not call any agent
+        LOG_DIR.mkdir(parents=True, exist_ok=True)   # keep what it would have sent, to see why the cache missed
+        (LOG_DIR / f"blocked_{name.replace('/', '_')}.json").write_text(json.dumps({"agent": name, "prompt": prompt}))
         raise AgentError(f"agent call blocked by PIPELINE_NO_AGENTS: {name}")
     opts = ClaudeAgentOptions(
         system_prompt=system_prompt,

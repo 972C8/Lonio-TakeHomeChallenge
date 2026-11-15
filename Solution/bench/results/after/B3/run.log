@@ -1,0 +1,43 @@
+Pipeline for feature 'employee-onboarding'
+[1-2] normalize + extract sources
+  running normalize/fund_email ...
+  running extract/fund_email ...
+[3] verify facts
+  running judge_facts ...
+  fact judge: 9 facts judged, 179 verdicts reused
+[4] knowledge model
+  running knowledge.raw ...
+  delta: 9 new or changed facts, 0 removed
+  guard: open.OQ-canton-abroad: removal reverted - it cites no removed fact
+  delta: 2 items, 2 rules, 0 open questions changed or added; 0 removed
+[5] feature: sections and stories
+  running feature.plan ...
+  plan: keeping 8 sections, assigning pension_fund_canton
+  running sections/SEC-01-identity-and-address ...
+  updating sections/SEC-01-identity-and-address: address_country, pension_fund_canton, residence_canton
+  running sections/SEC-02-start-date-insurance ...
+  updating sections/SEC-02-start-date-insurance: insurance_start_date
+  reusing sections/SEC-03-civil-status-spouse (nothing it depends on changed)
+  reusing sections/SEC-04-source-tax-liability (nothing it depends on changed)
+  reusing sections/SEC-05-tariff-basics (nothing it depends on changed)
+  reusing sections/SEC-06-children (nothing it depends on changed)
+  reusing sections/SEC-07-living-abroad (nothing it depends on changed)
+  running sections/SEC-08-completion-and-submission ...
+  updating sections/SEC-08-completion-and-submission: insurance_start_date
+  running feature.flow ...
+[6] apply decisions
+[7] checks
+  running judge_trace ...
+  trace judge: 8 elements judged, 75 verdicts reused
+[8] render feature specs
+[9] dev refinement
+  running dev_refinement ...
+  dev refinement (incremental): 6 changed, 0 removed, 5 context files
+[10] review
+  running review ...
+
+188 facts -> 35 information items, 18 rules -> 1 feature with 8 sections, 30 stories, 102 acceptance criteria; 5 open questions
+errors 5, warnings 54, examples 227/227 pass, dev refinement questions 16, tech leaks 8
+verdict: not_ready
+cost this run: $2.84
+review: build/employee-onboarding/review.md   requirements: requirements/employee-onboarding/

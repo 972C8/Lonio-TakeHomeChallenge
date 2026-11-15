@@ -1,0 +1,295 @@
+{
+ "case": "B3",
+ "label": "after-rerun",
+ "ok": false,
+ "checks": [
+  {
+   "check": "no errors (other than expected flags)",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "all examples pass",
+   "ok": true,
+   "soft": false,
+   "detail": "228/228"
+  },
+  {
+   "check": "only expected stories changed",
+   "ok": false,
+   "soft": false,
+   "detail": "US-08.3"
+  },
+  {
+   "check": "story US-02.2 changed",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "0-1 stories added",
+   "ok": true,
+   "soft": false,
+   "detail": "US-01.5"
+  },
+  {
+   "check": "rule.insurance_start_date mentions ['2027']",
+   "ok": true,
+   "soft": false,
+   "detail": ""
+  },
+  {
+   "check": "one of: open question OQ-canton-abroad closed / decision D-002 flagged for re-confirmation",
+   "ok": true,
+   "soft": false,
+   "detail": "decision D-002 flagged for re-confirmation"
+  },
+  {
+   "check": "no-op rerun calls no agent (B0)",
+   "ok": false,
+   "soft": false,
+   "detail": ""
+  }
+ ],
+ "metrics": {
+  "usage": {
+   "by_stage": {
+    "write_section": {
+     "calls": 3,
+     "turns": 6,
+     "input_tokens": 6,
+     "output_tokens": 19419,
+     "cache_read_input_tokens": 21958,
+     "cache_creation_input_tokens": 80883,
+     "total_tokens": 122266,
+     "cost_usd": 1.0481,
+     "seconds": 136.9
+    },
+    "dev_refinement": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 3515,
+     "cache_read_input_tokens": 2375,
+     "cache_creation_input_tokens": 92172,
+     "total_tokens": 98064,
+     "cost_usd": 0.8174,
+     "seconds": 32.2
+    },
+    "knowledge_delta": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 4927,
+     "cache_read_input_tokens": 9314,
+     "cache_creation_input_tokens": 38411,
+     "total_tokens": 52654,
+     "cost_usd": 0.4116,
+     "seconds": 41.0
+    },
+    "review": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 2369,
+     "cache_read_input_tokens": 2116,
+     "cache_creation_input_tokens": 40827,
+     "total_tokens": 45314,
+     "cost_usd": 0.1913,
+     "seconds": 18.1
+    },
+    "judge_trace": {
+     "calls": 2,
+     "turns": 4,
+     "input_tokens": 4,
+     "output_tokens": 2106,
+     "cache_read_input_tokens": 4120,
+     "cache_creation_input_tokens": 21782,
+     "total_tokens": 28012,
+     "cost_usd": 0.1109,
+     "seconds": 17.7
+    },
+    "flow": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 2227,
+     "cache_read_input_tokens": 6124,
+     "cache_creation_input_tokens": 11439,
+     "total_tokens": 19792,
+     "cost_usd": 0.0698,
+     "seconds": 12.5
+    },
+    "extract": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 1690,
+     "cache_read_input_tokens": 5163,
+     "cache_creation_input_tokens": 552,
+     "total_tokens": 7407,
+     "cost_usd": 0.0396,
+     "seconds": 13.6
+    },
+    "judge_facts": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 575,
+     "cache_read_input_tokens": 2091,
+     "cache_creation_input_tokens": 5142,
+     "total_tokens": 7810,
+     "cost_usd": 0.0271,
+     "seconds": 5.4
+    },
+    "plan_assign": {
+     "calls": 1,
+     "turns": 2,
+     "input_tokens": 2,
+     "output_tokens": 85,
+     "cache_read_input_tokens": 7321,
+     "cache_creation_input_tokens": 556,
+     "total_tokens": 7964,
+     "cost_usd": 0.0038,
+     "seconds": 2.1
+    }
+   },
+   "total": {
+    "calls": 12,
+    "turns": 24,
+    "input_tokens": 24,
+    "output_tokens": 36913,
+    "cache_read_input_tokens": 60582,
+    "cache_creation_input_tokens": 291764,
+    "total_tokens": 389283,
+    "cost_usd": 2.7196,
+    "seconds": 279.5
+   }
+  },
+  "cost_usd": 2.72,
+  "stages_ran": [
+   "normalize/fund_email",
+   "extract/fund_email",
+   "judge_facts",
+   "knowledge.raw",
+   "feature.plan",
+   "sections/SEC-02-start-date-insurance",
+   "sections/SEC-08-completion-and-submission",
+   "sections/SEC-01-identity-and-address",
+   "feature.flow",
+   "judge_trace",
+   "dev_refinement",
+   "review"
+  ],
+  "counts": {
+   "units": 346,
+   "facts": 188,
+   "items": 35,
+   "rules": 18,
+   "sections": 8,
+   "stories": 31,
+   "acceptance_criteria": 103,
+   "open_questions": 5,
+   "exclusions": 12
+  },
+  "verdict": "not_ready",
+  "baseline_verdict": "ready_with_caveats",
+  "errors": [
+   {
+    "check": "decisions",
+    "target": "D-002",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-002`: F-fund_email-90df7e: The pension fund registration screen has a field \"Canton\", which means the employee's canton of residence.; F-fund_email-a0397d: Lonio should not ask the employee f"
+   },
+   {
+    "check": "decisions",
+    "target": "D-012",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-012`: F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working da"
+   },
+   {
+    "check": "decisions",
+    "target": "D-033",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-033`: F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working da"
+   },
+   {
+    "check": "decisions",
+    "target": "D-037",
+    "message": "new evidence since this decision (4 fact(s)) - re-confirm, update or drop it, then run `pipeline reconfirm D-037`: F-fund_email-0b09ba: The employee's first working day is needed because the pension fund's insurance start date depends on it.; F-fund_email-0f18b5: For employees whose first working da"
+   }
+  ],
+  "warnings": 54,
+  "examples": {
+   "pass": 228,
+   "total": 228
+  },
+  "dev_refinement": {
+   "questions": 16,
+   "by_severity": {
+    "blocker": 0,
+    "major": 8,
+    "minor": 8
+   },
+   "tech_leaks": 7
+  },
+  "review_findings": 10,
+  "stories": {
+   "added": [
+    "US-01.5"
+   ],
+   "removed": [],
+   "changed": [
+    "US-01.4",
+    "US-02.2",
+    "US-08.3"
+   ],
+   "unchanged": 27,
+   "added_sections": {
+    "US-01.5": "SEC-01-identity-and-address"
+   }
+  },
+  "elements": {
+   "added": [
+    "rule.pension_fund_canton"
+   ],
+   "removed": [],
+   "changed_behaviour": [
+    "open.OQ-canton-abroad",
+    "rule.insurance_start_date"
+   ]
+  },
+  "files_changed": [
+   "requirements/employee-onboarding/README.md",
+   "requirements/employee-onboarding/feature.md",
+   "requirements/employee-onboarding/information.md",
+   "requirements/employee-onboarding/open-questions.md",
+   "requirements/employee-onboarding/stories/US-01.4-canton-of-residence-for-employees-living-in-switzerland.md",
+   "requirements/employee-onboarding/stories/US-01.5-canton-for-the-pension-fund-for-every-employee.md",
+   "requirements/employee-onboarding/stories/US-02.2-insurance-start-date-derived-from-the-first-working-day.md",
+   "requirements/employee-onboarding/stories/US-08.3-questionnaire-is-read-only-for-the-employee-after-submission.md",
+   "requirements/employee-onboarding/traceability.md"
+  ],
+  "impact": {
+   "added": [
+    "US-01.5"
+   ],
+   "removed": [],
+   "changed": [
+    "US-01.4",
+    "US-02.2",
+    "US-08.3"
+   ],
+   "unchanged": 27,
+   "changed_without_cause": [],
+   "changed_elements": [
+    "OQ-canton-abroad",
+    "address_country",
+    "insurance_start_date",
+    "pension_fund_canton",
+    "residence_canton"
+   ],
+   "guard_reverted": []
+  },
+  "seconds": 203
+ },
+ "noop_after": false
+}

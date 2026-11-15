@@ -1,0 +1,55 @@
+Pipeline for feature 'employee-onboarding'
+[1-2] normalize + extract sources
+[3] verify facts
+[4] knowledge model
+[5] feature: sections and stories
+  reusing sections/SEC-01-identity-and-address (nothing it depends on changed)
+  reusing sections/SEC-02-start-date-insurance (nothing it depends on changed)
+  reusing sections/SEC-03-civil-status-spouse (nothing it depends on changed)
+  reusing sections/SEC-04-source-tax-liability (nothing it depends on changed)
+  reusing sections/SEC-05-tariff-basics (nothing it depends on changed)
+  reusing sections/SEC-06-children (nothing it depends on changed)
+  reusing sections/SEC-07-living-abroad (nothing it depends on changed)
+  reusing sections/SEC-08-completion-and-submission (nothing it depends on changed)
+[6] apply decisions
+[7] checks
+[8] render feature specs
+[9] dev refinement
+[10] review
+  running review ...
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/user/lonio-takehomechallenge/Solution/pipeline/__main__.py", line 87, in <module>
+    main()
+    ~~~~^^
+  File "/home/user/lonio-takehomechallenge/Solution/pipeline/__main__.py", line 41, in main
+    rep = asyncio.run(run(a.feature, set(a.force), skip_llm_checks=a.fast))
+  File "/usr/local/lib/python3.13/asyncio/runners.py", line 196, in run
+    return runner.run(main)
+           ~~~~~~~~~~^^^^^^
+  File "/usr/local/lib/python3.13/asyncio/runners.py", line 119, in run
+    return self._loop.run_until_complete(task)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/usr/local/lib/python3.13/asyncio/base_events.py", line 726, in run_until_complete
+    return future.result()
+           ~~~~~~~~~~~~~^^
+  File "/home/user/lonio-takehomechallenge/Solution/pipeline/run.py", line 808, in run
+    review = await stage_review(ctx, report)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/lonio-takehomechallenge/Solution/pipeline/run.py", line 710, in stage_review
+    return await ctx.stage("review", [stable, AGENTS / "reviewer.md"], go)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/lonio-takehomechallenge/Solution/pipeline/engine/context.py", line 97, in stage
+    data = await fn()
+           ^^^^^^^^^^
+  File "/home/user/lonio-takehomechallenge/Solution/pipeline/run.py", line 703, in go
+    return await run_agent("review", load_prompt(AGENTS / "reviewer.md"),
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                           json.dumps(report, ensure_ascii=False, indent=1, default=str), Review,
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                           model=ctx.model("review"), max_turns=6)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/lonio-takehomechallenge/Solution/pipeline/engine/llm.py", line 70, in run_agent
+    raise AgentError(f"agent call blocked by PIPELINE_NO_AGENTS: {name}")
+pipeline.engine.llm.AgentError: agent call blocked by PIPELINE_NO_AGENTS: review

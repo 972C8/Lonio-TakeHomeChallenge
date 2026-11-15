@@ -137,6 +137,19 @@ class NewEvidenceSinceDecision(unittest.TestCase):
         cur.knowledge.items[0].asked_when_expr = 'country == "CH"'          # now it changed in behaviour
         self.assertEqual(len(D.new_evidence(self.ctx, [d], cur, facts, {"F-hr-1"}, prev)), 1)
 
+    def test_flag_stays_on_the_next_run_until_reconfirmed(self):
+        d = Decision(id="D-002", action="direct", statement="s", rationale="r")
+        facts = [fact("F-hr-1"), fact("F-email-9")]
+        spec = self.spec(["F-hr-1", "F-email-9", "D-002"])
+        prev = self.spec(["F-hr-1", "D-002"])
+        prev.knowledge.items[0].asked_when_expr = 'country == "CH"'          # the element changed in this run
+        self.assertEqual(len(D.new_evidence(self.ctx, [d], spec, facts, {"F-hr-1"}, prev)), 1)
+        # next run, nothing changed (prev == spec): the flag must not vanish on its own
+        self.assertEqual(len(D.new_evidence(self.ctx, [d], spec, facts, set(f.id for f in facts), spec)), 1)
+        self.ctx.write("facts", [x.model_dump() for x in facts])
+        D.reconfirm(self.ctx, ["D-002"])
+        self.assertEqual(D.new_evidence(self.ctx, [d], spec, facts, set(f.id for f in facts), spec), [])
+
     def test_accepted_fact_flagged_through_the_elements_citing_it(self):
         d = Decision(id="D-012", action="accept", target="fact.F-hr-1", rationale="r")
         f = D.new_evidence(self.ctx, [d], self.spec(["F-hr-1", "F-email-9"]), [fact("F-hr-1"), fact("F-email-9")], {"F-hr-1"})

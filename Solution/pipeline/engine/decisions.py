@@ -235,7 +235,8 @@ def new_evidence(ctx, decisions: list[Decision], spec: Spec, facts: list[Fact],
     """Flag decisions whose shaped elements now cite facts that did not exist when the decision was stamped -
     but only through elements that are new or changed in substance since the previous run (`prev_spec`):
     an element that merely gained a citation does not put the decision in question.
-    `known_before`: fact ids of the previous run (used to stamp decisions seen for the first time)."""
+    `known_before`: fact ids of the previous run (used to stamp decisions seen for the first time).
+    A flag stays raised on later runs until the decision is re-confirmed (`reconfirm`) or its facts are gone."""
     from .incremental import behaviour
     before = {(k, i): behaviour(k, e) for k, i, e in _elements(prev_spec)} if prev_spec else None
 
@@ -246,6 +247,7 @@ def new_evidence(ctx, decisions: list[Decision], spec: Spec, facts: list[Fact],
     state = json.loads(path.read_text()) if path.exists() else {}
     by_id = {f.id: f for f in facts}
     current = set(by_id)
+    pending = state.get("_pending", {})
     F = []
     for d in decisions:
         if d.id not in state:
@@ -257,11 +259,17 @@ def new_evidence(ctx, decisions: list[Decision], spec: Spec, facts: list[Fact],
         cited = {r for k, i, e in shaped_by(d, spec) if (kinds is None or k in kinds) and substantive(k, i, e)
                  for r in getattr(e, "source_refs", []) if r.startswith("F-")}
         new = sorted(r for r in cited - known if r in by_id)
+        new = sorted(set(new) | {r for r in pending.get(d.id, []) if r in by_id and r not in known})
+        if new:
+            pending[d.id] = new
+        else:
+            pending.pop(d.id, None)
         if new:
             shown = "; ".join(f"{r}: {by_id[r].statement[:140]}" for r in new[:3]) + (" ..." if len(new) > 3 else "")
             F.append(Finding(check="decisions", severity="error", target=d.id,
                              message=f"new evidence since this decision ({len(new)} fact(s)) - re-confirm, update or drop "
                                      f"it, then run `pipeline reconfirm {d.id}`: {shown}"))
+    state["_pending"] = {k: v for k, v in pending.items() if k in {d.id for d in decisions}}
     path.write_text(json.dumps(state, indent=1))
     return F
 
@@ -273,5 +281,6 @@ def reconfirm(ctx, ids: list[str]) -> list[str]:
     current = sorted(f["id"] for f in json.loads(ctx.out("facts").read_text()))
     for i in ids:
         state[i] = current
+        state.get("_pending", {}).pop(i, None)
     path.write_text(json.dumps(state, indent=1))
     return ids
