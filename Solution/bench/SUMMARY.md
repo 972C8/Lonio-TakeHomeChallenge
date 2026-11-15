@@ -6,7 +6,7 @@ raw results per case: `bench/results/<label>/<case>/` (result.json, run log, rev
 ## Result
 
 Over the three delta cases (one new source each), tokens fell **75%** (5.85M → 1.44M) and the SDK cost
-estimate **39%** ($17.98 → $10.91). Every case passed the gate: no check that held before fails after, same
+estimate **39%** ($17.98 → $10.92). Every case passed the gate: no check that held before fails after, same
 verdict, all examples pass, same stories added, same open questions.
 
 | Case | Tokens before | after | Cost before | after | Gate |
@@ -25,7 +25,7 @@ Tokens fall more than cost: most of the old tokens were cheap cache reads of the
 | Dev refinement | 4.01M tok, $5.63 | 0.34M tok, $2.96 | one call on changed files instead of a 39-turn read loop |
 | Section writers | 0.78M tok, $7.26 | 0.56M tok, $5.12 | slice of the knowledge model instead of the whole model |
 | Fact judge | 0.55M tok, $1.21 | 0.02M tok, $0.08 | verdicts cached per fact; only new facts judged |
-| Review, flow, assign | $1.85 | $0.85 | Sonnet instead of Opus |
+| Review, flow, assign | $1.71 | $0.84 | Sonnet instead of Opus |
 
 ## Quality, before → after
 
