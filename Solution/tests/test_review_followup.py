@@ -21,9 +21,12 @@ class TestFollowupPrompt(unittest.TestCase):
         self.assertEqual(R.review_followup(None, None, [dec("D-001")]), "")
 
     def test_lists_previous_findings_and_only_new_decisions(self):
-        text = R.review_followup(PREV, {"decision_ids": ["D-001"]}, [dec("D-001", "old"), dec("D-002", "new one")])
+        seen = {"D-001": R._decision_digest(dec("D-001", "old")), "D-003": R._decision_digest(dec("D-003", "a"))}
+        text = R.review_followup(PREV, {"decisions_seen": seen},
+                                 [dec("D-001", "old"), dec("D-002", "new one"), dec("D-003", "changed")])
         self.assertIn("Tariff code fails", text)
         self.assertIn("D-002", text)
+        self.assertIn("D-003", text)        # changed since
         self.assertNotIn("D-001", text)
 
     def test_unknown_previous_decisions_are_said_so(self):
@@ -33,7 +36,7 @@ class TestFollowupPrompt(unittest.TestCase):
 class FakeCtx:
     def __init__(self, d):
         self.build, self.manifest, self.ran, self.reused, self.force = Path(d), {}, [], [], set()
-        self.prev = {"review": PREV, "report": {"decision_ids": []}}
+        
 
     def out(self, name):
         return self.build / f"{name}.json"
@@ -57,8 +60,8 @@ class TestFingerprint(unittest.TestCase):
             ctx = FakeCtx(d)
             ctx.stage = stage
             base = {"impact": None, "findings": {"error": [], "warning": [], "info": []}, "x": 1}
-            asyncio.run(R.stage_review(ctx, {**base, "decision_ids": ["D-001"]}, [dec("D-001")]))
-            asyncio.run(R.stage_review(ctx, {**base, "decision_ids": ["D-001", "D-002"]}, [dec("D-001"), dec("D-002")]))
+            asyncio.run(R.stage_review(ctx, {**base, "decisions_seen": {"D-001": "a"}}, [dec("D-001")]))
+            asyncio.run(R.stage_review(ctx, {**base, "decisions_seen": {"D-001": "a", "D-002": "b"}}, [dec("D-001"), dec("D-002")]))
         self.assertEqual(seen[0], seen[1])
 
 

@@ -711,8 +711,8 @@ def review_followup(prev_review: dict | None, prev_report: dict | None, decision
     are resolved, still open or new. Empty on the first review."""
     if not prev_review or not prev_review.get("findings"):
         return ""
-    known = prev_report.get("decision_ids") if prev_report else None
-    new = [d for d in decisions if known is not None and d.id not in set(known)]
+    known = prev_report.get("decisions_seen") if prev_report else None
+    new = [d for d in decisions if known is not None and known.get(d.id) != _decision_digest(d)]
     L = ["", "## Follow-up to the previous review", "",
          "Below are the findings of the previous review. For each one, decide from the report above whether it "
          "still applies. If it no longer applies, list it under `resolved` with what resolved it (decision ids "
@@ -723,9 +723,13 @@ def review_followup(prev_review: dict | None, prev_report: dict | None, decision
     if known is None:
         L += ["", "Decisions taken since the previous review: not recorded for that review; use the report."]
     else:
-        L += ["", "Decisions taken since the previous review:"] + \
+        L += ["", "Decisions taken or changed since the previous review:"] + \
              ([f"- {d.id} ({d.action}{' ' + d.target if d.target else ''}): {d.statement}" for d in new] or ["- none"])
     return "\n".join(L)
+
+
+def _decision_digest(d) -> str:
+    return sha(d.action, d.target, d.statement, d.value)
 
 
 async def stage_review(ctx, report: dict, decisions: list | None = None) -> dict:
@@ -739,7 +743,7 @@ async def stage_review(ctx, report: dict, decisions: list | None = None) -> dict
     # the impact section says what the last run changed; on a rerun with nothing new it only flips to "nothing
     # changed", which is no reason to review again. The follow-up block is not part of the fingerprint either:
     # it changes with every review, and an unchanged report needs no new review.
-    stable = {k: v for k, v in report.items() if k not in ("impact", "decision_ids")}
+    stable = {k: v for k, v in report.items() if k not in ("impact", "decisions_seen")}
     stable["findings"] = {sev: [f for f in fs if f["check"] != "impact"] for sev, fs in report["findings"].items()}
     return await ctx.stage("review", [stable, AGENTS / "reviewer.md"], go)
 
@@ -835,7 +839,8 @@ async def run(feature_id: str, force: set[str] | None = None, skip_llm_checks: b
         "dev_refinement": refinement,
         "impact": impact,
         "skipped_sources": [s["id"] for s in ctx.profile["sources"] if not any(u.source_id == s["id"] for u in units)],
-        "decision_ids": [d.id for d in decisions],     # the next review lists the decisions taken since this one
+        # the next review lists the decisions taken or changed since this one
+        "decisions_seen": {d.id: _decision_digest(d) for d in decisions},
     }
     review = None
     if not skip_llm_checks:

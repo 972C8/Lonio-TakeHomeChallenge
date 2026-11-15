@@ -652,10 +652,8 @@ decisions:
   target: rule.tariff_code.expression
   statement: The tariff code is one code made of the tariff letter, the child digit and the church-tax
     suffix (D-051), for example C1Y. The child digit is the number of children who count; the examples
-    have one child each.
-  value: if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in
-    principle no source tax liability, subject to the double taxation agreement", [tariff_letter, if_else(child_count,
-    1, 0), church_tax_suffix]))
+    have one child each. When the letter or the church-tax suffix cannot be derived because an answer is missing (for example after an HR change), the result is 'incomplete - HR must complete' (D-048, D-053).
+  value: 'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", if_else(tariff_letter == null or church_tax_suffix == null, "incomplete - HR must complete", [tariff_letter, if_else(child_count, 1, 0), church_tax_suffix])))'
   rationale: 'Review finding: the written expression used ''+'', which the condition language rejects,
     so no example could compute a code.'
   by: Product owner

@@ -21,11 +21,6 @@
       "severity": "minor"
     },
     {
-      "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
-      "question": "Both examples in AC-06.6.5 are marked as failed (❌). The first expects Denomination 'required' after an HR change. D-053 says that examples after an HR change should expect 'HR must complete', not that the question is asked. The second example (civil status changed to Married) does not show the never-asked spouse employment question at all. What exactly should these examples expect, so we have a passing acceptance test for the 'incomplete' case?",
-      "severity": "major"
-    },
-    {
       "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
       "question": "After an HR change, 'incomplete - HR must complete' is specified for the tariff code and for 'subject to source tax'. What happens to the pension fund results when an HR change makes an answer apply that was never asked? Two examples: a move from abroad to Switzerland, where the canton was never asked; and a change from Single to Married, where the spouse's date of birth was never asked. Should the canton for the fund, and the fund registration with civil status Married, also show 'incomplete - HR must complete'? Or should the canton keep showing Zurich until HR enters it? Which derived results does the 'incomplete' state apply to?",
       "severity": "major"
@@ -44,17 +39,32 @@
       "file": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
       "question": "AC-07.2.1 says 'At least one child block is filled in' when the employee answered 'yes' to having children. The trace check notes that no cited source backs this. Is it a confirmed rule, and if so what happens when the employee removes the last child block? Is that blocked, or is 'has children' then treated as 'no'?",
       "severity": "minor"
+    },
+    {
+      "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
+      "question": "AC-06.6.5's first example still has a second, output-side 'Denomination' column expecting 'required' after an HR change, while D-053 says examples after an HR change expect 'HR must complete', not that the question is asked/required. The second example (civil status changed to Married) does not show the never-asked 'Spouse gainfully employed' answer at all. What exactly should these examples expect, so the 'incomplete' acceptance test checks the right thing?",
+      "severity": "major"
+    },
+    {
+      "file": "feature.md",
+      "question": "The 'Full source tax tariff code' rule (rows 3-4, D-052) gives 'incomplete - HR must complete' only when the tariff letter or church-tax suffix cannot be determined; the child digit is 'any'. What is the result when HR adds a child (e.g. 'Has children' changed to yes or a new child block) whose per-child questions were never answered, so the child digit cannot be determined? Should that also be 'incomplete - HR must complete'?",
+      "severity": "major"
+    },
+    {
+      "file": "feature.md",
+      "question": "After an HR change, 'Subject to source tax' itself may be undeterminable (e.g. HR changes the address from abroad to Switzerland and nationality/C permit were never asked; or to Liechtenstein and daily return was never asked). The tariff code rule only covers subject yes/no and Liechtenstein yes/no. Should the tariff code (and the subject-to-source-tax result) show 'incomplete - HR must complete' in these cases?",
+      "severity": "major"
+    },
+    {
+      "file": "feature.md",
+      "question": "The 'Tariff letter' rule keeps row 6 (G -> Q, citing D-051) while D-006 drops the tariff G/Q cases and the base letter rule says G cannot occur. Should the G -> Q mapping be built and tested at all, or removed?",
+      "severity": "minor"
     }
   ],
   "already_flagged": [
     "OQ-calculator-coverage: whether the computed tariff code matches the Zurich calculator for unexplored paths (residence block for A/B/H, more than 3 children, H3N/P3N, inferred per-child rows); non-blocking go-live condition"
   ],
   "tech_leaks": [
-    {
-      "file": "feature.md",
-      "quote": "(The internal expression evaluates one child block; it is summed over all blocks.)",
-      "why": "Refers to an internal formula ('internal expression') rather than business language. D-045 forbids this."
-    },
     {
       "file": "information.md",
       "quote": "(The internal expression evaluates one child block; it is summed over all blocks.)",
@@ -64,6 +74,11 @@
       "file": "stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md",
       "quote": "free text is not accepted and the country is required",
       "why": "Prescribes how the input field behaves (no free text). Choosing from the list is already the business rule; how input is restricted is up to engineering."
+    },
+    {
+      "file": "feature.md",
+      "quote": "(The internal expression evaluates one child block; it is summed over all blocks.)",
+      "why": "Refers to an internal formula ('internal expression') rather than business language. D-045 forbids this."
     }
   ]
 }

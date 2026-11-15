@@ -2913,7 +2913,7 @@
             ]
           }
         ],
-        "expression": "if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", [tariff_letter, if_else(child_count, 1, 0), church_tax_suffix]))",
+        "expression": "if_else(not subject_to_source_tax, \"no tariff code\", if_else(liechtenstein_no_source_tax, \"in principle no source tax liability, subject to the double taxation agreement\", if_else(tariff_letter == null or church_tax_suffix == null, \"incomplete - HR must complete\", [tariff_letter, if_else(child_count, 1, 0), church_tax_suffix])))",
         "source_refs": [
           "D-001",
           "D-007",

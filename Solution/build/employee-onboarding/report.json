@@ -12,20 +12,7 @@
     "exclusions": 11
   },
   "findings": {
-    "error": [
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.5 / HR changed the address to France; denomination never asked",
-        "message": "tariff_code = ['A', 0, None], expected 'incomplete - HR must complete'"
-      },
-      {
-        "check": "examples",
-        "severity": "error",
-        "target": "AC-06.6.5 / HR changed the civil status to Married; spouse employment never asked",
-        "message": "tariff_code = [None, 0, 'N'], expected 'incomplete - HR must complete'"
-      }
-    ],
+    "error": [],
     "warning": [
       {
         "check": "fact_judge",
@@ -247,7 +234,7 @@
         "check": "trace_judge",
         "severity": "warning",
         "target": "rule.tariff_code",
-        "message": "partial: The expression uses if_else(child_count, 1, 0), giving only 0 or 1, which contradicts the statement and F-4c53e3 (number of counted children, e.g. C3Y); the 'no tariff code' row also cites F-hr_transcript-5af8d0, which is not among the cited facts."
+        "message": "partial: The expression renders the child digit as if_else(child_count, 1, 0), which can only give 0 or 1, but the statement and F-zh_source_tax_calculator-4c53e3 say the digit is the number of counted children (e.g. C3Y); the 'no tariff code' row also cites F-hr_transcript-5af8d0, which is not among the cited facts."
       },
       {
         "check": "trace_judge",
@@ -270,20 +257,26 @@
       {
         "check": "dev_refinement",
         "severity": "warning",
-        "target": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
-        "message": "Both examples in AC-06.6.5 are marked as failed (❌). The first expects Denomination 'required' after an HR change. D-053 says that examples after an HR change should expect 'HR must complete', not that the question is asked. The second example (civil status changed to Married) does not show the never-asked spouse employment question at all. What exactly should these examples expect, so we have a passing acceptance test for the 'incomplete' case?"
-      },
-      {
-        "check": "dev_refinement",
-        "severity": "warning",
         "target": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
         "message": "After an HR change, 'incomplete - HR must complete' is specified for the tariff code and for 'subject to source tax'. What happens to the pension fund results when an HR change makes an answer apply that was never asked? Two examples: a move from abroad to Switzerland, where the canton was never asked; and a change from Single to Married, where the spouse's date of birth was never asked. Should the canton for the fund, and the fund registration with civil status Married, also show 'incomplete - HR must complete'? Or should the canton keep showing Zurich until HR enters it? Which derived results does the 'incomplete' state apply to?"
       },
       {
-        "check": "tech_leak",
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
+        "message": "AC-06.6.5's first example still has a second, output-side 'Denomination' column expecting 'required' after an HR change, while D-053 says examples after an HR change expect 'HR must complete', not that the question is asked/required. The second example (civil status changed to Married) does not show the never-asked 'Spouse gainfully employed' answer at all. What exactly should these examples expect, so the 'incomplete' acceptance test checks the right thing?"
+      },
+      {
+        "check": "dev_refinement",
         "severity": "warning",
         "target": "feature.md",
-        "message": "\"(The internal expression evaluates one child block; it is summed over all blocks.)\" - Refers to an internal formula ('internal expression') rather than business language. D-045 forbids this."
+        "message": "The 'Full source tax tariff code' rule (rows 3-4, D-052) gives 'incomplete - HR must complete' only when the tariff letter or church-tax suffix cannot be determined; the child digit is 'any'. What is the result when HR adds a child (e.g. 'Has children' changed to yes or a new child block) whose per-child questions were never answered, so the child digit cannot be determined? Should that also be 'incomplete - HR must complete'?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "warning",
+        "target": "feature.md",
+        "message": "After an HR change, 'Subject to source tax' itself may be undeterminable (e.g. HR changes the address from abroad to Switzerland and nationality/C permit were never asked; or to Liechtenstein and daily return was never asked). The tariff code rule only covers subject yes/no and Liechtenstein yes/no. Should the tariff code (and the subject-to-source-tax result) show 'incomplete - HR must complete' in these cases?"
       },
       {
         "check": "tech_leak",
@@ -296,6 +289,12 @@
         "severity": "warning",
         "target": "stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md",
         "message": "\"free text is not accepted and the country is required\" - Prescribes how the input field behaves (no free text). Choosing from the list is already the business rule; how input is restricted is up to engineering."
+      },
+      {
+        "check": "tech_leak",
+        "severity": "warning",
+        "target": "feature.md",
+        "message": "\"(The internal expression evaluates one child block; it is summed over all blocks.)\" - Refers to an internal formula ('internal expression') rather than business language. D-045 forbids this."
       }
     ],
     "info": [
@@ -340,6 +339,12 @@
         "severity": "info",
         "target": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
         "message": "AC-07.2.1 says 'At least one child block is filled in' when the employee answered 'yes' to having children. The trace check notes that no cited source backs this. Is it a confirmed rule, and if so what happens when the employee removes the last child block? Is that blocked, or is 'has children' then treated as 'no'?"
+      },
+      {
+        "check": "dev_refinement",
+        "severity": "info",
+        "target": "feature.md",
+        "message": "The 'Tariff letter' rule keeps row 6 (G -> Q, citing D-051) while D-006 drops the tariff G/Q cases and the base letter rule says G cannot occur. Should the G -> Q mapping be built and tested at all, or removed?"
       }
     ]
   },
@@ -2309,18 +2314,14 @@
     {
       "case": "AC-06.6.5 / HR changed the address to France; denomination never asked",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = ['A', 0, None], expected 'incomplete - HR must complete'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-06.6.5 / HR changed the civil status to Married; spouse employment never asked",
       "origin": "spec",
-      "pass": false,
-      "failures": [
-        "tariff_code = [None, 0, 'N'], expected 'incomplete - HR must complete'"
-      ]
+      "pass": true,
+      "failures": []
     },
     {
       "case": "AC-07.1.1 / Married cross-border commuter from Germany with children",
@@ -2733,11 +2734,6 @@
         "severity": "minor"
       },
       {
-        "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
-        "question": "Both examples in AC-06.6.5 are marked as failed (❌). The first expects Denomination 'required' after an HR change. D-053 says that examples after an HR change should expect 'HR must complete', not that the question is asked. The second example (civil status changed to Married) does not show the never-asked spouse employment question at all. What exactly should these examples expect, so we have a passing acceptance test for the 'incomplete' case?",
-        "severity": "major"
-      },
-      {
         "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
         "question": "After an HR change, 'incomplete - HR must complete' is specified for the tariff code and for 'subject to source tax'. What happens to the pension fund results when an HR change makes an answer apply that was never asked? Two examples: a move from abroad to Switzerland, where the canton was never asked; and a change from Single to Married, where the spouse's date of birth was never asked. Should the canton for the fund, and the fund registration with civil status Married, also show 'incomplete - HR must complete'? Or should the canton keep showing Zurich until HR enters it? Which derived results does the 'incomplete' state apply to?",
         "severity": "major"
@@ -2756,17 +2752,32 @@
         "file": "stories/US-07.2-one-block-per-child-age-status-and-household.md",
         "question": "AC-07.2.1 says 'At least one child block is filled in' when the employee answered 'yes' to having children. The trace check notes that no cited source backs this. Is it a confirmed rule, and if so what happens when the employee removes the last child block? Is that blocked, or is 'has children' then treated as 'no'?",
         "severity": "minor"
+      },
+      {
+        "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
+        "question": "AC-06.6.5's first example still has a second, output-side 'Denomination' column expecting 'required' after an HR change, while D-053 says examples after an HR change expect 'HR must complete', not that the question is asked/required. The second example (civil status changed to Married) does not show the never-asked 'Spouse gainfully employed' answer at all. What exactly should these examples expect, so the 'incomplete' acceptance test checks the right thing?",
+        "severity": "major"
+      },
+      {
+        "file": "feature.md",
+        "question": "The 'Full source tax tariff code' rule (rows 3-4, D-052) gives 'incomplete - HR must complete' only when the tariff letter or church-tax suffix cannot be determined; the child digit is 'any'. What is the result when HR adds a child (e.g. 'Has children' changed to yes or a new child block) whose per-child questions were never answered, so the child digit cannot be determined? Should that also be 'incomplete - HR must complete'?",
+        "severity": "major"
+      },
+      {
+        "file": "feature.md",
+        "question": "After an HR change, 'Subject to source tax' itself may be undeterminable (e.g. HR changes the address from abroad to Switzerland and nationality/C permit were never asked; or to Liechtenstein and daily return was never asked). The tariff code rule only covers subject yes/no and Liechtenstein yes/no. Should the tariff code (and the subject-to-source-tax result) show 'incomplete - HR must complete' in these cases?",
+        "severity": "major"
+      },
+      {
+        "file": "feature.md",
+        "question": "The 'Tariff letter' rule keeps row 6 (G -> Q, citing D-051) while D-006 drops the tariff G/Q cases and the base letter rule says G cannot occur. Should the G -> Q mapping be built and tested at all, or removed?",
+        "severity": "minor"
       }
     ],
     "already_flagged": [
       "OQ-calculator-coverage: whether the computed tariff code matches the Zurich calculator for unexplored paths (residence block for A/B/H, more than 3 children, H3N/P3N, inferred per-child rows); non-blocking go-live condition"
     ],
     "tech_leaks": [
-      {
-        "file": "feature.md",
-        "quote": "(The internal expression evaluates one child block; it is summed over all blocks.)",
-        "why": "Refers to an internal formula ('internal expression') rather than business language. D-045 forbids this."
-      },
       {
         "file": "information.md",
         "quote": "(The internal expression evaluates one child block; it is summed over all blocks.)",
@@ -2776,197 +2787,158 @@
         "file": "stories/US-02.3-use-the-home-address-country-as-the-country-of-residence.md",
         "quote": "free text is not accepted and the country is required",
         "why": "Prescribes how the input field behaves (no free text). Choosing from the list is already the business rule; how input is restricted is up to engineering."
+      },
+      {
+        "file": "feature.md",
+        "quote": "(The internal expression evaluates one child block; it is summed over all blocks.)",
+        "why": "Refers to an internal formula ('internal expression') rather than business language. D-045 forbids this."
       }
     ]
   },
   "impact": {
-    "added": [
-      "US-08.5"
-    ],
+    "added": [],
     "removed": [],
-    "changed": [
-      "US-01.1",
-      "US-01.2",
-      "US-01.3",
-      "US-01.4",
-      "US-01.5",
-      "US-01.6",
-      "US-01.7",
-      "US-01.8",
-      "US-02.1",
-      "US-02.2",
-      "US-02.3",
-      "US-02.4",
-      "US-03.1",
-      "US-03.2",
-      "US-03.3",
-      "US-04.1",
-      "US-04.2",
-      "US-04.3",
-      "US-04.4",
-      "US-05.1",
-      "US-05.2",
-      "US-05.3",
-      "US-05.4",
-      "US-06.2",
-      "US-06.3",
-      "US-06.4",
-      "US-06.5",
-      "US-06.6",
-      "US-06.7",
-      "US-07.1",
-      "US-07.2",
-      "US-07.3",
-      "US-07.4",
-      "US-07.5",
-      "US-07.6",
-      "US-08.1",
-      "US-08.2",
-      "US-08.3",
-      "US-08.4"
-    ],
-    "unchanged": 0,
+    "changed": [],
+    "unchanged": 40,
     "changed_without_cause": [],
-    "changed_elements": [
-      "OQ-calculator-coverage",
-      "OQ-fund-divorced-widowed",
-      "address_country",
-      "address_house_number",
-      "address_postcode",
-      "address_street",
-      "address_town",
-      "base_tariff_letter",
-      "calculator_civil_status",
-      "calculator_residence",
-      "child_age_status",
-      "child_alternating_custody",
-      "child_common_household_other_parent",
-      "child_count",
-      "child_custody",
-      "child_main_financial_contributor",
-      "child_maintenance_over_50",
-      "child_parental_care",
-      "child_result",
-      "child_same_household",
-      "child_shared_custody",
-      "church_tax_suffix",
-      "civil_status",
-      "confession",
-      "cross_border_tariff",
-      "daily_return_germany",
-      "daily_return_liechtenstein",
-      "daily_return_reasonable",
-      "date_of_birth",
-      "discard_inapplicable_answers",
-      "dta_reservation_note",
-      "first_name",
-      "first_working_day",
-      "has_children",
-      "holds_c_permit",
-      "insurance_start_date",
-      "last_name",
-      "liechtenstein_no_source_tax",
-      "nationality",
-      "non_return_days_45",
-      "non_return_days_60",
-      "pension_fund_canton",
-      "pension_fund_civil_status",
-      "permit_reminder",
-      "questionnaire_flow",
-      "read_only_after_submission",
-      "residence_canton",
-      "residence_certificate",
-      "spouse_date_of_birth",
-      "spouse_gainful_employment",
-      "spouse_holds_c_permit",
-      "spouse_nationality",
-      "spouse_residence_country",
-      "subject_to_source_tax",
-      "tariff_code",
-      "tariff_letter"
-    ],
+    "changed_elements": [],
     "guard_reverted": []
   },
   "skipped_sources": [],
+  "decisions_seen": {
+    "D-001": "447d25bdef226ede",
+    "D-002": "61059fa4c8ae013e",
+    "D-003": "cf7e249924d0534d",
+    "D-004": "3fc1000f6c9c0abf",
+    "D-005": "70969951ab77d9d3",
+    "D-006": "b6fe7540a7198dce",
+    "D-007": "a29e83d35a14f8a4",
+    "D-008": "99300ede7b7127f6",
+    "D-009": "9b06e038ab7eaf7a",
+    "D-010": "19bcaedb15381615",
+    "D-011": "2b52f5659217a1d3",
+    "D-012": "c5e59ea3e7dc1db9",
+    "D-013": "0cd932f335b3e20c",
+    "D-014": "7dcda1f0f143114a",
+    "D-015": "6ac1ddce5f963c92",
+    "D-016": "dc7720f3a68b710e",
+    "D-017": "7bb60ec3b0bc46a1",
+    "D-018": "ca6df554915c20d3",
+    "D-019": "d4bbf2daf47204b1",
+    "D-020": "036825812ede2388",
+    "D-021": "3b40b3e4665399c1",
+    "D-022": "c43217d9b76888ee",
+    "D-023": "f291ed596d985f22",
+    "D-024": "f4d97f2ce21fa8e7",
+    "D-025": "d2c3dd9450765f48",
+    "D-026": "77d868d685c53569",
+    "D-027": "f4d97f2ce21fa8e7",
+    "D-028": "d2c3dd9450765f48",
+    "D-029": "26e5f15203938ae1",
+    "D-030": "e2f2949fbbb30d32",
+    "D-031": "c87d0e9986ba8b11",
+    "D-032": "c5e85d99b6110191",
+    "D-033": "15dbac9dee91c1ed",
+    "D-034": "0797f95fe3b87c1c",
+    "D-035": "91a57d2b0a2e8487",
+    "D-036": "3fa557c380e57af0",
+    "D-037": "b1795a16c4583379",
+    "D-038": "1da8ed698f093e67",
+    "D-039": "99ea54ab9c102fa3",
+    "D-040": "82a81ee0d820414b",
+    "D-041": "434bed1e4d2a8f73",
+    "D-042": "333ddc621d35173d",
+    "D-043": "5bd15ad901068002",
+    "D-044": "4140e724ac7fa71d",
+    "D-045": "3e57807d20070780",
+    "D-046": "4e7eda9b26f4cef8",
+    "D-047": "7c0763da95b4a613",
+    "D-048": "93f0f1a89b1d170d",
+    "D-049": "6962980b0110e99d",
+    "D-050": "0f0c84cd869d190b",
+    "D-051": "8a5e75c284891d8c",
+    "D-052": "8063f93d210d34c9",
+    "D-053": "1e92617ac7360551",
+    "D-054": "f460c46e676c2ed8"
+  },
   "review": {
-    "verdict": "not_ready",
-    "summary": "Two examples in AC-06.6.5 fail, and dev refinement raised two major questions about the 'incomplete - HR must complete' state. Technical wording also leaks into the spec (D-045). Several rules and items are only partly traced to cited sources. The calculator-coverage open question is non-blocking, but it needs sign-off before go-live.",
+    "verdict": "ready_with_caveats",
+    "summary": "All 300+ examples pass and there are no errors or blocking open questions. The only open question, OQ-calculator-coverage, is non-blocking. Nothing from the previous review is fully resolved. The biggest gap is the 'incomplete - HR must complete' state after an HR change. Its scope is still undefined, and three major dev-refinement questions remain. The tariff_code trace warning still shows the old child-digit expression. Engineering can start on the main flow, but PO decisions are needed on the incomplete state, the tariff_code expression and the tech leaks.",
     "findings": [
       {
-        "title": "AC-06.6.5 examples fail: the 'incomplete' case has no passing test",
-        "why": "After an HR change, the tariff code is specified as 'incomplete - HR must complete' (D-053). The computed code instead returns a partial value (A0 / N). The first example expects Denomination 'required', which contradicts D-053. The second never shows the unasked spouse-employment question. The incomplete-state behaviour is therefore untested and ambiguous.",
-        "evidence": "examples: AC-06.6.5 (both cases pass=false); dev_refinement US-06.6 (major)",
-        "action": "Decide in decisions.yaml that the tariff code is 'incomplete - HR must complete' whenever a required input was never asked. Then fix both example tables: show the unasked question as 'not asked' and expect 'incomplete'. Fix the rule expression so it returns 'incomplete' rather than a partial code."
+        "title": "Scope of the 'incomplete - HR must complete' state is undefined",
+        "status": "still_open",
+        "why": "D-052 and D-053 cover the tariff letter and church-tax suffix only. The following are not covered: pension fund canton, fund civil status Married without a spouse date of birth, an undeterminable child digit, and an undeterminable 'subject to source tax' after an HR change. Engineering would have to guess.",
+        "evidence": "dev_refinement US-01.6 (major); feature.md x2 (major); D-052, D-053",
+        "action": "Add a decision listing every derived result that can show 'incomplete'. Cover canton, spouse date of birth, child digit and subject-to-source-tax, and state what each shows when its inputs were never asked."
       },
       {
-        "title": "Scope of the 'incomplete' state is undefined for pension fund results",
-        "why": "The spec covers only the tariff code and 'subject to source tax'. It does not say what the fund canton, or the fund civil status Married without a spouse date of birth, show after an HR change that makes an unasked answer applicable. Engineering would have to guess.",
-        "evidence": "dev_refinement US-01.6 (major); items pension_fund_canton, pension_fund_civil_status",
-        "action": "Decide which derived results go 'incomplete' (for example canton and the spouse date of birth for the fund). Or decide that HR must enter the missing value, and state that in US-01.6."
+        "title": "AC-06.6.5 examples: expectations after an HR change are ambiguous",
+        "status": "still_open",
+        "why": "The examples now pass, but the first still expects Denomination 'required', which contradicts D-053. The second omits the never-asked spouse-employment answer. The test may assert the wrong thing.",
+        "evidence": "examples AC-06.6.5 (pass); dev_refinement US-06.6 (major)",
+        "action": "Rewrite both examples to expect 'HR must complete' for the unasked answers. Show the spouse-employment input in the second example."
       },
       {
-        "title": "tariff_code rule contradicts its own statement",
-        "why": "The expression uses if_else(child_count,1,0), which yields only 0 or 1. The statement and the calculator facts require the number of counted children (for example C3Y). Codes for two or more children would be wrong.",
-        "evidence": "trace_judge rule.tariff_code; OQ-calculator-coverage (H3N/P3N, more than 3 children)",
-        "action": "Correct the expression to use the child count (or its capped value). Add examples for 2 and 3 children. Confirm the behaviour for more than 3 children with the domain expert."
+        "title": "tariff_code expression vs child-digit statement",
+        "status": "still_open",
+        "why": "The trace judge still reports if_else(child_count,1,0), which only gives 0 or 1. D-052 requires the number of counted children (for example C3Y). Codes for two or more children would be wrong. The report may predate the D-052 override.",
+        "evidence": "trace_judge rule.tariff_code; D-052; OQ-calculator-coverage (H3N/P3N)",
+        "action": "Confirm the expression after D-052 yields the child count, and add an example with 2 or more children."
       },
       {
         "title": "Technical wording leaks into the spec",
-        "why": "D-045 forbids internal-formula language in business text. ISO 3166 is implementation vocabulary, and 'free text is not accepted' dictates how the input behaves.",
+        "status": "still_open",
+        "why": "D-045 forbids internal-formula language. 'ISO 3166' is implementation vocabulary, and 'free text is not accepted' dictates how the input behaves.",
         "evidence": "tech_leak: feature.md and information.md ('internal expression'); US-02.3; item.address_country, nationality, spouse_nationality; AC-02.3.1, AC-05.1.2, AC-05.2.3",
-        "action": "Remove the 'internal expression' sentence. Say 'a list of countries (English names) plus stateless'. Drop the free-text prohibition and keep only 'the country is required'."
+        "action": "Replace these with business wording: 'chosen from a list of countries, plus stateless'. Drop the 'internal expression' sentence and the free-text sentence."
       },
       {
         "title": "Rules rely on facts and gating that no cited source backs",
-        "why": "Liechtenstein/non_return_days_45 gating, the tariff purposes, the 'cannot occur for onboarding' claim and several table rows are not backed by the cited facts. Some rows cite facts that are not in the rule's citation list. That weakens traceability and risks wrong rules.",
-        "evidence": "trace_judge: rule.questionnaire_flow, base_tariff_letter, cross_border_tariff, tariff_letter, calculator_residence, pension_fund_canton, liechtenstein_no_source_tax; items has_children, child_*, spouse_gainful_employment",
-        "action": "Add the missing citations (D-002, D-047, F-...3432a9, e22d17, f86c6b, 5af8d0). Where no source exists, mark the claim as inferred in decisions.yaml or remove it."
+        "status": "still_open",
+        "why": "The following are unbacked or cited incorrectly: Liechtenstein/non_return_days_45 gating, tariff purposes, 'G→Q cannot occur', and rows citing facts missing from the rule's citation list. This weakens traceability.",
+        "evidence": "trace_judge: questionnaire_flow, base_tariff_letter, cross_border_tariff, tariff_letter, calculator_residence, pension_fund_canton, liechtenstein_no_source_tax, has_children, child_*, spouse_gainful_employment; D-002, D-047 not cited",
+        "action": "Add the missing citations (D-002, D-047, the cited calculator facts). Mark the remaining rows as inferred decisions."
       },
       {
-        "title": "Unconfirmed rule: at least one child block is required",
-        "why": "AC-07.2.1 requires at least one child block and every child question to be required. No source backs either. The behaviour when the last block is removed is undefined.",
+        "title": "G→Q mapping kept although D-006 drops G/Q",
+        "status": "new",
+        "why": "Row 6 of the tariff letter rule (D-051) conflicts with D-006 and with the base letter rule. This risks dead code and unneeded tests.",
+        "evidence": "dev_refinement feature.md (minor); trace_judge rule.tariff_letter",
+        "action": "Decide whether to remove the G→Q row or keep it with a stated reason."
+      },
+      {
+        "title": "Unconfirmed rule: at least one child block required",
+        "status": "still_open",
+        "why": "AC-07.2.1 requires at least one child block and every child question to be required. No source backs either. What happens when the last block is removed is undefined.",
         "evidence": "trace_judge story.US-07.2; dev_refinement US-07.2",
-        "action": "Confirm with HR. Decide whether removing the last child block is blocked or sets 'has children' to no."
+        "action": "Confirm the rule with HR. Define what happens when the last block is removed (blocked, or 'has children' becomes no)."
       },
       {
         "title": "Inconsistent expected values across example tables",
-        "why": "The same question is marked 'asked' in some stories and 'required' in others. '–' is used for inputs and for results with mismatched values, and Married/Single spouse date of birth differs from Divorced/Widowed. Testers cannot tell what to assert.",
+        "status": "still_open",
+        "why": "'asked' and 'required' are used for the same question. '–' is used as both input and result with mismatched values. Spouse date of birth expectations differ between Married/Single and Divorced/Widowed.",
         "evidence": "dev_refinement US-01.2, US-01.1, US-04.4",
-        "action": "Define a single vocabulary (required / optional / not asked) and what '–' means. Align the tables to it and fix the US-04.4 rows."
+        "action": "Define the vocabulary: asked vs required, and what '–' means. Normalise the tables."
       },
       {
         "title": "Conflicting rules on when a missing answer blocks the employee",
+        "status": "still_open",
         "why": "Some stories block leaving the step and others block only submission. US-01.7 allows saving a partly filled step.",
-        "evidence": "dev_refinement US-01.8 (US-02.1, US-02.2, US-03.1, US-04.1, AC-01.8.2)",
-        "action": "Decide that missing answers block only submission, not navigation. Align the stories and say how an incomplete step is shown."
+        "evidence": "dev_refinement US-01.8; US-02.1, US-02.2, US-03.1, US-04.1, AC-01.8.2",
+        "action": "Decide: block submission only (recommended), and align the stories."
       },
       {
-        "title": "Tariff calculator coverage is unverified (non-blocking)",
-        "why": "Unexplored paths (A/B/H residence block, inferred per-child rows, more than 3 children, H3N/P3N) could produce wrong source tax codes. Some calculator facts are only partly verified (Q16 residence meaning, Q14, Q19, Q to the cross-border tariff).",
-        "evidence": "open_questions OQ-calculator-coverage; fact_judge F-zh_source_tax_calculator-037b1c, 64ac33, dc0ae9, c8aa5e, 2754e8; inferred_items",
-        "action": "Schedule the domain expert comparison against the Zurich calculator before go-live. Confirm the meaning of Q14, Q16 and Q19."
-      },
-      {
-        "title": "Certificate-of-residence and start-date semantics unclear (minor)",
-        "why": "'Provided' versus 'has' a certificate changes what HR expects. The first-working-day check has no defined 'sent' date, and past dates are not addressed. The insurance start date validation (the 1st of a month) has no source for its error behaviour.",
-        "evidence": "dev_refinement US-08.2, US-03.1; coverage F-pension_portal-e45e5b unused",
-        "action": "Decide: 'yes' means already given to HR. Define the reference date for the one-year window and whether past dates are allowed. State the start-date error wording as a product decision."
+        "title": "Calculator coverage unverified; minor semantics open",
+        "status": "still_open",
+        "why": "The unexplored tariff paths (A/B/H residence block, inferred per-child rows, more than 3 children, H3N/P3N) could give wrong codes. Several calculator facts are only partly verified. Also open: certificate 'provided' vs 'has', the 'sent' date for the start-date check, and the insurance start-date error behaviour (F-pension_portal-e45e5b unused).",
+        "evidence": "OQ-calculator-coverage (non-blocking); fact_judge F-zh_source_tax_calculator-037b1c, 64ac33, dc0ae9, c8aa5e, 2754e8; dev_refinement US-08.2, US-03.1; coverage",
+        "action": "Have a domain expert compare computed codes with the calculator before go-live. Clarify certificate wording, the 'sent' date, and the start-date error behaviour."
       }
     ]
   },
   "stages": {
     "ran": [
-      "knowledge.raw",
-      "feature.plan",
-      "sections/SEC-03-employment-start",
-      "sections/SEC-04-civil-status-spouse",
-      "sections/SEC-02-personal-details-address",
-      "sections/SEC-08-cross-border-residence",
-      "sections/SEC-05-source-tax-liability",
-      "sections/SEC-01-questionnaire-flow",
-      "sections/SEC-07-source-tax-children",
-      "sections/SEC-06-source-tax-tariff-basics",
-      "feature.flow",
       "judge_trace",
       "dev_refinement",
       "review"
@@ -2978,100 +2950,59 @@
       "extract/pension_portal",
       "normalize/zh_source_tax_calculator",
       "extract/zh_source_tax_calculator",
-      "judge_facts"
+      "judge_facts",
+      "knowledge.raw",
+      "feature.plan",
+      "feature.flow"
     ]
   },
-  "cost_usd_this_run": 9.81,
+  "cost_usd_this_run": 0.94,
   "usage_this_run": {
     "by_stage": {
-      "write_section": {
-        "calls": 8,
-        "turns": 16,
-        "input_tokens": 16,
-        "output_tokens": 114027,
-        "cache_read_input_tokens": 10272,
-        "cache_creation_input_tokens": 275064,
-        "total_tokens": 399379,
-        "cost_usd": 4.5044,
-        "seconds": 854.5
-      },
       "dev_refinement": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 5107,
+        "output_tokens": 2931,
         "cache_read_input_tokens": 2375,
-        "cache_creation_input_tokens": 216322,
-        "total_tokens": 223806,
-        "cost_usd": 1.9416,
-        "seconds": 50.1
-      },
-      "knowledge": {
-        "calls": 1,
-        "turns": 2,
-        "input_tokens": 2,
-        "output_tokens": 51639,
-        "cache_read_input_tokens": 1484,
-        "cache_creation_input_tokens": 46974,
-        "total_tokens": 100099,
-        "cost_usd": 1.4127,
-        "seconds": 400.1
-      },
-      "judge_trace": {
-        "calls": 16,
-        "turns": 32,
-        "input_tokens": 32,
-        "output_tokens": 19079,
-        "cache_read_input_tokens": 32960,
-        "cache_creation_input_tokens": 264492,
-        "total_tokens": 316563,
-        "cost_usd": 1.2795,
-        "seconds": 153.7
-      },
-      "plan_feature": {
-        "calls": 1,
-        "turns": 2,
-        "input_tokens": 2,
-        "output_tokens": 4322,
-        "cache_read_input_tokens": 1416,
-        "cache_creation_input_tokens": 38514,
-        "total_tokens": 44254,
-        "cost_usd": 0.398,
-        "seconds": 33.8
+        "cache_creation_input_tokens": 78918,
+        "total_tokens": 84226,
+        "cost_usd": 0.6984,
+        "seconds": 29.4
       },
       "review": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 2402,
-        "cache_read_input_tokens": 2116,
-        "cache_creation_input_tokens": 40601,
-        "total_tokens": 45121,
-        "cost_usd": 0.1907,
-        "seconds": 18.3
+        "output_tokens": 2741,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 45566,
+        "total_tokens": 48309,
+        "cost_usd": 0.2142,
+        "seconds": 19.0
       },
-      "flow": {
+      "judge_trace": {
         "calls": 1,
         "turns": 2,
         "input_tokens": 2,
-        "output_tokens": 1535,
-        "cache_read_input_tokens": 671,
-        "cache_creation_input_tokens": 17034,
-        "total_tokens": 19242,
-        "cost_usd": 0.0845,
-        "seconds": 9.9
+        "output_tokens": 698,
+        "cache_read_input_tokens": 2060,
+        "cache_creation_input_tokens": 4488,
+        "total_tokens": 7248,
+        "cost_usd": 0.0256,
+        "seconds": 6.4
       }
     },
     "total": {
-      "calls": 29,
-      "turns": 58,
-      "input_tokens": 58,
-      "output_tokens": 198111,
-      "cache_read_input_tokens": 51294,
-      "cache_creation_input_tokens": 899001,
-      "total_tokens": 1148464,
-      "cost_usd": 9.8114,
-      "seconds": 1520.4
+      "calls": 3,
+      "turns": 6,
+      "input_tokens": 6,
+      "output_tokens": 6370,
+      "cache_read_input_tokens": 4435,
+      "cache_creation_input_tokens": 128972,
+      "total_tokens": 139783,
+      "cost_usd": 0.9382,
+      "seconds": 54.8
     }
   }
 }

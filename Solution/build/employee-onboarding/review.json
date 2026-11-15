@@ -1,66 +1,76 @@
 {
-  "verdict": "not_ready",
-  "summary": "Two examples in AC-06.6.5 fail, and dev refinement raised two major questions about the 'incomplete - HR must complete' state. Technical wording also leaks into the spec (D-045). Several rules and items are only partly traced to cited sources. The calculator-coverage open question is non-blocking, but it needs sign-off before go-live.",
+  "verdict": "ready_with_caveats",
+  "summary": "All 300+ examples pass and there are no errors or blocking open questions. The only open question, OQ-calculator-coverage, is non-blocking. Nothing from the previous review is fully resolved. The biggest gap is the 'incomplete - HR must complete' state after an HR change. Its scope is still undefined, and three major dev-refinement questions remain. The tariff_code trace warning still shows the old child-digit expression. Engineering can start on the main flow, but PO decisions are needed on the incomplete state, the tariff_code expression and the tech leaks.",
   "findings": [
     {
-      "title": "AC-06.6.5 examples fail: the 'incomplete' case has no passing test",
-      "why": "After an HR change, the tariff code is specified as 'incomplete - HR must complete' (D-053). The computed code instead returns a partial value (A0 / N). The first example expects Denomination 'required', which contradicts D-053. The second never shows the unasked spouse-employment question. The incomplete-state behaviour is therefore untested and ambiguous.",
-      "evidence": "examples: AC-06.6.5 (both cases pass=false); dev_refinement US-06.6 (major)",
-      "action": "Decide in decisions.yaml that the tariff code is 'incomplete - HR must complete' whenever a required input was never asked. Then fix both example tables: show the unasked question as 'not asked' and expect 'incomplete'. Fix the rule expression so it returns 'incomplete' rather than a partial code."
+      "title": "Scope of the 'incomplete - HR must complete' state is undefined",
+      "status": "still_open",
+      "why": "D-052 and D-053 cover the tariff letter and church-tax suffix only. The following are not covered: pension fund canton, fund civil status Married without a spouse date of birth, an undeterminable child digit, and an undeterminable 'subject to source tax' after an HR change. Engineering would have to guess.",
+      "evidence": "dev_refinement US-01.6 (major); feature.md x2 (major); D-052, D-053",
+      "action": "Add a decision listing every derived result that can show 'incomplete'. Cover canton, spouse date of birth, child digit and subject-to-source-tax, and state what each shows when its inputs were never asked."
     },
     {
-      "title": "Scope of the 'incomplete' state is undefined for pension fund results",
-      "why": "The spec covers only the tariff code and 'subject to source tax'. It does not say what the fund canton, or the fund civil status Married without a spouse date of birth, show after an HR change that makes an unasked answer applicable. Engineering would have to guess.",
-      "evidence": "dev_refinement US-01.6 (major); items pension_fund_canton, pension_fund_civil_status",
-      "action": "Decide which derived results go 'incomplete' (for example canton and the spouse date of birth for the fund). Or decide that HR must enter the missing value, and state that in US-01.6."
+      "title": "AC-06.6.5 examples: expectations after an HR change are ambiguous",
+      "status": "still_open",
+      "why": "The examples now pass, but the first still expects Denomination 'required', which contradicts D-053. The second omits the never-asked spouse-employment answer. The test may assert the wrong thing.",
+      "evidence": "examples AC-06.6.5 (pass); dev_refinement US-06.6 (major)",
+      "action": "Rewrite both examples to expect 'HR must complete' for the unasked answers. Show the spouse-employment input in the second example."
     },
     {
-      "title": "tariff_code rule contradicts its own statement",
-      "why": "The expression uses if_else(child_count,1,0), which yields only 0 or 1. The statement and the calculator facts require the number of counted children (for example C3Y). Codes for two or more children would be wrong.",
-      "evidence": "trace_judge rule.tariff_code; OQ-calculator-coverage (H3N/P3N, more than 3 children)",
-      "action": "Correct the expression to use the child count (or its capped value). Add examples for 2 and 3 children. Confirm the behaviour for more than 3 children with the domain expert."
+      "title": "tariff_code expression vs child-digit statement",
+      "status": "still_open",
+      "why": "The trace judge still reports if_else(child_count,1,0), which only gives 0 or 1. D-052 requires the number of counted children (for example C3Y). Codes for two or more children would be wrong. The report may predate the D-052 override.",
+      "evidence": "trace_judge rule.tariff_code; D-052; OQ-calculator-coverage (H3N/P3N)",
+      "action": "Confirm the expression after D-052 yields the child count, and add an example with 2 or more children."
     },
     {
       "title": "Technical wording leaks into the spec",
-      "why": "D-045 forbids internal-formula language in business text. ISO 3166 is implementation vocabulary, and 'free text is not accepted' dictates how the input behaves.",
+      "status": "still_open",
+      "why": "D-045 forbids internal-formula language. 'ISO 3166' is implementation vocabulary, and 'free text is not accepted' dictates how the input behaves.",
       "evidence": "tech_leak: feature.md and information.md ('internal expression'); US-02.3; item.address_country, nationality, spouse_nationality; AC-02.3.1, AC-05.1.2, AC-05.2.3",
-      "action": "Remove the 'internal expression' sentence. Say 'a list of countries (English names) plus stateless'. Drop the free-text prohibition and keep only 'the country is required'."
+      "action": "Replace these with business wording: 'chosen from a list of countries, plus stateless'. Drop the 'internal expression' sentence and the free-text sentence."
     },
     {
       "title": "Rules rely on facts and gating that no cited source backs",
-      "why": "Liechtenstein/non_return_days_45 gating, the tariff purposes, the 'cannot occur for onboarding' claim and several table rows are not backed by the cited facts. Some rows cite facts that are not in the rule's citation list. That weakens traceability and risks wrong rules.",
-      "evidence": "trace_judge: rule.questionnaire_flow, base_tariff_letter, cross_border_tariff, tariff_letter, calculator_residence, pension_fund_canton, liechtenstein_no_source_tax; items has_children, child_*, spouse_gainful_employment",
-      "action": "Add the missing citations (D-002, D-047, F-...3432a9, e22d17, f86c6b, 5af8d0). Where no source exists, mark the claim as inferred in decisions.yaml or remove it."
+      "status": "still_open",
+      "why": "The following are unbacked or cited incorrectly: Liechtenstein/non_return_days_45 gating, tariff purposes, 'G→Q cannot occur', and rows citing facts missing from the rule's citation list. This weakens traceability.",
+      "evidence": "trace_judge: questionnaire_flow, base_tariff_letter, cross_border_tariff, tariff_letter, calculator_residence, pension_fund_canton, liechtenstein_no_source_tax, has_children, child_*, spouse_gainful_employment; D-002, D-047 not cited",
+      "action": "Add the missing citations (D-002, D-047, the cited calculator facts). Mark the remaining rows as inferred decisions."
     },
     {
-      "title": "Unconfirmed rule: at least one child block is required",
-      "why": "AC-07.2.1 requires at least one child block and every child question to be required. No source backs either. The behaviour when the last block is removed is undefined.",
+      "title": "G→Q mapping kept although D-006 drops G/Q",
+      "status": "new",
+      "why": "Row 6 of the tariff letter rule (D-051) conflicts with D-006 and with the base letter rule. This risks dead code and unneeded tests.",
+      "evidence": "dev_refinement feature.md (minor); trace_judge rule.tariff_letter",
+      "action": "Decide whether to remove the G→Q row or keep it with a stated reason."
+    },
+    {
+      "title": "Unconfirmed rule: at least one child block required",
+      "status": "still_open",
+      "why": "AC-07.2.1 requires at least one child block and every child question to be required. No source backs either. What happens when the last block is removed is undefined.",
       "evidence": "trace_judge story.US-07.2; dev_refinement US-07.2",
-      "action": "Confirm with HR. Decide whether removing the last child block is blocked or sets 'has children' to no."
+      "action": "Confirm the rule with HR. Define what happens when the last block is removed (blocked, or 'has children' becomes no)."
     },
     {
       "title": "Inconsistent expected values across example tables",
-      "why": "The same question is marked 'asked' in some stories and 'required' in others. '–' is used for inputs and for results with mismatched values, and Married/Single spouse date of birth differs from Divorced/Widowed. Testers cannot tell what to assert.",
+      "status": "still_open",
+      "why": "'asked' and 'required' are used for the same question. '–' is used as both input and result with mismatched values. Spouse date of birth expectations differ between Married/Single and Divorced/Widowed.",
       "evidence": "dev_refinement US-01.2, US-01.1, US-04.4",
-      "action": "Define a single vocabulary (required / optional / not asked) and what '–' means. Align the tables to it and fix the US-04.4 rows."
+      "action": "Define the vocabulary: asked vs required, and what '–' means. Normalise the tables."
     },
     {
       "title": "Conflicting rules on when a missing answer blocks the employee",
+      "status": "still_open",
       "why": "Some stories block leaving the step and others block only submission. US-01.7 allows saving a partly filled step.",
-      "evidence": "dev_refinement US-01.8 (US-02.1, US-02.2, US-03.1, US-04.1, AC-01.8.2)",
-      "action": "Decide that missing answers block only submission, not navigation. Align the stories and say how an incomplete step is shown."
+      "evidence": "dev_refinement US-01.8; US-02.1, US-02.2, US-03.1, US-04.1, AC-01.8.2",
+      "action": "Decide: block submission only (recommended), and align the stories."
     },
     {
-      "title": "Tariff calculator coverage is unverified (non-blocking)",
-      "why": "Unexplored paths (A/B/H residence block, inferred per-child rows, more than 3 children, H3N/P3N) could produce wrong source tax codes. Some calculator facts are only partly verified (Q16 residence meaning, Q14, Q19, Q to the cross-border tariff).",
-      "evidence": "open_questions OQ-calculator-coverage; fact_judge F-zh_source_tax_calculator-037b1c, 64ac33, dc0ae9, c8aa5e, 2754e8; inferred_items",
-      "action": "Schedule the domain expert comparison against the Zurich calculator before go-live. Confirm the meaning of Q14, Q16 and Q19."
-    },
-    {
-      "title": "Certificate-of-residence and start-date semantics unclear (minor)",
-      "why": "'Provided' versus 'has' a certificate changes what HR expects. The first-working-day check has no defined 'sent' date, and past dates are not addressed. The insurance start date validation (the 1st of a month) has no source for its error behaviour.",
-      "evidence": "dev_refinement US-08.2, US-03.1; coverage F-pension_portal-e45e5b unused",
-      "action": "Decide: 'yes' means already given to HR. Define the reference date for the one-year window and whether past dates are allowed. State the start-date error wording as a product decision."
+      "title": "Calculator coverage unverified; minor semantics open",
+      "status": "still_open",
+      "why": "The unexplored tariff paths (A/B/H residence block, inferred per-child rows, more than 3 children, H3N/P3N) could give wrong codes. Several calculator facts are only partly verified. Also open: certificate 'provided' vs 'has', the 'sent' date for the start-date check, and the insurance start-date error behaviour (F-pension_portal-e45e5b unused).",
+      "evidence": "OQ-calculator-coverage (non-blocking); fact_judge F-zh_source_tax_calculator-037b1c, 64ac33, dc0ae9, c8aa5e, 2754e8; dev_refinement US-08.2, US-03.1; coverage",
+      "action": "Have a domain expert compare computed codes with the calculator before go-live. Clarify certificate wording, the 'sent' date, and the start-date error behaviour."
     }
   ]
 }
