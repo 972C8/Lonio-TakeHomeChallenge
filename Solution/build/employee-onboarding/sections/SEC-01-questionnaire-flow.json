@@ -2,23 +2,23 @@
   "id": "SEC-01-questionnaire-flow",
   "order": 1,
   "title": "Questionnaire flow overview",
-  "purpose": "Define the steps, their order and the conditions for showing each one. Also define the end of the questionnaire: permit reminder, discarding answers that no longer apply, and read-only after submission.",
+  "purpose": "Define the eight steps, their order and the conditions under which each step and question appears. Cover saving and resuming, going back without losing answers, discarding answers that no longer apply, the permit reminder, the summary and confirmation, and read-only after submission.",
   "stories": [
     {
       "id": "US-01.1",
       "title": "Show the source tax step only to employees who are subject to source tax",
       "as_a": "hr",
-      "i_want": "the source tax questions (denomination, spouse employment, children, cross-border questions) to be shown only to employees who are subject to source tax",
-      "so_that": "I no longer have to work out up front who must answer them, and employees who are not subject to source tax are not asked for personal data no party needs",
+      "i_want": "the source tax details (denomination, whether the spouse is gainfully employed, whether there are children) and the children step to be asked only of employees who are subject to source tax, and for Liechtenstein residents only when they stay abroad more than 45 non-return days",
+      "so_that": "I no longer have to guess up front who must answer the source tax questions, and Lonio holds no source tax data about people who do not need it",
       "priority": "P1",
-      "priority_reason": "HR states it never knows up front who has to answer the source tax questions; asking everyone would collect data that must not be collected (G-01).",
+      "priority_reason": "HR names this as a current pain ('I never know up front who has to answer those questions'), and asking everyone breaks data minimisation (G-01).",
       "acceptance_criteria": [
         {
           "id": "AC-01.1.1",
-          "title": "Who sees the source tax questions",
-          "given": "the employee has answered country of residence and, where asked, nationality, C permit, civil status and the spouse questions",
-          "when": "the questionnaire decides whether to show the source tax step",
-          "then": "the source tax step is shown only if the employee is subject to source tax: everyone living abroad, whatever their nationality; and anyone living in Switzerland who is not Swiss, has no C permit and is not married or in a registered partnership with a Swiss national or C permit holder who lives in Switzerland. Anyone with Swiss citizenship counts as Swiss. Registered partnership counts as married and separated as single. Assumption, to be verified by a domain expert: HR's consolidated rule is applied as stated, and 'here' in HR's wording means Switzerland (D-043). The civil status mapping is also an assumption (D-003).",
+          "title": "Source tax details only for employees subject to source tax",
+          "given": "an employee has answered the steps 'Home address', 'Nationality and C permit' and 'Civil status and spouse'",
+          "when": "Lonio decides whether to show step 6 'Source tax details'",
+          "then": "the step is shown only if the employee is subject to source tax (anyone living abroad; or, living in Switzerland, a non-Swiss employee without a C permit who is not married or in a registered partnership with a Swiss national or C-permit holder living in Switzerland). Otherwise denomination, spouse gainfully employed and has children are not asked, and step 7 'Children' is not shown either.",
           "examples": [
             {
               "name": "Tomás (hr_transcript/F-hr_transcript-b90bd9)",
@@ -45,17 +45,13 @@
                 },
                 {
                   "item": "spouse_residence_country",
-                  "value": "Switzerland"
+                  "value": "yes"
                 }
               ],
               "then": [
                 {
                   "target": "subject_to_source_tax",
                   "expect": "no"
-                },
-                {
-                  "target": "spouse_holds_c_permit",
-                  "expect": "not asked"
                 },
                 {
                   "target": "confession",
@@ -70,9 +66,1281 @@
                   "expect": "not asked"
                 }
               ],
+              "source_refs": [
+                "F-hr_transcript-b90bd9"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Maria (hr_transcript/F-hr_transcript-845204)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Portugal"
+                },
+                {
+                  "item": "holds_c_permit",
+                  "value": "yes"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "confession",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [
+                "F-hr_transcript-845204"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Stefan, Swiss living abroad, country assumed Germany (hr_transcript/F-hr_transcript-3f2c2a)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "confession",
+                  "expect": "asked"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_gainful_employment",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [
+                "F-hr_transcript-3f2c2a"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Swiss employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                },
+                {
+                  "target": "confession",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Non-Swiss, no C permit, single, living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Portugal"
+                },
+                {
+                  "item": "holds_c_permit",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "confession",
+                  "expect": "asked"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_gainful_employment",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Non-Swiss in a registered partnership with a non-Swiss partner without C permit",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "holds_c_permit",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Registered partnership"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Italy"
+                },
+                {
+                  "item": "spouse_holds_c_permit",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
+                },
+                {
+                  "target": "confession",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_gainful_employment",
+                  "expect": "asked"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-b84498",
+            "F-hr_transcript-5af8d0",
+            "D-047",
+            "G-01"
+          ]
+        },
+        {
+          "id": "AC-01.1.2",
+          "title": "Spouse gainfully employed only for married employees and registered partners",
+          "given": "an employee is shown step 6 'Source tax details'",
+          "when": "the step is shown",
+          "then": "the question whether the spouse or registered partner is gainfully employed is asked only if the civil status is Married or Registered partnership; Separated counts as single for source tax, so separated, single, divorced and widowed employees are not asked it (assumption D-003, to be verified by a domain expert).",
+          "examples": [
+            {
+              "name": "Married, living in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_gainful_employment",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Separated, living in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Separated"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_gainful_employment",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "F-zh_source_tax_calculator-0137bf",
+            "D-003",
+            "D-047"
+          ]
+        },
+        {
+          "id": "AC-01.1.3",
+          "title": "Liechtenstein residents: cross-border questions first, tariff questions only above 45 non-return days",
+          "given": "an employee lives in Liechtenstein (and is therefore subject to source tax)",
+          "when": "the employee goes through the questionnaire",
+          "then": "step 5 'Cross-border commuting' (daily return, then more than 45 non-return days) comes before step 6 'Source tax details'. If the employee returns daily or expects at most 45 non-return days, there is in principle no source tax liability and steps 6 and 7 are skipped. If the employee expects more than 45 non-return days, steps 6 and 7 are asked as for any employee subject to source tax. Assumption (to be verified by a domain expert): this order and skipping follow D-040.",
+          "examples": [
+            {
+              "name": "Liechtenstein, daily return",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                },
+                {
+                  "item": "daily_return_liechtenstein",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "daily_return_liechtenstein",
+                  "expect": "asked"
+                },
+                {
+                  "target": "non_return_days_45",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "confession",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Liechtenstein, no daily return, at most 45 days",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_date_of_birth",
+                  "value": "12.03.1988"
+                },
+                {
+                  "item": "daily_return_liechtenstein",
+                  "value": "no"
+                },
+                {
+                  "item": "non_return_days_45",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "non_return_days_45",
+                  "expect": "asked"
+                },
+                {
+                  "target": "confession",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_gainful_employment",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Liechtenstein, no daily return, more than 45 days",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_date_of_birth",
+                  "value": "12.03.1988"
+                },
+                {
+                  "item": "daily_return_liechtenstein",
+                  "value": "no"
+                },
+                {
+                  "item": "non_return_days_45",
+                  "value": "yes"
+                }
+              ],
+              "then": [
+                {
+                  "target": "confession",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_gainful_employment",
+                  "expect": "asked"
+                },
+                {
+                  "target": "has_children",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-040",
+            "D-007",
+            "F-zh_source_tax_calculator-e96210",
+            "F-zh_source_tax_calculator-f4ece9"
+          ]
+        }
+      ],
+      "items": [
+        "confession",
+        "spouse_gainful_employment",
+        "has_children",
+        "daily_return_liechtenstein",
+        "non_return_days_45"
+      ],
+      "rules": [
+        "questionnaire_flow"
+      ],
+      "source_refs": [
+        "F-hr_transcript-b84498",
+        "F-hr_transcript-5af8d0",
+        "F-hr_transcript-3f2c2a",
+        "F-hr_transcript-845204",
+        "F-hr_transcript-b90bd9",
+        "F-zh_source_tax_calculator-0137bf",
+        "G-01",
+        "D-007",
+        "D-040",
+        "D-047",
+        "D-003"
+      ],
+      "status": "decision"
+    },
+    {
+      "id": "US-01.2",
+      "title": "Ask the steps in an order that avoids unneeded questions",
+      "as_a": "employee",
+      "i_want": "to go through eight fixed steps in a fixed order, where each step and each question appears only when a receiving party needs my answer",
+      "so_that": "I answer only what is needed, and earlier answers (where I live, my nationality, my civil status) decide which later questions I see",
+      "priority": "P1",
+      "priority_reason": "The flow is the backbone of the questionnaire: asking too little blocks a registration, asking too much collects personal data no party needs (G-01).",
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.2.1",
+          "title": "Exactly eight steps in a fixed order",
+          "given": "an employee opens the questionnaire, which is in English",
+          "when": "the employee goes through it",
+          "then": "the steps come in this order: 1 About you; 2 Home address; 3 Nationality and C permit; 4 Civil status and spouse; 5 Cross-border commuting; 6 Source tax details; 7 Children; 8 Permit reminder, summary and submission. There is no separate step for the first working day. A step whose questions all do not apply to this employee is skipped. Assumption (to be verified by a domain expert): this list of steps and its order follow D-047.",
+          "examples": [],
+          "source_refs": [
+            "D-047",
+            "G-09",
+            "G-01"
+          ]
+        },
+        {
+          "id": "AC-01.2.2",
+          "title": "Step 1 'About you' for everyone",
+          "given": "any employee",
+          "when": "step 1 is shown",
+          "then": "first name, last name, date of birth and first working day are required of everyone.",
+          "examples": [
+            {
+              "name": "Any employee",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "first_name",
+                  "expect": "required"
+                },
+                {
+                  "target": "last_name",
+                  "expect": "required"
+                },
+                {
+                  "target": "date_of_birth",
+                  "expect": "required"
+                },
+                {
+                  "target": "first_working_day",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-047"
+          ]
+        },
+        {
+          "id": "AC-01.2.3",
+          "title": "Step 2 'Home address' as on the first working day; canton only in Switzerland",
+          "given": "any employee",
+          "when": "step 2 is shown",
+          "then": "the home address as it applies on the first working day is required: street, house number (or the explicit option 'no house number'), postcode, town and country. The canton is asked only if the country is Switzerland. Assumptions (to be verified by a domain expert): the address applies on the first working day (D-041), every address field is required apart from the 'no house number' option (D-042, D-049), and employees abroad are not asked for a canton (D-002).",
+          "examples": [
+            {
+              "name": "Living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "address_street",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_postcode",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_town",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_country",
+                  "expect": "required"
+                },
+                {
+                  "target": "residence_canton",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Stefan, Swiss living abroad, country assumed Germany (hr_transcript/F-hr_transcript-3f2c2a)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "address_street",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_country",
+                  "expect": "required"
+                },
+                {
+                  "target": "residence_canton",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-041",
+            "D-042",
+            "D-049",
+            "D-002",
+            "F-hr_transcript-c0fe95",
+            "D-047"
+          ]
+        },
+        {
+          "id": "AC-01.2.4",
+          "title": "Step 3 'Nationality and C permit' only for employees living in Switzerland",
+          "given": "an employee has given the country of the home address",
+          "when": "Lonio decides whether to show step 3",
+          "then": "nationality is asked only if the employee lives in Switzerland; employees living abroad are subject to source tax whatever their nationality and are not asked it. Whether the employee holds a C permit (yes/no) is asked only if the nationality is not Switzerland; no other permit type is asked. Anyone holding Swiss citizenship, also together with another nationality, answers Switzerland.",
+          "examples": [
+            {
+              "name": "Maria (hr_transcript/F-hr_transcript-845204)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Portugal"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "asked"
+                },
+                {
+                  "target": "holds_c_permit",
+                  "expect": "asked"
+                }
+              ],
               "source_refs": [],
               "illustrative": false
             },
+            {
+              "name": "Swiss employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "asked"
+                },
+                {
+                  "target": "holds_c_permit",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Stateless employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "stateless"
+                }
+              ],
+              "then": [
+                {
+                  "target": "holds_c_permit",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Stefan, Swiss living abroad, country assumed Germany (hr_transcript/F-hr_transcript-3f2c2a)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "holds_c_permit",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-005",
+            "D-008",
+            "D-038",
+            "F-hr_transcript-3f2c2a",
+            "F-hr_transcript-c9d9b9",
+            "D-047"
+          ]
+        },
+        {
+          "id": "AC-01.2.5",
+          "title": "Step 4 'Civil status and spouse': civil status for everyone, spouse questions only when needed",
+          "given": "any employee, wherever they live",
+          "when": "step 4 is shown",
+          "then": "civil status is required of everyone. The spouse's or registered partner's date of birth is asked only if the civil status is Married, Registered partnership or Separated, not if Divorced or Widowed (assumption D-004, to be verified by a domain expert). The spouse's nationality, whether the spouse holds a C permit (only if the spouse is not Swiss) and whether the spouse lives in Switzerland (only if the spouse is Swiss or holds a C permit) are asked only of a non-Swiss employee living in Switzerland without a C permit who is married or in a registered partnership, because only then can the spouse exemption from source tax apply.",
+          "examples": [
+            {
+              "name": "Tomás (hr_transcript/F-hr_transcript-b90bd9)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Brazil"
+                },
+                {
+                  "item": "holds_c_permit",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Switzerland"
+                }
+              ],
+              "then": [
+                {
+                  "target": "civil_status",
+                  "expect": "required"
+                },
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "required"
+                },
+                {
+                  "target": "spouse_nationality",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_holds_c_permit",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_residence_country",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": false
+            },
+            {
+              "name": "Married C-permit holder",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Portugal"
+                },
+                {
+                  "item": "holds_c_permit",
+                  "value": "yes"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "required"
+                },
+                {
+                  "target": "spouse_nationality",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_residence_country",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Non-Swiss spouse without C permit",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Brazil"
+                },
+                {
+                  "item": "holds_c_permit",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Brazil"
+                },
+                {
+                  "item": "spouse_holds_c_permit",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_holds_c_permit",
+                  "expect": "asked"
+                },
+                {
+                  "target": "spouse_residence_country",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Married, living in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "civil_status",
+                  "expect": "required"
+                },
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "required"
+                },
+                {
+                  "target": "spouse_nationality",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Divorced",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Divorced"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "spouse_nationality",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Separated Swiss employee",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Separated"
+                }
+              ],
+              "then": [
+                {
+                  "target": "spouse_date_of_birth",
+                  "expect": "required"
+                },
+                {
+                  "target": "spouse_nationality",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-003",
+            "D-004",
+            "F-hr_transcript-b90bd9",
+            "F-hr_transcript-54d011",
+            "F-hr_transcript-2334d8",
+            "D-047",
+            "D-050"
+          ]
+        },
+        {
+          "id": "AC-01.2.6",
+          "title": "Step 5 'Cross-border commuting' only for Liechtenstein and Germany residents",
+          "given": "an employee has given the country of the home address",
+          "when": "Lonio decides whether to show step 5",
+          "then": "the step is shown only to employees living in Liechtenstein or Germany, who are all subject to source tax. Liechtenstein residents are asked about daily return and, without daily return, about more than 45 non-return days; Germany residents are asked about daily return and the follow-up questions (including the certificate of residence). The employee states what they expect for the year; no documents are uploaded. Employees living in Switzerland or in any other country do not see this step.",
+          "examples": [
+            {
+              "name": "Living in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "daily_return_germany",
+                  "expect": "asked"
+                },
+                {
+                  "target": "daily_return_liechtenstein",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Living in Liechtenstein",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                }
+              ],
+              "then": [
+                {
+                  "target": "daily_return_liechtenstein",
+                  "expect": "asked"
+                },
+                {
+                  "target": "daily_return_germany",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Living in France",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "France"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "daily_return_germany",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "daily_return_liechtenstein",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "confession",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Portugal"
+                },
+                {
+                  "item": "holds_c_permit",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "daily_return_germany",
+                  "expect": "not asked"
+                },
+                {
+                  "target": "daily_return_liechtenstein",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-047",
+            "D-040",
+            "D-035",
+            "F-zh_source_tax_calculator-31d762",
+            "F-zh_source_tax_calculator-e22d17"
+          ]
+        },
+        {
+          "id": "AC-01.2.7",
+          "title": "Steps 6 and 7 only when source tax details apply; one block per child",
+          "given": "an employee is subject to source tax and, if living in Liechtenstein, expects more than 45 non-return days",
+          "when": "steps 6 and 7 are shown",
+          "then": "step 6 asks denomination, spouse gainfully employed (married and registered partners only) and whether the employee has biological or adopted children. Step 7 'Children' is shown only if the answer is yes, with one block of child questions per child; there is no maximum number of children and each child's age is judged on the first working day (assumption D-044, to be verified by a domain expert).",
+          "examples": [
+            {
+              "name": "Subject, living in Germany",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "has_children",
+                  "expect": "asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            },
+            {
+              "name": "Swiss employee in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Single"
+                }
+              ],
+              "then": [
+                {
+                  "target": "has_children",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "D-047",
+            "D-044",
+            "F-hr_transcript-b84498",
+            "F-zh_source_tax_calculator-103b19",
+            "F-zh_source_tax_calculator-ab8a06"
+          ]
+        },
+        {
+          "id": "AC-01.2.8",
+          "title": "Step 8 closes the questionnaire",
+          "given": "an employee has answered every step that applies",
+          "when": "step 8 is shown",
+          "then": "the employee sees the permit reminder if it applies to them, then a summary page, and submits with one confirmation.",
+          "examples": [],
+          "source_refs": [
+            "D-047",
+            "D-010",
+            "D-050"
+          ]
+        }
+      ],
+      "items": [
+        "first_name",
+        "last_name",
+        "date_of_birth",
+        "first_working_day",
+        "address_street",
+        "address_house_number",
+        "address_postcode",
+        "address_town",
+        "address_country",
+        "residence_canton",
+        "nationality",
+        "holds_c_permit",
+        "civil_status",
+        "spouse_date_of_birth",
+        "spouse_nationality",
+        "spouse_holds_c_permit",
+        "spouse_residence_country",
+        "daily_return_liechtenstein",
+        "daily_return_germany",
+        "has_children"
+      ],
+      "rules": [
+        "questionnaire_flow"
+      ],
+      "source_refs": [
+        "D-047",
+        "D-040",
+        "D-041",
+        "D-002",
+        "D-049",
+        "D-005",
+        "D-008",
+        "D-003",
+        "D-004",
+        "D-035",
+        "D-044",
+        "D-010",
+        "D-050",
+        "D-045",
+        "G-01",
+        "G-09",
+        "F-hr_transcript-b84498",
+        "F-hr_transcript-5af8d0",
+        "F-hr_transcript-b90bd9",
+        "F-hr_transcript-c0fe95"
+      ],
+      "status": "decision"
+    },
+    {
+      "id": "US-01.3",
+      "title": "Ask each piece of information once and reuse it for every receiving party",
+      "as_a": "hr",
+      "i_want": "each piece of information to be asked once in the questionnaire and recorded for every receiving party that needs it (pension fund, source tax and HR)",
+      "so_that": "the employee is not asked the same thing twice and I no longer collect the data separately for each party and re-enter it",
+      "priority": "P1",
+      "priority_reason": "Core goal of the feature (G-01): collect once, reuse for every party; today data is collected per party and re-entered manually.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.3.1",
+          "title": "No question appears twice",
+          "given": "a piece of information is needed by more than one party (for example civil status by the pension fund and for source tax, or the country of residence by HR, the pension fund and source tax)",
+          "when": "the employee goes through the questionnaire",
+          "then": "the question is asked once, in its step, and the single answer is recorded for HR and used for every party that needs it; for example civil status is asked once in step 4 and serves both the pension fund registration and the source tax tariff.",
+          "examples": [
+            {
+              "name": "Civil status asked once for everyone",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                }
+              ],
+              "then": [
+                {
+                  "target": "civil_status",
+                  "expect": "required"
+                },
+                {
+                  "target": "address_country",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
+          "source_refs": [
+            "G-01",
+            "D-003",
+            "D-047",
+            "F-hr_transcript-ce8ca4"
+          ]
+        },
+        {
+          "id": "AC-01.3.2",
+          "title": "Derived values are not asked",
+          "given": "a value one party needs can be derived from answers already given",
+          "when": "the questionnaire is shown",
+          "then": "the employee is not asked for it: the insurance start date is derived from the first working day, the canton for employees living abroad is set to the canton of the place of work (Zurich), the civil status for the pension fund and for source tax is derived from the one civil status answer, and the source tax tariff code is computed from the answers. Assumption (to be verified by a domain expert): the canton for employees abroad follows D-002 and the civil status mapping follows D-003.",
+          "examples": [],
+          "source_refs": [
+            "G-08",
+            "D-001",
+            "D-002",
+            "D-003",
+            "D-039"
+          ]
+        },
+        {
+          "id": "AC-01.3.3",
+          "title": "Answers are recorded for HR",
+          "given": "the employee has submitted the questionnaire",
+          "when": "the answers are recorded",
+          "then": "they are recorded for HR; how they are passed to the pension fund and the source tax office, and any HR screen, are specified separately.",
+          "examples": [],
+          "source_refs": [
+            "D-034",
+            "G-04"
+          ]
+        }
+      ],
+      "items": [
+        "address_country",
+        "civil_status",
+        "first_working_day",
+        "spouse_date_of_birth"
+      ],
+      "rules": [
+        "questionnaire_flow"
+      ],
+      "source_refs": [
+        "G-01",
+        "G-02",
+        "G-04",
+        "G-08",
+        "D-001",
+        "D-002",
+        "D-003",
+        "D-034",
+        "D-047",
+        "F-hr_transcript-ce8ca4",
+        "F-hr_transcript-ab3cba"
+      ],
+      "status": "decision"
+    },
+    {
+      "id": "US-01.4",
+      "title": "Remind non-Swiss employees and employees living abroad to bring their permit",
+      "as_a": "hr",
+      "i_want": "every non-Swiss employee living in Switzerland and every employee living abroad to be reminded at the end of the questionnaire to bring their permit on the first working day",
+      "so_that": "fewer new employees forget their permit on their first day",
+      "priority": "P2",
+      "priority_reason": "Explicit HR wish ('Half of them forget'); it saves follow-up but does not block a registration.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.4.1",
+          "title": "Who sees the reminder",
+          "given": "an employee reaches step 8 'Permit reminder, summary and submission'",
+          "when": "Lonio decides whether to show the permit reminder",
+          "then": "the reminder is shown to an employee living in Switzerland whose nationality is not Switzerland, and to every employee living abroad whatever their nationality (nationality is not asked of them). It is not shown to a Swiss employee living in Switzerland.",
+          "examples": [
             {
               "name": "Maria (hr_transcript/F-hr_transcript-845204)",
               "given": [
@@ -91,320 +1359,15 @@
               ],
               "then": [
                 {
-                  "target": "subject_to_source_tax",
-                  "expect": "no"
-                },
-                {
-                  "target": "confession",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "has_children",
-                  "expect": "not asked"
+                  "target": "permit_reminder",
+                  "expect": "yes"
                 }
               ],
-              "source_refs": [],
+              "source_refs": [
+                "F-hr_transcript-845204"
+              ],
               "illustrative": false
             },
-            {
-              "name": "Swiss citizen living abroad, like Stefan (hr_transcript/F-hr_transcript-3f2c2a)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                }
-              ],
-              "then": [
-                {
-                  "target": "subject_to_source_tax",
-                  "expect": "yes"
-                },
-                {
-                  "target": "nationality",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "confession",
-                  "expect": "asked"
-                },
-                {
-                  "target": "has_children",
-                  "expect": "asked"
-                },
-                {
-                  "target": "daily_return_germany",
-                  "expect": "asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Swiss resident with Swiss citizenship",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "subject_to_source_tax",
-                  "expect": "no"
-                },
-                {
-                  "target": "holds_c_permit",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "confession",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Single non-Swiss resident without C permit",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Germany"
-                },
-                {
-                  "item": "holds_c_permit",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                }
-              ],
-              "then": [
-                {
-                  "target": "subject_to_source_tax",
-                  "expect": "yes"
-                },
-                {
-                  "target": "spouse_nationality",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "confession",
-                  "expect": "asked"
-                },
-                {
-                  "target": "has_children",
-                  "expect": "asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Married to a non-Swiss spouse without C permit",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "holds_c_permit",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "spouse_holds_c_permit",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "subject_to_source_tax",
-                  "expect": "yes"
-                },
-                {
-                  "target": "spouse_residence_country",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "confession",
-                  "expect": "asked"
-                },
-                {
-                  "target": "spouse_gainful_employment",
-                  "expect": "asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Married to a C permit holder living abroad",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "holds_c_permit",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Italy"
-                },
-                {
-                  "item": "spouse_holds_c_permit",
-                  "value": "yes"
-                },
-                {
-                  "item": "spouse_residence_country",
-                  "value": "Italy"
-                }
-              ],
-              "then": [
-                {
-                  "target": "subject_to_source_tax",
-                  "expect": "yes"
-                },
-                {
-                  "target": "confession",
-                  "expect": "asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Registered partner of a Swiss national living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "France"
-                },
-                {
-                  "item": "holds_c_permit",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Registered partnership"
-                },
-                {
-                  "item": "spouse_nationality",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "subject_to_source_tax",
-                  "expect": "no"
-                },
-                {
-                  "target": "confession",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Separated non-Swiss resident without C permit",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "France"
-                },
-                {
-                  "item": "holds_c_permit",
-                  "value": "no"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Separated"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_nationality",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "subject_to_source_tax",
-                  "expect": "yes"
-                },
-                {
-                  "target": "confession",
-                  "expect": "asked"
-                },
-                {
-                  "target": "spouse_gainful_employment",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-hr_transcript-5af8d0",
-            "F-hr_transcript-3f2c2a",
-            "F-hr_transcript-845204",
-            "F-hr_transcript-b90bd9",
-            "F-hr_transcript-b84498",
-            "D-003",
-            "D-008",
-            "D-038",
-            "D-043"
-          ]
-        },
-        {
-          "id": "AC-01.1.2",
-          "title": "Spouse questions for source tax only when they can change the outcome",
-          "given": "the employee lives in Switzerland",
-          "when": "the civil status and spouse step is shown",
-          "then": "the spouse's nationality, C permit and country of residence are asked only if the employee is not Swiss, has no C permit and is married or in a registered partnership; the spouse's C permit only if the spouse is not Swiss; the spouse's country of residence only if the spouse is Swiss or holds a C permit. Employees living abroad are never asked these questions, because they are subject to source tax anyway.",
-          "examples": [
             {
               "name": "Tomás (hr_transcript/F-hr_transcript-b90bd9)",
               "given": [
@@ -419,61 +1382,59 @@
                 {
                   "item": "holds_c_permit",
                   "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "permit_reminder",
+                  "expect": "yes"
+                }
+              ],
+              "source_refs": [
+                "F-hr_transcript-b90bd9"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Stefan, Swiss living abroad, country assumed Germany (hr_transcript/F-hr_transcript-3f2c2a)",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Germany"
+                }
+              ],
+              "then": [
+                {
+                  "target": "permit_reminder",
+                  "expect": "yes"
                 },
                 {
-                  "item": "civil_status",
-                  "value": "Married"
+                  "target": "nationality",
+                  "expect": "not asked"
+                }
+              ],
+              "source_refs": [
+                "F-hr_transcript-3f2c2a",
+                "D-038"
+              ],
+              "illustrative": true
+            },
+            {
+              "name": "Swiss employee living in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
                 },
                 {
-                  "item": "spouse_nationality",
+                  "item": "nationality",
                   "value": "Switzerland"
                 }
               ],
               "then": [
                 {
-                  "target": "spouse_nationality",
-                  "expect": "asked"
-                },
-                {
-                  "target": "spouse_holds_c_permit",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "spouse_residence_country",
-                  "expect": "asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Married employee living in Liechtenstein",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_nationality",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "spouse_holds_c_permit",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "spouse_residence_country",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "spouse_date_of_birth",
-                  "expect": "asked"
+                  "target": "permit_reminder",
+                  "expect": "no"
                 }
               ],
               "source_refs": [],
@@ -481,54 +1442,73 @@
             }
           ],
           "source_refs": [
-            "F-hr_transcript-54d011",
-            "F-hr_transcript-f3ce84",
-            "F-hr_transcript-76eacc",
-            "F-hr_transcript-e5337d",
-            "G-01",
-            "D-003",
-            "D-005"
+            "D-010",
+            "D-038",
+            "F-hr_transcript-c53552"
+          ]
+        },
+        {
+          "id": "AC-01.4.2",
+          "title": "Wording provided by HR; Swiss citizens abroad can tell it does not apply",
+          "given": "the reminder is shown",
+          "when": "the employee reads it",
+          "then": "it uses the wording HR provides before go-live, and that wording lets a Swiss citizen living abroad, such as Stefan, see that it does not apply to them. The reminder only informs: it asks no question and collects no data.",
+          "examples": [],
+          "source_refs": [
+            "D-010",
+            "D-038",
+            "D-050",
+            "F-hr_transcript-c53552"
           ]
         }
       ],
-      "items": [],
+      "items": [
+        "address_country",
+        "nationality"
+      ],
       "rules": [
-        "questionnaire_flow"
+        "permit_reminder"
       ],
       "source_refs": [
-        "F-hr_transcript-b84498",
-        "F-hr_transcript-5af8d0",
-        "F-hr_transcript-3f2c2a",
-        "F-hr_transcript-845204",
-        "F-hr_transcript-b90bd9",
-        "G-01",
-        "D-001",
-        "D-003",
-        "D-008",
+        "F-hr_transcript-c53552",
+        "D-010",
         "D-038",
-        "D-043",
-        "D-045"
+        "D-050",
+        "D-047",
+        "G-01"
       ],
       "status": "decision"
     },
     {
-      "id": "US-01.2",
-      "title": "Ask the steps in an order that avoids unneeded questions",
+      "id": "US-01.5",
+      "title": "Discard answers that no longer apply on submission",
       "as_a": "employee",
-      "i_want": "to answer one short English questionnaire in a fixed order of steps, where each step only appears when it applies to me",
-      "so_that": "I answer only what a receiving party needs from me and every later step can depend on what I already said",
+      "i_want": "to go back and change an earlier answer without losing my other answers, while answers to questions that no longer apply are not kept once I submit",
+      "so_that": "I can correct myself freely, and Lonio keeps no personal data about me that no party needs",
       "priority": "P1",
-      "priority_reason": "The order is what makes conditional questions possible; without it the questionnaire either blocks registrations or over-collects personal data (G-01).",
+      "priority_reason": "Data minimisation is a hard constraint (G-01); losing input when going back would frustrate employees.",
       "acceptance_criteria": [
         {
-          "id": "AC-01.2.1",
-          "title": "Steps and order",
-          "given": "a new employee opens the questionnaire",
-          "when": "they go through it",
-          "then": "the questionnaire is in English and has these steps in this order: 1 Personal details (first name, last name, date of birth - always); 2 Start (first working day, the contractual start date even on a weekend or public holiday - always); 3 Home address as on the first working day (street, house number or 'no house number', postcode, town, country - always; canton only if living in Switzerland); 4 Nationality and permit (only if living in Switzerland: nationality, and whether they hold a C permit if not Swiss); 5 Civil status and spouse; 6 Liechtenstein cross-border (only if living in Liechtenstein); 7 Source tax personal details (denomination; spouse employment if married or in a registered partnership); 8 Children; 9 Germany cross-border (only if living in Germany); 10 Summary and submission. Steps 7 to 9 appear only when a tariff code is needed. Assumptions, to be verified by a domain expert: the first working day is the contractual start date (D-039); address and country are those on the first working day (D-041); the house number is required, with a 'no house number' option (D-042); employees living abroad are not asked for the canton, Zurich is entered for them (D-002); there is no maximum number of children and a child's age is judged on the first working day (D-044).",
+          "id": "AC-01.5.1",
+          "title": "Going back keeps answers until submission",
+          "given": "an employee has answered questions in later steps and goes back to change an earlier answer so that some of those questions no longer apply",
+          "when": "the employee changes the answer back, or moves forward again, before submitting",
+          "then": "every answer given earlier is still there, including answers to questions that currently do not apply, so no input is lost by going back and forth before submission.",
+          "examples": [],
+          "source_refs": [
+            "D-036",
+            "D-050"
+          ]
+        },
+        {
+          "id": "AC-01.5.2",
+          "title": "Answers that no longer apply are discarded on submission",
+          "given": "at submission some answers belong to questions that do not apply to the employee's latest answers",
+          "when": "the employee submits",
+          "then": "those answers are discarded and are not recorded, shown on the record or used for any result; only answers to questions that apply are kept.",
           "examples": [
             {
-              "name": "Swiss citizen living in Switzerland",
+              "name": "Moved the home address from Germany to Switzerland before submitting; Germany cross-border and source tax answers are discarded",
               "given": [
                 {
                   "item": "address_country",
@@ -545,169 +1525,10 @@
               ],
               "then": [
                 {
-                  "target": "residence_canton",
-                  "expect": "asked"
-                },
-                {
-                  "target": "nationality",
-                  "expect": "asked"
-                },
-                {
-                  "target": "holds_c_permit",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "civil_status",
-                  "expect": "asked"
-                },
-                {
-                  "target": "confession",
-                  "expect": "not asked"
-                },
-                {
                   "target": "daily_return_germany",
                   "expect": "not asked"
                 },
                 {
-                  "target": "daily_return_liechtenstein",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Employee living in Germany",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                }
-              ],
-              "then": [
-                {
-                  "target": "residence_canton",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "nationality",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "holds_c_permit",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "confession",
-                  "expect": "asked"
-                },
-                {
-                  "target": "has_children",
-                  "expect": "asked"
-                },
-                {
-                  "target": "daily_return_germany",
-                  "expect": "asked"
-                },
-                {
-                  "target": "daily_return_liechtenstein",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "G-09",
-            "F-hr_transcript-c0fe95",
-            "D-001",
-            "D-002",
-            "D-033",
-            "D-039",
-            "D-041",
-            "D-042",
-            "D-044"
-          ]
-        },
-        {
-          "id": "AC-01.2.2",
-          "title": "Liechtenstein cross-border questions come first and can skip the tariff questions",
-          "given": "the employee lives in Liechtenstein",
-          "when": "they reach the source tax part of the questionnaire",
-          "then": "they are first asked whether they expect to return daily to their main residence in Liechtenstein and, if not, whether they expect more than 45 work-related non-return days in the calendar year; this comes before denomination, spouse employment and children. With daily return or at most 45 non-return days the result is 'in principle no source tax liability, subject to the double taxation agreement', flagged for HR, and denomination, spouse employment and children are not asked. With more than 45 non-return days these questions are asked and the normal tariff code is recorded with the note 'subject to the double taxation agreement', flagged for HR. Assumption, to be verified by a domain expert (D-040). How HR sees the flag belongs to the later HR-side spec (see OQ-hr-side-follow-ups).",
-          "examples": [
-            {
-              "name": "Liechtenstein, daily return",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "daily_return_liechtenstein",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "daily_return_liechtenstein",
-                  "expect": "asked"
-                },
-                {
-                  "target": "non_return_days_45",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "confession",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "spouse_gainful_employment",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "has_children",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Liechtenstein, no daily return, at most 45 non-return days",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "daily_return_liechtenstein",
-                  "value": "no"
-                },
-                {
-                  "item": "non_return_days_45",
-                  "value": "no"
-                }
-              ],
-              "then": [
-                {
-                  "target": "non_return_days_45",
-                  "expect": "asked"
-                },
-                {
                   "target": "confession",
                   "expect": "not asked"
                 },
@@ -720,148 +1541,7 @@
               "illustrative": true
             },
             {
-              "name": "Liechtenstein, more than 45 non-return days",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                },
-                {
-                  "item": "daily_return_liechtenstein",
-                  "value": "no"
-                },
-                {
-                  "item": "non_return_days_45",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "confession",
-                  "expect": "asked"
-                },
-                {
-                  "target": "spouse_gainful_employment",
-                  "expect": "asked"
-                },
-                {
-                  "target": "has_children",
-                  "expect": "asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-zh_source_tax_calculator-981b6b",
-            "F-zh_source_tax_calculator-e96210",
-            "F-zh_source_tax_calculator-f4ece9",
-            "F-zh_source_tax_calculator-fb87f1",
-            "F-zh_source_tax_calculator-cc19c7",
-            "D-007",
-            "D-034",
-            "D-035",
-            "D-040"
-          ]
-        }
-      ],
-      "items": [],
-      "rules": [
-        "questionnaire_flow"
-      ],
-      "source_refs": [
-        "G-01",
-        "G-09",
-        "D-001",
-        "D-002",
-        "D-007",
-        "D-033",
-        "D-039",
-        "D-040",
-        "D-041",
-        "D-042",
-        "D-044",
-        "D-045",
-        "F-hr_transcript-c0fe95",
-        "F-zh_source_tax_calculator-981b6b",
-        "F-zh_source_tax_calculator-e96210",
-        "F-zh_source_tax_calculator-fb87f1",
-        "F-zh_source_tax_calculator-cc19c7"
-      ],
-      "status": "decision"
-    },
-    {
-      "id": "US-01.3",
-      "title": "Ask each piece of information once and reuse it for every receiving party",
-      "as_a": "hr",
-      "i_want": "each piece of information to be asked from the employee only once and recorded for every party that needs it (HR, Pensionskasse Muster, source tax)",
-      "so_that": "I no longer re-enter the same data for each party and registrations are not blocked by missing data such as the spouse's date of birth",
-      "priority": "P1",
-      "priority_reason": "Missing data blocks registrations today (the fund cannot register a married employee without the spouse's date of birth) and asking once is the core goal of the feature (G-01).",
-      "acceptance_criteria": [
-        {
-          "id": "AC-01.3.1",
-          "title": "Shared answers are asked once",
-          "given": "an answer is needed by more than one party, such as civil status (pension fund and source tax) or country of residence (HR, pension fund and source tax)",
-          "when": "the employee goes through the questionnaire",
-          "then": "the question appears exactly once and its answer is recorded for HR for every party that needs it; how the data reaches each party is a separate topic and not part of this questionnaire",
-          "examples": [
-            {
-              "name": "Civil status used by fund and source tax",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Married"
-                }
-              ],
-              "then": [
-                {
-                  "target": "civil_status",
-                  "expect": "asked"
-                },
-                {
-                  "target": "address_country",
-                  "expect": "asked"
-                },
-                {
-                  "target": "spouse_date_of_birth",
-                  "expect": "asked"
-                },
-                {
-                  "target": "spouse_gainful_employment",
-                  "expect": "asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "G-01",
-            "G-04",
-            "D-034",
-            "F-hr_transcript-ce8ca4",
-            "F-zh_source_tax_calculator-9007c3"
-          ]
-        },
-        {
-          "id": "AC-01.3.2",
-          "title": "A question is asked only when a party needs it for this person",
-          "given": "the employee's earlier answers show that no party needs a piece of information for them",
-          "when": "the questionnaire reaches that question",
-          "then": "the question is not asked. For example, the spouse's or partner's date of birth is asked from married, registered-partnership and separated employees, not from divorced or widowed ones. Assumption, to be verified by a domain expert: registered partnership and separated are entered at the fund as Married, which requires the spouse's date of birth (D-003, D-004). Nothing outside the needs of HR, the pension fund and source tax is asked (no AHV data, IT equipment, permit type or income type).",
-          "examples": [
-            {
-              "name": "Divorced employee",
+              "name": "Changed civil status from Married to Divorced before submitting; spouse date of birth is discarded",
               "given": [
                 {
                   "item": "address_country",
@@ -884,161 +1564,57 @@
               ],
               "source_refs": [],
               "illustrative": true
-            },
-            {
-              "name": "Widowed employee",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Widowed"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_date_of_birth",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Registered partner, like Daniel (hr_transcript/F-hr_transcript-3907fe)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Registered partnership"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_date_of_birth",
-                  "expect": "required"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Separated employee",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Separated"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_date_of_birth",
-                  "expect": "required"
-                },
-                {
-                  "target": "spouse_nationality",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
             }
           ],
           "source_refs": [
-            "G-01",
-            "G-03",
-            "F-pension_portal-39bab1",
-            "F-pension_portal-c5ee15",
-            "D-003",
-            "D-004",
-            "D-005",
-            "D-006"
+            "D-036",
+            "G-01"
           ]
         }
       ],
       "items": [],
       "rules": [
+        "discard_inapplicable_answers",
         "questionnaire_flow"
       ],
       "source_refs": [
-        "G-01",
-        "G-04",
-        "F-hr_transcript-2334d8",
-        "F-pension_portal-a0065b",
-        "F-pension_portal-c5ee15",
-        "F-hr_transcript-ce8ca4",
-        "F-zh_source_tax_calculator-9007c3",
-        "D-003",
-        "D-004",
-        "D-034",
-        "D-045"
+        "D-036",
+        "D-050",
+        "G-01"
       ],
       "status": "decision"
     },
     {
-      "id": "US-01.4",
-      "title": "Remind non-Swiss employees and employees living abroad to bring their permit",
+      "id": "US-01.6",
+      "title": "Make the questionnaire read-only after submission and derive results from the latest answers",
       "as_a": "hr",
-      "i_want": "the questionnaire to end with a reminder to bring the permit on the first working day for every non-Swiss employee and every employee living abroad",
-      "so_that": "fewer new employees forget their permit on their first day",
+      "i_want": "the questionnaire to be read-only for the employee once submitted, with later changes made by HR and every derived result always derived again from the latest answers",
+      "so_that": "the record stays consistent and the pension fund and source tax always get results that match the current facts",
       "priority": "P2",
-      "priority_reason": "Explicit HR wish ('half of them forget'); it removes a recurring nuisance but blocks no registration.",
+      "priority_reason": "Prevents inconsistent records after submission; the HR editing itself is specified later (D-034).",
       "acceptance_criteria": [
         {
-          "id": "AC-01.4.1",
-          "title": "Who gets the permit reminder",
-          "given": "the employee has reached the summary step",
-          "when": "the summary is shown",
-          "then": "a reminder to bring their permit on the first working day is shown to every employee living in Switzerland who is not Swiss and to every employee living abroad, whatever their nationality (nationality is not asked of them). A Swiss citizen living in Switzerland gets no reminder. The reminder collects no data. HR words it so that a Swiss citizen living abroad can see it does not apply to them; this spec states only its purpose.",
+          "id": "AC-01.6.1",
+          "title": "Read-only for the employee after submission",
+          "given": "an employee has submitted the questionnaire",
+          "when": "the employee opens it again",
+          "then": "the employee can see the answers but cannot change them; any later change (a move, a marriage, a new child, a certificate of residence handed in later, a corrected nationality, a moved first working day) is made by HR, in the HR-side spec to be written later.",
+          "examples": [],
+          "source_refs": [
+            "D-037",
+            "D-033",
+            "D-034"
+          ]
+        },
+        {
+          "id": "AC-01.6.2",
+          "title": "Derived results always follow the latest answers",
+          "given": "an answer has changed after submission",
+          "when": "the derived results are looked at",
+          "then": "the insurance start date, the civil status for the pension fund and for source tax, whether the employee is subject to source tax and the tariff code are derived again from the latest answers; for the first working day the latest date always counts and no history of earlier dates is kept.",
           "examples": [
             {
-              "name": "Maria (hr_transcript/F-hr_transcript-845204)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Portugal"
-                },
-                {
-                  "item": "holds_c_permit",
-                  "value": "yes"
-                }
-              ],
-              "then": [
-                {
-                  "target": "permit_reminder",
-                  "expect": "yes"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Tomás (hr_transcript/F-hr_transcript-b90bd9)",
+              "name": "Tomás (hr_transcript/F-hr_transcript-b90bd9) as submitted",
               "given": [
                 {
                   "item": "address_country",
@@ -1062,207 +1638,56 @@
                 },
                 {
                   "item": "spouse_residence_country",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "permit_reminder",
-                  "expect": "yes"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Swiss citizen living abroad, like Stefan (hr_transcript/F-hr_transcript-3f2c2a)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                }
-              ],
-              "then": [
-                {
-                  "target": "permit_reminder",
-                  "expect": "yes"
-                },
-                {
-                  "target": "nationality",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Employee living in Liechtenstein",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                }
-              ],
-              "then": [
-                {
-                  "target": "permit_reminder",
-                  "expect": "yes"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Swiss citizen living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "permit_reminder",
-                  "expect": "no"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-hr_transcript-c53552",
-            "D-010",
-            "D-038"
-          ]
-        }
-      ],
-      "items": [],
-      "rules": [
-        "permit_reminder"
-      ],
-      "source_refs": [
-        "F-hr_transcript-c53552",
-        "D-010",
-        "D-038",
-        "G-01",
-        "D-045"
-      ],
-      "status": "decision"
-    },
-    {
-      "id": "US-01.5",
-      "title": "Discard answers that no longer apply on submission",
-      "as_a": "employee",
-      "i_want": "answers to questions that no longer apply after I change an earlier answer to be discarded when I submit, while being kept until then",
-      "so_that": "I can go back and forth without losing input, and no personal data is kept that no party needs",
-      "priority": "P2",
-      "priority_reason": "Required by data minimisation (G-01) but it affects only employees who change earlier answers; it blocks no registration.",
-      "acceptance_criteria": [
-        {
-          "id": "AC-01.5.1",
-          "title": "Answers kept while editing",
-          "given": "the employee has answered a question and then changes an earlier answer so that the question no longer applies",
-          "when": "they change the earlier answer back before submitting",
-          "then": "their previous answer to the question is still there and they do not have to enter it again",
-          "examples": [],
-          "source_refs": [
-            "D-036"
-          ]
-        },
-        {
-          "id": "AC-01.5.2",
-          "title": "Answers that no longer apply are discarded on submission",
-          "given": "the employee's final answers mean that a question they answered earlier no longer applies",
-          "when": "they submit the questionnaire",
-          "then": "the answer to that question is discarded and not recorded for any party; only answers to questions that apply to the final answers are recorded",
-          "examples": [
-            {
-              "name": "Civil status changed from Married to Single",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "nationality",
-                  "value": "Switzerland"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                }
-              ],
-              "then": [
-                {
-                  "target": "spouse_date_of_birth",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Country changed from Switzerland to Germany",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                }
-              ],
-              "then": [
-                {
-                  "target": "residence_canton",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "nationality",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "holds_c_permit",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Liechtenstein resident changed to daily return",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                },
-                {
-                  "item": "civil_status",
-                  "value": "Single"
-                },
-                {
-                  "item": "daily_return_liechtenstein",
                   "value": "yes"
                 }
               ],
               "then": [
                 {
-                  "target": "non_return_days_45",
-                  "expect": "not asked"
+                  "target": "subject_to_source_tax",
+                  "expect": "no"
+                }
+              ],
+              "source_refs": [
+                "F-hr_transcript-b90bd9"
+              ],
+              "illustrative": false
+            },
+            {
+              "name": "Tomás after HR records that his wife no longer lives in Switzerland",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "nationality",
+                  "value": "Brazil"
+                },
+                {
+                  "item": "holds_c_permit",
+                  "value": "no"
+                },
+                {
+                  "item": "civil_status",
+                  "value": "Married"
+                },
+                {
+                  "item": "spouse_nationality",
+                  "value": "Switzerland"
+                },
+                {
+                  "item": "spouse_residence_country",
+                  "value": "no"
+                }
+              ],
+              "then": [
+                {
+                  "target": "subject_to_source_tax",
+                  "expect": "yes"
                 },
                 {
                   "target": "confession",
-                  "expect": "not asked"
-                },
-                {
-                  "target": "has_children",
-                  "expect": "not asked"
+                  "expect": "asked"
                 }
               ],
               "source_refs": [],
@@ -1270,6 +1695,31 @@
             }
           ],
           "source_refs": [
+            "D-037",
+            "D-033"
+          ]
+        },
+        {
+          "id": "AC-01.6.3",
+          "title": "HR change that opens unanswered questions",
+          "given": "after submission HR changes an answer so that questions apply that the employee was never asked (for example the employee now becomes subject to source tax)",
+          "when": "the derived results that depend on those questions are looked at",
+          "then": "they show 'incomplete - HR must complete' instead of a value (for example the tariff code) until HR enters the missing answers. Assumption (to be verified by a domain expert): this follows D-048.",
+          "examples": [],
+          "source_refs": [
+            "D-048",
+            "D-037"
+          ]
+        },
+        {
+          "id": "AC-01.6.4",
+          "title": "HR change that makes answers no longer apply",
+          "given": "after submission HR changes an answer so that some recorded answers no longer apply",
+          "when": "HR's change is saved",
+          "then": "the answers that no longer apply are discarded, as on the employee's submission. Assumption (to be verified by a domain expert): this follows D-048.",
+          "examples": [],
+          "source_refs": [
+            "D-048",
             "D-036",
             "G-01"
           ]
@@ -1277,91 +1727,146 @@
       ],
       "items": [],
       "rules": [
+        "read_only_after_submission",
         "discard_inapplicable_answers"
-      ],
-      "source_refs": [
-        "D-036",
-        "G-01",
-        "D-045"
-      ],
-      "status": "decision"
-    },
-    {
-      "id": "US-01.6",
-      "title": "Make the questionnaire read-only after submission and derive results from the latest answers",
-      "as_a": "hr",
-      "i_want": "the questionnaire to be read-only for the employee once submitted, with later changes made by HR and every derived result always computed again from the latest answers",
-      "so_that": "the recorded data stays consistent and the insurance start date, civil status for the fund and for source tax, source tax liability and tariff code always match the current facts, for example when the first working day moves",
-      "priority": "P2",
-      "priority_reason": "The first working day often moves and the insurance start date depends on it; stale derived values would give wrong registrations, but HR handles the changes.",
-      "acceptance_criteria": [
-        {
-          "id": "AC-01.6.1",
-          "title": "Employee cannot change answers after submission",
-          "given": "the employee has submitted the questionnaire",
-          "when": "they open it again",
-          "then": "they can see their answers but cannot change them; any later change (a move, a marriage, a new child, a certificate of residence handed in later, a corrected nationality, a new first working day) is made by HR. How HR makes these changes belongs to the later HR-side spec (see OQ-hr-side-follow-ups).",
-          "examples": [],
-          "source_refs": [
-            "D-037",
-            "D-033",
-            "D-034"
-          ]
-        },
-        {
-          "id": "AC-01.6.2",
-          "title": "Derived results follow the latest answers",
-          "given": "an answer has been changed after submission",
-          "when": "the derived results are looked at",
-          "then": "the insurance start date, the civil status for the pension fund and for source tax, whether the employee is subject to source tax and the tariff code are derived again from the latest answers; for the first working day the latest date always counts and no history of earlier dates is kept. Assumption, to be verified by a domain expert: the insurance start date is derived only from the first working day, which is the contractual start date (D-039).",
-          "examples": [],
-          "source_refs": [
-            "D-037",
-            "D-033",
-            "D-039",
-            "F-hr_transcript-e3721e"
-          ]
-        }
-      ],
-      "items": [],
-      "rules": [
-        "read_only_after_submission"
       ],
       "source_refs": [
         "D-037",
         "D-033",
         "D-034",
-        "D-039",
-        "F-hr_transcript-e3721e",
-        "F-hr_transcript-1d5c07",
-        "D-045"
+        "D-048",
+        "D-036"
       ],
       "status": "decision"
+    },
+    {
+      "id": "US-01.7",
+      "title": "Save answers as I go and resume until I submit",
+      "as_a": "employee",
+      "i_want": "my answers to be saved as I go, so that I can stop and come back to the questionnaire until I submit it",
+      "so_that": "I can look up information (for example my spouse's date of birth or my expected non-return days) without losing what I have already entered",
+      "priority": "P2",
+      "priority_reason": "Convenience for the employee; it does not change which data is collected.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.7.1",
+          "title": "Answers are saved as the employee goes",
+          "given": "an employee has answered some questions and leaves the questionnaire before submitting",
+          "when": "the employee returns",
+          "then": "all answers given so far are still there and the employee can continue and submit. Assumption (to be verified by a domain expert): this follows D-050.",
+          "examples": [],
+          "source_refs": [
+            "D-050"
+          ]
+        },
+        {
+          "id": "AC-01.7.2",
+          "title": "Resuming ends with submission",
+          "given": "an employee has submitted the questionnaire",
+          "when": "the employee returns",
+          "then": "the employee can no longer change answers; the questionnaire is read-only and later changes are made by HR.",
+          "examples": [],
+          "source_refs": [
+            "D-050",
+            "D-037"
+          ]
+        }
+      ],
+      "items": [],
+      "rules": [
+        "questionnaire_flow"
+      ],
+      "source_refs": [
+        "D-050",
+        "D-036",
+        "D-037"
+      ],
+      "status": "decision"
+    },
+    {
+      "id": "US-01.8",
+      "title": "Review a summary and submit with one confirmation",
+      "as_a": "employee",
+      "i_want": "to see a summary of my answers and submit them with one confirmation",
+      "so_that": "I can check what I give before it is recorded for HR and used for the pension fund and source tax",
+      "priority": "P1",
+      "priority_reason": "Submission completes the onboarding data; without it no registration or tariff code can be produced.",
+      "acceptance_criteria": [
+        {
+          "id": "AC-01.8.1",
+          "title": "Summary before submission",
+          "given": "an employee has answered every step that applies and has seen the permit reminder if it applies",
+          "when": "the employee reaches the end of step 8",
+          "then": "a summary page shows the employee's answers. Assumption (to be verified by a domain expert): the summary shows only answers to questions that apply to the employee's latest answers, since the others will be discarded on submission (D-036, D-045).",
+          "examples": [],
+          "source_refs": [
+            "D-050",
+            "D-047",
+            "D-036",
+            "D-045"
+          ]
+        },
+        {
+          "id": "AC-01.8.2",
+          "title": "One confirmation submits",
+          "given": "an employee is on the summary page",
+          "when": "the employee confirms once",
+          "then": "the questionnaire is submitted and the answers are recorded for HR; nothing is submitted before this confirmation.",
+          "examples": [],
+          "source_refs": [
+            "D-050",
+            "D-034"
+          ]
+        },
+        {
+          "id": "AC-01.8.3",
+          "title": "Required answers must be given before submission",
+          "given": "a question that applies and is required for this employee has no answer",
+          "when": "the employee tries to submit",
+          "then": "the questionnaire is not submitted and the employee is shown which answers are missing. Assumption (to be verified by a domain expert): no source states this behaviour explicitly; it follows from the questions being required (D-045).",
+          "examples": [],
+          "source_refs": [
+            "D-045",
+            "D-049",
+            "D-050"
+          ]
+        }
+      ],
+      "items": [],
+      "rules": [
+        "questionnaire_flow"
+      ],
+      "source_refs": [
+        "D-050",
+        "D-047",
+        "D-036",
+        "D-045"
+      ],
+      "status": "inferred"
     }
   ],
   "items": [],
   "rules": [
     "questionnaire_flow",
-    "permit_reminder",
     "discard_inapplicable_answers",
-    "read_only_after_submission"
+    "read_only_after_submission",
+    "permit_reminder"
   ],
-  "open_questions": [
-    "OQ-hr-side-follow-ups"
-  ],
+  "open_questions": [],
   "source_refs": [
     "G-01",
     "G-04",
     "G-09",
-    "D-001",
     "D-010",
-    "D-033",
     "D-034",
     "D-036",
     "D-037",
     "D-038",
     "D-040",
     "D-045",
+    "D-047",
+    "D-048",
+    "D-050",
     "F-hr_transcript-c53552"
   ]
 }

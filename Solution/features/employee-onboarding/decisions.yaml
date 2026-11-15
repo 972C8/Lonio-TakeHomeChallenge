@@ -580,59 +580,70 @@ decisions:
 - id: D-047
   action: direct
   target: ''
-  statement: The questionnaire has exactly these steps, in this order, and feature.md, the flow rule and the stories
-    use the same list. 1 About you (first name, last name, date of birth, first working day); 2 Home address
-    (as on the first working day, canton only in Switzerland); 3 Nationality and C permit (only employees
-    living in Switzerland); 4 Civil status and spouse (civil status is asked of everyone, wherever they live);
-    5 Cross-border commuting (Liechtenstein and Germany residents subject to source tax); 6 Source tax details
-    (denomination, spouse gainfully employed, has children); 7 Children (one block per child); 8 Permit
-    reminder, summary and submission. There is no separate step for the first working day. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  statement: The questionnaire has exactly these steps, in this order, and feature.md, the flow rule and
+    the stories use the same list. 1 About you (first name, last name, date of birth, first working day);
+    2 Home address (as on the first working day, canton only in Switzerland); 3 Nationality and C permit
+    (only employees living in Switzerland); 4 Civil status and spouse (civil status is asked of everyone,
+    wherever they live); 5 Cross-border commuting (Liechtenstein and Germany residents subject to source
+    tax); 6 Source tax details (denomination, spouse gainfully employed, has children); 7 Children (one
+    block per child); 8 Permit reminder, summary and submission. There is no separate step for the first
+    working day. Assumption - to be verified by a domain expert; state this assumption in the user story.
   value: null
-  rationale: "Review finding: feature.md had 8 steps, the flow rule and US-01.2 had 10."
+  rationale: 'Review finding: feature.md had 8 steps, the flow rule and US-01.2 had 10.'
   by: Product owner
-
+  evidence: []
+  evidence_hash: e3b0c44298fc
 - id: D-048
   action: direct
   target: ''
-  statement: When HR changes an answer after submission so that questions apply that were never asked, the derived
-    results that depend on them (for example the tariff code) show 'incomplete - HR must complete' instead
-    of a value, until HR enters the missing answers. Answers that no longer apply after an HR change are
-    discarded, as on the employee's submission. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  statement: When HR changes an answer after submission so that questions apply that were never asked,
+    the derived results that depend on them (for example the tariff code) show 'incomplete - HR must complete'
+    instead of a value, until HR enters the missing answers. Answers that no longer apply after an HR
+    change are discarded, as on the employee's submission. Assumption - to be verified by a domain expert;
+    state this assumption in the user story.
   value: null
-  rationale: "Review finding: behaviour after an HR edit was undefined (US-01.6)."
+  rationale: 'Review finding: behaviour after an HR edit was undefined (US-01.6).'
   by: Product owner
-
+  evidence: []
+  evidence_hash: e3b0c44298fc
 - id: D-049
   action: direct
   target: ''
-  statement: Every home address field (street, house number, postcode, town, country) is required; the only exception
-    is the explicit 'no house number' option. Examples and acceptance criteria use the term 'required' for
-    these fields, never 'asked'. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  statement: Every home address field (street, house number, postcode, town, country) is required; the
+    only exception is the explicit 'no house number' option. Examples and acceptance criteria use the
+    term 'required' for these fields, never 'asked'. Assumption - to be verified by a domain expert; state
+    this assumption in the user story.
   value: null
-  rationale: "Review finding: address criteria and examples disagreed on required fields."
+  rationale: 'Review finding: address criteria and examples disagreed on required fields.'
   by: Product owner
-
+  evidence: []
+  evidence_hash: e3b0c44298fc
 - id: D-050
   action: direct
   target: ''
-  statement: Build-time values. HR provides the permit reminder wording before go-live. Country of residence and
-    nationality are chosen from the ISO 3166 country list; nationality also offers 'stateless'. The date of
-    birth must make the employee at least 14 and at most 100 years old on the first working day; the first
-    working day must lie within one year after the questionnaire is sent. Answers are saved as the employee
-    goes and they can resume until they submit; submitting needs one confirmation on a summary page.
-    Answers are kept when the employee goes back and changes an earlier answer (until submission), and
-    this is testable. The spouse's residence is asked as 'Does your spouse live in Switzerland? yes/no',
-    not as a country. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  statement: Build-time values. HR provides the permit reminder wording before go-live. Country of residence
+    and nationality are chosen from the ISO 3166 country list; nationality also offers 'stateless'. The
+    date of birth must make the employee at least 14 and at most 100 years old on the first working day;
+    the first working day must lie within one year after the questionnaire is sent. Answers are saved
+    as the employee goes and they can resume until they submit; submitting needs one confirmation on a
+    summary page. Answers are kept when the employee goes back and changes an earlier answer (until submission),
+    and this is testable. The spouse's residence is asked as 'Does your spouse live in Switzerland? yes/no',
+    not as a country. Assumption - to be verified by a domain expert; state this assumption in the user
+    story.
   value: null
-  rationale: "Review finding: unspecified values and limits."
+  rationale: 'Review finding: unspecified values and limits.'
   by: Product owner
-
+  evidence: []
+  evidence_hash: e3b0c44298fc
 - id: D-051
   action: direct
   target: ''
-  statement: The full tariff code is one text such as 'N1Y' (letter, child digit, church-tax suffix). When no
-    tariff code is needed the result is the text 'no tariff code'. The cross-border letter mapping follows
-    the calculator fact in full, including G to Q where the calculator shows it. Assumption - to be verified by a domain expert; state this assumption in the user story.
+  statement: The full tariff code is one text such as 'N1Y' (letter, child digit, church-tax suffix).
+    When no tariff code is needed the result is the text 'no tariff code'. The cross-border letter mapping
+    follows the calculator fact in full, including G to Q where the calculator shows it. Assumption -
+    to be verified by a domain expert; state this assumption in the user story.
   value: null
-  rationale: "Review finding: all US-06.6 examples failed on the code's format."
+  rationale: 'Review finding: all US-06.6 examples failed on the code''s format.'
   by: Product owner
+  evidence: []
+  evidence_hash: e3b0c44298fc

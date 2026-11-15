@@ -1,10 +1,10 @@
 {
-  "intro": "The questionnaire has 8 steps, in English. Only applicable questions are shown, and a step where no question applies to the employee is skipped. The order follows dependencies: identity and address first, because residence decides what is asked next. Nationality and civil status follow, because they decide whether source tax applies. Cross-border questions come before denomination, spouse and children, because for Liechtenstein residents they can make the tariff questions unnecessary. Each piece of information is asked once and reused for every receiving party. Swiss residents with Swiss citizenship or a C permit never see the source tax steps.",
+  "intro": "The questionnaire has eight steps in a fixed order. Only the questions that apply to this employee are shown, and a step where no question applies is skipped. The order follows dependency: the home address country decides who is asked for nationality and cross-border details. Civil status and spouse answers come before the source tax details. Liechtenstein cross-border questions come before the source tax details, because they decide whether those details are needed at all. Children come last, after the question of whether the employee has any. Answers are saved as the employee goes and can be resumed until submission. Going back and changing an earlier answer keeps the other answers until submission.",
   "steps": [
     {
       "order": 1,
       "title": "About you",
-      "asks": "First name, last name, date of birth and the first working day.",
+      "asks": "First name, last name, date of birth and first working day.",
       "shown_to": "Everyone",
       "items": [
         "first_name",
@@ -12,12 +12,14 @@
         "date_of_birth",
         "first_working_day"
       ],
-      "rules": []
+      "rules": [
+        "questionnaire_flow"
+      ]
     },
     {
       "order": 2,
       "title": "Home address",
-      "asks": "Street, house number, postcode, town and country of the home address that applies on the first working day; the canton of residence only if the country is Switzerland.",
+      "asks": "Street, house number, postcode, town and country of the home address as on the first working day; the canton of residence only if the country is Switzerland.",
       "shown_to": "Everyone",
       "items": [
         "address_street",
@@ -33,7 +35,7 @@
       "order": 3,
       "title": "Nationality and C permit",
       "asks": "Nationality; whether the employee holds a C permit only if not Swiss.",
-      "shown_to": "Employees living in Switzerland",
+      "shown_to": "Employees living in Switzerland (skipped for employees living abroad)",
       "items": [
         "nationality",
         "holds_c_permit"
@@ -43,8 +45,8 @@
     {
       "order": 4,
       "title": "Civil status and spouse",
-      "asks": "Civil status; the spouse's or registered partner's date of birth if Married, Registered partnership or Separated; the spouse's nationality only if the employee is not Swiss, has no C permit and is married or in a registered partnership; whether the spouse holds a C permit if the spouse is not Swiss; the spouse's country of residence if the spouse is Swiss or holds a C permit.",
-      "shown_to": "Everyone (spouse questions only where their conditions apply)",
+      "asks": "Civil status. Date of birth of the spouse or registered partner if Married, Registered partnership or Separated. If the employee lives in Switzerland, is not Swiss, has no C permit and is married or in a registered partnership: the spouse's nationality, whether the spouse holds a C permit (only if the spouse is not Swiss), and whether the spouse lives in Switzerland (only if the spouse is Swiss or holds a C permit).",
+      "shown_to": "Everyone for civil status; the spouse questions only as described",
       "items": [
         "civil_status",
         "spouse_date_of_birth",
@@ -57,8 +59,8 @@
     {
       "order": 5,
       "title": "Cross-border commuting",
-      "asks": "For Liechtenstein residents: daily return, then, if not daily, whether more than 45 non-return days are expected. For Germany residents: daily return; certificate of residence if daily return (\"not yet\" is allowed); if not daily, whether daily return is reasonable (under 100 km) and, if reasonable but not done, whether more than 60 non-return days are expected.",
-      "shown_to": "Employees subject to source tax who live in Germany or Liechtenstein",
+      "asks": "Liechtenstein: daily return, and if not daily, more than 45 work-related non-return days. Germany: daily return; if daily, whether a certificate of residence has been handed in ('not yet' counts as no); if not daily, whether daily return is reasonable (less than 100 km) and, if reasonable, more than 60 work-related non-return days.",
+      "shown_to": "Employees living in Liechtenstein or Germany who are subject to source tax (skipped for everyone else)",
       "items": [
         "daily_return_liechtenstein",
         "non_return_days_45",
@@ -74,8 +76,8 @@
     {
       "order": 6,
       "title": "Source tax details",
-      "asks": "Denomination; whether the spouse or partner is gainfully employed (only if married or in a registered partnership); whether the employee has children.",
-      "shown_to": "Employees subject to source tax who need a tariff code (Liechtenstein residents only with more than 45 non-return days)",
+      "asks": "Denomination; whether the spouse or partner is gainfully employed (only if married or in a registered partnership); whether the employee has biological or adopted children.",
+      "shown_to": "Employees subject to source tax; for Liechtenstein residents only with more than 45 non-return days (skipped if there is in principle no source tax liability)",
       "items": [
         "confession",
         "spouse_gainful_employment",
@@ -86,8 +88,8 @@
     {
       "order": 7,
       "title": "Children",
-      "asks": "For each child: minor or adult in first education; whether the child lives in the same household; then, depending on the answers, custody, common household with the other parent, shared custody, parental care, alternating custody, main financial contributor and whether more than 50% of maintenance is provided.",
-      "shown_to": "Employees who need a tariff code and have children",
+      "asks": "One block per child: minor or adult in first education; whether the child lives in the same household; then, depending on the answers, custody, common household with the other parent, shared custody, parental care, alternating custody, who contributes more financially, and whether more than 50% of maintenance is provided.",
+      "shown_to": "Employees subject to source tax who have children (skipped otherwise)",
       "items": [
         "child_age_status",
         "child_same_household",
@@ -103,14 +105,15 @@
     },
     {
       "order": 8,
-      "title": "Permit reminder",
-      "asks": "Nothing is asked; the employee is reminded to bring their permit on the first working day.",
-      "shown_to": "Every non-Swiss employee and every employee living abroad",
+      "title": "Permit reminder, summary and submission",
+      "asks": "Nothing new is asked. The employee sees a reminder to bring their permit on the first working day, reviews a summary of the answers and submits with one confirmation.",
+      "shown_to": "Everyone; the permit reminder only to non-Swiss employees living in Switzerland and to all employees living abroad",
       "items": [],
       "rules": [
-        "permit_reminder"
+        "permit_reminder",
+        "discard_inapplicable_answers"
       ]
     }
   ],
-  "closing": "After the last step the employee submits the questionnaire. Answers to questions that no longer apply are discarded on submission (discard_inapplicable_answers), and the questionnaire becomes read-only for the employee (read_only_after_submission). Later changes are made by HR, and all derived results are derived again from the latest answers."
+  "closing": "After submission the questionnaire is read-only for the employee. Answers that no longer apply are discarded on submission. Any later change is made by HR, and all derived results are derived again from the latest answers."
 }

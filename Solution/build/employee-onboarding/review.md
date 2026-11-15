@@ -2,317 +2,363 @@
 
 **Verdict: NOT READY**
 
-12 example simulations fail, all in US-06.6 (the full tariff code). The failures look like one format mismatch: the computed code is split into parts such as ['N', 1, 'Y'], and the expected value is the joined string 'N1Y'. The 'no tariff code' cases return None. This story is the main acceptance test for the computed code, so it must pass before build. The step order is also contradictory between feature.md and US-01.2. Technical terms leak into business prose against D-045. The open questions are non-blocking, but the calculator comparison is a go-live condition.
+Not ready. The tariff_code rule fails lint because its expression uses a `+` (BinOp) that the expression language doesn't allow. That one error makes 14 examples fail (all of AC-06.6.x and AC-06.7.3), including the main acceptance tests for the computed tariff code. A US-01.6 contradiction and a technical-vocabulary leak are also open. The other items are caveats: weak traceability on several items, two non-blocking open questions, and inconsistent 'asked' and 'required' wording.
 
 ## Reviewer findings
 
-1. **All US-06.6 examples fail (tariff code assembly)** – The full tariff code is the main output of the feature. Its acceptance examples do not pass, so the rule and the examples disagree. Most likely the rule returns the parts (letter, digit, church suffix) as a list instead of the joined string, and returns None where the spec says 'no tariff code'. The spec side could also be at fault.  
-   Evidence: examples: AC-06.6.1 (6 cases), AC-06.6.2 (3 cases), AC-06.6.3 (3 cases). Example: tariff_code = ['N',1,'Y'], expected 'N1Y'. Example: tariff_code = None, expected 'no tariff code'. rule.tariff_letter: the cited fact maps G->Q, but the rule returns null for G.  
-   Action: Fix the tariff_code expression so it joins letter, digit and suffix into one string. Decide how 'no tariff code' is represented, either null or an explicit marker, and align the example wording with that. Re-run the examples. Also resolve the G->Q handling in tariff_letter.
-2. **Step order contradicts itself (8 vs 10 steps)** – Engineering cannot tell whether the Germany cross-border questions come before or after denomination and children. They also cannot tell whether there is a separate first-working-day step or a summary step.  
-   Evidence: dev_refinement on feature.md: the flow table has 8 steps. The questionnaire_flow rule and AC-01.2.1 have 10 steps. trace_judge on rule.questionnaire_flow: the content of steps 1-5 and 7-10 is not backed by cited facts.  
-   Action: Add a decision in decisions.yaml fixing the one authoritative step order. Regenerate feature.md and US-01.2 from it.
-3. **Behaviour after an HR edit is undefined (US-01.6)** – If HR changes an answer so that new questions apply, those inputs were never asked. The derived tariff code and other results could be wrong or stale.  
-   Evidence: dev_refinement on US-01.6 (major). Related: OQ-hr-side-follow-ups is non-blocking.  
-   Action: Decide what derived results show while inputs are missing: no code, an 'incomplete' state, or the old value. Decide whether answers that no longer apply are discarded after an HR change, as they are on employee submission.
-4. **Technical terms leak into business prose** – D-045 forbids internal rule ids and formula talk in the spec text.  
-   Evidence: tech_leak in feature.md: '(discard_inapplicable_answers)' and '(read_only_after_submission)'. 'The expression ...' appears in feature.md and information.md, 2 times each.  
-   Action: Reword in business language. Examples: 'each child adds 1 or 0 to the child count' and 'H applies if any child counts with H'. Remove the snake_case ids.
-5. **Calculator coverage is unproven for unexplored and inferred paths** – Lonio now owns the tariff result. Unexplored paths could produce wrong codes. These are the residence block for A/B/H, more than 3 children, H3N/P3N, and the inferred child rows (US-07.3 to US-07.6).  
-   Evidence: OQ-calculator-coverage (non-blocking). inferred_items: rule.child_result, rule.child_count, US-05.2, US-07.3 to US-07.6. fact_judge: partial on F-zh_source_tax_calculator-037b1c, 64ac33, dc0ae9, c8aa5e and 2754e8.  
-   Action: Record a go-live condition: a domain expert compares the computed codes with the Zurich calculator. Confirm that the inferred rows are acceptable. Specify a maximum child count, or confirm 'no maximum'.
-6. **Several claims are not backed by cited facts** – Traceability is weak for some rules. A reviewer cannot verify them from the sources.  
-   Evidence: trace_judge: 'required' answers in US-07.1 to US-07.5. 'No maximum' children in AC-06.6.1. 'Children never change the letter for married employees' in US-06.4 and US-07.6. Uncited fact ids in calculator_residence, child_result and cross_border_tariff. The invented 01.04 date in US-03.3.  
-   Action: Add the missing citations, or mark the items as inferred or decided via decisions.yaml. For example, cite D-034 and D-044. Remove or mark the invented example date.
-7. **Source tax rule rests on hedged or unconfirmed statements** – The core rule for who is subject to source tax is built on a hedged answer from Anna ('I think so'), and the portal facts overstate what the units show.  
-   Evidence: fact_judge: partial on F-hr_transcript-550840 and 5af8d0. Portal facts 39bab1 (spouse date of birth only when Married), 6d3630 and b359c3. Related open-question id OQ-source-tax-rule-confirmation appears in the changed elements.  
-   Action: Get written confirmation from HR (Anna) of the final rule. Confirm what the portal does for Divorced and Widowed and for employees living abroad. Record the answers as decisions.
-8. **Address required-fields and example inconsistencies** – The AC text and the examples disagree on which address fields are required. This produces ambiguous tests.  
-   Evidence: US-02.2: AC-02.2.1 omits the house number, which D-042 makes required. The Germany example marks fields only 'asked'. US-05.2 and US-05.1 mix 'required' and 'asked'. US-01.2 shows civil status as '–' for Germany.  
-   Action: Decide that all address fields are required, with 'no house number' as the only exception. Use one term ('required') in all examples. Fix the Germany civil-status example.
-9. **Unspecified values and limits** – These are build-time decisions that nobody has made yet, and the spec does not cover them.  
-   Evidence: dev_refinement info: permit reminder wording not given (US-01.4). Country and nationality list and stateless cases (US-05.1). Limits on the first working day and date of birth (US-03.1). Save and resume and confirmation (US-01.6). Spouse residence as yes/no under data minimisation (US-05.2). Keep-answers wording in D-036 versus AC-01.5.1.  
-   Action: Record decisions: who provides the reminder wording and when, the country list, the date plausibility rules, and the save/confirm behaviour. Decide whether the spouse residence question is a yes/no or a country. Say whether keeping answers is a testable requirement.
+1. **tariff_code rule does not evaluate (lint error); 14 examples fail** – The tariff code is the core output of the feature. The expression concatenates tariff_letter + child_count + church_tax_suffix with `+`, which the expression language rejects. No tariff code can be computed, and the 14 examples that expect one all fail.  
+   Evidence: lint rule.tariff_code; examples AC-06.6.1 (7 cases), AC-06.6.2 (3), AC-06.6.3 (3), AC-06.7.3 'Employee answers no'. All show 'construct BinOp not allowed'.  
+   Action: Rewrite the rule using the allowed constructs, e.g. a concat/format function, or one if_else branch per letter/digit/suffix. If concatenation is needed, add it to the expression language. Re-run the examples; there should be no expectation changes.
+2. **The tariff rule does not implement the statement or table for the Liechtenstein >45 days and incomplete cases** – The statement says the more-than-45-days case carries a 'subject to the double taxation agreement' note and that an incomplete questionnaire gives 'incomplete - HR must complete' (D-048). The expression yields neither. Fixing the BinOp alone would still leave the rule short of its own spec.  
+   Evidence: trace_judge rule.tariff_code; AC-06.6.3 'more than 45 non-return days' expects C0Y; AC-01.6.3 / D-048  
+   Action: Decide in decisions.yaml how the DTA note and the incomplete result are represented (extra output field or text), and add both to the rule. Cite fb87f1 and cc19c7 in the rule.
+3. **AC-01.6.2 contradicts AC-01.6.3** – After submission the questionnaire is read-only. The example nevertheless expects 'Denomination: asked' once HR records a change, while D-048 says the result becomes 'incomplete - HR must complete'. Engineering cannot tell whether the questionnaire reopens for the employee.  
+   Evidence: dev_refinement US-01.6 (major); AC-01.6.1, AC-01.6.2, AC-01.6.3, D-048  
+   Action: Decide whether HR completes the missing answer or the employee is asked again. Then fix the example, or AC-01.6.3, accordingly.
+4. **Implementation vocabulary leaks into the spec** – D-045 forbids the word 'expression' in business text, and the 'ISO 3166' list name is implementation vocabulary. Engineering decisions should not be fixed in the spec.  
+   Evidence: tech_leak feature.md and information.md ('The expression gives, per child…'); item.address_country, item.nationality, item.spouse_nationality, AC-02.3.1 ('ISO 3166')  
+   Action: Reword the child-count note in business terms, e.g. 'the digit is the number of counted children'. Replace 'ISO 3166 country list' with 'list of countries'. Leave the standard to engineering.
+5. **Facts cited by examples and conditions are not in the cited-fact lists** – Several story examples, items and rules rely on facts that are not in their cited sets. Most of these are the Maria and Tomás examples. This weakens traceability. Two claims are unbacked: Liechtenstein never gets the cross-border tariff, and Swiss nationals are exempt.  
+   Evidence: trace_judge US-01.2, US-01.4, US-06.2, US-06.3, US-06.5, US-06.6, US-06.7, US-08.2 (AC-08.2.4), rule.cross_border_tariff, rule.questionnaire_flow, item.spouse_gainful_employment, item.has_children  
+   Action: Add the missing source_refs (845204, b90bd9, 3f2c2a, cc19c7, d75286, 300c72, 97139a). Then confirm in decisions.yaml the Liechtenstein cross-border rule and the Swiss-national exemption, which no source states.
+6. **Purpose claims and one rule row are unsupported or overstated** – Several purposes are stated as business rules without a source, and one rule row contradicts its source. Engineers will take them as confirmed.  
+   Evidence: trace_judge item.child_main_financial_contributor ('H tariff'), item.non_return_days_60, item.daily_return_reasonable, item.first_working_day (age reference date), AC-03.1.4 ('HR plans the start'), US-06.2 (denomination not part of fund registration), rule.pension_fund_civil_status (partner date of birth also for Separated and Married, but D-003 covers registered partnership only)  
+   Action: Either back each claim with a decision or source, or soften or remove it. For pension_fund_civil_status, confirm in decisions.yaml which civil statuses need the partner's date of birth.
+7. **Inconsistent blocking behaviour and 'asked' versus 'required'** – The stories disagree on whether a missing required answer blocks the next step or only submission. The expected-result vocabulary also differs between stories, and '–' is undefined. Test cases will be ambiguous.  
+   Evidence: dev_refinement US-01.8 (US-02.1/02.2 vs AC-01.8.3/US-04.1); US-01.2 vs US-05.1/05.2  
+   Action: Decide on one rule: block only submission, which fits the save-and-resume in US-01.7. Define 'asked' versus 'required' and the meaning of '–', then align the stories.
+8. **Certificate-of-residence semantics are unclear** – The item is named 'handed in' and the calculator asks 'beigebracht', but the story asks whether the employee 'has' a certificate. This changes the meaning of yes/no/not yet, and what HR expects afterwards.  
+   Evidence: dev_refinement US-08.2; trace_judge item.residence_certificate  
+   Action: Decide in decisions.yaml what 'yes', 'no' and 'not yet' mean, and when HR expects a certificate.
+9. **Non-blocking open questions need owners before go-live** – The tariff code may differ from the Zurich calculator on unexplored paths. Several facts are only partly verified, and the pension portal form for Divorced and Widowed is unknown. The portal facts for the start date and canton are unused or unverified. The Germany questions for people living abroad are not specified.  
+   Evidence: OQ-calculator-coverage, OQ-fund-divorced-widowed; fact_judge F-pension_portal-39bab1, -6d3630, -b359c3, -e45e5b; coverage F-pension_portal-3a97ab, F-hr_transcript-8595fb; US-03.1 date window  
+   Action: Assign a domain expert to compare computed codes with the calculator before go-live. Ask the fund or HR to check the portal. Clarify how the insurance start date derives from the first working day, and what happens when the first working day is in the past.
+10. **Inferred items remain unconfirmed** – Several rules and stories are inferred and rely on 'inferred, go-live check' examples. They also carry gaps such as Q14 being read as parental care, and Q16 being read as residence in Switzerland.  
+   Evidence: inferred_items (spouse_nationality, church_tax_suffix, child_result, base_tariff_letter, US-05.2, US-07.3 to 07.5 and others); fact_judge F-zh_source_tax_calculator-64ac33, -037b1c, -dc0ae9, -2754e8  
+   Action: Have HR or a domain expert confirm the inferred items and the calculator-question meanings, and record them in decisions.yaml.
 
 ## Numbers
 
-342 source units → 177 facts → 35 information items, 18 business rules → one feature with 8 sections, 36 stories, 107 acceptance criteria; 2 open questions, 9 exclusions.
+342 source units → 177 facts → 35 information items, 18 business rules → one feature with 8 sections, 39 stories, 120 acceptance criteria; 2 open questions, 11 exclusions.
 
 ## Impact of this run
 
-Stories added: US-04.4, US-05.4; changed: US-01.1, US-01.2, US-01.3, US-01.4, US-01.5, US-01.6, US-02.1, US-02.2, US-02.3, US-02.4, US-03.1, US-03.2, US-03.3, US-04.1, US-04.2, US-04.3, US-05.1, US-05.2, US-05.3, US-06.2, US-06.3, US-06.4, US-06.5, US-06.6, US-07.1, US-07.2, US-07.3, US-07.4, US-07.5, US-07.6, US-08.1, US-08.2, US-08.3, US-08.4; removed: -; unchanged: 0.
+Stories added: US-01.7, US-01.8, US-06.7; changed: US-01.1, US-01.2, US-01.3, US-01.4, US-01.5, US-01.6, US-02.1, US-02.2, US-02.3, US-02.4, US-03.1, US-03.2, US-03.3, US-04.1, US-04.2, US-04.3, US-04.4, US-05.1, US-05.2, US-05.3, US-05.4, US-06.2, US-06.3, US-06.4, US-06.5, US-06.6, US-07.1, US-07.2, US-07.3, US-07.4, US-07.5, US-07.6, US-08.1, US-08.2, US-08.3, US-08.4; removed: -; unchanged: 0.
 
-Knowledge elements changed: OQ-calculator-coverage, OQ-canton-abroad, OQ-civil-status-partnership, OQ-hr-side-follow-ups, OQ-source-tax-rule-confirmation, OQ-spouse-dob-other-status, address_country, address_house_number, address_postcode, address_street, address_town, base_tariff_letter, calculator_civil_status, calculator_residence, child_age_status, child_alternating_custody, child_common_household_other_parent, child_count, child_custody, child_main_financial_contributor, child_maintenance_over_50, child_parental_care, child_result, child_same_household, child_shared_custody, church_tax_suffix, civil_status, confession, cross_border_tariff, daily_return_germany, daily_return_liechtenstein, daily_return_reasonable, date_of_birth, discard_inapplicable_answers, first_name, first_working_day, has_children, holds_c_permit, insurance_start_date, last_name, liechtenstein_no_source_tax, nationality, non_return_days_45, non_return_days_60, pension_fund_canton, pension_fund_civil_status, permit_reminder, questionnaire_flow, read_only_after_submission, residence_canton, residence_certificate, spouse_date_of_birth, spouse_gainful_employment, spouse_holds_c_permit, spouse_nationality, spouse_residence_country, subject_to_source_tax, tariff_code, tariff_letter
+Knowledge elements changed: OQ-calculator-coverage, OQ-fund-divorced-widowed, OQ-hr-side-follow-ups, address_country, address_house_number, address_postcode, address_street, address_town, base_tariff_letter, calculator_civil_status, calculator_residence, child_age_status, child_alternating_custody, child_common_household_other_parent, child_count, child_custody, child_main_financial_contributor, child_maintenance_over_50, child_parental_care, child_result, child_same_household, child_shared_custody, church_tax_suffix, civil_status, confession, cross_border_tariff, daily_return_germany, daily_return_liechtenstein, daily_return_reasonable, date_of_birth, discard_inapplicable_answers, first_name, first_working_day, has_children, holds_c_permit, insurance_start_date, last_name, liechtenstein_no_source_tax, nationality, non_return_days_45, non_return_days_60, pension_fund_canton, pension_fund_civil_status, permit_reminder, questionnaire_flow, read_only_after_submission, residence_canton, residence_certificate, spouse_date_of_birth, spouse_gainful_employment, spouse_holds_c_permit, spouse_nationality, spouse_residence_country, subject_to_source_tax, tariff_code, tariff_letter
 
-## Errors (12)
+## Errors (14)
 
-- [examples] `AC-06.6.1 / Calculator: married, spouse works, one child, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)` tariff_code = ['N', 1, 'Y'], expected 'N1Y'
-- [examples] `AC-06.6.1 / Calculator: same, without certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)` tariff_code = ['C', 1, 'Y'], expected 'C1Y'
-- [examples] `AC-06.6.1 / Single cross-border commuter, no children (D-001 example L0Y)` tariff_code = ['L', 0, 'Y'], expected 'L0Y'
-- [examples] `AC-06.6.1 / Single non-Swiss resident of Switzerland, no church` tariff_code = ['A', 0, 'N'], expected 'A0N'
-- [examples] `AC-06.6.1 / Calculator: married, spouse does not work, child neither (zh_source_tax_calculator/F-zh_source_tax_calculator-abe889)` tariff_code = ['B', 0, 'N'], expected 'B0N'
-- [examples] `AC-06.6.1 / Living in another country, single, no church` tariff_code = ['A', 0, 'N'], expected 'A0N'
-- [examples] `AC-06.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9)` tariff_code = None, expected 'no tariff code'
-- [examples] `AC-06.6.2 / Maria (hr_transcript/F-hr_transcript-845204)` tariff_code = None, expected 'no tariff code'
-- [examples] `AC-06.6.2 / Swiss citizen living in Switzerland` tariff_code = None, expected 'no tariff code'
-- [examples] `AC-06.6.3 / Liechtenstein, daily return` tariff_code = None, expected 'no tariff code'
-- [examples] `AC-06.6.3 / Liechtenstein, at most 45 non-return days` tariff_code = None, expected 'no tariff code'
-- [examples] `AC-06.6.3 / Calculator: Liechtenstein, more than 45 days, married, spouse works, one child (zh_source_tax_calculator/F-zh_source_tax_calculator-cc19c7)` tariff_code = ['C', 1, 'Y'], expected 'C1Y'
+- [lint] `rule.tariff_code` expression: construct BinOp not allowed in 'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))'
+- [examples] `AC-06.7.3 / Employee answers no` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'A0N'
+- [examples] `AC-06.6.1 / Calculator case C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'C1Y'
+- [examples] `AC-06.6.1 / Calculator case N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'N1Y'
+- [examples] `AC-06.6.1 / Cross-border commuter L0Y (example from D-001)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'L0Y'
+- [examples] `AC-06.6.1 / Calculator case H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'H1Y'
+- [examples] `AC-06.6.1 / Calculator case A0N, other country (zh_source_tax_calculator/F-zh_source_tax_calculator-f86c6b)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'A0N'
+- [examples] `AC-06.6.1 / Calculator case B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a)` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'B0Y'
+- [examples] `AC-06.6.2 / Maria (hr_transcript/F-hr_transcript-845204): Portuguese, C permit` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
+- [examples] `AC-06.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9): Swiss wife, living in Winterthur` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
+- [examples] `AC-06.6.2 / Swiss national living in Switzerland` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
+- [examples] `AC-06.6.3 / Liechtenstein resident who returns daily` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'in principle no source tax liability, subject to the double taxation agreement'
+- [examples] `AC-06.6.3 / Liechtenstein resident, at most 45 non-return days` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'in principle no source tax liability, subject to the double taxation agreement'
+- [examples] `AC-06.6.3 / Liechtenstein resident, more than 45 non-return days` tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'C0Y'
 
-## Examples executed against the knowledge model (222/234 pass)
+## Examples executed against the knowledge model (257/270 pass)
 
 - ✅ AC-01.1.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
 - ✅ AC-01.1.1 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
-- ✅ AC-01.1.1 / Swiss citizen living abroad, like Stefan (hr_transcript/F-hr_transcript-3f2c2a) (spec)
-- ✅ AC-01.1.1 / Swiss resident with Swiss citizenship (spec)
-- ✅ AC-01.1.1 / Single non-Swiss resident without C permit (spec)
-- ✅ AC-01.1.1 / Married to a non-Swiss spouse without C permit (spec)
-- ✅ AC-01.1.1 / Married to a C permit holder living abroad (spec)
-- ✅ AC-01.1.1 / Registered partner of a Swiss national living in Switzerland (spec)
-- ✅ AC-01.1.1 / Separated non-Swiss resident without C permit (spec)
-- ✅ AC-01.1.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
-- ✅ AC-01.1.2 / Married employee living in Liechtenstein (spec)
-- ✅ AC-01.2.1 / Swiss citizen living in Switzerland (spec)
-- ✅ AC-01.2.1 / Employee living in Germany (spec)
-- ✅ AC-01.2.2 / Liechtenstein, daily return (spec)
-- ✅ AC-01.2.2 / Liechtenstein, no daily return, at most 45 non-return days (spec)
-- ✅ AC-01.2.2 / Liechtenstein, more than 45 non-return days (spec)
-- ✅ AC-01.3.1 / Civil status used by fund and source tax (spec)
-- ✅ AC-01.3.2 / Divorced employee (spec)
-- ✅ AC-01.3.2 / Widowed employee (spec)
-- ✅ AC-01.3.2 / Registered partner, like Daniel (hr_transcript/F-hr_transcript-3907fe) (spec)
-- ✅ AC-01.3.2 / Separated employee (spec)
+- ✅ AC-01.1.1 / Stefan, Swiss living abroad, country assumed Germany (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-01.1.1 / Swiss employee living in Switzerland (spec)
+- ✅ AC-01.1.1 / Non-Swiss, no C permit, single, living in Switzerland (spec)
+- ✅ AC-01.1.1 / Non-Swiss in a registered partnership with a non-Swiss partner without C permit (spec)
+- ✅ AC-01.1.2 / Married, living in Germany (spec)
+- ✅ AC-01.1.2 / Separated, living in Germany (spec)
+- ✅ AC-01.1.3 / Liechtenstein, daily return (spec)
+- ✅ AC-01.1.3 / Liechtenstein, no daily return, at most 45 days (spec)
+- ✅ AC-01.1.3 / Liechtenstein, no daily return, more than 45 days (spec)
+- ✅ AC-01.2.2 / Any employee (spec)
+- ✅ AC-01.2.3 / Living in Switzerland (spec)
+- ✅ AC-01.2.3 / Stefan, Swiss living abroad, country assumed Germany (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-01.2.4 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
+- ✅ AC-01.2.4 / Swiss employee living in Switzerland (spec)
+- ✅ AC-01.2.4 / Stateless employee living in Switzerland (spec)
+- ✅ AC-01.2.4 / Stefan, Swiss living abroad, country assumed Germany (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-01.2.5 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
+- ✅ AC-01.2.5 / Married C-permit holder (spec)
+- ✅ AC-01.2.5 / Non-Swiss spouse without C permit (spec)
+- ✅ AC-01.2.5 / Married, living in Germany (spec)
+- ✅ AC-01.2.5 / Divorced (spec)
+- ✅ AC-01.2.5 / Separated Swiss employee (spec)
+- ✅ AC-01.2.6 / Living in Germany (spec)
+- ✅ AC-01.2.6 / Living in Liechtenstein (spec)
+- ✅ AC-01.2.6 / Living in France (spec)
+- ✅ AC-01.2.6 / Living in Switzerland (spec)
+- ✅ AC-01.2.7 / Subject, living in Germany (spec)
+- ✅ AC-01.2.7 / Swiss employee in Switzerland (spec)
+- ✅ AC-01.3.1 / Civil status asked once for everyone (spec)
 - ✅ AC-01.4.1 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
 - ✅ AC-01.4.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
-- ✅ AC-01.4.1 / Swiss citizen living abroad, like Stefan (hr_transcript/F-hr_transcript-3f2c2a) (spec)
-- ✅ AC-01.4.1 / Employee living in Liechtenstein (spec)
-- ✅ AC-01.4.1 / Swiss citizen living in Switzerland (spec)
-- ✅ AC-01.5.2 / Civil status changed from Married to Single (spec)
-- ✅ AC-01.5.2 / Country changed from Switzerland to Germany (spec)
-- ✅ AC-01.5.2 / Liechtenstein resident changed to daily return (spec)
-- ✅ AC-02.1.1 / Employee living in Switzerland (spec)
-- ✅ AC-02.1.1 / Employee living in Germany (spec)
-- ✅ AC-02.1.2 / Employee living in Liechtenstein (spec)
+- ✅ AC-01.4.1 / Stefan, Swiss living abroad, country assumed Germany (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-01.4.1 / Swiss employee living in Switzerland (spec)
+- ✅ AC-01.5.2 / Moved the home address from Germany to Switzerland before submitting; Germany cross-border and source tax answers are discarded (spec)
+- ✅ AC-01.5.2 / Changed civil status from Married to Divorced before submitting; spouse date of birth is discarded (spec)
+- ✅ AC-01.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9) as submitted (spec)
+- ✅ AC-01.6.2 / Tomás after HR records that his wife no longer lives in Switzerland (spec)
+- ✅ AC-02.1.1 / Any employee: name required (spec)
+- ✅ AC-02.1.1 / Employee living abroad: name required too (spec)
+- ✅ AC-02.1.2 / Any employee: date of birth required (spec)
 - ✅ AC-02.2.1 / Employee living in Switzerland (spec)
 - ✅ AC-02.2.1 / Employee living in Germany (spec)
-- ✅ AC-02.3.2 / Stefan, Swiss citizen living abroad (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-02.2.2 / House number required for any employee (spec)
+- ✅ AC-02.3.1 / Country required for every employee (spec)
+- ✅ AC-02.3.2 / Stefan, Swiss, living abroad (hr_transcript/F-hr_transcript-3f2c2a; country assumed) (spec)
 - ✅ AC-02.3.2 / Employee living in Liechtenstein (spec)
-- ✅ AC-02.3.2 / Employee living in another country (spec)
-- ✅ AC-02.3.2 / Employee living in Switzerland (spec)
-- ✅ AC-02.4.1 / Employee living in Switzerland (spec)
-- ✅ AC-02.4.1 / Stefan, Swiss citizen living abroad (hr_transcript/F-hr_transcript-3f2c2a) (spec)
-- ✅ AC-02.4.1 / Employee living in Liechtenstein (spec)
-- ✅ AC-02.4.2 / Living in Switzerland, canton Bern (spec)
-- ✅ AC-02.4.2 / Living in Switzerland, canton Zurich (spec)
-- ✅ AC-02.4.2 / Stefan, Swiss citizen living abroad (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-02.3.2 / Employee living in France (spec)
+- ✅ AC-02.3.3 / Employee living in Switzerland (spec)
+- ✅ AC-02.4.1 / Living in Switzerland, canton Bern (spec)
+- ✅ AC-02.4.1 / Living in Switzerland, canton Zurich (spec)
+- ✅ AC-02.4.2 / Living in Germany (spec)
 - ✅ AC-02.4.2 / Living in Liechtenstein (spec)
-- ✅ AC-02.4.2 / Living in another country (spec)
-- ✅ AC-03.1.1 / Mid-month start, as in Julia's case (hr_transcript/F-hr_transcript-e18e66) (spec)
-- ✅ AC-03.1.1 / Start on the 1st of a month (spec)
-- ✅ AC-03.1.2 / Contract starts on Saturday 1 August (Swiss National Day) (spec)
-- ✅ AC-03.2.2 / Start on 1 April (spec)
-- ✅ AC-03.2.2 / Contractual start on Saturday 1 August (public holiday) (spec)
-- ✅ AC-03.2.3 / Julia, start on 15 March (hr_transcript/F-hr_transcript-30d25c) (spec)
+- ✅ AC-03.1.1 / Any new employee (spec)
+- ✅ AC-03.2.2 / Start on the 1st of a month (spec)
+- ✅ AC-03.2.2 / Contractual start on a Saturday and Swiss National Day (spec)
+- ✅ AC-03.2.3 / Julia (hr_transcript/F-hr_transcript-e18e66), start moved to 15 March (year assumed) (spec)
 - ✅ AC-03.2.3 / Start on the 2nd of a month (spec)
-- ✅ AC-03.2.3 / Start on the last day of the year (spec)
-- ✅ AC-03.2.4 / Contractual start on Sunday 15 March (spec)
-- ✅ AC-03.3.1 / Moved from 01.04 to 15.03, as Julia did (hr_transcript/F-hr_transcript-e18e66) (spec)
-- ✅ AC-03.3.1 / Moved from 15.03 to 01.03 (earlier exit from old employer) (spec)
-- ✅ AC-03.3.2 / HR moves the start from 15.03 to 01.05 (spec)
-- ✅ AC-03.3.2 / HR moves the start from 01.05 to 20.04 (spec)
+- ✅ AC-03.2.3 / Start at the end of the year (spec)
+- ✅ AC-03.3.1 / Julia (hr_transcript/F-hr_transcript-e18e66): start moved to 15 March, from an originally agreed 01.03.2026 (original date and year assumed) (spec)
+- ✅ AC-03.3.1 / Start moved one week earlier, from 08.06.2026 to 01.06.2026 after negotiating an earlier exit (spec)
 - ✅ AC-04.1.1 / Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe) (spec)
-- ✅ AC-04.1.1 / Single employee (spec)
+- ✅ AC-04.1.1 / Single employee living in Switzerland (spec)
+- ✅ AC-04.1.1 / Married employee living in Germany (spec)
 - ✅ AC-04.2.1 / Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe) (spec)
 - ✅ AC-04.2.1 / Married employee (spec)
 - ✅ AC-04.2.1 / Separated employee (spec)
-- ✅ AC-04.2.2 / Single employee (spec)
-- ✅ AC-04.2.2 / Divorced employee (spec)
-- ✅ AC-04.2.2 / Widowed employee (spec)
+- ✅ AC-04.2.1 / Single employee (spec)
+- ✅ AC-04.2.1 / Divorced employee (spec)
+- ✅ AC-04.2.1 / Widowed employee (spec)
 - ✅ AC-04.3.1 / Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe) (spec)
-- ✅ AC-04.3.1 / Married employee (spec)
-- ✅ AC-04.3.2 / Single employee (spec)
-- ✅ AC-04.3.2 / Divorced employee (spec)
-- ✅ AC-04.3.2 / Widowed employee (spec)
-- ✅ AC-04.3.2 / Separated employee (spec)
-- ✅ AC-04.4.1 / Single employee (spec)
-- ✅ AC-04.4.1 / Married employee (spec)
-- ✅ AC-04.4.1 / Divorced employee (spec)
-- ✅ AC-04.4.1 / Widowed employee (spec)
-- ✅ AC-04.4.2 / Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe) (spec)
-- ✅ AC-04.4.2 / Separated employee (spec)
+- ✅ AC-04.3.1 / Married (spec)
+- ✅ AC-04.3.1 / Single (spec)
+- ✅ AC-04.3.1 / Divorced (spec)
+- ✅ AC-04.3.1 / Widowed (spec)
+- ✅ AC-04.3.1 / Separated (spec)
+- ✅ AC-04.4.1 / Daniel, registered partnership (hr_transcript/F-hr_transcript-3907fe) (spec)
+- ✅ AC-04.4.1 / Separated (spec)
+- ✅ AC-04.4.1 / Single (spec)
+- ✅ AC-04.4.1 / Married (spec)
+- ✅ AC-04.4.1 / Divorced (spec)
+- ✅ AC-04.4.1 / Widowed (spec)
 - ✅ AC-05.1.1 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
-- ✅ AC-05.1.1 / Swiss citizen living abroad, like Stefan (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-05.1.1 / Stefan, Swiss citizen living abroad (hr_transcript/F-hr_transcript-3f2c2a) (spec)
 - ✅ AC-05.1.1 / Employee living in Liechtenstein (spec)
-- ✅ AC-05.1.2 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
-- ✅ AC-05.1.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
-- ✅ AC-05.1.2 / Swiss employee living in Switzerland (spec)
+- ✅ AC-05.1.3 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
+- ✅ AC-05.1.3 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
+- ✅ AC-05.1.3 / Swiss national living in Switzerland (spec)
+- ✅ AC-05.1.3 / Stateless employee living in Switzerland (spec)
+- ✅ AC-05.1.3 / Employee living in Germany (spec)
 - ✅ AC-05.2.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
-- ✅ AC-05.2.1 / Registered partnership, non-Swiss without C permit (spec)
-- ✅ AC-05.2.1 / Separated, non-Swiss without C permit (spec)
-- ✅ AC-05.2.1 / Married C permit holder (spec)
-- ✅ AC-05.2.1 / Married, living abroad (spec)
-- ✅ AC-05.2.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
-- ✅ AC-05.2.2 / Non-Swiss spouse (spec)
+- ✅ AC-05.2.1 / Registered partner without C permit (spec)
+- ✅ AC-05.2.1 / Separated employee without C permit (spec)
+- ✅ AC-05.2.1 / Divorced employee without C permit (spec)
+- ✅ AC-05.2.1 / Married employee with C permit (spec)
+- ✅ AC-05.2.1 / Married Swiss national living in Switzerland (spec)
+- ✅ AC-05.2.1 / Married employee living in Germany (spec)
+- ✅ AC-05.2.2 / Tomás, Swiss wife (hr_transcript/F-hr_transcript-b90bd9) (spec)
+- ✅ AC-05.2.2 / Spouse from Italy (spec)
 - ✅ AC-05.2.3 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
 - ✅ AC-05.2.3 / Spouse with C permit (spec)
-- ✅ AC-05.2.3 / Spouse neither Swiss nor C permit holder (spec)
-- ✅ AC-05.3.1 / Swiss citizen living abroad, like Stefan (hr_transcript/F-hr_transcript-3f2c2a) (spec)
-- ✅ AC-05.3.1 / Employee living in Liechtenstein (spec)
-- ✅ AC-05.3.1 / Employee living in another country (spec)
+- ✅ AC-05.2.3 / Spouse without C permit (spec)
+- ✅ AC-05.3.1 / Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-05.3.1 / Stefan, Swiss citizen living abroad (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-05.3.1 / Employee living in France (spec)
 - ✅ AC-05.3.2 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
-- ✅ AC-05.3.2 / Swiss employee (also a dual national) (spec)
-- ✅ AC-05.3.3 / Single, non-Swiss without C permit (spec)
-- ✅ AC-05.3.3 / Separated, non-Swiss without C permit (spec)
-- ✅ AC-05.3.3 / Widowed, non-Swiss without C permit (spec)
-- ✅ AC-05.3.4 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
-- ✅ AC-05.3.4 / Registered partner with C permit living in Switzerland (spec)
-- ✅ AC-05.3.4 / Swiss spouse living abroad (spec)
-- ✅ AC-05.3.4 / Spouse neither Swiss nor C permit holder (spec)
-- ✅ AC-05.4.1 / Living in Switzerland (spec)
-- ✅ AC-05.4.1 / Living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a) (spec)
-- ✅ AC-05.4.1 / Living in Liechtenstein (hr_transcript/F-hr_transcript-3f2c2a) (spec)
-- ✅ AC-05.4.1 / Living in France (spec)
-- ✅ AC-06.2.1 / Lives in Germany (spec)
-- ✅ AC-06.2.1 / Swiss citizen living in Switzerland (spec)
-- ✅ AC-06.2.1 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
-- ✅ AC-06.2.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
-- ✅ AC-06.2.1 / Non-Swiss single resident without C permit (spec)
-- ✅ AC-06.2.1 / Liechtenstein, daily return (spec)
-- ✅ AC-06.2.1 / Liechtenstein, at most 45 non-return days (spec)
-- ✅ AC-06.2.1 / Liechtenstein, more than 45 non-return days (spec)
-- ✅ AC-06.2.3 / Church member living in Germany (spec)
-- ✅ AC-06.2.3 / No church membership, living in Germany (spec)
-- ✅ AC-06.3.1 / Married, living in Germany (spec)
-- ✅ AC-06.3.1 / Registered partnership, living in Germany (spec)
-- ✅ AC-06.3.1 / Separated, living in Germany (spec)
-- ✅ AC-06.3.1 / Divorced, living in Germany (spec)
-- ✅ AC-06.3.1 / Single non-Swiss resident without C permit (spec)
-- ✅ AC-06.3.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
-- ✅ AC-06.3.1 / Married non-Swiss resident, spouse without C permit (spec)
-- ✅ AC-06.3.1 / Married, Liechtenstein, daily return (spec)
-- ✅ AC-06.3.1 / Married, Liechtenstein, more than 45 non-return days (spec)
-- ✅ AC-06.4.1 / Married, spouse works (spec)
-- ✅ AC-06.4.1 / Married, spouse does not work (spec)
-- ✅ AC-06.4.1 / Registered partnership, partner works (spec)
-- ✅ AC-06.4.1 / Married, spouse works, minor child with sole custody (spec)
-- ✅ AC-06.4.2 / Single, no children (spec)
-- ✅ AC-06.4.2 / Separated, no children (spec)
-- ✅ AC-06.4.2 / Widowed, no children (spec)
-- ✅ AC-06.4.2 / Divorced, minor child in household with sole custody (spec)
-- ✅ AC-06.4.2 / Single, child neither minor nor in first education (spec)
-- ✅ AC-06.5.1 / Married, spouse works, daily return with certificate (spec)
-- ✅ AC-06.5.1 / Married, spouse does not work, daily return with certificate (spec)
-- ✅ AC-06.5.1 / Single, no children, daily return with certificate (spec)
-- ✅ AC-06.5.1 / Divorced, minor child with sole custody, daily return with certificate (spec)
-- ✅ AC-06.5.1 / Married, spouse works, no daily return, reasonable, at most 60 days (spec)
-- ✅ AC-06.5.2 / Married, daily return without certificate (spec)
-- ✅ AC-06.5.2 / Married, daily return, certificate not yet (spec)
-- ✅ AC-06.5.2 / Married, no daily return, not reasonable (spec)
-- ✅ AC-06.5.2 / Married, no daily return, reasonable, more than 60 days (spec)
-- ✅ AC-06.5.2 / Single non-Swiss resident of Switzerland (spec)
-- ✅ AC-06.5.2 / Single, living in another country (spec)
-- ❌ AC-06.6.1 / Calculator: married, spouse works, one child, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3) (spec): tariff_code = ['N', 1, 'Y'], expected 'N1Y'
-- ❌ AC-06.6.1 / Calculator: same, without certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3) (spec): tariff_code = ['C', 1, 'Y'], expected 'C1Y'
-- ❌ AC-06.6.1 / Single cross-border commuter, no children (D-001 example L0Y) (spec): tariff_code = ['L', 0, 'Y'], expected 'L0Y'
-- ❌ AC-06.6.1 / Single non-Swiss resident of Switzerland, no church (spec): tariff_code = ['A', 0, 'N'], expected 'A0N'
-- ❌ AC-06.6.1 / Calculator: married, spouse does not work, child neither (zh_source_tax_calculator/F-zh_source_tax_calculator-abe889) (spec): tariff_code = ['B', 0, 'N'], expected 'B0N'
-- ❌ AC-06.6.1 / Living in another country, single, no church (spec): tariff_code = ['A', 0, 'N'], expected 'A0N'
-- ❌ AC-06.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec): tariff_code = None, expected 'no tariff code'
-- ❌ AC-06.6.2 / Maria (hr_transcript/F-hr_transcript-845204) (spec): tariff_code = None, expected 'no tariff code'
-- ❌ AC-06.6.2 / Swiss citizen living in Switzerland (spec): tariff_code = None, expected 'no tariff code'
-- ❌ AC-06.6.3 / Liechtenstein, daily return (spec): tariff_code = None, expected 'no tariff code'
-- ❌ AC-06.6.3 / Liechtenstein, at most 45 non-return days (spec): tariff_code = None, expected 'no tariff code'
-- ❌ AC-06.6.3 / Calculator: Liechtenstein, more than 45 days, married, spouse works, one child (zh_source_tax_calculator/F-zh_source_tax_calculator-cc19c7) (spec): tariff_code = ['C', 1, 'Y'], expected 'C1Y'
-- ✅ AC-07.1.1 / Lives in Germany, single (spec)
-- ✅ AC-07.1.1 / Lives in Switzerland, not Swiss, no C permit, single (spec)
-- ✅ AC-07.1.1 / Lives in Liechtenstein, more than 45 non-return days (spec)
-- ✅ AC-07.1.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
-- ✅ AC-07.1.2 / Maria (hr_transcript/F-hr_transcript-845204) (spec)
-- ✅ AC-07.1.2 / Swiss employee living in Switzerland (spec)
-- ✅ AC-07.1.3 / Liechtenstein, daily return (spec)
-- ✅ AC-07.1.3 / Liechtenstein, no daily return, at most 45 non-return days (spec)
-- ✅ AC-07.1.5 / Germany, single, no children (spec)
-- ✅ AC-07.2.2 / Germany, married, has children (spec)
-- ✅ AC-07.2.3 / Calculator: married, child neither → B0N (zh_source_tax_calculator/F-zh_source_tax_calculator-abe889) (spec)
-- ✅ AC-07.2.4 / Minor child (spec)
-- ✅ AC-07.2.4 / Adult child in first education (spec)
-- ✅ AC-07.3.1 / Single, minor in household (spec)
-- ✅ AC-07.3.2 / Calculator: married, sole custody → C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286) (spec)
-- ✅ AC-07.3.2 / Calculator: single, sole custody → H1 (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72) (spec)
-- ✅ AC-07.3.2 / Registered partnership, sole custody (spec)
-- ✅ AC-07.3.2 / Separated, sole custody (spec)
-- ✅ AC-07.3.3 / Calculator: married, shared custody, common household → C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-5d8fb0) (spec)
-- ✅ AC-07.3.3 / Single, common household, employee main contributor (inferred) (spec)
-- ✅ AC-07.3.3 / Calculator: single, common household, other parent main contributor → A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-5686d7) (spec)
-- ✅ AC-07.3.4 / Calculator: married, no alternating custody → C0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358) (spec)
-- ✅ AC-07.3.4 / Calculator: single, no alternating custody → H1N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc0ae9) (spec)
-- ✅ AC-07.3.4 / Married, alternating custody, employee main contributor (inferred) (spec)
-- ✅ AC-07.3.4 / Calculator: single, alternating custody, employee main contributor → H (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72) (spec)
-- ✅ AC-07.3.4 / Calculator: married, alternating custody, other parent main contributor → C0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358) (spec)
-- ✅ AC-07.3.4 / Single, alternating custody, other parent main contributor (inferred) (spec)
-- ✅ AC-07.4.1 / Registered partnership, minor elsewhere (spec)
-- ✅ AC-07.4.1 / Separated, minor elsewhere (spec)
-- ✅ AC-07.4.2 / Calculator: married, no shared custody → B0N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace) (spec)
-- ✅ AC-07.4.2 / Calculator: single, no parental care → A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace) (spec)
-- ✅ AC-07.4.3 / Calculator: married, shared custody, alternating, employee main contributor → B1N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace) (spec)
-- ✅ AC-07.4.3 / Calculator: single, parental care, alternating, employee main contributor → H1N (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace) (spec)
-- ✅ AC-07.4.3 / Married, alternating, other parent main contributor (inferred) (spec)
-- ✅ AC-07.4.3 / Widowed, parental care, no alternating custody (inferred) (spec)
-- ✅ AC-07.5.1 / Adult child in household (spec)
-- ✅ AC-07.5.2 / Calculator: married, adult in household, common household → B1N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561) (spec)
-- ✅ AC-07.5.2 / Single, common household, employee main contributor (inferred) (spec)
-- ✅ AC-07.5.2 / Single, common household, other parent main contributor (inferred) (spec)
-- ✅ AC-07.5.3 / Calculator: single, no common household, more than 50% → H1N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561) (spec)
-- ✅ AC-07.5.3 / Married, no common household, more than 50% (inferred) (spec)
-- ✅ AC-07.5.3 / No common household, not more than 50% (inferred) (spec)
-- ✅ AC-07.5.4 / Calculator: single, adult elsewhere, more than 50% → A1N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561) (spec)
-- ✅ AC-07.5.4 / Married, adult elsewhere, more than 50% (inferred) (spec)
-- ✅ AC-07.5.4 / Calculator: married, adult elsewhere, not more than 50% → B0N (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561) (spec)
-- ✅ AC-07.6.1 / Child that counts adds 1 (spec)
-- ✅ AC-07.6.1 / Child counted with H adds 1 (spec)
-- ✅ AC-07.6.1 / Child that does not count adds 0 (spec)
-- ✅ AC-07.6.1 / No children gives 0 (spec)
-- ✅ AC-08.1.2 / Employee living in Switzerland (Swiss) (spec)
-- ✅ AC-08.1.2 / Employee living in France (other country) (spec)
-- ✅ AC-08.2.1 / Employee living in Germany (spec)
-- ✅ AC-08.2.1 / Employee living in Liechtenstein (spec)
-- ✅ AC-08.2.2 / Daily return to Germany (spec)
-- ✅ AC-08.2.2 / No daily return to Germany (spec)
-- ✅ AC-08.2.3 / Calculator: daily return with certificate gives N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3) (spec)
-- ✅ AC-08.2.3 / Calculator: daily return without certificate gives C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3) (spec)
-- ✅ AC-08.2.3 / Certificate not yet available counts as no (spec)
-- ✅ AC-08.3.1 / Germany, no daily return (spec)
-- ✅ AC-08.3.1 / Germany, daily return (spec)
-- ✅ AC-08.3.2 / Daily return reasonable (spec)
-- ✅ AC-08.3.2 / Daily return not reasonable (spec)
-- ✅ AC-08.3.3 / Calculator: reasonable, not more than 60 days gives N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e) (spec)
-- ✅ AC-08.3.3 / Calculator: reasonable, more than 60 days gives C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e) (spec)
-- ✅ AC-08.3.3 / Calculator: daily return not reasonable gives C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e) (spec)
-- ✅ AC-08.4.1 / Liechtenstein resident (spec)
-- ✅ AC-08.4.1 / Liechtenstein, no daily return (spec)
-- ✅ AC-08.4.1 / Liechtenstein, daily return (spec)
-- ✅ AC-08.4.1 / Employee living in Germany (spec)
-- ✅ AC-08.4.2 / Calculator: daily return to Liechtenstein (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1) (spec)
-- ✅ AC-08.4.2 / Calculator: no daily return, at most 45 days (zh_source_tax_calculator/F-zh_source_tax_calculator-fb87f1) (spec)
-- ✅ AC-08.4.3 / Calculator: more than 45 days gives C1Y with DTA reservation (zh_source_tax_calculator/F-zh_source_tax_calculator-cc19c7) (spec)
+- ✅ AC-05.3.2 / Swiss national living in Switzerland (spec)
+- ✅ AC-05.3.3 / Tomás (hr_transcript/F-hr_transcript-b90bd9) (spec)
+- ✅ AC-05.3.3 / Registered partner of a C-permit holder living in Switzerland (spec)
+- ✅ AC-05.3.3 / Swiss spouse not living in Switzerland (spec)
+- ✅ AC-05.3.3 / Spouse neither Swiss nor C-permit holder (spec)
+- ✅ AC-05.3.4 / Single employee (spec)
+- ✅ AC-05.3.4 / Separated employee (spec)
+- ✅ AC-05.3.4 / Divorced employee (spec)
+- ✅ AC-05.3.4 / Widowed employee (spec)
+- ✅ AC-05.4.1 / Employee living in Konstanz (hr_transcript/F-hr_transcript-3f2c2a) (spec)
+- ✅ AC-05.4.1 / Employee living in Switzerland (spec)
+- ✅ AC-05.4.1 / Employee living in Liechtenstein (spec)
+- ✅ AC-05.4.1 / Employee living in France (spec)
+- ✅ AC-08.1.1 / Calculator: main residence in Switzerland (zh_source_tax_calculator/F-aedb40) (spec)
+- ✅ AC-08.1.1 / Calculator option Deutschland (zh_source_tax_calculator/F-d62dd4) (spec)
+- ✅ AC-08.1.1 / Calculator option Liechtenstein (zh_source_tax_calculator/F-d62dd4) (spec)
+- ✅ AC-08.1.1 / Employee living in France (spec)
+- ✅ AC-08.1.1 / Employee living in Austria (spec)
+- ✅ AC-08.1.2 / Living in Switzerland (spec)
+- ✅ AC-08.1.2 / Calculator: 'Anderes Land' gives the base tariff (zh_source_tax_calculator/F-f86c6b) (spec)
+- ✅ AC-08.1.3 / Calculator: Germany shows the daily return question (zh_source_tax_calculator/F-31d762) (spec)
+- ✅ AC-08.1.3 / Calculator: Liechtenstein shows the daily return question (zh_source_tax_calculator/F-e22d17) (spec)
+- ✅ AC-08.2.1 / Living in Germany (spec)
+- ✅ AC-08.2.1 / Living in Liechtenstein (spec)
+- ✅ AC-08.2.2 / Calculator: certificate question after daily return 'Ja' (zh_source_tax_calculator/F-5f6820) (spec)
+- ✅ AC-08.2.2 / No daily return - no certificate question (spec)
+- ✅ AC-08.2.3 / Calculator: daily return and certificate gives N1Y (zh_source_tax_calculator/F-993db3) (spec)
+- ✅ AC-08.2.3 / Calculator: daily return without certificate gives C1Y (zh_source_tax_calculator/F-993db3) (spec)
+- ✅ AC-08.2.3 / New hire without certificate yet (spec)
+- ✅ AC-08.2.4 / Calculator: 'Anderes Land' gives the base tariff (zh_source_tax_calculator/F-f86c6b) (spec)
+- ✅ AC-08.2.4 / Living in Switzerland (spec)
+- ✅ AC-08.2.4 / Calculator: Liechtenstein over 45 days gives the normal tariff (zh_source_tax_calculator/F-cc19c7) (spec)
+- ✅ AC-08.3.1 / Calculator: asked after daily return 'Nein' (zh_source_tax_calculator/F-aaece6) (spec)
+- ✅ AC-08.3.1 / Daily return - not asked (spec)
+- ✅ AC-08.3.2 / Calculator: asked after reasonable 'Ja' (zh_source_tax_calculator/F-33ef31) (spec)
+- ✅ AC-08.3.2 / Return not reasonable - not asked (spec)
+- ✅ AC-08.3.3 / Calculator: not reasonable gives C1Y (zh_source_tax_calculator/F-c8aa5e) (spec)
+- ✅ AC-08.3.3 / Calculator: reasonable and more than 60 days gives C1Y (zh_source_tax_calculator/F-c8aa5e) (spec)
+- ✅ AC-08.3.3 / Calculator: reasonable and not more than 60 days gives N1Y (zh_source_tax_calculator/F-c8aa5e) (spec)
+- ✅ AC-08.4.1 / Calculator: Liechtenstein shows the daily return question (zh_source_tax_calculator/F-e22d17) (spec)
+- ✅ AC-08.4.1 / Living in Germany (spec)
+- ✅ AC-08.4.2 / Calculator: asked after daily return 'Nein' (zh_source_tax_calculator/F-f4ece9) (spec)
+- ✅ AC-08.4.2 / Daily return - not asked (spec)
+- ✅ AC-08.4.3 / Calculator: daily return 'Ja' (zh_source_tax_calculator/F-fb87f1) (spec)
+- ✅ AC-08.4.3 / Calculator: not more than 45 days (zh_source_tax_calculator/F-fb87f1) (spec)
+- ✅ AC-08.4.4 / Calculator: more than 45 days gives C1Y with DTA note (zh_source_tax_calculator/F-cc19c7) (spec)
+- ✅ AC-08.4.4 / Living in Germany - Liechtenstein rule does not apply (spec)
+- ✅ AC-06.2.1 / Maria (hr_transcript/F-hr_transcript-845204): Portuguese, C permit (spec)
+- ✅ AC-06.2.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9): Brazilian, B permit, Swiss wife, lives in Winterthur (spec)
+- ✅ AC-06.2.1 / Swiss national living in Switzerland (spec)
+- ✅ AC-06.2.1 / Non-Swiss without C permit living in Switzerland (spec)
+- ✅ AC-06.2.1 / Employee living in France (abroad) (spec)
+- ✅ AC-06.2.1 / Liechtenstein resident who returns daily (spec)
+- ✅ AC-06.2.1 / Liechtenstein resident, no daily return, at most 45 non-return days (spec)
+- ✅ AC-06.2.1 / Liechtenstein resident, no daily return, more than 45 non-return days (spec)
+- ✅ AC-06.2.3 / Calculator case A0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-2eab9a) (spec)
+- ✅ AC-06.2.3 / Calculator case A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-2eab9a) (spec)
+- ✅ AC-06.3.1 / Tomás (hr_transcript/F-hr_transcript-b90bd9): married, not subject (spouse exemption) (spec)
+- ✅ AC-06.3.1 / Married, subject to source tax, non-Swiss spouse without C permit (spec)
+- ✅ AC-06.3.1 / Registered partner living abroad (cf. Daniel, hr_transcript/F-hr_transcript-3907fe) (spec)
+- ✅ AC-06.3.1 / Separated employee subject to source tax (spec)
+- ✅ AC-06.3.1 / Divorced employee subject to source tax (spec)
+- ✅ AC-06.3.1 / Widowed employee subject to source tax (spec)
+- ✅ AC-06.3.1 / Married Liechtenstein resident who returns daily (spec)
+- ✅ AC-06.3.1 / Married Liechtenstein resident with more than 45 non-return days (spec)
+- ✅ AC-06.7.1 / Maria (hr_transcript/F-hr_transcript-845204): C permit, not subject (spec)
+- ✅ AC-06.7.1 / Single employee living abroad (spec)
+- ✅ AC-06.7.1 / Married employee subject to source tax (spec)
+- ✅ AC-06.7.1 / Liechtenstein resident with at most 45 non-return days (spec)
+- ✅ AC-06.7.1 / Liechtenstein resident with more than 45 non-return days (spec)
+- ❌ AC-06.7.3 / Employee answers no (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'A0N'
+- ✅ AC-06.7.3 / Employee answers yes (spec)
+- ✅ AC-06.4.1 / Calculator case C0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) (spec)
+- ✅ AC-06.4.1 / Calculator case B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) (spec)
+- ✅ AC-06.4.1 / Registered partner with a working partner (cf. Daniel, hr_transcript/F-hr_transcript-3907fe) (spec)
+- ✅ AC-06.4.2 / Calculator case A0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-037b1c) (spec)
+- ✅ AC-06.4.2 / Calculator case H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72): minor child in household, sole custody (spec)
+- ✅ AC-06.4.2 / Calculator case A0N (zh_source_tax_calculator/F-zh_source_tax_calculator-5686d7): other parent is main contributor (spec)
+- ✅ AC-06.4.2 / Separated employee without children (spec)
+- ✅ AC-06.4.2 / Divorced employee, minor child in household with sole custody (spec)
+- ✅ AC-06.4.3 / Calculator case A0N, other country (zh_source_tax_calculator/F-zh_source_tax_calculator-f86c6b) (spec)
+- ✅ AC-06.5.1 / Calculator case C1Y, daily return without certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3) (spec)
+- ✅ AC-06.5.1 / Certificate of residence 'not yet' (spec)
+- ✅ AC-06.5.1 / Calculator case C1Y, daily return not reasonable (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e) (spec)
+- ✅ AC-06.5.1 / Calculator case C1Y, more than 60 non-return days (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e) (spec)
+- ✅ AC-06.5.1 / Liechtenstein resident with more than 45 non-return days (spec)
+- ✅ AC-06.5.2 / Calculator case N1Y, daily return with certificate (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3) (spec)
+- ✅ AC-06.5.2 / Calculator case N1Y, reasonable return, at most 60 days (zh_source_tax_calculator/F-zh_source_tax_calculator-c8aa5e) (spec)
+- ✅ AC-06.5.2 / Single cross-border commuter: A becomes L (spec)
+- ✅ AC-06.5.2 / Married, spouse not working: B becomes M (spec)
+- ✅ AC-06.5.2 / Single parent: H becomes P (spec)
+- ❌ AC-06.6.1 / Calculator case C1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'C1Y'
+- ❌ AC-06.6.1 / Calculator case N1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-993db3) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'N1Y'
+- ❌ AC-06.6.1 / Cross-border commuter L0Y (example from D-001) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'L0Y'
+- ❌ AC-06.6.1 / Calculator case H1Y (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'H1Y'
+- ❌ AC-06.6.1 / Calculator case A0N, other country (zh_source_tax_calculator/F-zh_source_tax_calculator-f86c6b) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'A0N'
+- ❌ AC-06.6.1 / Calculator case B0Y (zh_source_tax_calculator/F-zh_source_tax_calculator-97139a) (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'B0Y'
+- ❌ AC-06.6.2 / Maria (hr_transcript/F-hr_transcript-845204): Portuguese, C permit (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
+- ❌ AC-06.6.2 / Tomás (hr_transcript/F-hr_transcript-b90bd9): Swiss wife, living in Winterthur (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
+- ❌ AC-06.6.2 / Swiss national living in Switzerland (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'no tariff code'
+- ❌ AC-06.6.3 / Liechtenstein resident who returns daily (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'in principle no source tax liability, subject to the double taxation agreement'
+- ❌ AC-06.6.3 / Liechtenstein resident, at most 45 non-return days (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'in principle no source tax liability, subject to the double taxation agreement'
+- ❌ AC-06.6.3 / Liechtenstein resident, more than 45 non-return days (spec): tariff_code = 'ERROR: construct BinOp not allowed in \'if_else(not subject_to_source_tax, "no tariff code", if_else(liechtenstein_no_source_tax, "in principle no source tax liability, subject to the double taxation agreement", tariff_letter + child_count + church_tax_suffix))\'', expected 'C0Y'
+- ✅ AC-07.1.1 / Employee living in Germany with children (spec)
+- ✅ AC-07.1.1 / Employee living in Germany without children (spec)
+- ✅ AC-07.1.1 / Swiss employee living in Switzerland (spec)
+- ✅ AC-07.1.1 / Maria, Portuguese with C permit (hr_transcript/F-hr_transcript-845204) (spec)
+- ✅ AC-07.1.1 / Tomás, Brazilian married to a Swiss wife in Winterthur (hr_transcript/F-hr_transcript-b90bd9) (spec)
+- ✅ AC-07.1.1 / Liechtenstein resident returning daily (spec)
+- ✅ AC-07.1.1 / Liechtenstein resident with more than 45 non-return days and children (spec)
+- ✅ AC-07.2.2 / Minor child (spec)
+- ✅ AC-07.2.2 / Adult child in first education (spec)
+- ✅ AC-07.2.3 / Calculator run B0N, married, child 'weder noch' (zh_source_tax_calculator/F-zh_source_tax_calculator-abe889) (spec)
+- ✅ AC-07.2.3 / Single employee, child neither minor nor in first education (spec)
+- ✅ AC-07.3.1 / Sole custody ends the questions (spec)
+- ✅ AC-07.3.1 / Married, shared custody, common household: no contributor question (spec)
+- ✅ AC-07.3.1 / Single, shared custody, common household: contributor asked (spec)
+- ✅ AC-07.3.1 / No common household, alternating custody (spec)
+- ✅ AC-07.3.1 / No common household, no alternating custody (spec)
+- ✅ AC-07.3.2 / Calculator run C1Y, married, sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-d75286) (spec)
+- ✅ AC-07.3.2 / Calculator run C1Y, married, shared custody, common household (zh_source_tax_calculator/F-zh_source_tax_calculator-5d8fb0) (spec)
+- ✅ AC-07.3.2 / Calculator run C0Y, married, no alternating custody (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358) (spec)
+- ✅ AC-07.3.2 / Calculator run C0Y, married, alternating custody, other parent contributes more (zh_source_tax_calculator/F-zh_source_tax_calculator-a4d358) (spec)
+- ✅ AC-07.3.2 / Married, alternating custody, employee contributes more (inferred, go-live check) (spec)
+- ✅ AC-07.3.3 / Calculator run H1Y, single, sole custody (zh_source_tax_calculator/F-zh_source_tax_calculator-300c72) (spec)
+- ✅ AC-07.3.3 / Single, common household, employee contributes more (spec)
+- ✅ AC-07.3.3 / Calculator run A0N, single, common household, other parent contributes more (zh_source_tax_calculator/F-zh_source_tax_calculator-5686d7) (spec)
+- ✅ AC-07.3.3 / Calculator run H1N, single, no common household, no alternating custody (zh_source_tax_calculator/F-zh_source_tax_calculator-dc0ae9) (spec)
+- ✅ AC-07.3.3 / Single, alternating custody, employee contributes more (spec)
+- ✅ AC-07.3.3 / Single, alternating custody, other parent contributes more (inferred, go-live check) (spec)
+- ✅ AC-07.3.4 / Registered partner, sole custody (spec)
+- ✅ AC-07.3.4 / Separated, sole custody (spec)
+- ✅ AC-07.4.1 / Married: shared custody asked (spec)
+- ✅ AC-07.4.1 / Separated: parental care asked (spec)
+- ✅ AC-07.4.1 / Married, no shared custody: block ends (spec)
+- ✅ AC-07.4.1 / Single, parental care and alternating custody (spec)
+- ✅ AC-07.4.2 / Calculator run B1N, married, shared custody, alternating, employee contributes more (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace) (spec)
+- ✅ AC-07.4.2 / Married, alternating, other parent contributes more (inferred, go-live check) (spec)
+- ✅ AC-07.4.2 / Married, shared custody, no alternating custody (inferred, go-live check) (spec)
+- ✅ AC-07.4.2 / Calculator run B0N, married, no shared custody (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace) (spec)
+- ✅ AC-07.4.2 / Calculator run H1N, single, parental care, alternating, employee contributes more (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace) (spec)
+- ✅ AC-07.4.2 / Single, alternating, other parent contributes more (inferred, go-live check) (spec)
+- ✅ AC-07.4.2 / Divorced, parental care, no alternating custody (inferred, go-live check) (spec)
+- ✅ AC-07.4.2 / Calculator run A0N, single, no parental care (zh_source_tax_calculator/F-zh_source_tax_calculator-dc6ace) (spec)
+- ✅ AC-07.5.1 / Married, child in household with common household (spec)
+- ✅ AC-07.5.1 / Single, child in household with common household (spec)
+- ✅ AC-07.5.1 / Child in household without common household (spec)
+- ✅ AC-07.5.1 / Child outside the household (spec)
+- ✅ AC-07.5.2 / Calculator run B1N, married, child in household with common household (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561) (spec)
+- ✅ AC-07.5.2 / Married, in household, no common household, more than 50% (inferred, go-live check) (spec)
+- ✅ AC-07.5.2 / Married, in household, no common household, not more than 50% (inferred, go-live check) (spec)
+- ✅ AC-07.5.2 / Registered partner, child outside household, more than 50% (inferred, go-live check) (spec)
+- ✅ AC-07.5.2 / Calculator run B0N, married, child outside household, not more than 50% (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561) (spec)
+- ✅ AC-07.5.3 / Single, common household, employee contributes more (spec)
+- ✅ AC-07.5.3 / Single, common household, other parent contributes more (inferred, go-live check) (spec)
+- ✅ AC-07.5.3 / Calculator run H1N, single, in household, no common household, more than 50% (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561) (spec)
+- ✅ AC-07.5.3 / Separated, in household, no common household, not more than 50% (inferred, go-live check) (spec)
+- ✅ AC-07.5.3 / Calculator run A1N, single, child outside household, more than 50% (zh_source_tax_calculator/F-zh_source_tax_calculator-3eb561) (spec)
+- ✅ AC-07.5.3 / Divorced, child outside household, not more than 50% (inferred, go-live check) (spec)
+- ✅ AC-07.6.1 / Counted child adds one (married, sole custody) (spec)
+- ✅ AC-07.6.1 / Child counted with H adds one (single, sole custody) (spec)
+- ✅ AC-07.6.1 / Child neither minor nor in first education adds nothing (spec)
+- ✅ AC-07.6.1 / Child not counted adds nothing (married, no shared custody) (spec)
 
 ## Open questions (need your decision)
 
-- **OQ-calculator-coverage**: Does Lonio's computed tariff code match the Zurich calculator for the paths not explored (residence block for A/B/H, more than 3 children, H3N/P3N examples, inferred per-child rows)? → recommended: Non-blocking for the spec, but a go-live condition: domain expert comparison before release.
-- **OQ-hr-side-follow-ups**: How does HR see the Liechtenstein DTA flag and change the first working day or other answers after submission? → recommended: Note for the later HR-side spec; not blocking the questionnaire.
+- **OQ-calculator-coverage**: Does Lonio's computed tariff code match the Zurich calculator on the paths not explored (residence block for A/B/H, more than 3 children, H3N/P3N, and the per-child rows marked inferred)? → recommended: Domain expert check before go-live (go-live condition, not blocking the spec).
+- **OQ-fund-divorced-widowed**: Does the pension fund form show any extra field (e.g. a former spouse's date of birth) when civil status is Divorced or Widowed? → recommended: Ask the fund or HR to check the portal; proceed with D-004.
 
 ## Inferred items to confirm
 
 - item.spouse_nationality
-- item.spouse_holds_c_permit
-- item.spouse_residence_country
+- rule.church_tax_suffix
 - rule.child_result
-- rule.child_count
+- rule.base_tariff_letter
+- story.US-01.8
+- story.US-02.1
+- story.US-03.3
 - story.US-05.2
+- story.US-06.2
+- story.US-06.3
+- story.US-06.7
+- story.US-06.4
 - story.US-07.3
 - story.US-07.4
 - story.US-07.5
-- story.US-07.6
 - fact F-hr_transcript-3edf89: HR needs the employee's name. Leo asked about 'Name, address' and Anna answered 'Yes', but she only elaborated on the address.
 - fact F-hr_transcript-e18e66: When the first working day changes, the insurance start date given to the pension fund must be re-derived and updated. A missed update (Julia) caused a wrong date at the fund, an unfriendly letter and weeks of fixing.
 - fact F-hr_transcript-54d011: The spouse's nationality, permit and residence only matter for source tax when the employee is married. They are presumably only needed when the employee would otherwise be subject to source tax (non-Swiss, no C permit, living in Switzerland).
@@ -326,32 +372,28 @@ Knowledge elements changed: OQ-calculator-coverage, OQ-canton-abroad, OQ-civil-s
 - fact F-zh_source_tax_calculator-dc0ae9: Single, minor child in household, shared custody, no common household and no alternating custody gives H1N (child counted with H).
 - fact F-zh_source_tax_calculator-cc19c7: Liechtenstein residents without daily return and more than 45 non-return days get the normal tariff plus 'Unter Vorbehalt des Doppelbesteuerungsabkommens'.
 
-## Dev refinement questions (12)
+## Dev refinement questions (7)
 
-- [major] `feature.md` The step order contradicts itself. The flow table in feature.md has 8 steps: name, date of birth and first working day together in step 1, then one cross-border step 5 for Germany and Liechtenstein that comes before denomination and children, and a permit-reminder step 8. The 'Questionnaire flow overview' rule and US-01.2 AC-01.2.1 have 10 steps: first working day as its own step 2, Liechtenstein cross-border as step 6, Germany cross-border as step 9 after children, and a 'Summary and submission' step 10. Which order is correct? In particular, are the Germany cross-border questions asked before or after denomination and children, and is there a separate summary step?
-- [major] `stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md` Results are 'always derived again from the latest answers'. If HR changes an answer after submission so that new questions now apply, the inputs were never asked. Examples: Single becomes Married (spouse's date of birth, spouse employment), a move from Switzerland to Germany (daily return, certificate), a new child (child block). What should the derived results show while those inputs are missing: no tariff code, an 'incomplete' state, or the old value? Do answers that no longer apply after an HR change get discarded, as they do on employee submission?
 - [major] `stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md` Every example in AC-06.6.1, AC-06.6.2 and AC-06.6.3 is marked ❌ under 'Checked', while all other stories show ✅. Are these expected tariff codes (N1Y, C1Y, L0Y, A0N, B0N, 'no tariff code', C1Y with the double taxation agreement note) known to be wrong, or just not checked yet? They are the main acceptance tests for the computed code.
-- [minor] `stories/US-02.2-collect-a-complete-postal-home-address.md` AC-02.2.1 lists only street, postcode, town and country as required. Its Germany example marks every address field, including country, as only 'asked', while the Switzerland example marks them all 'required'. AC-02.2.2 and D-042 make the house number required too. Are all address fields required for every employee, whatever the country, with 'no house number' as the only way around the house number?
-- [minor] `stories/US-01.5-discard-answers-that-no-longer-apply-on-submission.md` D-036 says answers that no longer apply 'may be kept' until submission. AC-01.5.1 makes it a requirement that the previous answer 'is still there'. Is keeping them a must (testable acceptance criterion), or optional?
-- [minor] `stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md` In AC-01.2.1, the example 'Employee living in Germany' shows Civil status as '–' in the results, while civil status is always asked of everyone (US-04.1). Is this a mistake in the example, or is civil status meant to be skipped in some case?
-- [minor] `stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md` Before submission, can the employee save partway and come back later, and is there a review/summary of all answers before the final submit? After submission, does the employee get a confirmation? Submission is final (read-only), so these decide what the employee can check before locking it.
-- [minor] `stories/US-03.1-employee-confirms-the-first-working-day.md` Are there business limits on the first working day, e.g. it must not be in the past or more than N months ahead? Is there a plausibility check on the employee's and spouse's dates of birth (minimum working age)? The pension fund only requires the DD.MM.YYYY format.
-- [minor] `stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md` Nationality (and the country of the home address and of the spouse's residence) is 'a country by English name'. Which list of countries/nationalities should be offered, and how do stateless employees or employees with unclear status answer the nationality question? Only 'Switzerland vs not' matters for the rule.
-- [minor] `stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md` The example tables mix 'required' and 'asked' as expected results for questions the text says must be answered. Examples: spouse nationality 'required' for Tomás vs 'asked' for the registered partner; spouse residence 'required' vs 'asked'; in US-05.1, C permit 'required' for Maria vs 'asked' for Tomás. Is there a real difference (i.e. may some of these be left empty), or are they the same?
-- [minor] `stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md` The spouse's country of residence matters only as 'lives in Switzerland or not'. Under data minimisation (G-01), should we ask the full country, or only 'Does your spouse/partner live in Switzerland? yes/no'?
-- [minor] `stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md` The permit reminder is 'worded by HR', but no text is given. Who provides the final wording and when (before build or configurable later)? Is it shown only at the end, or also elsewhere (e.g. in a confirmation)?
+- [major] `stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md` AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?
+- [minor] `stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md` In AC-06.7.3 the example 'Employee answers no' (France, Single, None or other, no children → A0N) is marked ❌, while the 'yes' example is ✅. Is A0N the wrong expected code for this case, or has it simply not been checked yet?
+- [minor] `stories/US-03.1-employee-confirms-the-first-working-day.md` The first working day 'must lie within one year after the questionnaire is sent'. Can it also be before the send date or in the past, for example when the employee has already started or fills in the questionnaire late? Sending the questionnaire is part of the later HR-side spec, so which date counts as 'sent' for this check? Is there also any plausibility check on the spouse's date of birth?
+- [minor] `stories/US-01.8-review-a-summary-and-submit-with-one-confirmation.md` The stories disagree on when a missing required answer blocks the employee. US-02.1 and US-02.2 say the employee 'cannot continue' to the next step. US-04.1 and AC-01.8.3 say the employee only cannot submit, and is then shown what is missing. Should a missing required answer stop the employee from moving to the next step, or only from submitting (so a partly filled step can be saved and left, as US-01.7 allows)?
+- [minor] `stories/US-08.2-germany-daily-return-and-certificate-of-residence.md` The item is called 'Certificate of residence handed in', and the calculator asks whether it has been provided ('beigebracht'). The story instead asks whether the employee 'has a certificate of residence for HR'. Does 'yes' mean the certificate has already been given to HR, or only that the employee has one? Should HR expect a certificate later for 'no' as well as for 'not yet', or only for 'not yet'?
+- [minor] `stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md` Expected results for the same question differ between stories. US-01.2 marks spouse's nationality, spouse lives in Switzerland and nationality as 'asked' (AC-01.2.4, AC-01.2.5). US-05.1 and US-05.2 mark the same cases as 'required'. Several rows also show '–' for questions that always apply, for example civil status for the married C-permit holder in AC-01.2.5, or postcode and town for Stefan in AC-01.2.3. Is there a real difference between 'asked' and 'required' (can any of these answers be left empty?), and does '–' mean 'not checked in this example'?
 
-## Technical vocabulary found in the spec (5)
+## Technical vocabulary found in the spec (6)
 
-- `feature.md` "Answers to questions that no longer apply are discarded on submission (discard_inapplicable_answers), and the questionnaire becomes read-only for the employee (read_only_after_submission)." - Internal snake_case rule ids appear in business prose. D-045 forbids this.
-- `feature.md` "The expression gives each child's contribution (1 or 0), summed over all children." - Refers to an internal formula ('expression') rather than business language. D-045 forbids this.
-- `feature.md` "The expression is per child; H applies if any child gives H." - Refers to an internal formula ('expression') rather than business language.
-- `information.md` "The expression gives each child's contribution (1 or 0), summed over all children." - Refers to an internal formula ('expression') rather than business language.
-- `information.md` "The expression is per child; H applies if any child gives H." - Refers to an internal formula ('expression') rather than business language.
+- `item.address_country` implementation vocabulary ['iso 3166']: Country chosen from the ISO 3166 country list, by English name (e.g. Switzerland, Germany, Liechtenstein).
+- `item.nationality` implementation vocabulary ['iso 3166']: Country chosen from the ISO 3166 country list, plus 'stateless'.
+- `item.spouse_nationality` implementation vocabulary ['iso 3166']: Country chosen from the ISO 3166 country list, plus 'stateless'.
+- `ac.AC-02.3.1` implementation vocabulary ['iso 3166']: the country is required and is chosen from the ISO 3166 country list, shown by English name (e.g. Switzerland, Germany, Liechtenstein). This
+- `feature.md` "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)" - Refers to an internal formula ('expression') rather than business language. D-045 forbids this.
+- `information.md` "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)" - Refers to an internal formula ('expression') rather than business language. D-045 forbids this.
 
 ## Coverage
 
-158/342 source units cited; 143/177 facts used.
+156/342 source units cited; 139/177 facts used.
 
 Uncited units (confirm they are irrelevant):
 
@@ -379,6 +421,7 @@ Uncited units (confirm they are irrelevant):
 - hr_transcript/T-037: Okay. Noted. Can I go back to source tax? You said all non-Swiss employees.
 - hr_transcript/T-041: Sure, send it if it's easy. Do people need anything from you on the first day? Laptops, things like that? I just want to see if that belongs in the same form.
 - hr_transcript/T-047: Okay. Anything else on who needs to do it? I'd rather hear all of it now.
+- hr_transcript/T-051: Okay, that's fine, the calculator will tell us. I think I have what I need. Is there anything you were hoping to cover that we didn't?
 - hr_transcript/T-052: Only the timing. When can we have this?
 - hr_transcript/T-053: I'll come back to you on that this week, once we've gone through your screenshots.
 - hr_transcript/T-054: Good. I'll send them after lunch. Thanks, Leo.
@@ -516,6 +559,7 @@ Uncited units (confirm they are irrelevant):
 - pension_portal/S07-E25: Cancel
 - pension_portal/S07-E26: Register
 - pension_portal/S07-E27: Fields marked * are required.
+- zh_source_tax_calculator/C-Q01: Für welche Einkünfte möchten Sie den Quellensteuertarif ermitteln? Options: Erwerbseinkommen | Ersatzeinkünfte Help: Calculator heading: 'Quellensteuertarif bes
 - zh_source_tax_calculator/C-Q24: Tägliche Rückkehr an den Hauptwohnsitz in Deutschland während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein
 - zh_source_tax_calculator/C-Q25: Tägliche Rückkehr grundsätzlich zumutbar während oder vor Bezug der Ersatzeinkünfte (weniger als 100km Fahrdistanz)? Options: Ja | Nein
 - zh_source_tax_calculator/C-Q26: Nachweis von mehr als 60 beruflich bedingten Nichtrückkehrtagen im Kalenderjahr beigebracht während oder vor Bezug der Ersatzeinkünfte? Options: Ja | Nein
@@ -540,7 +584,7 @@ Uncited units (confirm they are irrelevant):
 - zh_source_tax_calculator/C-N01: The calculator is an Angular app (app-root, ng 11, assets from www.services.zh.ch/app/quest/tarifbestimmung/prod/) rendered inline in the section 'Tarifrechner 
 - zh_source_tax_calculator/C-N08: The answer value in V25–V29 summarises repeated per-child answers (Kind 1/2/3) because the schema allows one value per question id.
 
-## Other warnings (41)
+## Other warnings (40)
 
 - [fact_judge] `F-hr_transcript-34494f` partial: Leo's 'We'll keep that for now' supports agreement, but 'online tariff calculator' and 'canton of Zurich' are okay; 'acknowledges not exactly how it works' is fine—minor: Leo agreed is supported, so only the 'questionnaire is the calculator' equation is slightly inferred. | The source tax questionnaire is the canton of Zurich's online tariff calculator, which outputs the tariff code. HR uses the Zurich calculator for everybody and acknowledges that this is not exactly how it works. Leo agreed to keep it that way for now.
 - [fact_judge] `F-hr_transcript-550840` partial: Leo's summary and Anna's 'I think so' are supported, but 'later added more conditions' is not shown in these units. | Leo summarised the rule as 'non-Swiss, but not with a C permit'. Anna only answered 'I think so' (hedged), and later added more conditions.
@@ -555,41 +599,40 @@ Uncited units (confirm they are irrelevant):
 - [fact_judge] `F-zh_source_tax_calculator-dc0ae9` partial: V19 gives H1N for these answers, but the units don't give the Q10/Q11 question texts, so mapping them to 'common household' and 'alternating custody' is inferred. | Single, minor child in household, shared custody, no common household and no alternating custody gives H1N (child counted with H).
 - [fact_judge] `F-zh_source_tax_calculator-c8aa5e` partial: Q21 help lists only L/M/N/P for the cross-border outcome; adding Q is not stated for this branch. | Germany resident without daily return: if return is not reasonable -> normal tariff; if reasonable and >60 non-return days proven -> normal tariff; if reasonable and no proof -> cross-border tariff (L/M/N/P, Q).
 - [fact_judge] `F-zh_source_tax_calculator-2754e8` partial: Outcomes match the vectors, but these units never state that Q19 is the certificate (Ansässigkeitsbescheinigung) question. | Replacement income, Germany: daily return with certificate -> Q; daily return without certificate -> G; no daily return, reasonable, no >60-day proof -> Q; with proof -> G; not reasonable -> G.
+- [coverage] `F-hr_transcript-8595fb` fact not used anywhere in the spec: For employees living abroad, the calculator asks more questions, and Germany has its own forms. Anna cannot remember what they are called. Leo deferred to the calculator, so the exact questions are unresolved in this transcript.
+- [coverage] `F-pension_portal-3a97ab` fact not used anywhere in the spec: The portal requires an insurance start date on the 1st of a month but does not show how it relates to the employee's first working day (e.g. which 1st of a month to choose when work starts mid-month); the derivation rule is unknown.
 - [coverage] `F-pension_portal-e45e5b` fact not used anywhere in the spec: No screenshot shows the validation error for an insurance start date that is not the 1st of a month or for a malformed date; its behaviour and wording are unknown.
-- [trace_judge] `item.has_children` partial: The purpose 'possibly tariff H' is not backed by any cited fact; only the child digit is supported.
-- [trace_judge] `item.child_same_household` partial: The 'per-child result' purpose and the 'repeated per child' form are not backed by the cited facts, which only cover the question, its options and when it is shown.
-- [trace_judge] `item.child_custody` partial: The question, options and display conditions are backed, but the purpose 'sole custody makes the child count (tariff H for single persons)' is not in any cited fact.
-- [trace_judge] `item.child_main_financial_contributor` partial: The question, options and conditions are backed, but the purpose 'main contributor can count the child (tariff H for single persons)' is not in any cited fact.
-- [trace_judge] `rule.questionnaire_flow` partial: The cited facts back only English, ask-once, the Liechtenstein ordering and the full tariff code; the content of steps 1-5, 7-10 and the 'Swiss with Swiss citizenship or C permit never see source tax questions' claim are not in the cited facts.
-- [trace_judge] `rule.calculator_residence` partial: The 'Other country (base tariff, no further residence questions)' row cites F-...-f86c6b, which is not among the cited facts, so 'base tariff, no further residence questions' is unbacked.
-- [trace_judge] `rule.child_result` partial: The 'Neither' → 'does not count' row cites F-...-abe889, which is not among the cited facts; the other rows are backed or marked inferred under D-046/D-009.
-- [trace_judge] `rule.cross_border_tariff` partial: The Germany rows are backed, but the 'Switzerland, Liechtenstein or other country → normal tariff' row cites f86c6b and cc19c7, which are not among the cited facts.
-- [trace_judge] `rule.tariff_letter` partial: The cited fact also maps G->Q for the cross-border tariff, but the rule and its expression omit G and return null for it.
-- [trace_judge] `story.US-01.2` partial: The Germany cross-border step, the nationality/C-permit step, and the always-asked name and date of birth are not backed by the cited facts (D-005 and the pension-portal facts are not cited).
-- [trace_judge] `story.US-01.3` partial: Country of residence being needed by HR, the pension fund and source tax is not backed by the cited facts, and the separated example's 'spouse nationality not asked' has no cited support.
-- [trace_judge] `story.US-01.4` partial: The permit reminder rule is backed by D-010 and D-038, but the non-illustrative Maria and Tomás examples rely on transcript facts that are not cited.
-- [trace_judge] `story.US-02.1` partial: The pension fund's required fields are backed, but HR using the name to address the documents it posts is not in the cited quote, which covers only the address.
-- [trace_judge] `story.US-02.2` partial: AC-02.2.1 lists only street, postcode, town and country as required, leaving out the house number, which D-042 makes required and which its own Switzerland example marks required.
-- [trace_judge] `story.US-03.3` partial: The non-illustrative example 'Moved from 01.04 to 15.03' invents the original 01.04 date, because the fact only says Julia moved her date to 15 March.
-- [trace_judge] `story.US-04.3` partial: AC-04.3.3 and the priority reason say the calculator's civil status drives the spouse questions on the married path and the tariff letter, but no cited fact describes those calculator steps; the cited facts give only the two civil status groups and the spouse exemption.
-- [trace_judge] `story.US-06.4` partial: The claims that children never change the letter for married employees, and that a single employee whose child does not count with H gets A, are not stated in the cited facts, which only cover the no-children case and the H-child case.
-- [trace_judge] `story.US-06.6` partial: AC-06.6.1 says the child digit has 'no maximum', but the cited facts do not back this; D-044 is not cited there and the calculator facts say more than 3 children is untested.
-- [trace_judge] `story.US-07.1` partial: No cited fact says the children answer is 'required' or 'recorded for HR' (D-034 is not cited), and AC-07.1.2 adds registered partnership with a Swiss or C-permit spouse, which the cited source-tax facts do not mention.
-- [trace_judge] `story.US-07.2` partial: The 'an answer is required' claims in AC-07.2.2 and AC-07.2.4 are not backed by any cited fact, which only give the calculator's options.
-- [trace_judge] `story.US-07.3` partial: The 'answer is required' claims are not backed by cited facts, and the non-illustrative 'single, alternating custody, employee main contributor → H' example (shown as Divorced) is not an observed calculator row in the cited facts.
-- [trace_judge] `story.US-07.4` partial: The 'answer is required' claims are not backed by cited facts, and the 'does not count' cases for alternating custody are only inferred, not observed.
-- [trace_judge] `story.US-07.5` partial: The 'required' claims are not backed by cited facts, and the registered-partnership and separated equivalences in the AC wording are only covered by assumption.
-- [trace_judge] `story.US-07.6` partial: AC-07.6.2's claim that married employees and registered partners never get 'counts with H' is not stated in the cited facts, which only describe H for single, divorced, separated or widowed persons.
-- [dev_refinement] `feature.md` The step order contradicts itself. The flow table in feature.md has 8 steps: name, date of birth and first working day together in step 1, then one cross-border step 5 for Germany and Liechtenstein that comes before denomination and children, and a permit-reminder step 8. The 'Questionnaire flow overview' rule and US-01.2 AC-01.2.1 have 10 steps: first working day as its own step 2, Liechtenstein cross-border as step 6, Germany cross-border as step 9 after children, and a 'Summary and submission' step 10. Which order is correct? In particular, are the Germany cross-border questions asked before or after denomination and children, and is there a separate summary step?
-- [dev_refinement] `stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md` Results are 'always derived again from the latest answers'. If HR changes an answer after submission so that new questions now apply, the inputs were never asked. Examples: Single becomes Married (spouse's date of birth, spouse employment), a move from Switzerland to Germany (daily return, certificate), a new child (child block). What should the derived results show while those inputs are missing: no tariff code, an 'incomplete' state, or the old value? Do answers that no longer apply after an HR change get discarded, as they do on employee submission?
+- [trace_judge] `item.first_working_day` partial: No cited fact says the first working day is the reference date for children's age (only the insurance start date and the address are backed by D-039/D-041/D-047).
+- [trace_judge] `item.spouse_nationality` partial: The form 'ISO 3166 country list plus stateless' is cited only for the employee's nationality in D-050, not for the spouse's nationality.
+- [trace_judge] `item.residence_certificate` partial: The HR purpose ('knows a certificate is still expected') is not stated in the cited facts; the rest, including 'not yet', is backed.
+- [trace_judge] `item.daily_return_reasonable` partial: Question, options and condition are backed, but no cited fact says this answer decides the cross-border tariff.
+- [trace_judge] `item.non_return_days_60` partial: No cited fact backs the purpose 'more than 60 days gives the normal tariff, otherwise cross-border'; the question, options, condition and expectation framing are backed.
+- [trace_judge] `item.spouse_gainful_employment` partial: The cited facts back the question, Yes/No values, married/registered-partner condition and B/C tariff, but not the 'address_country != Liechtenstein or non_return_days_45 == yes' part of the condition.
+- [trace_judge] `item.has_children` partial: The question and values are backed, but the cited facts do not support the Liechtenstein/non_return_days_45 part of the asked_when and required_when conditions.
+- [trace_judge] `item.child_main_financial_contributor` partial: The purpose 'H tariff for single parents' is not backed by any cited fact.
+- [trace_judge] `rule.questionnaire_flow` partial: The step list, ordering, saving/resume, back-and-change and single confirmation are backed, but the row details (German certificate of residence, permit reminder only for non-Swiss or living abroad, C permit only if not Swiss, spouse questions) rely on facts and decisions that are not among the cited ones.
+- [trace_judge] `rule.pension_fund_civil_status` partial: D-003 gives the partner's date of birth only for registered partnership, but the statement attaches it to Separated (and Married) too, which no cited fact backs.
+- [trace_judge] `rule.cross_border_tariff` partial: The 'not Germany' row cites F-zh_source_tax_calculator-cc19c7, which is not among the cited facts, and the cited facts do not show that Liechtenstein never gets the cross-border tariff (only Switzerland and 'Anderes Land' are covered).
+- [trace_judge] `rule.tariff_code` partial: The expression gives no 'subject to the double taxation agreement' note or flag for the more-than-45-days case, and no 'incomplete' result, although the statement and table say so; rows also cite fb87f1 and cc19c7, which are not among the cited facts.
+- [trace_judge] `story.US-01.2` partial: AC-01.2.7 limits 'spouse gainfully employed' to married and registered partners, which no cited fact states, and the non-illustrative Maria example in AC-01.2.4 rests on F-hr_transcript-845204, which is not cited.
+- [trace_judge] `story.US-01.4` partial: The non-illustrative Maria example cites F-hr_transcript-845204, which is not among the cited facts, so her C-permit and Portugal details are unbacked.
+- [trace_judge] `story.US-03.1` partial: AC-03.1.4 says HR 'plans the start and keeps the fund registration up to date', which no cited fact states (the facts only say the pension fund needs the first working day).
+- [trace_judge] `story.US-08.1` partial: AC-08.1.2 lists 'reasonableness of daily return' and 'non-return days' questions, which no cited fact backs.
+- [trace_judge] `story.US-08.2` partial: AC-08.2.4 says the cross-border tariff never applies to any non-Germany resident, but the cited facts only back this for Switzerland, other countries and Liechtenstein with over 45 non-return days, not for a Liechtenstein resident who returns daily.
+- [trace_judge] `story.US-06.2` partial: The non-illustrative Maria and Tomás examples cite F-hr_transcript-845204 and -b90bd9, which are not among the cited facts. The claim that the denomination is not part of the pension fund registration is also not backed.
+- [trace_judge] `story.US-06.3` partial: The non-illustrative Tomás example (spouse exemption) cites F-hr_transcript-b90bd9, which is not among the cited facts. Everything else is backed.
+- [trace_judge] `story.US-06.7` partial: The non-illustrative Maria example cites F-hr_transcript-845204, which is not among the cited facts. Everything else is backed.
+- [trace_judge] `story.US-06.5` partial: The claim that Liechtenstein residents never get a cross-border letter is not backed by the cited facts (the Liechtenstein fact is not cited), and the priority reason relies on F-hr_transcript-3f2c2a, which is not among the cited facts.
+- [trace_judge] `story.US-06.6` partial: AC-06.6.2 names Swiss nationals as exempt, but no cited fact says so (only C-permit holders and Swiss/C-permit spouses are covered), and several example source_refs (d75286, 300c72, 97139a) are not among the cited facts.
 - [dev_refinement] `stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md` Every example in AC-06.6.1, AC-06.6.2 and AC-06.6.3 is marked ❌ under 'Checked', while all other stories show ✅. Are these expected tariff codes (N1Y, C1Y, L0Y, A0N, B0N, 'no tariff code', C1Y with the double taxation agreement note) known to be wrong, or just not checked yet? They are the main acceptance tests for the computed code.
+- [dev_refinement] `stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md` AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?
 
 ## Run
 
-Stages run: knowledge.raw, feature.plan, sections/SEC-03-employment-start, sections/SEC-02-personal-details-address, sections/SEC-04-civil-status-spouse, sections/SEC-05-source-tax-liability, sections/SEC-01-questionnaire-flow, sections/SEC-08-cross-border-residence, sections/SEC-06-source-tax-tariff-basics, sections/SEC-07-source-tax-children, feature.flow, judge_trace, dev_refinement, review
+Stages run: knowledge.raw, feature.plan, sections/SEC-03-employment-start, sections/SEC-04-civil-status-spouse, sections/SEC-02-personal-details-address, sections/SEC-08-cross-border-residence, sections/SEC-05-source-tax-liability, sections/SEC-01-questionnaire-flow, sections/SEC-07-source-tax-children, sections/SEC-06-source-tax-tariff-basics, feature.flow, judge_trace, dev_refinement, review
 
 Stages reused from cache: normalize/hr_transcript, extract/hr_transcript, normalize/pension_portal, extract/pension_portal, normalize/zh_source_tax_calculator, extract/zh_source_tax_calculator, judge_facts
 
-LLM cost this run: $9.22
+LLM cost this run: $9.8
 
-Tokens this run: 1,080,931 in 29 agent calls (58 input, 50,048 cache read, 847,421 cache write, 183,404 output)
+Tokens this run: 1,146,463 in 30 agent calls (60 input, 52,108 cache read, 894,249 cache write, 200,046 output)

@@ -1,95 +1,55 @@
 {
   "questions": [
     {
-      "file": "feature.md",
-      "question": "The step order contradicts itself. The flow table in feature.md has 8 steps: name, date of birth and first working day together in step 1, then one cross-border step 5 for Germany and Liechtenstein that comes before denomination and children, and a permit-reminder step 8. The 'Questionnaire flow overview' rule and US-01.2 AC-01.2.1 have 10 steps: first working day as its own step 2, Liechtenstein cross-border as step 6, Germany cross-border as step 9 after children, and a 'Summary and submission' step 10. Which order is correct? In particular, are the Germany cross-border questions asked before or after denomination and children, and is there a separate summary step?",
-      "severity": "major"
-    },
-    {
-      "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
-      "question": "Results are 'always derived again from the latest answers'. If HR changes an answer after submission so that new questions now apply, the inputs were never asked. Examples: Single becomes Married (spouse's date of birth, spouse employment), a move from Switzerland to Germany (daily return, certificate), a new child (child block). What should the derived results show while those inputs are missing: no tariff code, an 'incomplete' state, or the old value? Do answers that no longer apply after an HR change get discarded, as they do on employee submission?",
-      "severity": "major"
-    },
-    {
       "file": "stories/US-06.6-compute-and-record-the-full-source-tax-tariff-code.md",
       "question": "Every example in AC-06.6.1, AC-06.6.2 and AC-06.6.3 is marked ❌ under 'Checked', while all other stories show ✅. Are these expected tariff codes (N1Y, C1Y, L0Y, A0N, B0N, 'no tariff code', C1Y with the double taxation agreement note) known to be wrong, or just not checked yet? They are the main acceptance tests for the computed code.",
       "severity": "major"
     },
     {
-      "file": "stories/US-02.2-collect-a-complete-postal-home-address.md",
-      "question": "AC-02.2.1 lists only street, postcode, town and country as required. Its Germany example marks every address field, including country, as only 'asked', while the Switzerland example marks them all 'required'. AC-02.2.2 and D-042 make the house number required too. Are all address fields required for every employee, whatever the country, with 'no house number' as the only way around the house number?",
-      "severity": "minor"
-    },
-    {
-      "file": "stories/US-01.5-discard-answers-that-no-longer-apply-on-submission.md",
-      "question": "D-036 says answers that no longer apply 'may be kept' until submission. AC-01.5.1 makes it a requirement that the previous answer 'is still there'. Is keeping them a must (testable acceptance criterion), or optional?",
-      "severity": "minor"
-    },
-    {
-      "file": "stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md",
-      "question": "In AC-01.2.1, the example 'Employee living in Germany' shows Civil status as '–' in the results, while civil status is always asked of everyone (US-04.1). Is this a mistake in the example, or is civil status meant to be skipped in some case?",
-      "severity": "minor"
-    },
-    {
       "file": "stories/US-01.6-make-the-questionnaire-read-only-after-submission-and-derive.md",
-      "question": "Before submission, can the employee save partway and come back later, and is there a review/summary of all answers before the final submit? After submission, does the employee get a confirmation? Submission is final (read-only), so these decide what the employee can check before locking it.",
+      "question": "AC-01.6.2 contradicts AC-01.6.3. In the example, after HR records that Tomás's wife no longer lives in Switzerland, the expected result for Denomination is 'asked'. But the employee can no longer answer anything after submission (AC-01.6.1), and AC-01.6.3 / D-048 say the tariff code should then show 'incomplete - HR must complete'. Which is the expected outcome for this example: is the employee asked again (the questionnaire reopens for them), or does HR complete it while the result shows 'incomplete'?",
+      "severity": "major"
+    },
+    {
+      "file": "stories/US-06.7-ask-employees-subject-to-source-tax-whether-they-have.md",
+      "question": "In AC-06.7.3 the example 'Employee answers no' (France, Single, None or other, no children → A0N) is marked ❌, while the 'yes' example is ✅. Is A0N the wrong expected code for this case, or has it simply not been checked yet?",
       "severity": "minor"
     },
     {
       "file": "stories/US-03.1-employee-confirms-the-first-working-day.md",
-      "question": "Are there business limits on the first working day, e.g. it must not be in the past or more than N months ahead? Is there a plausibility check on the employee's and spouse's dates of birth (minimum working age)? The pension fund only requires the DD.MM.YYYY format.",
+      "question": "The first working day 'must lie within one year after the questionnaire is sent'. Can it also be before the send date or in the past, for example when the employee has already started or fills in the questionnaire late? Sending the questionnaire is part of the later HR-side spec, so which date counts as 'sent' for this check? Is there also any plausibility check on the spouse's date of birth?",
       "severity": "minor"
     },
     {
-      "file": "stories/US-05.1-ask-nationality-and-c-permit-only-of-employees-living-in.md",
-      "question": "Nationality (and the country of the home address and of the spouse's residence) is 'a country by English name'. Which list of countries/nationalities should be offered, and how do stateless employees or employees with unclear status answer the nationality question? Only 'Switzerland vs not' matters for the rule.",
+      "file": "stories/US-01.8-review-a-summary-and-submit-with-one-confirmation.md",
+      "question": "The stories disagree on when a missing required answer blocks the employee. US-02.1 and US-02.2 say the employee 'cannot continue' to the next step. US-04.1 and AC-01.8.3 say the employee only cannot submit, and is then shown what is missing. Should a missing required answer stop the employee from moving to the next step, or only from submitting (so a partly filled step can be saved and left, as US-01.7 allows)?",
       "severity": "minor"
     },
     {
-      "file": "stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md",
-      "question": "The example tables mix 'required' and 'asked' as expected results for questions the text says must be answered. Examples: spouse nationality 'required' for Tomás vs 'asked' for the registered partner; spouse residence 'required' vs 'asked'; in US-05.1, C permit 'required' for Maria vs 'asked' for Tomás. Is there a real difference (i.e. may some of these be left empty), or are they the same?",
+      "file": "stories/US-08.2-germany-daily-return-and-certificate-of-residence.md",
+      "question": "The item is called 'Certificate of residence handed in', and the calculator asks whether it has been provided ('beigebracht'). The story instead asks whether the employee 'has a certificate of residence for HR'. Does 'yes' mean the certificate has already been given to HR, or only that the employee has one? Should HR expect a certificate later for 'no' as well as for 'not yet', or only for 'not yet'?",
       "severity": "minor"
     },
     {
-      "file": "stories/US-05.2-ask-the-spouse-s-nationality-c-permit-and-residence-only.md",
-      "question": "The spouse's country of residence matters only as 'lives in Switzerland or not'. Under data minimisation (G-01), should we ask the full country, or only 'Does your spouse/partner live in Switzerland? yes/no'?",
-      "severity": "minor"
-    },
-    {
-      "file": "stories/US-01.4-remind-non-swiss-employees-and-employees-living-abroad-to.md",
-      "question": "The permit reminder is 'worded by HR', but no text is given. Who provides the final wording and when (before build or configurable later)? Is it shown only at the end, or also elsewhere (e.g. in a confirmation)?",
+      "file": "stories/US-01.2-ask-the-steps-in-an-order-that-avoids-unneeded-questions.md",
+      "question": "Expected results for the same question differ between stories. US-01.2 marks spouse's nationality, spouse lives in Switzerland and nationality as 'asked' (AC-01.2.4, AC-01.2.5). US-05.1 and US-05.2 mark the same cases as 'required'. Several rows also show '–' for questions that always apply, for example civil status for the married C-permit holder in AC-01.2.5, or postcode and town for Stefan in AC-01.2.3. Is there a real difference between 'asked' and 'required' (can any of these answers be left empty?), and does '–' mean 'not checked in this example'?",
       "severity": "minor"
     }
   ],
   "already_flagged": [
     "OQ-calculator-coverage: whether the computed tariff code matches the Zurich calculator for unexplored paths (residence block for A/B/H, more than 3 children, H3N/P3N, inferred per-child rows); non-blocking go-live condition",
-    "OQ-hr-side-follow-ups: how HR sees the Liechtenstein DTA flag and changes the first working day or other answers after submission (later HR-side spec)"
+    "OQ-fund-divorced-widowed: whether the pension fund form shows an extra field (e.g. a former spouse's date of birth) for Divorced or Widowed; proceed with D-004 until the fund or HR checks the portal"
   ],
   "tech_leaks": [
     {
       "file": "feature.md",
-      "quote": "Answers to questions that no longer apply are discarded on submission (discard_inapplicable_answers), and the questionnaire becomes read-only for the employee (read_only_after_submission).",
-      "why": "Internal snake_case rule ids appear in business prose. D-045 forbids this."
-    },
-    {
-      "file": "feature.md",
-      "quote": "The expression gives each child's contribution (1 or 0), summed over all children.",
+      "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
       "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
     },
     {
-      "file": "feature.md",
-      "quote": "The expression is per child; H applies if any child gives H.",
-      "why": "Refers to an internal formula ('expression') rather than business language."
-    },
-    {
       "file": "information.md",
-      "quote": "The expression gives each child's contribution (1 or 0), summed over all children.",
-      "why": "Refers to an internal formula ('expression') rather than business language."
-    },
-    {
-      "file": "information.md",
-      "quote": "The expression is per child; H applies if any child gives H.",
-      "why": "Refers to an internal formula ('expression') rather than business language."
+      "quote": "(The expression gives, per child, whether that child is counted; the digit is the number of children for which it is true.)",
+      "why": "Refers to an internal formula ('expression') rather than business language. D-045 forbids this."
     }
   ]
 }

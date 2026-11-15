@@ -2,26 +2,26 @@
   "id": "SEC-02-personal-details-address",
   "order": 2,
   "title": "Personal details and home address",
-  "purpose": "Collect the employee's name, date of birth and complete home address as it applies on the first working day, plus the canton for the pension fund.",
+  "purpose": "Collect the employee's name, date of birth and complete home address (as on the first working day), plus the canton for the pension fund. Residents of Switzerland choose their canton; for employees abroad Zurich is recorded and the canton is not asked.",
   "stories": [
     {
       "id": "US-02.1",
       "title": "Collect the employee's name and date of birth",
       "as_a": "pension_fund",
-      "i_want": "every new employee to give their first name, last name and date of birth in the onboarding questionnaire",
-      "so_that": "the occupational pension registration can be submitted. The fund's form rejects a registration where any of these required fields is empty. HR also needs the name to identify the employee and to address the documents it posts to them.",
+      "i_want": "every new employee to give their first name, last name and date of birth in the first step 'About you' of the onboarding questionnaire",
+      "so_that": "the registration at Pensionskasse Muster is never blocked by an empty required field (First name, Last name, Date of birth), and HR can identify the employee and address documents to them",
       "priority": "P1",
-      "priority_reason": "First name, last name and date of birth are required fields in the pension fund registration. If one is missing, the registration is blocked (F-pension_portal-44a27b).",
+      "priority_reason": "The pension fund portal rejects a registration when First name, Last name or Date of birth is empty, so without them the registration is blocked.",
       "acceptance_criteria": [
         {
           "id": "AC-02.1.1",
-          "title": "Name is asked of every employee and cannot be left empty",
-          "given": "a new employee fills in the onboarding questionnaire, whatever their country of residence, nationality or civil status",
-          "when": "they reach the personal details",
-          "then": "they are asked for their first name and their last name. Both answers are required, so the questionnaire cannot be submitted while either is empty. The answers are recorded for the pension fund registration (fields 'First name' and 'Last name') and for HR, which uses them to identify the employee and address the documents it posts.",
+          "title": "First and last name are always asked and required",
+          "given": "a new employee fills in step 1 'About you' of the questionnaire (the step also holds the first working day, which another story covers), whatever they answer elsewhere",
+          "when": "they try to continue without a first name or a last name",
+          "then": "they cannot continue until both are filled in. The first and last name are recorded for the pension fund (its required fields 'First name' and 'Last name') and for HR, which uses the name to identify the employee and address documents. HR's need for the name is inferred: HR confirmed 'name, address' but only explained the address.",
           "examples": [
             {
-              "name": "Employee living in Switzerland",
+              "name": "Any employee: name required",
               "given": [
                 {
                   "item": "address_country",
@@ -31,15 +31,7 @@
               "then": [
                 {
                   "target": "first_name",
-                  "expect": "asked"
-                },
-                {
-                  "target": "first_name",
                   "expect": "required"
-                },
-                {
-                  "target": "last_name",
-                  "expect": "asked"
                 },
                 {
                   "target": "last_name",
@@ -50,7 +42,7 @@
               "illustrative": true
             },
             {
-              "name": "Employee living in Germany",
+              "name": "Employee living abroad: name required too",
               "given": [
                 {
                   "item": "address_country",
@@ -60,15 +52,7 @@
               "then": [
                 {
                   "target": "first_name",
-                  "expect": "asked"
-                },
-                {
-                  "target": "first_name",
                   "expect": "required"
-                },
-                {
-                  "target": "last_name",
-                  "expect": "asked"
                 },
                 {
                   "target": "last_name",
@@ -84,18 +68,18 @@
             "F-pension_portal-c688e4",
             "F-pension_portal-44a27b",
             "F-hr_transcript-3edf89",
-            "G-01"
+            "D-047"
           ]
         },
         {
           "id": "AC-02.1.2",
-          "title": "Date of birth is asked of every employee as a day, month and year",
-          "given": "a new employee fills in the onboarding questionnaire",
-          "when": "they reach the personal details",
-          "then": "they are asked for their date of birth as day, month and year (DD.MM.YYYY, e.g. 14.03.1990). The answer is required, so the questionnaire cannot be submitted without it. It is recorded for the pension fund registration (field 'Date of birth').",
+          "title": "Date of birth is always asked and required, as DD.MM.YYYY",
+          "given": "a new employee fills in step 1 'About you'",
+          "when": "they enter their date of birth",
+          "then": "the date of birth is required for every employee and is given as a date in the form DD.MM.YYYY (e.g. 14.03.1990). It is recorded for the pension fund, whose registration form requires 'Date of birth' in that form.",
           "examples": [
             {
-              "name": "Employee living in Liechtenstein",
+              "name": "Any employee: date of birth required",
               "given": [
                 {
                   "item": "address_country",
@@ -103,10 +87,6 @@
                 }
               ],
               "then": [
-                {
-                  "target": "date_of_birth",
-                  "expect": "asked"
-                },
                 {
                   "target": "date_of_birth",
                   "expect": "required"
@@ -121,6 +101,30 @@
             "F-pension_portal-967bc9",
             "F-pension_portal-44a27b",
             "G-10"
+          ]
+        },
+        {
+          "id": "AC-02.1.3",
+          "title": "Date of birth must be plausible for the first working day",
+          "given": "a new employee has entered a date of birth and a first working day",
+          "when": "the date of birth means they would be younger than 14 or older than 100 on the first working day",
+          "then": "the date of birth is not accepted and the employee is asked to correct it. An employee who is at least 14 and at most 100 years old on the first working day can continue. Assumption to be verified by a domain expert (D-050): these age limits are a product decision, not stated by the pension fund or HR.",
+          "examples": [],
+          "source_refs": [
+            "D-050"
+          ]
+        },
+        {
+          "id": "AC-02.1.4",
+          "title": "No further personal identifiers are asked",
+          "given": "a new employee fills in step 1 'About you'",
+          "when": "they look at the questions in the step",
+          "then": "besides the first working day, only first name, last name and date of birth are asked. No social insurance (AHV) number and no badge photo are asked, because no receiving party in scope needs them.",
+          "examples": [],
+          "source_refs": [
+            "G-01",
+            "G-03",
+            "D-047"
           ]
         }
       ],
@@ -137,27 +141,28 @@
         "F-pension_portal-967bc9",
         "F-pension_portal-44a27b",
         "F-hr_transcript-3edf89",
-        "G-01",
-        "G-10",
-        "D-045"
+        "D-047",
+        "D-050",
+        "G-03",
+        "G-09"
       ],
-      "status": "confirmed"
+      "status": "inferred"
     },
     {
       "id": "US-02.2",
       "title": "Collect a complete postal home address",
       "as_a": "hr",
-      "i_want": "every new employee to give their complete home address (street, house number, postcode, town and country) as it applies on their first working day",
-      "so_that": "HR can post the many documents it sends to employees to an address that is complete and correct from the start of employment",
+      "i_want": "every new employee to give a complete postal home address (street, house number, postcode, town and country) as it will be on their first working day, in step 2 'Home address'",
+      "so_that": "the many documents HR posts to employees reach them, without HR having to chase missing parts of the address",
       "priority": "P1",
-      "priority_reason": "HR posts many documents to employees and states that the address 'has to be complete' (F-hr_transcript-3beee8, F-hr_transcript-c0fe95). An incomplete address means documents cannot be delivered.",
+      "priority_reason": "HR posts many documents to employees and states the address 'has to be complete'; an incomplete address stops HR's postal correspondence.",
       "acceptance_criteria": [
         {
           "id": "AC-02.2.1",
-          "title": "The full postal address is asked of every employee",
-          "given": "a new employee fills in the onboarding questionnaire",
-          "when": "they reach the home address",
-          "then": "they are asked for street, house number, postcode, town and country, written as a normal postal address on an envelope and nothing more. Street, postcode, town and country are required. The address is recorded for HR so it can post documents.",
+          "title": "Street, postcode and town are required for every employee",
+          "given": "a new employee fills in step 2 'Home address', wherever they live",
+          "when": "they try to continue with the street, the postcode or the town empty",
+          "then": "they cannot continue until street, postcode and town are filled in. The address is recorded for HR. Assumption to be verified by a domain expert (D-049): every home address field is required; the only exception is the explicit 'no house number' option.",
           "examples": [
             {
               "name": "Employee living in Switzerland",
@@ -173,10 +178,6 @@
                   "expect": "required"
                 },
                 {
-                  "target": "address_house_number",
-                  "expect": "required"
-                },
-                {
                   "target": "address_postcode",
                   "expect": "required"
                 },
@@ -185,7 +186,7 @@
                   "expect": "required"
                 },
                 {
-                  "target": "address_country",
+                  "target": "address_house_number",
                   "expect": "required"
                 }
               ],
@@ -203,23 +204,19 @@
               "then": [
                 {
                   "target": "address_street",
-                  "expect": "asked"
-                },
-                {
-                  "target": "address_house_number",
-                  "expect": "asked"
+                  "expect": "required"
                 },
                 {
                   "target": "address_postcode",
-                  "expect": "asked"
+                  "expect": "required"
                 },
                 {
                   "target": "address_town",
-                  "expect": "asked"
+                  "expect": "required"
                 },
                 {
-                  "target": "address_country",
-                  "expect": "asked"
+                  "target": "address_house_number",
+                  "expect": "required"
                 }
               ],
               "source_refs": [],
@@ -229,30 +226,63 @@
           "source_refs": [
             "F-hr_transcript-c0fe95",
             "F-hr_transcript-3beee8",
-            "F-hr_transcript-66fe15"
+            "D-049",
+            "D-047"
           ]
         },
         {
           "id": "AC-02.2.2",
-          "title": "House number is required, with an explicit 'no house number' answer",
-          "given": "a new employee enters their home address",
-          "when": "the address has a house number, or the address has none",
-          "then": "the employee must either enter the house number or state explicitly 'no house number'. The house number cannot simply be left blank. Assumption, to be verified by a domain expert: HR wants a complete address including the house number, and some addresses have none (D-042).",
-          "examples": [],
+          "title": "House number is required, with an explicit 'no house number' option",
+          "given": "a new employee fills in step 2 'Home address'",
+          "when": "they try to continue without a house number",
+          "then": "they can continue only if they have entered a house number or explicitly chosen 'no house number'; an empty house number alone is not accepted. Assumption to be verified by a domain expert (D-042): HR wants the address complete including the number, and some addresses have no house number.",
+          "examples": [
+            {
+              "name": "House number required for any employee",
+              "given": [
+                {
+                  "item": "address_country",
+                  "value": "Liechtenstein"
+                }
+              ],
+              "then": [
+                {
+                  "target": "address_house_number",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
           "source_refs": [
             "F-hr_transcript-c0fe95",
-            "D-042"
+            "D-042",
+            "D-049"
           ]
         },
         {
           "id": "AC-02.2.3",
-          "title": "The address asked is the one that applies on the first working day",
-          "given": "a new employee who is moving around the time they start, e.g. relocating to Switzerland for the new job",
-          "when": "they enter their home address",
-          "then": "the questionnaire makes clear that the address to give is the one where they will live on their first working day, not an earlier one. Assumption, to be verified by a domain expert (D-041).",
+          "title": "The address is the one that applies on the first working day",
+          "given": "a new employee will move before their first working day",
+          "when": "they fill in step 2 'Home address'",
+          "then": "the question makes clear that the address asked is the one that applies on the first working day, so the employee enters their new address. Assumption to be verified by a domain expert (D-041).",
           "examples": [],
           "source_refs": [
             "D-041"
+          ]
+        },
+        {
+          "id": "AC-02.2.4",
+          "title": "Only a normal postal address is asked",
+          "given": "a new employee fills in step 2 'Home address'",
+          "when": "they look at the address questions",
+          "then": "only what is needed to write the address on an envelope is asked: street, house number, postcode, town and country. Nothing else, such as a second address or a phone number, is asked.",
+          "examples": [],
+          "source_refs": [
+            "F-hr_transcript-66fe15",
+            "F-hr_transcript-c0fe95",
+            "G-01"
           ]
         }
       ],
@@ -260,17 +290,17 @@
         "address_street",
         "address_house_number",
         "address_postcode",
-        "address_town",
-        "address_country"
+        "address_town"
       ],
       "rules": [],
       "source_refs": [
-        "F-hr_transcript-3beee8",
         "F-hr_transcript-c0fe95",
+        "F-hr_transcript-3beee8",
         "F-hr_transcript-66fe15",
         "D-041",
         "D-042",
-        "D-045"
+        "D-047",
+        "D-049"
       ],
       "status": "decision"
     },
@@ -278,35 +308,50 @@
       "id": "US-02.3",
       "title": "Use the home address country as the country of residence",
       "as_a": "source_tax",
-      "i_want": "the country of the employee's home address to be used as their country of residence, without asking for it a second time",
-      "so_that": "Lonio can tell whether the employee lives abroad (and is therefore subject to source tax whatever their nationality) and which follow-up questions apply, while the employee states the country only once",
+      "i_want": "the country of the employee's home address to count as their country of residence, without a separate residence question",
+      "so_that": "Lonio knows whether the employee lives in Switzerland or abroad. Employees living abroad are always subject to source tax, and the country decides which later questions apply. The employee is asked for the country only once.",
       "priority": "P1",
-      "priority_reason": "Country of residence decides who is subject to source tax and which further questions are asked. HR today does not know up front who has to answer the source tax questions (F-hr_transcript-b84498, F-hr_transcript-5af8d0).",
+      "priority_reason": "The country of residence decides source tax liability and the canton for the pension fund; without it neither the tariff nor the registration can be completed.",
       "acceptance_criteria": [
         {
           "id": "AC-02.3.1",
-          "title": "Country is given once and named in English",
-          "given": "a new employee enters their home address",
-          "when": "they give the country",
-          "then": "they choose the country by its English name (e.g. Switzerland, Germany, Liechtenstein). This one answer counts as their country of residence on the first working day. The employee is not asked about their country of residence anywhere else in the questionnaire. The answer is recorded for HR (postal address), for source tax (residence) and for the pension fund (to decide the canton). The residence-on-the-first-working-day reading is an assumption to be verified by a domain expert (D-041).",
-          "examples": [],
+          "title": "Country is required and chosen from the country list",
+          "given": "a new employee fills in step 2 'Home address'",
+          "when": "they give the country of their home address as it applies on the first working day",
+          "then": "the country is required and is chosen from the ISO 3166 country list, shown by English name (e.g. Switzerland, Germany, Liechtenstein). This country is the employee's country of residence; no separate question about the country of residence is asked. It is recorded for HR as part of the postal address, for source tax and for the pension fund (the fund uses it to decide the canton). Assumptions to be verified by a domain expert: the country list (D-050) and the address as on the first working day (D-041).",
+          "examples": [
+            {
+              "name": "Country required for every employee",
+              "given": [],
+              "then": [
+                {
+                  "target": "address_country",
+                  "expect": "required"
+                }
+              ],
+              "source_refs": [],
+              "illustrative": true
+            }
+          ],
           "source_refs": [
             "F-hr_transcript-c0fe95",
             "F-hr_transcript-ab3cba",
-            "G-01",
+            "F-zh_source_tax_calculator-4c65ae",
             "G-10",
-            "D-041"
+            "D-041",
+            "D-049",
+            "D-050"
           ]
         },
         {
           "id": "AC-02.3.2",
-          "title": "Living abroad means subject to source tax and no nationality question",
-          "given": "a new employee whose home address is outside Switzerland",
+          "title": "Employees living abroad are subject to source tax and are not asked nationality or canton",
+          "given": "a new employee's home address on the first working day is outside Switzerland",
           "when": "they continue the questionnaire",
-          "then": "Lonio treats them as subject to source tax whatever their nationality, as in HR's rule where 'here' means Switzerland. They are not asked for their nationality or for a canton. An employee whose home address is in Switzerland is asked for their nationality and canton, and their source tax liability depends on those further answers. Applying HR's rule as stated is an assumption to be verified by a domain expert (D-043).",
+          "then": "they are subject to source tax whatever their nationality (HR's example: Stefan is Swiss, lives abroad and is still subject). Their nationality is not asked (data minimisation), and the canton is not asked either. 'Here' in HR's rule is read as Switzerland; assumption to be verified by a domain expert (D-043).",
           "examples": [
             {
-              "name": "Stefan, Swiss citizen living abroad (hr_transcript/F-hr_transcript-3f2c2a)",
+              "name": "Stefan, Swiss, living abroad (hr_transcript/F-hr_transcript-3f2c2a; country assumed)",
               "given": [
                 {
                   "item": "address_country",
@@ -328,7 +373,7 @@
                 }
               ],
               "source_refs": [],
-              "illustrative": false
+              "illustrative": true
             },
             {
               "name": "Employee living in Liechtenstein",
@@ -356,7 +401,7 @@
               "illustrative": true
             },
             {
-              "name": "Employee living in another country",
+              "name": "Employee living in France",
               "given": [
                 {
                   "item": "address_country",
@@ -375,7 +420,24 @@
               ],
               "source_refs": [],
               "illustrative": true
-            },
+            }
+          ],
+          "source_refs": [
+            "F-hr_transcript-3f2c2a",
+            "F-hr_transcript-5af8d0",
+            "G-01",
+            "D-002",
+            "D-038",
+            "D-043"
+          ]
+        },
+        {
+          "id": "AC-02.3.3",
+          "title": "Employees living in Switzerland are asked their nationality and canton",
+          "given": "a new employee's home address on the first working day is in Switzerland",
+          "when": "they continue the questionnaire",
+          "then": "they are asked their canton of residence in step 2 and their nationality in step 3 'Nationality and C permit'. Whether they are subject to source tax then depends on those later answers, not on the country alone.",
+          "examples": [
             {
               "name": "Employee living in Switzerland",
               "given": [
@@ -399,11 +461,9 @@
             }
           ],
           "source_refs": [
-            "F-hr_transcript-3f2c2a",
             "F-hr_transcript-5af8d0",
-            "D-038",
-            "D-043",
-            "D-002"
+            "D-002",
+            "D-047"
           ]
         }
       ],
@@ -412,19 +472,20 @@
       ],
       "rules": [],
       "source_refs": [
+        "F-hr_transcript-c0fe95",
         "F-hr_transcript-ab3cba",
         "F-hr_transcript-3f2c2a",
         "F-hr_transcript-5af8d0",
-        "F-hr_transcript-b84498",
-        "F-zh_source_tax_calculator-aedb40",
-        "F-zh_source_tax_calculator-d62dd4",
+        "F-zh_source_tax_calculator-4c65ae",
         "G-01",
         "G-10",
         "D-002",
         "D-038",
         "D-041",
         "D-043",
-        "D-045"
+        "D-047",
+        "D-049",
+        "D-050"
       ],
       "status": "decision"
     },
@@ -432,86 +493,17 @@
       "id": "US-02.4",
       "title": "Ask Swiss residents for their canton",
       "as_a": "pension_fund",
-      "i_want": "every registration to carry a canton: the canton of residence for employees living in Switzerland and Zurich, the canton of the place of work, for employees living abroad",
-      "so_that": "the required 'Canton' field of the registration is never empty, and employees living abroad are not asked a question the fund's canton list cannot answer for them",
+      "i_want": "a canton for every new employee: the canton of residence chosen by employees who live in Switzerland, and Zurich (the canton of the place of work at Muster AG) for employees who live abroad, without asking them",
+      "so_that": "the required 'Canton' field of the registration is always filled, even for employees living abroad, for whom the fund's list has no option",
       "priority": "P1",
-      "priority_reason": "'Canton' is a required field. Without it the pension fund registration is blocked (F-pension_portal-44a27b, F-pension_portal-6c621f).",
+      "priority_reason": "'Canton' is a required field of the fund's registration; if it is empty the registration is rejected ('Canton is required.').",
       "acceptance_criteria": [
         {
           "id": "AC-02.4.1",
-          "title": "Only employees living in Switzerland choose their canton",
-          "given": "a new employee has given the country of their home address",
-          "when": "the country is Switzerland",
-          "then": "they are asked to choose their canton of residence. The answer is required. The choice is one of the 26 cantons on the pension fund's list: Aargau, Appenzell Ausserrhoden, Appenzell Innerrhoden, Basel-Landschaft, Basel-Stadt, Bern, Fribourg, Geneva, Glarus, Graubünden, Jura, Lucerne, Neuchâtel, Nidwalden, Obwalden, Schaffhausen, Schwyz, Solothurn, St. Gallen, Thurgau, Ticino, Uri, Valais, Vaud, Zug, Zurich. If the country is anything other than Switzerland, the canton is not asked. Assumption, to be verified by a domain expert (D-002).",
-          "examples": [
-            {
-              "name": "Employee living in Switzerland",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Switzerland"
-                }
-              ],
-              "then": [
-                {
-                  "target": "residence_canton",
-                  "expect": "asked"
-                },
-                {
-                  "target": "residence_canton",
-                  "expect": "required"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Stefan, Swiss citizen living abroad (hr_transcript/F-hr_transcript-3f2c2a)",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Germany"
-                }
-              ],
-              "then": [
-                {
-                  "target": "residence_canton",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": false
-            },
-            {
-              "name": "Employee living in Liechtenstein",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "Liechtenstein"
-                }
-              ],
-              "then": [
-                {
-                  "target": "residence_canton",
-                  "expect": "not asked"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            }
-          ],
-          "source_refs": [
-            "F-pension_portal-6c621f",
-            "F-pension_portal-3432a9",
-            "D-002"
-          ]
-        },
-        {
-          "id": "AC-02.4.2",
-          "title": "Canton recorded for the pension fund",
-          "given": "a new employee has submitted the questionnaire",
-          "when": "Lonio determines the canton for the pension fund registration",
-          "then": "for an employee living in Switzerland, it is the canton they chose. For an employee living in any other country, it is Zurich, the canton of Muster AG's place of work, which Lonio enters without asking. Because the fund's list has no option for a residence outside Switzerland and the fund does not say whether 'Canton' means residence or work, this mapping is an assumption to be verified by a domain expert (D-002). The canton is derived again from the latest answers whenever they change.",
+          "title": "Employees living in Switzerland choose their canton",
+          "given": "a new employee's home address on the first working day is in Switzerland",
+          "when": "they fill in step 2 'Home address'",
+          "then": "they are asked their canton of residence, it is required, and they choose one of the 26 cantons the fund lists: Aargau, Appenzell Ausserrhoden, Appenzell Innerrhoden, Basel-Landschaft, Basel-Stadt, Bern, Fribourg, Geneva, Glarus, Graubünden, Jura, Lucerne, Neuchâtel, Nidwalden, Obwalden, Schaffhausen, Schwyz, Solothurn, St. Gallen, Thurgau, Ticino, Uri, Valais, Vaud, Zug, Zurich. The chosen canton is recorded as the canton for the pension fund.",
           "examples": [
             {
               "name": "Living in Switzerland, canton Bern",
@@ -526,6 +518,10 @@
                 }
               ],
               "then": [
+                {
+                  "target": "residence_canton",
+                  "expect": "required"
+                },
                 {
                   "target": "pension_fund_canton",
                   "expect": "Bern"
@@ -548,15 +544,35 @@
               ],
               "then": [
                 {
+                  "target": "residence_canton",
+                  "expect": "required"
+                },
+                {
                   "target": "pension_fund_canton",
                   "expect": "Zurich"
                 }
               ],
               "source_refs": [],
               "illustrative": true
-            },
+            }
+          ],
+          "source_refs": [
+            "F-pension_portal-6c621f",
+            "F-pension_portal-3432a9",
+            "F-pension_portal-44a27b",
+            "D-002",
+            "D-047"
+          ]
+        },
+        {
+          "id": "AC-02.4.2",
+          "title": "Employees living abroad are not asked; Zurich is recorded",
+          "given": "a new employee's home address on the first working day is outside Switzerland",
+          "when": "they fill in step 2 'Home address'",
+          "then": "the canton is not asked, and Zurich, the canton of the place of work at Muster AG, is recorded as the canton for the pension fund. Assumption to be verified by a domain expert (D-002): the fund's portal does not say whether 'Canton' means residence or place of work, and its list has no option for a residence abroad.",
+          "examples": [
             {
-              "name": "Stefan, Swiss citizen living abroad (hr_transcript/F-hr_transcript-3f2c2a)",
+              "name": "Living in Germany",
               "given": [
                 {
                   "item": "address_country",
@@ -565,12 +581,16 @@
               ],
               "then": [
                 {
+                  "target": "residence_canton",
+                  "expect": "not asked"
+                },
+                {
                   "target": "pension_fund_canton",
                   "expect": "Zurich"
                 }
               ],
               "source_refs": [],
-              "illustrative": false
+              "illustrative": true
             },
             {
               "name": "Living in Liechtenstein",
@@ -582,22 +602,9 @@
               ],
               "then": [
                 {
-                  "target": "pension_fund_canton",
-                  "expect": "Zurich"
-                }
-              ],
-              "source_refs": [],
-              "illustrative": true
-            },
-            {
-              "name": "Living in another country",
-              "given": [
-                {
-                  "item": "address_country",
-                  "value": "France"
-                }
-              ],
-              "then": [
+                  "target": "residence_canton",
+                  "expect": "not asked"
+                },
                 {
                   "target": "pension_fund_canton",
                   "expect": "Zurich"
@@ -608,15 +615,29 @@
             }
           ],
           "source_refs": [
-            "F-pension_portal-3432a9",
             "F-pension_portal-b359c3",
-            "D-002",
-            "D-037"
+            "F-pension_portal-3432a9",
+            "D-002"
+          ]
+        },
+        {
+          "id": "AC-02.4.3",
+          "title": "The canton for the fund always follows the latest answers",
+          "given": "the questionnaire has been submitted and HR later changes the employee's country of residence",
+          "when": "the canton for the pension fund is derived again",
+          "then": "it follows the latest answers. If the employee now lives abroad, Zurich is recorded and any canton chosen earlier is discarded. If the employee now lives in Switzerland but no canton was ever asked, the canton for the fund shows 'incomplete - HR must complete' until HR enters it. Assumption to be verified by a domain expert (D-048). How HR makes the change belongs to the later HR-side spec.",
+          "examples": [],
+          "source_refs": [
+            "D-037",
+            "D-048",
+            "D-034",
+            "D-002"
           ]
         }
       ],
       "items": [
-        "residence_canton"
+        "residence_canton",
+        "address_country"
       ],
       "rules": [
         "pension_fund_canton"
@@ -624,11 +645,13 @@
       "source_refs": [
         "F-pension_portal-6c621f",
         "F-pension_portal-3432a9",
-        "F-pension_portal-44a27b",
         "F-pension_portal-b359c3",
-        "G-01",
+        "F-pension_portal-44a27b",
         "D-002",
-        "D-045"
+        "D-037",
+        "D-041",
+        "D-047",
+        "D-048"
       ],
       "status": "decision"
     }
@@ -652,17 +675,16 @@
     "F-pension_portal-db702a",
     "F-pension_portal-c688e4",
     "F-pension_portal-88b436",
-    "F-pension_portal-44a27b",
     "F-pension_portal-6c621f",
-    "F-pension_portal-3432a9",
     "F-pension_portal-b359c3",
-    "F-hr_transcript-3edf89",
     "F-hr_transcript-c0fe95",
     "F-hr_transcript-3beee8",
     "G-10",
     "D-002",
     "D-041",
     "D-042",
-    "D-045"
+    "D-047",
+    "D-049",
+    "D-050"
   ]
 }
