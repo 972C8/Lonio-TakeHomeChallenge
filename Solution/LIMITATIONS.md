@@ -33,24 +33,57 @@
    adds citations is deliberately ignored for sections that merely use the
    element and for decision flags.
 
-4. **Adding or changing a source still uses more tokens than it needs to.**
-   Incremental reruns keep untouched sections, but several steps still work on
-   everything:
+4. **Adding or changing a source still costs more than it needs to, mainly
+   because the knowledge delta drifts.** A new source that only confirms what
+   is known can still change an element in substance and rewrite every section
+   that uses it: in the benchmark, an HR call confirming "Swiss yes or no"
+   changed the nationality item and rewrote 6 of 8 sections (8 stories), $3.6
+   of that run's $6.1; a pension fund email also rewrote an unrelated story
+   (US-08.3). Other steps still work on more than changed:
    - a changed source is normalised and extracted again in full, not only its
      changed parts;
    - the knowledge delta sends the whole previous model to the agent, even
      when a handful of facts changed;
-   - dev refinement and the reviewer re-read the whole spec although most of
-     it is unchanged (the trace judge reuses verdicts of unchanged elements);
-   - any change to guidance, a directive or a prompt rebuilds the model and
-     every section from scratch.
-   In practice a small new source costs about $4.50 (one new story, 29
-   untouched), against about $10-13 for a full rebuild.
-   Possible optimisations: extract only changed units, send the delta agent
-   only the elements related to the new facts, and treat a changed directive
-   as a delta of the elements that cite it.
+   - any change to guidance, a directive or an agent's system prompt rebuilds
+     the model and every section from scratch (prompts are part of each
+     stage's fingerprint).
    The delta guard is a cause check, not a meaning check: a change that cites
    a new fact is accepted even if the fact does not really require it, and a
    new high-precedence source that contradicts much of the model may need
    changes the guard reverts. The reverted changes are listed in review.md;
    `--force knowledge.raw` rebuilds in full when they are wanted.
+
+   **How we reduced it: an overnight optimisation loop.** An agent ran
+   unattended overnight in a cloud session on a branch, on the same Max login:
+   1. It added real token logging per stage (`usage_this_run` in
+      report.json).
+   2. It built a benchmark (`bench/`): a fresh full rebuild as the frozen
+      baseline, plus three mock sources with expected changes (an HR email
+      asking for an email copy of the answers, a pension fund email with a
+      2027 insurance rule and the canton for employees abroad, an HR call that
+      contradicts decision D-007). Each case measures tokens, changed stories,
+      errors, examples, open questions and the verdict, and a no-op rerun
+      right after must call no agent.
+   3. It applied the optimisations one at a time, unit-tested without AI, and
+      gated them on the benchmark: no check that held before may fail, the
+      verdict must stay the same, and tokens must go down. A failing case was
+      rerun once to rule out model noise. When the Max 5-hour limit stopped a
+      run, it resumed after the reset.
+
+   Four savings passed the gate. Over the three new-source cases tokens fell
+   75% (5.85M to 1.44M) and the SDK cost estimate 39% ($17.98 to $10.92):
+   - dev refinement on reruns: one call on the changed files (plus feature.md
+     and related stories) instead of a 39-turn read loop over every file
+     (-$2.67);
+   - section writers get only the part of the knowledge model their section
+     owns or uses, the rest as a one-line index (-$2.14);
+   - the fact judge caches verdicts per fact, so only new facts are judged
+     (-$1.13);
+   - review, flow and section assignment run on Sonnet instead of Opus
+     (-$0.87).
+   The no-op check also found two defects, now fixed: a decision flagged for
+   new evidence lost its flag on the next rerun without being re-confirmed,
+   and a rerun with nothing new re-ran the reviewer. Results:
+   `bench/SUMMARY.md`. Not yet re-measured: a full rebuild after the changes.
+   Next: stop the knowledge-delta drift above, then send the delta agent only
+   the elements related to the new facts and extract only changed units.
